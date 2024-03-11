@@ -1,4 +1,4 @@
-package ing.soft;
+package ing.soft.view;
 
 public class ClientApp {
 }
