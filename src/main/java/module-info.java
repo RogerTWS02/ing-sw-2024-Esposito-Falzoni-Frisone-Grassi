@@ -11,6 +11,6 @@ module group.sweng.ingsw2024espositofalzonifrisonegrassi {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
 
-    opens group.sweng.ingsw2024espositofalzonifrisonegrassi to javafx.fxml;
-    exports group.sweng.ingsw2024espositofalzonifrisonegrassi;
+    opens ing.soft to javafx.fxml;
+    exports ing.soft;
 }
