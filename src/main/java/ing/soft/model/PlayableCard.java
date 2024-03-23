@@ -6,9 +6,12 @@ public abstract class PlayableCard {
     private final Resource[] permResource;
     private final Corner[] cardCorners;
 
-    public PlayableCard(Resource[] permResource, Corner[] cardCorners) {
+    private final int UUID;
+
+    public PlayableCard(Resource[] permResource, Corner[] cardCorners, int UUID) {
         this.permResource = permResource;
         this.cardCorners = cardCorners;
+        this.UUID = UUID;
     }
 
     public void setState(boolean state) {
@@ -34,4 +37,6 @@ public abstract class PlayableCard {
     public Corner[] getCardCorners() {
         return cardCorners;
     }
+
+    public int getUUID() {return UUID;}
 }
