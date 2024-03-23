@@ -19,7 +19,7 @@ public abstract class PlayableCard {
         isFlipped = flipped;
     }
 
-    public boolean isState() {
+    public boolean getState() {
         return State;
     }
 
