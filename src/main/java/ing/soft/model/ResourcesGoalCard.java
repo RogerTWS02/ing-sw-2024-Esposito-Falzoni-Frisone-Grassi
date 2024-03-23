@@ -7,7 +7,7 @@ public class ResourcesGoalCard extends GoalCard{
     /* how can we combine the fact that has a final attribute to the playerboard with the existence of common goalgard? */
 
 
-    public ResourcesGoalCard(int points, Resource[] resources, Playerboard board) {
+    public ResourcesGoalCard(int points, Resource[] resources) {
         super(points);
         this.resources = resources;
     }
