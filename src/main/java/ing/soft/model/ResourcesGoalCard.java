@@ -2,16 +2,19 @@ package ing.soft.model;
 
 public class ResourcesGoalCard extends GoalCard{
     private final Resource[] resources;
-    private final Playerboard board;
+
+
+    /* how can we combine the fact that has a final attribute to the playerboard with the existence of common goalgard? */
+
 
     public ResourcesGoalCard(int points, Resource[] resources, Playerboard board) {
         super(points);
         this.resources = resources;
-        this.board = board;
     }
 
     //I think we should add a reference to the playerboard to check the goal
-    public int checkGoal() {
+
+    public int checkGoal(Playerboard board) {
         int pointsScored = 1000; /*I initialized pointsScored to 1000 because in
             the final check I always take the minimum value*/
         int wolves = 0, mushrooms = 0, leaves = 0, butterflies = 0, feathers = 0, glassvials = 0, scrolls = 0;
