@@ -8,4 +8,5 @@ public enum Resource {
     FEATHER,
     SCROLL,
     GLASSVIAL
+
 }
