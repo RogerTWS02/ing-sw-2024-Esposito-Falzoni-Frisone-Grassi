@@ -1,8 +1,8 @@
 package ing.soft.model;
 
 public class ResourcesGoalCard extends GoalCard{
-    private Resource[] resources;
-    private Playerboard board;
+    private final Resource[] resources;
+    private final Playerboard board;
 
     public ResourcesGoalCard(int points, Resource[] resources, Playerboard board) {
         super(points);
@@ -19,30 +19,15 @@ public class ResourcesGoalCard extends GoalCard{
         /*Here I check the resources array, to understand what resources we are looking for
         and how many are there*/
 
-        for (int i = 0; i < resources.length; i++) {
-            switch (resources[i]) {
-                case WOLF -> {
-                    wolves++;
-                }
-                case MUSHROOM -> {
-                    mushrooms++;
-                }
-                case LEAF -> {
-                    leaves++;
-                }
-
-                case BUTTERFLY -> {
-                    butterflies++;
-                }
-                case FEATHER -> {
-                    feathers++;
-                }
-                case SCROLL -> {
-                    scrolls++;
-                }
-                case GLASSVIAL -> {
-                    glassvials++;
-                }
+        for (Resource value : resources) {
+            switch (value) {
+                case WOLF -> wolves++;
+                case MUSHROOM -> mushrooms++;
+                case LEAF -> leaves++;
+                case BUTTERFLY -> butterflies++;
+                case FEATHER -> feathers++;
+                case SCROLL -> scrolls++;
+                case GLASSVIAL -> glassvials++;
             }
         }
 
@@ -113,77 +98,77 @@ public class ResourcesGoalCard extends GoalCard{
 
         /*Now I have to count the points*/
 
-        for (int i = 0; i < resources.length; i++) {
+        for (Resource resource : resources) {
             int partialScore = 0;
-            switch (resources[i]) {
+            switch (resource) {
                 case WOLF -> {
-                    if(countwolves == 0){
+                    if (countwolves == 0) {
                         break;
-                    }else{
-                        partialScore = countwolves/wolves;
-                        if(partialScore < pointsScored){
+                    } else {
+                        partialScore = countwolves / wolves;
+                        if (partialScore < pointsScored) {
                             pointsScored = partialScore;
                         }
                     }
 
                 }
                 case MUSHROOM -> {
-                    if(countmushrooms == 0){
+                    if (countmushrooms == 0) {
                         break;
-                    }else{
-                        partialScore = countmushrooms/mushrooms;
-                        if(partialScore < pointsScored){
+                    } else {
+                        partialScore = countmushrooms / mushrooms;
+                        if (partialScore < pointsScored) {
                             pointsScored = partialScore;
                         }
                     }
                 }
                 case LEAF -> {
-                    if(countleaves == 0){
+                    if (countleaves == 0) {
                         break;
-                    }else{
-                        partialScore = countleaves/leaves;
-                        if(partialScore < pointsScored){
+                    } else {
+                        partialScore = countleaves / leaves;
+                        if (partialScore < pointsScored) {
                             pointsScored = partialScore;
                         }
                     }
                 }
 
                 case BUTTERFLY -> {
-                    if(countbutterflies == 0){
+                    if (countbutterflies == 0) {
                         break;
-                    }else{
-                        partialScore = countbutterflies/butterflies;
-                        if(partialScore < pointsScored){
+                    } else {
+                        partialScore = countbutterflies / butterflies;
+                        if (partialScore < pointsScored) {
                             pointsScored = partialScore;
                         }
                     }
                 }
                 case FEATHER -> {
-                    if(countfeathers == 0){
+                    if (countfeathers == 0) {
                         break;
-                    }else{
-                        partialScore = countfeathers/feathers;
-                        if(partialScore < pointsScored){
+                    } else {
+                        partialScore = countfeathers / feathers;
+                        if (partialScore < pointsScored) {
                             pointsScored = partialScore;
                         }
                     }
                 }
                 case SCROLL -> {
-                    if(countscrolls == 0){
+                    if (countscrolls == 0) {
                         break;
-                    }else{
-                        partialScore = countscrolls/scrolls;
-                        if(partialScore < pointsScored){
+                    } else {
+                        partialScore = countscrolls / scrolls;
+                        if (partialScore < pointsScored) {
                             pointsScored = partialScore;
                         }
                     }
                 }
                 case GLASSVIAL -> {
-                    if(countglassvials == 0){
+                    if (countglassvials == 0) {
                         break;
-                    }else{
-                        partialScore = countglassvials/glassvials;
-                        if(partialScore < pointsScored){
+                    } else {
+                        partialScore = countglassvials / glassvials;
+                        if (partialScore < pointsScored) {
                             pointsScored = partialScore;
                         }
                     }
@@ -191,6 +176,9 @@ public class ResourcesGoalCard extends GoalCard{
             }
         }
 
-        return pointsScored;
+        if(pointsScored == 1000){
+            pointsScored = 0;
+            return pointsScored;
+        }else{return pointsScored;}
     }
 }
