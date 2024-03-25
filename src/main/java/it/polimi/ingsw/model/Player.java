@@ -36,4 +36,9 @@ public class Player {
     public GoalCard getSecretGoalCard() {
         return secretGoalCard;
     }
+
+    //Secret goal card setter
+    public void setSecretGoalCard(GoalCard secretGoalCard) {
+        this.secretGoalCard = secretGoalCard;
+    }
 }
