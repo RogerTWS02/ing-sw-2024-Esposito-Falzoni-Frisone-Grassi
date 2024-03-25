@@ -25,7 +25,7 @@ public class PatternGoalCard extends GoalCard {
                 position[1]=j;
 
                 /*it`s the starting point of a pattern */
-                if (matchedPattern(position,pattern, board, usedCard)) {timesMatched+=1;}
+                if (matchedPattern(position, board, usedCard)) {timesMatched+=1;}
                 }
             }
 
@@ -35,12 +35,12 @@ public class PatternGoalCard extends GoalCard {
     /* check if the pattern is matched, it can surly be done in a recursive way, ned more time to elaborate the method,
     now it`s should just work not optimal solution, (arraylist passed by reference?)
      */
-    private boolean matchedPattern(int[] startingPoint, Pattern pattern, PlayerBoard board, ArrayList usedCard) {
+    private boolean matchedPattern(int[] startingPoint, PlayerBoard board, ArrayList usedCard) {
        /*
        just checking every conditions that mismatch the pattern with a brute force algorithm
         */
     /* same resource? */
-        if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource() != pattern.getFirstResource()) {
+        if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource().equals(pattern.getFirstResource())) {
             return false;
         }
     /* already visited? */
@@ -51,7 +51,7 @@ public class PatternGoalCard extends GoalCard {
         startingPoint[0] = startingPoint[0] + pattern.getSecondPosition()[0];
         startingPoint[1] = startingPoint[1] + pattern.getSecondPosition()[1];
 
-        if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource() != pattern.getSecondResource()) {
+        if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource().equals(pattern.getSecondResource())) {
             return false;
         }
         if(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
@@ -62,7 +62,7 @@ public class PatternGoalCard extends GoalCard {
         startingPoint[0] = startingPoint[0] + pattern.getThirdPosition()[0];
         startingPoint[1] = startingPoint[1] + pattern.getThirdPosition()[1];
 
-        if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource() != pattern.getThirdResource()) {
+        if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource().equals(pattern.getThirdResource())) {
             return false;
         }
         if(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
