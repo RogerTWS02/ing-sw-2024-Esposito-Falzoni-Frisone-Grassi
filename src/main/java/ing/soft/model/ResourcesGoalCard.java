@@ -14,7 +14,7 @@ public class ResourcesGoalCard extends GoalCard{
 
     //I think we should add a reference to the playerboard to check the goal
 
-    public int checkGoal(Playerboard board) {
+    public int checkGoal(PlayerBoard board) {
         int pointsScored = 1000; /*I initialized pointsScored to 1000 because in
             the final check I always take the minimum value*/
         int wolves = 0, mushrooms = 0, leaves = 0, butterflies = 0, feathers = 0, glassvials = 0, scrolls = 0;
@@ -39,8 +39,8 @@ public class ResourcesGoalCard extends GoalCard{
         /*Now I compare the resources in the resources array and check how many of them
         are there in the board*/
 
-        for (int i = 0; i < board.getResources.length; i++) {
-            switch (board.getResources[i]) {
+        for (int i = 0; i < board.getResources().size(); i++) {
+            switch (board.getResources().get(i)) {
                 case WOLF -> {
                     if (wolves == 0) {
                         break;

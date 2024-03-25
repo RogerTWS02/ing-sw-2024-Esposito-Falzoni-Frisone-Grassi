@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class PatternGoalCard extends GoalCard {
-    private Pattern pattern;
+    private final Pattern pattern;
 
     public PatternGoalCard(int points, Pattern pattern) {
         super(points);
@@ -14,10 +14,10 @@ public class PatternGoalCard extends GoalCard {
     }
 
     /*Yet to be thought how to check the pattern; method checkGoal is not finished*/
- /* iterate all the board */
-    public int checkGoal(Playerboard board) {
+    /* iterate all the board */
+    public int checkGoal(PlayerBoard board) {
         int timesMatched=0;
-       ArrayList<Integer> usedcard = new ArrayList<Integer>();
+       ArrayList<Integer> usedCard = new ArrayList<Integer>();
         for (int i = 0; i <= 80; i++) {
             for (int j = 0; j <= 80; j++) {
                 int[] position= new int[2];
@@ -25,7 +25,7 @@ public class PatternGoalCard extends GoalCard {
                 position[1]=j;
 
                 /*it`s the starting point of a pattern */
-                if (matchedPattern(position,pattern, board, usedcard)) {timesMatched+=1;}
+                if (matchedPattern(position,pattern, board, usedCard)) {timesMatched+=1;}
                 }
             }
 
@@ -35,7 +35,7 @@ public class PatternGoalCard extends GoalCard {
     /* check if the pattern is matched, it can surly be done in a recursive way, ned more time to elaborate the method,
     now it`s should just work not optimal solution, (arraylist passed by reference?)
      */
-    private boolean matchedPattern(int[] startingPoint, Pattern pattern, Playerboard board, ArrayList usedcard) {
+    private boolean matchedPattern(int[] startingPoint, Pattern pattern, PlayerBoard board, ArrayList usedCard) {
        /*
        just checking every conditions that mismatch the pattern with a brute force algorithm
         */
@@ -44,8 +44,8 @@ public class PatternGoalCard extends GoalCard {
             return false;
         }
     /* already visited? */
-        if(usedcard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
-        usedcard.add(usedcard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID()));
+        if(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
+        usedCard.add(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID()));
 
       /* next card in the pattern */
         startingPoint[0] = startingPoint[0] + pattern.getSecondPosition()[0];
@@ -54,8 +54,8 @@ public class PatternGoalCard extends GoalCard {
         if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource() != pattern.getSecondResource()) {
             return false;
         }
-        if(usedcard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
-        usedcard.add(usedcard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID()));
+        if(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
+        usedCard.add(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID()));
 
         /* next card in the pattern */
 
@@ -65,8 +65,8 @@ public class PatternGoalCard extends GoalCard {
         if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource() != pattern.getThirdResource()) {
             return false;
         }
-        if(usedcard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
-        usedcard.add(usedcard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID()));
+        if(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
+        usedCard.add(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID()));
         return true;
     };
 

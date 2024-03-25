@@ -11,9 +11,9 @@ public class Game {
     }
 
     public void setHand(Player x, PlayableCard y, PlayableCard z, PlayableCard k){
-        x.getCards[0] = y;
-        x.getCards[1] = z;
-        x.getCards[2] = k;
+        x.hand[0] = y;
+        x.hand[1] = z;
+        x.hand[2] = k;
     }
 
     public Player[] getPlayers() {

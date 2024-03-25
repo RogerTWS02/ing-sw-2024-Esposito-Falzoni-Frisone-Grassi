@@ -5,5 +5,4 @@ public enum State {
         UNAVAILABLE,
         OCCUPIED,
         UNPLAYED
-
 }

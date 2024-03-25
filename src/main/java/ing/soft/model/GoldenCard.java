@@ -4,8 +4,8 @@ public class GoldenCard extends PlayableCard {
     private final int points;
     private final Resource[] requiredResource;
 
-    public GoldenCard(Resource[] permResource, Corner[] cardCorners, int points, Resource[] requiredResource) {
-        super(permResource, cardCorners);
+    public GoldenCard(Resource[] permResource, Corner[] cardCorners, int points, Resource[] requiredResource, int UUID) {
+        super(permResource, cardCorners, UUID);
         this.points = points;
         this.requiredResource = requiredResource;
     }

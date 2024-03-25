@@ -1,7 +1,7 @@
 package ing.soft.model;
 
 public abstract class PlayableCard {
-    private boolean State;
+    private State state;
     private boolean isFlipped;
     private final Resource[] permResource;
     private final Corner[] cardCorners;
@@ -14,16 +14,16 @@ public abstract class PlayableCard {
         this.UUID = UUID;
     }
 
-    public void setState(boolean state) {
-        State = state;
+    public void setState(State state) {
+        this.state = state;
     }
 
     public void setFlipped(boolean flipped) {
         isFlipped = flipped;
     }
 
-    public boolean getState() {
-        return State;
+    public State getState() {
+        return state;
     }
 
     public boolean isFlipped() {
