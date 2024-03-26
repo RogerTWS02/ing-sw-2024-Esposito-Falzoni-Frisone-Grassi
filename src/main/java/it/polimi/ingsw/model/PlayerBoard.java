@@ -39,6 +39,7 @@ public class PlayerBoard {
                 try{
                     if(grid[x+i][y+j] == null) continue;
                     grid[x+i][y+j].getCardCorners()[id].setCovered(true);
+                    grid[x+i][y+j].setState(UNAVAILABLE);
                 }catch(ArrayIndexOutOfBoundsException ignored){}
             }
         }
@@ -50,7 +51,7 @@ public class PlayerBoard {
 
     /* Returns all the viewable resources present on the board*/
     public List<Resource> getResources(){
-        List<Resource> res = new ArrayList<Resource>();
+        List<Resource> res = new ArrayList<>();
         for(int i = 0; i < 80; i++){
             for(int j = 0; j < 80; j++){
                 /* skips the empty cells */

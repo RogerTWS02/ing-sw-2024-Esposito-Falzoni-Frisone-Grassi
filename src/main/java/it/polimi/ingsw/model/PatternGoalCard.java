@@ -10,11 +10,10 @@ public class PatternGoalCard extends GoalCard {
         this.pattern = pattern;
     }
 
-    /*Yet to be thought how to check the pattern; method checkGoal is not finished*/
     /* iterate all the board */
     public int checkGoal(PlayerBoard board) {
         int timesMatched=0;
-       ArrayList<Integer> usedCard = new ArrayList<Integer>();
+        ArrayList<Integer> usedCard = new ArrayList<Integer>();
         for (int i = 0; i <= 80; i++) {
             for (int j = 0; j <= 80; j++) {
                 int[] position= new int[2];
