@@ -23,9 +23,10 @@ public class PlayerBoard implements Serializable{
     }
 
     /* When I place a card on the board I have to update the state of the corresponding cell
-    *  and also the state of the corners of the neighbouring cards that get covered*/
+     * and also the state of the corners of the neighbouring cards that get covered */
     public void placeCard(PlayableCard card, int x, int y){
         grid[x][y] = card;
+        /* updates the state of the card when placed */
         grid[x][y].setState(OCCUPIED);
 
 
@@ -38,18 +39,28 @@ public class PlayerBoard implements Serializable{
                 int id = -1;
                 id++;
                 try{
-                    if(grid[x+i][y+j] == null) continue;
+                    /* if the neighbouring cell is empty, it needs to be instantiated to a dummy
+                     * ResourceCard to update the state of the PlayerBoard */
+                    if(grid[x+i][y+j] == null){
+                        grid[x+i][y+j] = new ResourceCard(
+                                new Resource[]{},
+                                new Corner[]{},
+                                0,
+                                0
+                        );
+
+                        /* if the neighbouring cell is empty then its state needs to be
+                         * changed according to the presence of the corresponding corner */
+                        if(grid[x][y].getCardCorners()[id] == null){
+                            grid[x+i][y+j].setState(UNAVAILABLE);
+                        }else{
+                            grid[x+i][y+j].setState(AVAILABLE);
+                        }
+                        continue;
+                    }
+                    /* if the neighbouring corner is present then it has to be set covered */
                     grid[x+i][y+j].getCardCorners()[id].setCovered(true);
 
-                    /* If the neighbour card has now all corner covered then its
-                       state needs to be updated
-                    */
-                    grid[x+i][y+j].setState(UNAVAILABLE);
-                    for(Corner c : grid[x+i][y+j].getCardCorners()){
-                        if(c == null || c.isCovered()) continue;
-                        grid[x+i][y+j].setState(AVAILABLE);
-                        break;
-                    }
                 }catch(ArrayIndexOutOfBoundsException ignored){}
             }
         }
@@ -65,16 +76,15 @@ public class PlayerBoard implements Serializable{
         for(int i = 0; i < 80; i++){
             for(int j = 0; j < 80; j++){
                 /* skips the empty cells */
-                if(grid[i][j] == null) continue;
+                if(grid[i][j] == null || grid[i][j].getState() == AVAILABLE || grid[i][j].getState() == UNAVAILABLE) continue;
 
-                /* If the card is flipped, only the permRes are added otherwise
-                *  all the resource on the not covered corners are returned*/
-
+                /* if the card is flipped, only the permRes are added otherwise
+                 * all the resource on the not covered corners are returned */
                 if(grid[i][j].isFlipped()) {
                     res.addAll(Arrays.asList(grid[i][j].getPermResource()));
                 }else{
                     for(Corner c: grid[i][j].getCardCorners()){
-                        if(c.isCovered()) continue;
+                        if(c == null || c.isCovered()) continue;
                         c.getCornerResource().ifPresent(res::add);
                     }
                 }
