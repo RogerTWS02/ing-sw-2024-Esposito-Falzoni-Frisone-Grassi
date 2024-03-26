@@ -1,19 +1,21 @@
 package it.polimi.ingsw.model;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class PatternGoalCard extends GoalCard {
-    private final Pattern pattern;
+    private final Triplet[] pattern;
 
-    public PatternGoalCard(int points, Pattern pattern) {
+    public PatternGoalCard(int points, Triplet[] pattern) {
         super(points);
         this.pattern = pattern;
     }
 
+
+    /*Yet to be thought how to check the pattern; method checkGoal is not finished*/
     /* iterate all the board */
     public int checkGoal(PlayerBoard board) {
         int timesMatched=0;
-        ArrayList<Integer> usedCard = new ArrayList<Integer>();
+       ArrayList<Integer> usedCard = new ArrayList<Integer>();
         for (int i = 0; i <= 80; i++) {
             for (int j = 0; j <= 80; j++) {
                 int[] position= new int[2];
@@ -21,11 +23,11 @@ public class PatternGoalCard extends GoalCard {
                 position[1]=j;
 
                 /*it`s the starting point of a pattern */
-                if (matchedPattern(position, board, usedCard)) {timesMatched+=1;}
+                if (matchedPattern(position, board, usedCard)) {timesMatched++;}
                 }
             }
 
-        return 0;
+        return timesMatched* this.getPoints();
     }
 
     /* check if the pattern is matched, it can surly be done in a recursive way, ned more time to elaborate the method,
@@ -36,34 +38,15 @@ public class PatternGoalCard extends GoalCard {
        just checking every conditions that mismatch the pattern with a brute force algorithm
         */
     /* same resource? */
-        if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource().equals(pattern.getFirstResource())) {
+        if(board.getCard(startingPoint[0],startingPoint[1]) == null ) {return false ;}
+        if (Arrays.asList(board.getCard(startingPoint[0], startingPoint[1]).getPermResource()).contains(pattern[0].getResource())) {
             return false;
         }
     /* already visited? */
         if(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
         usedCard.add(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID()));
 
-      /* next card in the pattern */
-        startingPoint[0] = startingPoint[0] + pattern.getSecondPosition()[0];
-        startingPoint[1] = startingPoint[1] + pattern.getSecondPosition()[1];
 
-        if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource().equals(pattern.getSecondResource())) {
-            return false;
-        }
-        if(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
-        usedCard.add(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID()));
-
-        /* next card in the pattern */
-
-        startingPoint[0] = startingPoint[0] + pattern.getThirdPosition()[0];
-        startingPoint[1] = startingPoint[1] + pattern.getThirdPosition()[1];
-
-        if (board.getCard(startingPoint[0], startingPoint[1]).getPermResource().equals(pattern.getThirdResource())) {
-            return false;
-        }
-        if(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID())){return false;}
-        usedCard.add(usedCard.contains(board.getCard(startingPoint[0], startingPoint[1]).getUUID()));
-        return true;
     };
 
 
