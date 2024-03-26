@@ -1,10 +1,12 @@
 package it.polimi.ingsw.model;
 
+import java.util.Map;
+
 public class GoldenCard extends PlayableCard {
     private final int points;
-    private final Resource[] requiredResource;
+    private final Map<Resource, Integer > requiredResource;
 
-    public GoldenCard(Resource[] permResource, Corner[] cardCorners, int points, Resource[] requiredResource, int UUID) {
+    public GoldenCard(Resource[] permResource, Corner[] cardCorners, int points, Map<Resource, Integer > requiredResource, int UUID) {
         super(permResource, cardCorners, UUID);
         this.points = points;
         this.requiredResource = requiredResource;
@@ -14,7 +16,7 @@ public class GoldenCard extends PlayableCard {
         return points;
     }
 
-    public Resource[] getRequiredResource() {
+    public Map<Resource, Integer > getRequiredResource() {
         return requiredResource;
     }
 }

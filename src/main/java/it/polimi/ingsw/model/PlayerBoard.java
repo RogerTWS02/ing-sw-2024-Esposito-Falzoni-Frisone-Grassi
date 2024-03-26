@@ -58,6 +58,7 @@ public class PlayerBoard {
 
                 /* If the card is flipped, only the permRes are added otherwise
                 *  all the resource on the not covered corners are returned*/
+
                 if(grid[i][j].isFlipped()) {
                     res.addAll(Arrays.asList(grid[i][j].getPermResource()));
                 }else{
