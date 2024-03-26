@@ -40,7 +40,16 @@ public class PlayerBoard implements Serializable{
                 try{
                     if(grid[x+i][y+j] == null) continue;
                     grid[x+i][y+j].getCardCorners()[id].setCovered(true);
+
+                    /* If the neighbour card has now all corner covered then its
+                       state needs to be updated
+                    */
                     grid[x+i][y+j].setState(UNAVAILABLE);
+                    for(Corner c : grid[x+i][y+j].getCardCorners()){
+                        if(c == null || c.isCovered()) continue;
+                        grid[x+i][y+j].setState(AVAILABLE);
+                        break;
+                    }
                 }catch(ArrayIndexOutOfBoundsException ignored){}
             }
         }
