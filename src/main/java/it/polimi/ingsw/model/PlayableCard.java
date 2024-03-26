@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model;
 
-public abstract class PlayableCard {
+import java.io.Serializable;
+
+public abstract class PlayableCard  implements Serializable {
     private State state;
     private boolean isFlipped;
     private final Resource[] permResource;

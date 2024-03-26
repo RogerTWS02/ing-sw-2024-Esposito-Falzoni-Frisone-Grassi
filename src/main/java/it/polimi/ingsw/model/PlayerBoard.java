@@ -1,12 +1,13 @@
 package it.polimi.ingsw.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static it.polimi.ingsw.model.State.*;
 
-public class PlayerBoard {
+public class PlayerBoard implements Serializable{
     protected PlayableCard[][] grid = new PlayableCard[80][80];
     public Pawn pawn;
 

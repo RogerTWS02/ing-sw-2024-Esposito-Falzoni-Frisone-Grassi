@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model;
 
-public class GoldenCard extends PlayableCard {
+import java.io.Serializable;
+
+public class GoldenCard extends PlayableCard{
     private final int points;
     private final Resource[] requiredResource;
 

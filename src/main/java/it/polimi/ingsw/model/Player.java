@@ -1,16 +1,23 @@
 package it.polimi.ingsw.model;
+import java.io.Serializable;
 
-public class Player {
+public class Player implements Serializable {
     protected String nickname;
     public PlayableCard[] hand = new PlayableCard[3];
     public int clientPort;
     private int score;
+    private PlayerBoard playerBoard;
     private GoalCard secretGoalCard;
 
 
     public Player(String nickname, int clientPort) {
         this.nickname = nickname;
         this.clientPort = clientPort;
+    }
+
+    //Playerboard getter
+    public PlayerBoard getPlayerBoard() {
+        return playerBoard;
     }
 
     public int getScore() {
