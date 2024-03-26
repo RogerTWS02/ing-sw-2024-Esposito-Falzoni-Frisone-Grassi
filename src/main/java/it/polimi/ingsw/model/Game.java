@@ -29,7 +29,9 @@ public class Game implements Serializable{
 
     //Generates the decks
     public void createDecks(){
+
         //TODO
+
     }
 
     //Implements persistency
