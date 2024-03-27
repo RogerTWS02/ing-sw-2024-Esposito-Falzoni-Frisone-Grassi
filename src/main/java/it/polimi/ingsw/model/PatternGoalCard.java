@@ -21,23 +21,28 @@ public class PatternGoalCard extends GoalCard {
         ArrayList<String> usedCard = new ArrayList<>();
         for (int i = 0; i <= 80; i++) {
             for (int j = 0; j <= 80; j++) {
-                /*it`s the starting point of a pattern */
+
+                /*iterate al the cell in the grid as possible starting point of the pattern*/
                 for (int z = 0; z < 6; z+=2) {
                     try {
+                        /*          position null?                         */
                         if (board.getCard(i + patternPosition[z], j + patternPosition[z+1]) == null) {
                             break;
                         }
+                        /* checks if the resource is the right one */
                         if (!Arrays.asList(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getPermResource()).contains(patternResource[z])) {
                             break;
                         }
+                        /* checks if the card has been already used for this pattern */
                         if (usedCard.contains(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getUUID())) {
                             break;
                         }
+                        /* pattern matched add cards used to the list */
                         if (z == 2) {
                             timesMatched++;
                             usedCard.add(board.getCard(i, j).getUUID());
-                            usedCard.add(board.getCard(i + 1, j + 1).getUUID());
-                            usedCard.add(board.getCard(i + 2, j + 2).getUUID());
+                            usedCard.add(board.getCard(i + patternPosition[2], j + patternPosition[3]).getUUID());
+                            usedCard.add(board.getCard(i + patternPosition[4], j + patternPosition[5]).getUUID());
                         }
 
                     } catch (ArrayIndexOutOfBoundsException ignored) {
