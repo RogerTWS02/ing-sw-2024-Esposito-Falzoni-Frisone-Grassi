@@ -8,9 +8,9 @@ public abstract class PlayableCard  implements Serializable {
     private final Resource[] permResource;
     private final Corner[] cardCorners;
 
-    private final int UUID;
+    private final String UUID;
 
-    public PlayableCard(Resource[] permResource, Corner[] cardCorners, int UUID) {
+    public PlayableCard(Resource[] permResource, Corner[] cardCorners, String UUID) {
         this.permResource = permResource;
         this.cardCorners = cardCorners;
         this.UUID = UUID;
@@ -40,5 +40,5 @@ public abstract class PlayableCard  implements Serializable {
         return cardCorners;
     }
 
-    public int getUUID() {return UUID;}
+    public String getUUID() {return UUID;}
 }
