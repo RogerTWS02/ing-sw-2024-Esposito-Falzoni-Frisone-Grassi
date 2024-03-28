@@ -1,27 +1,27 @@
 package it.polimi.ingsw.model;
+
 import java.io.*;
 import java.util.Random;
-import java.util.Stack;
 import java.util.ArrayList;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class Game implements Serializable{
     private Player startingPlayer;
     private ArrayList<Player> players;
-    public Stack<ResourceCard> resourceDeck;
-    public Stack<GoldenCard> goldenDeck;
-    private Stack<StartingCard> startingDeck;
-    private Stack<GoalCard> goalDeck;
+    public JSONArray resourceDeck;
+    public JSONArray goldenDeck;
+    public JSONArray startingDeck;
+    public JSONArray goalDeck;
     public ResourceCard[] viewableResourceCards;
     public GoldenCard[] viewableGoldenCards;
-    public GoalCard[] commonGoalCards;
+    private GoalCard[] commonGoalCards;
     private Player currentPlayer;
 
     public Game(){
         players = new ArrayList<>();
-        resourceDeck = new Stack<>();
-        goldenDeck = new Stack<>();
-        startingDeck = new Stack<>();
-        goalDeck = new Stack<>();
+        createDecks();
         viewableResourceCards = new ResourceCard[2];
         viewableGoldenCards = new GoldenCard[2];
         commonGoalCards = new GoalCard[2];
@@ -29,9 +29,19 @@ public class Game implements Serializable{
 
     //Generates the decks
     public void createDecks(){
+        JSONParser parser = new JSONParser();
+        String[] decksNames = {"resource", "golden", "starting", "goal"};
+        for(int i = 0; i < decksNames.length; i++) {
+            try {
+                Object JSONObject = parser.parse(new FileReader("resources/" + decksNames[i] + "Deck.json"));
+                JSONArray deckJSONArray = (JSONArray) JSONObject;
 
-        //TODO
+                //TODO
 
+            } catch (IOException | ParseException e) {
+                System.err.println("Error in JSON file parsing!");
+            }
+        }
     }
 
     //Implements persistency
@@ -93,24 +103,14 @@ public class Game implements Serializable{
    }
 
    //Current player getter
-    public Player getCurrentPlayerTurn(){
+    public Player getCurrentPlayer(){
          return currentPlayer;
     }
 
-   //Draw a starting card
-    public StartingCard drawStartingCard(){
-         return startingDeck.pop();
-    }
-
-   //Set a secret goal card to a player
-    public void setSecretGoalCard(Player player){
-        player.setSecretGoalCard(goalDeck.pop());
-    }
-
-   //Set common goal cards
-    public void setCommonGoalCards(){
-        commonGoalCards[0] = goalDeck.pop();
-        commonGoalCards[1] = goalDeck.pop();
+   //Set common goal cards passed by parameter
+    public void setCommonGoalCards(GoalCard card1, GoalCard card2){
+        commonGoalCards[0] = card1;
+        commonGoalCards[1] = card2;
     }
 
     //Common goal cards getter

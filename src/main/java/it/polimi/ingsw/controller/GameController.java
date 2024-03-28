@@ -6,6 +6,7 @@ public class GameController {
 
 
     //Draws a card from the deck passed by parameter
+    //TODO: da adeguare!
     public Object drawCard(Object[] deck){
         int lastCardIndex;
         for(lastCardIndex = deck.length - 1; deck[lastCardIndex] == null; lastCardIndex--);
