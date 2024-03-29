@@ -19,6 +19,10 @@ public class Game implements Serializable{
     private GoalCard[] commonGoalCards;
     private Player currentPlayer;
 
+    /**
+     * This is the constructor of the game, which gets to initialize a list of players,
+     * it creates decks, and also sets the visible cards on the table.
+     */
     public Game(){
         players = new ArrayList<>();
         createDecks();
@@ -27,7 +31,9 @@ public class Game implements Serializable{
         commonGoalCards = new GoalCard[2];
     }
 
-    //Generates the decks
+    /**
+     * This method generates all the 4 different decks.
+     */
     public void createDecks(){
         JSONParser parser = new JSONParser();
         String[] decksNames = {"resource", "golden", "starting", "goal"};
@@ -94,30 +100,48 @@ public class Game implements Serializable{
         }
     }
 
-   //Pick a random player and set it as the starting player
+    /**
+     * This method picks a random player and sets it as the first player in the game
+     */
    public void setFirstPlayer(){
-       Random random = new Random();
+       Random random =new Random();
        int randomNumber = random.nextInt(players.size());
        this.startingPlayer = players.get(randomNumber);
        currentPlayer = this.startingPlayer;
    }
 
-   //Current player getter
+    /**
+     * This method returns the active player on this turn.
+     * @return the player
+     */
     public Player getCurrentPlayer(){
-         return currentPlayer;
+        return currentPlayer;
     }
 
-   //Set common goal cards passed by parameter
+    /**
+     * This method sets the common goal cards on the table.
+     *
+     * @param card1 the first card on the table
+     * @param card2 the second card on the table
+     */
     public void setCommonGoalCards(GoalCard card1, GoalCard card2){
         commonGoalCards[0] = card1;
         commonGoalCards[1] = card2;
     }
 
-    //Common goal cards getter
+    /**
+     *  A call to this method is made when someone wants to get the two common goal cards.
+     * @return the array of goal cards which are in common
+     */
     public GoalCard[] getCommonGoalCards(){
         return commonGoalCards;
     }
 
+    /**
+     * A call to this method is made when someone wants to get all the players in the game.
+     *
+     * @return the list of players who are connected to the game
+     */
     public ArrayList<Player> getPlayers() {
         return players;
     }
