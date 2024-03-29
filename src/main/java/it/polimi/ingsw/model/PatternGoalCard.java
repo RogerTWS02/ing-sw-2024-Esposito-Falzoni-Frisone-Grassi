@@ -47,7 +47,7 @@ public class PatternGoalCard extends GoalCard {
                             break;
                         }
                         /* checks if the resource is the right one */
-                        if (!Arrays.asList(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getPermResource()).contains(patternResource[z])) {
+                        if (!Arrays.asList(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getPermResource()).contains(patternResource[z/2])) {
                             break;
                         }
                         /* checks if the card has been already used for this pattern */
@@ -55,7 +55,7 @@ public class PatternGoalCard extends GoalCard {
                             break;
                         }
                         /* pattern matched add cards used to the list */
-                        if (z == 2) {
+                        if (z == 4) {
                             timesMatched++;
                             usedCard.add(board.getCard(i, j).getUUID());
                             usedCard.add(board.getCard(i + patternPosition[2], j + patternPosition[3]).getUUID());
