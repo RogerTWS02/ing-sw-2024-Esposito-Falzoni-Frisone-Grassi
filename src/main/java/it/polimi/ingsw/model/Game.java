@@ -16,7 +16,7 @@ public class Game implements Serializable{
     public JSONArray goalDeck;
     public ResourceCard[] viewableResourceCards;
     public GoldenCard[] viewableGoldenCards;
-    private GoalCard[] commonGoalCards;
+    private final GoalCard[] commonGoalCards;
     private Player currentPlayer;
 
     /**
@@ -24,11 +24,26 @@ public class Game implements Serializable{
      * it creates decks, and also sets the visible cards on the table.
      */
     public Game(){
-        players = new ArrayList<>();
-        createDecks();
-        viewableResourceCards = new ResourceCard[2];
-        viewableGoldenCards = new GoldenCard[2];
-        commonGoalCards = new GoalCard[2];
+        if(checkOldGame()){
+            Game oldGame = retrieveGame();
+            assert oldGame != null;
+            this.startingPlayer = oldGame.startingPlayer;
+            this.players = oldGame.players;
+            this.resourceDeck = oldGame.resourceDeck;
+            this.goldenDeck = oldGame.goldenDeck;
+            this.startingDeck = oldGame.startingDeck;
+            this.goalDeck = oldGame.goalDeck;
+            this.viewableResourceCards = oldGame.viewableResourceCards;
+            this.viewableGoldenCards = oldGame.viewableGoldenCards;
+            this.commonGoalCards = oldGame.commonGoalCards;
+            this.currentPlayer = oldGame.currentPlayer;
+        } else {
+            players = new ArrayList<>();
+            createDecks();
+            viewableResourceCards = new ResourceCard[2];
+            viewableGoldenCards = new GoldenCard[2];
+            commonGoalCards = new GoalCard[2];
+        }
     }
 
     /**
@@ -41,9 +56,20 @@ public class Game implements Serializable{
             try {
                 Object JSONObject = parser.parse(new FileReader("resources/" + decksNames[i] + "Deck.json"));
                 JSONArray deckJSONArray = (JSONArray) JSONObject;
-
-                //TODO
-
+                switch (decksNames[i]) {
+                    case "resource":
+                        resourceDeck = deckJSONArray;
+                        break;
+                    case "golden":
+                        goldenDeck = deckJSONArray;
+                        break;
+                    case "starting":
+                        startingDeck = deckJSONArray;
+                        break;
+                    case "goal":
+                        goalDeck = deckJSONArray;
+                        break;
+                }
             } catch (IOException | ParseException e) {
                 System.err.println("Error in JSON file parsing!");
             }
@@ -77,17 +103,14 @@ public class Game implements Serializable{
         }
     }
 
-    //Restore a saved game
-    public static Game restoreGame(){
+    //Retrieve a saved game
+    public static Game retrieveGame(){
         try(ObjectInputStream saving = new ObjectInputStream(new FileInputStream("savings/game.svs"))){
             return (Game) saving.readObject();
         } catch (IOException | ClassNotFoundException e){
             System.err.println("Error trying restoring the game!");
         }
         return null;
-
-        //TODO: setup the game state
-
     }
 
     //Check if there's an old game saving and restore it if exists
@@ -104,7 +127,7 @@ public class Game implements Serializable{
      * This method picks a random player and sets it as the first player in the game
      */
    public void setFirstPlayer(){
-       Random random =new Random();
+       Random random = new Random();
        int randomNumber = random.nextInt(players.size());
        this.startingPlayer = players.get(randomNumber);
        currentPlayer = this.startingPlayer;
