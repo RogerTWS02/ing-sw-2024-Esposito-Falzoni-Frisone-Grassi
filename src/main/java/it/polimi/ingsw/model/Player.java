@@ -5,7 +5,7 @@ public class Player implements Serializable {
     protected String nickname;
     public PlayableCard[] hand = new PlayableCard[3];
     public int clientPort;
-    private int score;
+    private int score=0;
     private PlayerBoard playerBoard;
     private GoalCard secretGoalCard;
 

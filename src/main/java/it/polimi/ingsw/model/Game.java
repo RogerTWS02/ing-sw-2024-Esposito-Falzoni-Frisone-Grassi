@@ -133,6 +133,11 @@ public class Game implements Serializable{
        currentPlayer = this.startingPlayer;
    }
 
+
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
+    }
+
     /**
      * This method returns the active player on this turn.
      * @return the player
