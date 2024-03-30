@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.PlayableCard;
 import it.polimi.ingsw.model.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -44,4 +45,28 @@ public class GameController {
             currentGame.setPlayers(players);
         }
     }
+
+    /*
+    not very clear if there has to be some additional function in this method
+     */
+    public PlayableCard[] returnHand(Player player){
+        if (player != null){
+            return player.getHand();
+        }
+    return null;}
+
+    public void placeCard(int i,int j,PlayableCard card,Player player) {
+
+
+
+
+    }
+
+
+
+
+
+
 }
+
+
