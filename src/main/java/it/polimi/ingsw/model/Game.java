@@ -173,4 +173,23 @@ public class Game implements Serializable{
     public ArrayList<Player> getPlayers() {
         return players;
     }
+
+    public ResourceCard[] getViewableResourceCards() {
+        return viewableResourceCards;
+    }
+
+    public GoldenCard[] getViewableGoldenCards() {
+        return viewableGoldenCards;
+    }
+
+    public void setViewableResourceCards(ResourceCard[] viewableResourceCards) {
+        this.viewableResourceCards = viewableResourceCards;
+    }
+
+    public void setViewableGoldenCards(GoldenCard[] viewableGoldenCards) {
+        this.viewableGoldenCards = viewableGoldenCards;
+    }
+
+
+
 }

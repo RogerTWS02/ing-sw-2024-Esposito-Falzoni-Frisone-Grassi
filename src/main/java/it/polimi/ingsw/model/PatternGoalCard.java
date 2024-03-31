@@ -48,6 +48,7 @@ public class PatternGoalCard extends GoalCard {
                         }
                         /* starting card not usable in pattern */
                         if (i + patternPosition[z]==0 && j + patternPosition[z+1]==0){break;}
+
                         /* checks if the resource is the right one */
                         if (!Arrays.asList(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getPermResource()).contains(patternResource[z/2])) {
                             break;
