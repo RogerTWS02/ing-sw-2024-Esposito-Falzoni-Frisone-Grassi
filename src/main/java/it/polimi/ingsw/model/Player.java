@@ -25,8 +25,7 @@ public class Player implements Serializable {
     }
 
     public void setScore(int score) {
-        if (score >29){this.score = 29;}
-        else this.score = score;
+        this.score = Math.min(score, 29);
     }
 
     public String getNickname() {
