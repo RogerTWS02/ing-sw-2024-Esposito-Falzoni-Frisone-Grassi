@@ -43,13 +43,13 @@ public class GameController {
             //draw from resource cards
             card = currentGame.viewableResourceCards[chosen];
             ResourceCard[] newviewable = currentGame.getViewableResourceCards();
-            newviewable[chosen] = drawFromDeck(resourceDeck);
+            newviewable[chosen] = (ResourceCard) drawFromDeck(currentGame.getResourceDeck());
             currentGame.setViewableResourceCards(newviewable);
         }else{
             //draw from golden cards
             card = currentGame.viewableGoldenCards[chosen];
             GoldenCard[] newviewable = currentGame.getViewableGoldenCards();
-            newviewable[chosen] = drawFromDeck(goldenDeck);
+            newviewable[chosen] = (GoldenCard) drawFromDeck(currentGame.getGoldenDeck());
             currentGame.setViewableGoldenCards(newviewable);
         }
         return card;
@@ -112,6 +112,7 @@ public class GameController {
     }
 
  // needs some more detail, really useful?
+ // we already have this method in Game, so I don't think so
     public PlayableCard[] showViewable(boolean type){
         if(type){return currentGame.getViewableGoldenCards();
         }
@@ -119,6 +120,7 @@ public class GameController {
         }
     }
 
+    //Doesn't the view already show the top card of the deck?
     public Resource showResourceFromDeck (boolean type){
      return null;
     }
@@ -132,7 +134,24 @@ public class GameController {
         player.setScore(player.getScore() + player.getSecretGoalCard().checkGoal(player.getPlayerBoard()));
     }
 
+    //Not sure that we need this one, already present in Player class
+    public PlayerBoard viewPlayerBoard(Player p){
+        return p.getPlayerBoard();
+    }
 
+    public void setNumberOfPlayers(int number){
+    }
+
+    /**
+     * This method lets a player choose his secretGoalCard
+     *
+     * @param p the player
+     * @param lis the list of goal cards he can choose from
+     * @param number the card he chose
+     */
+    public void chooseSecretGoal(Player p, ArrayList<GoalCard> lis, int number){
+        p.setSecretGoalCard(lis.get(number));
+    }
 
 }
 

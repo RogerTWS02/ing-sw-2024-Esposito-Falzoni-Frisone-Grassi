@@ -76,6 +76,23 @@ public class Game implements Serializable{
         }
     }
 
+    //Not really sure if we need these
+    public JSONArray getResourceDeck() {
+        return resourceDeck;
+    }
+
+    public JSONArray getGoldenDeck() {
+        return goldenDeck;
+    }
+
+    public JSONArray getStartingDeck() {
+        return startingDeck;
+    }
+
+    public JSONArray getGoalDeck() {
+        return goalDeck;
+    }
+
     //Implements persistency
     public void saveGame() throws IOException {
         //Create a saving folder
@@ -135,7 +152,7 @@ public class Game implements Serializable{
 
 
     public void setPlayers(ArrayList<Player> players) {
-        this.players = players;
+       this.players = players;
     }
 
     /**
