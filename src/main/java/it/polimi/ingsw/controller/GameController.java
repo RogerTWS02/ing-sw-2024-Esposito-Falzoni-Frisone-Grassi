@@ -16,7 +16,7 @@ public class GameController {
     }
 
     //Draws a card from the deck passed by parameter
-    public Object drawFromDeck(JSONArray deck){
+    public PlayableCard drawFromDeck(JSONArray deck){
         Random random = new Random();
         int randomIndex = random.nextInt(deck.size());
         JSONObject JSONcard = (JSONObject) deck.get(randomIndex);

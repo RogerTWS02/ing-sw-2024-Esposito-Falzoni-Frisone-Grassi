@@ -1,0 +1,38 @@
+[
+    {
+        "UUID": "SC_1",
+        "permRes": "BUTTERFLY",
+        "frontCorners": ["EMPTY", "LEAF", "BUTTERFLY", "EMPTY"],
+        "backCorners": ["MUSHROOM", "LEAF", "BUTTERFLY", "WOLF"]
+    },
+    {
+        "UUID": "SC_2",
+        "permRes": "MUSHROOM",
+        "frontCorners": ["WOLF", "EMPTY", "EMPTY", "MUSHROOM"],
+        "backCorners": ["LEAF", "WOLF", "MUSHROOM", "BUTTERFLY"]
+    },
+    {
+        "UUID": "SC_3",
+        "permRes": ["LEAF", "MUSHROOM"],
+        "frontCorners": ["EMPTY", "EMPTY", "EMPTY", "EMPTY"],
+        "backCorners": ["BUTTERFLY", "WOLF", "MUSHROOM", "LEAF"]
+    },
+    {
+        "UUID": "SC_4",
+        "permRes": ["WOLF", "BUTTERFLY"],
+        "frontCorners": ["EMPTY", "EMPTY", "EMPTY", "EMPTY"],
+        "backCorners": ["LEAF", "BUTTERFLY", "WOLF", "MUSHROOM"]
+    },
+    {
+        "UUID": "SC_5",
+        "permRes": ["WOLF", "BUTTERFLY", "LEAF"],
+        "frontCorners": ["EMPTY", "EMPTY", null, null],
+        "backCorners": ["BUTTERFLY", "MUSHROOM", "LEAF", "WOLF"]
+    },
+    {
+        "UUID": "SC_6",
+        "permRes": ["LEAF", "WOLF", "MUSHROOM"],
+        "frontCorners": ["EMPTY", "EMPTY", null, null],
+        "backCorners": ["MUSHROOM", "WOLF", "LEAF", "BUTTERFLY"]
+    }
+]

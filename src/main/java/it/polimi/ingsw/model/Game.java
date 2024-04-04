@@ -13,7 +13,7 @@ public class Game implements Serializable{
     public JSONArray resourceDeck;
     public JSONArray goldenDeck;
     public JSONArray startingDeck;
-    public JSONArray goalDeck;
+    public ArrayList<String> goalDeck;
     public ResourceCard[] viewableResourceCards;
     public GoldenCard[] viewableGoldenCards;
     private final GoalCard[] commonGoalCards;
@@ -51,8 +51,8 @@ public class Game implements Serializable{
      */
     public void createDecks(){
         JSONParser parser = new JSONParser();
-        String[] decksNames = {"resource", "golden", "starting", "goal"};
-        for(int i = 0; i < decksNames.length; i++) {
+        String[] decksNames = {"resource", "golden", "starting"};
+        for(int i = 0; i < 3; i++) {
             try {
                 Object JSONObject = parser.parse(new FileReader("resources/" + decksNames[i] + "Deck.json"));
                 JSONArray deckJSONArray = (JSONArray) JSONObject;
@@ -66,13 +66,13 @@ public class Game implements Serializable{
                     case "starting":
                         startingDeck = deckJSONArray;
                         break;
-                    case "goal":
-                        goalDeck = deckJSONArray;
-                        break;
                 }
             } catch (IOException | ParseException e) {
                 System.err.println("Error in JSON file parsing!");
             }
+        }
+        for(int i = 0; i < 16; i++){
+            goalDeck.add("GoC_" + i);
         }
     }
 
@@ -89,8 +89,16 @@ public class Game implements Serializable{
         return startingDeck;
     }
 
-    public JSONArray getGoalDeck() {
+    public ArrayList<String> getGoalDeck() {
         return goalDeck;
+    }
+
+    //Draws a goalCard
+    public GoalCard drawGoalCard(){
+
+        //TODO: draws a goalCard and removes it from the ArrayList
+
+        return null; //So IDE doesn't give error
     }
 
     //Implements persistency
