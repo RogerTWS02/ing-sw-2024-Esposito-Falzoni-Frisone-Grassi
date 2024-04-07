@@ -60,15 +60,18 @@ public class GameController {
      not sure how we want to implement the port now it`s a random 50 just to have it working
      we need to choose the exception
      */
-    public void addPlayer(String nickname) throws SecurityException{
+    public void addPlayer(String nickname, int clientPort) throws SecurityException{
         /* check if player already exists */
+        if (currentGame.getCurrentPlayer().clientPort != clientPort){
+                throw new SecurityException("wrong clientPOrt");
+        }
         if (currentGame.getPlayers().stream().map(Player::getNickname).toList().contains(nickname)){
             throw new SecurityException("player already present");
         }
         /* if does not exist adds it to the Arraylist */
         else {
             ArrayList<Player> players = currentGame.getPlayers();
-            players.add(new Player(nickname,50));
+            players.add(new Player(nickname,clientPort));
             currentGame.setPlayers(players);
         }
     }
