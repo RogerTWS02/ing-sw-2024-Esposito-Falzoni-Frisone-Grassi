@@ -40,8 +40,8 @@ public class Game implements Serializable{
         } else {
             players = new ArrayList<>();
             createDecks();
-            viewableResourceCards = new ResourceCard[2];
-            viewableGoldenCards = new GoldenCard[2];
+            viewableResourceCards = new ResourceCard[3];
+            viewableGoldenCards = new GoldenCard[3];
             commonGoalCards = new GoalCard[2];
         }
     }
@@ -71,13 +71,13 @@ public class Game implements Serializable{
                 System.err.println("Error in JSON file parsing!");
             }
         }
-        for(int i = 0; i < 16; i++){
+        for(int i = 1; i < 17; i++){
             goalDeck.add("GoC_" + i);
         }
     }
 
     //Not really sure if we need these
-    public JSONArray getResourceDeck() {
+    /*public JSONArray getResourceDeck() {
         return resourceDeck;
     }
 
@@ -91,7 +91,7 @@ public class Game implements Serializable{
 
     public ArrayList<String> getGoalDeck() {
         return goalDeck;
-    }
+    }*/
 
     //Draws a goalCard
     public GoalCard drawGoalCard(){
@@ -207,12 +207,29 @@ public class Game implements Serializable{
         return viewableGoldenCards;
     }
 
-    public void setViewableResourceCards(ResourceCard[] viewableResourceCards) {
-        this.viewableResourceCards = viewableResourceCards;
+    //type==1: viewable card from the top of the deck; type==0: common card on the table
+    public void setViewableResourceCards(ResourceCard card, boolean type) {
+        if(type){
+            viewableResourceCards[2] = card;
+        } else {
+            if(viewableResourceCards[0] == null){
+                viewableResourceCards[0] = card;
+            } else {
+                viewableResourceCards[1] = card;
+            }
+        }
     }
 
-    public void setViewableGoldenCards(GoldenCard[] viewableGoldenCards) {
-        this.viewableGoldenCards = viewableGoldenCards;
+    public void setViewableGoldenCards(GoldenCard card, boolean type) {
+        if(type){
+            viewableGoldenCards[2] = card;
+        } else {
+            if(viewableGoldenCards[0] == null){
+                viewableGoldenCards[0] = card;
+            } else {
+                viewableGoldenCards[1] = card;
+            }
+        }
     }
 
 

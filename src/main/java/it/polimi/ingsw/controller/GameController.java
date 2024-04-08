@@ -27,30 +27,23 @@ public class GameController {
         return null; //So IDE doesn't give error
     }
 
-    /**
-     * This method draws a card from the ones which are positioned on the table with their faces uncovered,
-     * and it substitutes the viewable card picked up with a new card from the deck
-     *
-     * @param i which deck to choose from
-     * @param chosen which card the player wants to pick up between the 2 available
-     * @return the card
-     */
-
-    //We might have to add a method getDeck in Game
-    public PlayableCard drawFromViewable(boolean i, int chosen){
+    //Draws a card from the two common cards on the table of the specified type
+    //type==0: resourceCard, type==1: goldenCard
+    //card==0: "first" card, card==1: "second" card
+    public PlayableCard drawFromViewable(boolean whichType, boolean whichCard){
         PlayableCard card;
-        if(i){
-            //draw from resource cards
-            card = currentGame.viewableResourceCards[chosen];
-            ResourceCard[] newviewable = currentGame.getViewableResourceCards();
-            newviewable[chosen] = (ResourceCard) drawFromDeck(currentGame.getResourceDeck());
-            currentGame.setViewableResourceCards(newviewable);
-        }else{
-            //draw from golden cards
-            card = currentGame.viewableGoldenCards[chosen];
-            GoldenCard[] newviewable = currentGame.getViewableGoldenCards();
-            newviewable[chosen] = (GoldenCard) drawFromDeck(currentGame.getGoldenDeck());
-            currentGame.setViewableGoldenCards(newviewable);
+        if(whichType){
+            if(whichCard){
+                card = currentGame.getViewableGoldenCards()[1];
+            } else {
+                card = currentGame.getViewableGoldenCards()[0];
+            }
+        } else {
+            if(whichCard){
+                card = currentGame.getViewableResourceCards()[1];
+            } else {
+                card = currentGame.getViewableResourceCards()[0];
+            }
         }
         return card;
     }
