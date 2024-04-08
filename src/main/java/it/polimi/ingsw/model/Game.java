@@ -13,7 +13,7 @@ public class Game implements Serializable{
     public JSONArray resourceDeck;
     public JSONArray goldenDeck;
     public JSONArray startingDeck;
-    public ArrayList<String> goalDeck;
+    public JSONArray goalDeck;
     public ResourceCard[] viewableResourceCards;
     public GoldenCard[] viewableGoldenCards;
     private final GoalCard[] commonGoalCards;
@@ -51,8 +51,8 @@ public class Game implements Serializable{
      */
     public void createDecks(){
         JSONParser parser = new JSONParser();
-        String[] decksNames = {"resource", "golden", "starting"};
-        for(int i = 0; i < 3; i++) {
+        String[] decksNames = {"resource", "golden", "starting", "goal"};
+        for(int i = 0; i < 4; i++) {
             try {
                 Object JSONObject = parser.parse(new FileReader("resources/" + decksNames[i] + "Deck.json"));
                 JSONArray deckJSONArray = (JSONArray) JSONObject;
@@ -66,32 +66,15 @@ public class Game implements Serializable{
                     case "starting":
                         startingDeck = deckJSONArray;
                         break;
+                    case "goal":
+                        goalDeck = deckJSONArray;
+                        break;
                 }
             } catch (IOException | ParseException e) {
                 System.err.println("Error in JSON file parsing!");
             }
         }
-        for(int i = 1; i < 17; i++){
-            goalDeck.add("GoC_" + i);
-        }
     }
-
-    //Not really sure if we need these
-    /*public JSONArray getResourceDeck() {
-        return resourceDeck;
-    }
-
-    public JSONArray getGoldenDeck() {
-        return goldenDeck;
-    }
-
-    public JSONArray getStartingDeck() {
-        return startingDeck;
-    }
-
-    public ArrayList<String> getGoalDeck() {
-        return goalDeck;
-    }*/
 
     //Draws a goalCard
     public GoalCard drawGoalCard(){
@@ -231,7 +214,4 @@ public class Game implements Serializable{
             }
         }
     }
-
-
-
 }
