@@ -120,7 +120,7 @@ public class Game implements Serializable{
         return null;
     }
 
-    //Check if there's an old game saving and restore it if exists
+    //Check if there's an old game saving
     public static boolean checkOldGame(){
         File old = new File("savings/game.svs");
         if(old.exists()){
