@@ -94,8 +94,11 @@ public class GameController {
     /*
     checks if a position is available and the card is not null, then place it
      */
-    public void placeCard(int i,int j,PlayableCard card,Player player) {
-        if (player.getPlayerBoard().getCard(i,j).getState()==State.AVAILABLE && card != null){
+    public void placeCard(int i,int j,PlayableCard card,Player player) throws SecurityException {
+        if (card.getClass().getName().equals("StartingCard")&& (i!=0 || j!=0)){
+            throw new SecurityException("can't place starting card anywhere else from 0, 0");
+        }
+        if (card != null && player.getPlayerBoard().getCard(i,j).getState()==State.AVAILABLE){
             player.getPlayerBoard().placeCard(card, i, j);
         }
     }
