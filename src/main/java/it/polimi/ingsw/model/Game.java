@@ -38,7 +38,6 @@ public class Game implements Serializable{
             this.commonGoalCards = oldGame.commonGoalCards;
             this.currentPlayer = oldGame.currentPlayer;
         } else {
-            players = new ArrayList<>();
             createDecks();
             viewableResourceCards = new ResourceCard[3];
             viewableGoldenCards = new GoldenCard[3];
@@ -71,7 +70,7 @@ public class Game implements Serializable{
                         break;
                 }
             } catch (IOException | ParseException e) {
-                System.err.println("Error in JSON file parsing!");
+                System.err.println("Error in JSON file retrieving!");
             }
         }
     }

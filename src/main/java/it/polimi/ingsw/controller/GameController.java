@@ -27,7 +27,7 @@ public class GameController {
         return null; //So IDE doesn't give error
     }
 
-    //Draws a card from the two common cards on the table of the specified type
+    //Draws a card from the two common cards on the table of the specified type and set to null the related array cell
     //type==0: resourceCard, type==1: goldenCard
     //card==0: "first" card, card==1: "second" card
     public PlayableCard drawFromViewable(boolean whichType, boolean whichCard){
@@ -35,14 +35,18 @@ public class GameController {
         if(whichType){
             if(whichCard){
                 card = currentGame.getViewableGoldenCards()[1];
+                currentGame.viewableGoldenCards[1] = null;
             } else {
                 card = currentGame.getViewableGoldenCards()[0];
+                currentGame.viewableGoldenCards[0] = null;
             }
         } else {
             if(whichCard){
                 card = currentGame.getViewableResourceCards()[1];
+                currentGame.viewableResourceCards[1] = null;
             } else {
                 card = currentGame.getViewableResourceCards()[0];
+                currentGame.viewableResourceCards[0] = null;
             }
         }
         return card;
@@ -122,19 +126,6 @@ public class GameController {
                 return availablePosition;
     }
 
- // needs some more detail, really useful?
- // we already have this method in Game, so I don't think so
-    public PlayableCard[] showViewable(boolean type){
-        if(type){return currentGame.getViewableGoldenCards();
-        }
-        else{ return currentGame.getViewableResourceCards();
-        }
-    }
-
-    //Doesn't the view already show the top card of the deck?
-    public Resource showResourceFromDeck (boolean type){
-     return null;
-    }
  // update score with goal points
     public void getPointsFromGoalCards(Player player){
         // firstly common goal
@@ -145,7 +136,6 @@ public class GameController {
         player.setScore(player.getScore() + player.getSecretGoalCard().checkGoal(player.getPlayerBoard()));
     }
 
-    //Not sure that we need this one, already present in Player class
     public PlayerBoard viewPlayerBoard(Player p){
         return p.getPlayerBoard();
     }
@@ -158,6 +148,7 @@ public class GameController {
             }
             currentGame.setPlayers(list);
         }else{
+            System.err.println("Set a valid number of players!");
             throw new IllegalArgumentException();
         }
     }
@@ -172,7 +163,4 @@ public class GameController {
     public void chooseSecretGoal(Player p, ArrayList<GoalCard> lis, int number){
         p.setSecretGoalCard(lis.get(number));
     }
-
 }
-
-
