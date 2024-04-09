@@ -137,7 +137,11 @@ public class GameController {
 
     public void setNumberOfPlayers(int number){
         if(number <5 && number > 0) {
-            currentGame.setPlayers(new ArrayList<Player>(number));
+            ArrayList<Player> list = new ArrayList<>(number);
+            for(int i = 0; i< number; i++){
+                list.add(i, null);
+            }
+            currentGame.setPlayers(list);
         }else{
             throw new IllegalArgumentException();
         }
