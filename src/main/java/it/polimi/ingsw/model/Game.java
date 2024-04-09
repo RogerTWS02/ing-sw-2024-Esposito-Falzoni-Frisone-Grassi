@@ -143,6 +143,7 @@ public class Game implements Serializable{
 
 
     public void setPlayers(ArrayList<Player> players) {
+
        this.players = players;
     }
 

@@ -54,7 +54,9 @@ public class GameController {
      we need to choose the exception
      */
     public void addPlayer(String nickname, int clientPort) throws SecurityException{
+
         /* check if player already exists */
+
         if (currentGame.getCurrentPlayer().clientPort != clientPort){
                 throw new SecurityException("wrong clientPort");
         }
@@ -64,8 +66,18 @@ public class GameController {
         /* if does not exist adds it to the Arraylist */
         else {
             ArrayList<Player> players = currentGame.getPlayers();
-            players.add(new Player(nickname,clientPort));
-            currentGame.setPlayers(players);
+            int n;
+            for(n=0 ; n < currentGame.getPlayers().size(); n++) {
+                if (currentGame.getPlayers().get(n) == null) {
+                    players.add(n, new Player(nickname, clientPort));
+                    currentGame.setPlayers(players);
+                    break;
+                }
+
+            }
+            if(n>=currentGame.getPlayers().size()){
+                throw new SecurityException(" the lobby is full");
+            }
         }
     }
 
@@ -135,7 +147,7 @@ public class GameController {
         return p.getPlayerBoard();
     }
 
-    public void setNumberOfPlayers(int number){
+    public void setNumberOfPlayers(int number) throws IllegalArgumentException{
         if(number <5 && number > 0) {
             ArrayList<Player> list = new ArrayList<>(number);
             for(int i = 0; i< number; i++){
