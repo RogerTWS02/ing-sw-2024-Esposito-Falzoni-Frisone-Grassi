@@ -78,4 +78,4 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # Graphics resources:
-resources/graphics/*
+resources/graphics/**
