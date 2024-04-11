@@ -1,0 +1,58 @@
+[
+    {
+        "UUID": "PGC_1",
+        "points": 2,
+        "pattern": "diagonal",
+        "orientation": "go_up",
+        "resources": ["MUSHROOM", null]
+    },
+    {
+        "UUID": "PGC_2",
+        "points": 2,
+        "pattern": "diagonal",
+        "orientation": "go_down",
+        "resources": ["LEAF", null]
+    },
+    {
+        "UUID": "PGC_3",
+        "points": 2,
+        "pattern": "diagonal",
+        "orientation": "go_up",
+        "resources": ["WOLF", null]
+    },
+    {
+        "UUID": "PGC_4",
+        "points": 2,
+        "pattern": "diagonal",
+        "orientation": "go_down",
+        "resources": ["BUTTERFLY", null]
+    },
+    {
+        "UUID": "PGC_5",
+        "points": 3,
+        "pattern": "vertical",
+        "orientation": "down_right",
+        "resources": ["MUSHROOM", "LEAF"]
+    },
+    {
+        "UUID": "PGC_6",
+        "points": 3,
+        "pattern": "vertical",
+        "orientation": "down_left",
+        "resources": ["LEAF", "BUTTERFLY"]
+    },
+    {
+        "UUID": "PGC_7",
+        "points": 3,
+        "pattern": "vertical",
+        "orientation": "up_right",
+        "resources": ["WOLF", "MUSHROOM"]
+    },
+    {
+        "UUID": "PGC_8",
+        "points": 3,
+        "pattern": "vertical",
+        "orientation": "up_left",
+        "resources": ["BUTTERFLY", "WOLF"]
+    }
+]

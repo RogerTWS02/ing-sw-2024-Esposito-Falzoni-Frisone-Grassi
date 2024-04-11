@@ -13,7 +13,8 @@ public class Game implements Serializable{
     public JSONArray resourceDeck;
     public JSONArray goldenDeck;
     public JSONArray startingDeck;
-    public JSONArray goalDeck;
+    public JSONArray resourcesGoalDeck;
+    public JSONArray patternGoalDeck;
     public ResourceCard[] viewableResourceCards;
     public GoldenCard[] viewableGoldenCards;
     private final GoalCard[] commonGoalCards;
@@ -23,16 +24,19 @@ public class Game implements Serializable{
      * This is the constructor of the game, which gets to initialize a list of players,
      * it creates decks, and also sets the visible cards on the table.
      */
-    public Game(){
+    public Game() throws FileNotFoundException {
         if(checkOldGame()){
             Game oldGame = retrieveGame();
-            assert oldGame != null;
+            if (oldGame == null) {
+                throw new FileNotFoundException("Unable to retrieve old saving file!");
+            }
             this.startingPlayer = oldGame.startingPlayer;
             this.players = oldGame.players;
             this.resourceDeck = oldGame.resourceDeck;
             this.goldenDeck = oldGame.goldenDeck;
             this.startingDeck = oldGame.startingDeck;
-            this.goalDeck = oldGame.goalDeck;
+            this.resourcesGoalDeck = oldGame.resourcesGoalDeck;
+            this.patternGoalDeck = oldGame.patternGoalDeck;
             this.viewableResourceCards = oldGame.viewableResourceCards;
             this.viewableGoldenCards = oldGame.viewableGoldenCards;
             this.commonGoalCards = oldGame.commonGoalCards;
@@ -46,14 +50,19 @@ public class Game implements Serializable{
     }
 
     /**
-     * This method generates all the 4 different decks.
+     * This method generates all the different decks as JSONArrays.
      */
     public void createDecks(){
         JSONParser parser = new JSONParser();
-        String[] decksNames = {"resource", "golden", "starting", "goal"};
-        for(int i = 0; i < 4; i++) {
+        String[] decksNames = {"resource", "golden", "starting", "resourcesGoal", "patternGoal"};
+        for(int i = 0; i < 5; i++) {
             try {
-                Object JSONObject = parser.parse(new FileReader("resources/" + decksNames[i] + "Deck.json"));
+                InputStream input = getClass().getResourceAsStream("/" + decksNames[i] + "Deck.json");
+                if (input == null) {
+                    throw new FileNotFoundException("Error retrieving " + decksNames[i] + "Deck.json file!");
+                }
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(input));
+                Object JSONObject = parser.parse(buffer);
                 JSONArray deckJSONArray = (JSONArray) JSONObject;
                 switch (decksNames[i]) {
                     case "resource":
@@ -65,22 +74,17 @@ public class Game implements Serializable{
                     case "starting":
                         startingDeck = deckJSONArray;
                         break;
-                    case "goal":
-                        goalDeck = deckJSONArray;
+                    case "resourcesGoal":
+                        resourcesGoalDeck = deckJSONArray;
+                        break;
+                    case "patternGoal":
+                        patternGoalDeck = deckJSONArray;
                         break;
                 }
             } catch (IOException | ParseException e) {
-                System.err.println("Error in JSON file retrieving!");
+                System.err.println("Error in JSON files retrieving!");
             }
         }
-    }
-
-    //Draws a goalCard
-    public GoalCard drawGoalCard(){
-
-        //TODO: draws a goalCard and removes it from the ArrayList
-
-        return null; //So IDE doesn't give error
     }
 
     //Implements persistency

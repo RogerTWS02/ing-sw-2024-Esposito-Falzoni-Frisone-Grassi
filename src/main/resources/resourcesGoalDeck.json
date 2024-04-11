@@ -1,0 +1,42 @@
+[
+    {
+        "UUID": "RGC_1",
+        "points": 2,
+        "resources": ["MUSHROOM", "MUSHROOM", "MUSHROOM"]
+    },
+    {
+        "UUID": "RGC_2",
+        "points": 2,
+        "resources": ["LEAF", "LEAF", "LEAF"]
+    },
+    {
+        "UUID": "RGC_3",
+        "points": 2,
+        "resources": ["WOLF", "WOLF", "WOLF"]
+    },
+    {
+        "UUID": "RGC_4",
+        "points": 2,
+        "resources": ["BUTTERFLY", "BUTTERFLY", "BUTTERFLY"]
+    },
+    {
+        "UUID": "RGC_5",
+        "points": 3,
+        "resources": ["FEATHER", "GLASSVIAL", "SCROLL"]
+    },
+    {
+        "UUID": "RGC_6",
+        "points": 2,
+        "resources": ["SCROLL", "SCROLL", null]
+    },
+    {
+        "UUID": "RGC_7",
+        "points": 2,
+        "resources": ["GLASSVIAL", "GLASSVIAL", null]
+    },
+    {
+        "UUID": "RGC_8",
+        "points": 2,
+        "resources": ["FEATHER", "FEATHER", null]
+    }
+]
