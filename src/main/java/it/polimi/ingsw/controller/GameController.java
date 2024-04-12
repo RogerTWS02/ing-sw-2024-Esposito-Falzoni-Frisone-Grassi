@@ -4,15 +4,17 @@ import it.polimi.ingsw.model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class GameController {
-    private final Game currentGame;
+    private Game currentGame;
 
-    public GameController(Game currentGame) {
-        this.currentGame = currentGame;
+    public GameController() {
+        this.currentGame = null;
     }
 
     //Draws a card from the deck passed by parameter
@@ -162,5 +164,24 @@ public class GameController {
      */
     public void chooseSecretGoal(Player p, ArrayList<GoalCard> lis, int number){
         p.setSecretGoalCard(lis.get(number));
+    }
+
+    /**
+     * The method beginGame initiates a new game by calling the Game constructor
+     * and waits for the players to connect to the game
+     * @throws FileNotFoundException In case the files of the old game have been lost
+     */
+
+    //Maybe it should do something else, right now I don't know
+    public void beginGame() throws FileNotFoundException {
+        this.currentGame = new Game();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Insert the number of players: ");
+        setNumberOfPlayers(scanner.nextInt());
+        scanner.close();
+        while(currentGame.getPlayers().contains(null)){
+            //We have to wait for everyone to connect
+        }
+        System.out.println("\nEverything is set up!");
     }
 }
