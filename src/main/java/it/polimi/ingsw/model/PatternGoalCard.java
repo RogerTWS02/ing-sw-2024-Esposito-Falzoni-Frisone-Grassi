@@ -7,7 +7,9 @@ import java.util.Arrays;
  * which have a pattern objective.
  */
 public class PatternGoalCard extends GoalCard {
+    // array [0,0,x1,y1,x2,y2]  of relative position of the card in the pattern related to the first card
     private final int[] patternPosition;
+   // array of resources, in the order in witch they are expected to be found
     private final Resource[] patternResource;
 
     /**
@@ -36,28 +38,29 @@ public class PatternGoalCard extends GoalCard {
     public int checkGoal(PlayerBoard board) {
         int timesMatched = 0;
         ArrayList<String> usedCard = new ArrayList<>();
+        //iterate on all card in the matrix
         for (int i = 0; i <= 80; i++) {
             for (int j = 0; j <= 80; j++) {
 
-                /*iterate al the cell in the grid as possible starting point of the pattern*/
+                /*iterate all the cell as starting card of a pattern, z+2 to iterate all pairs [x,y] */
                 for (int z = 0; z < 6; z+=2) {
                     try {
-                        /*          position null?                         */
+                        /*   check if the position is null                         */
                         if (board.getCard(i + patternPosition[z], j + patternPosition[z+1]) == null) {
                             break;
                         }
-                        /* starting card not usable in pattern */
+                        /* check if the position is [0,0], because the starting card can not be used in a pattern */
                         if (i + patternPosition[z]==0 && j + patternPosition[z+1]==0){break;}
 
-                        /* checks if the resource is the right one */
+                        /* checks if the resource is the resource we expect in the pattern  */
                         if (!Arrays.asList(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getPermResource()).contains(patternResource[z/2])) {
                             break;
                         }
-                        /* checks if the card has been already used for this pattern */
+                        /* checks if the UUID of the card is in the array of card already used */
                         if (usedCard.contains(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getUUID())) {
                             break;
                         }
-                        /* pattern matched add cards used to the list */
+                        /* pattern matched noo previous case matched, z is 4 so checked last card, add cards used to the list */
                         if (z == 4) {
                             timesMatched++;
                             usedCard.add(board.getCard(i, j).getUUID());
