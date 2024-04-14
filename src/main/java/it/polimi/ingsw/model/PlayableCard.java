@@ -6,7 +6,7 @@ public abstract class PlayableCard  implements Serializable {
     private State state;
     private boolean isFlipped;
     private final Resource[] permResource;
-    private final Corner[] cardCorners;
+    private Corner[] cardCorners;
 
     private final String UUID;
 
@@ -18,6 +18,11 @@ public abstract class PlayableCard  implements Serializable {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    //Corner array setter
+    public void setCorners(Corner[] cardCorners) {
+        this.cardCorners = cardCorners;
     }
 
     public void setFlipped(boolean flipped) {

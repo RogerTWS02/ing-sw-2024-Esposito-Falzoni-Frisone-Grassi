@@ -5,10 +5,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameController {
     private Game currentGame;
@@ -18,15 +15,83 @@ public class GameController {
     }
 
     //Draws a card from the deck passed by parameter
-    public PlayableCard drawFromDeck(JSONArray deck){
+    public PlayableCard drawPlayableFromDeck(JSONArray deck){
         Random random = new Random();
         int randomIndex = random.nextInt(deck.size());
         JSONObject JSONcard = (JSONObject) deck.get(randomIndex);
         deck.remove(randomIndex);
+        if(deck == currentGame.resourceDeck){
+            return craftResourceCard(JSONcard);
+        } else if(deck == currentGame.goldenDeck){
+            return craftGoldenCard(JSONcard);
+        } else if(deck == currentGame.startingDeck){
+            return craftStartingCard(JSONcard);
+        }
+        return null;
+    }
 
-        //TODO: parse the JSON object and craft the card
+    public PlayableCard craftResourceCard(JSONObject JSONcard){
+        String UUID = (String) JSONcard.get("UUID");
+        int points = (Integer) JSONcard.get("points");
+        Resource permRes = stringToResource((String) JSONcard.get("permRes"));
+        JSONArray JSONCorners = (JSONArray) JSONcard.get("corners");
+        PlayableCard card = new ResourceCard(new Resource[]{permRes}, null, points, UUID);
+        card.setCorners(craftCornerArray(JSONCorners, card));
+        return card;
+    }
 
-        return null; //So IDE doesn't give error
+    public PlayableCard craftGoldenCard(JSONObject JSONcard){
+        String UUID = (String) JSONcard.get("UUID");
+        int points = (Integer) JSONcard.get("points");
+        Resource permRes = stringToResource((String) JSONcard.get("permRes"));
+        JSONArray JSONCorners = (JSONArray) JSONcard.get("corners");
+        Resource rule = stringToResource((String) JSONcard.get("rule"));
+        JSONArray JSONRequire = (JSONArray) JSONcard.get("require");
+        Resource[] require = new Resource[3];
+        for(int i = 0; i < 3; i++){
+            require[i] = stringToResource((String) JSONRequire.get(i));
+        }
+        PlayableCard card = new GoldenCard(new Resource[]{permRes}, null, points, require, rule, UUID);
+        card.setCorners(craftCornerArray(JSONCorners, card));
+        return card;
+    }
+
+    public PlayableCard craftStartingCard(JSONObject JSONcard){
+        String UUID = (String) JSONcard.get("UUID");
+        Resource permRes = stringToResource((String) JSONcard.get("permRes"));
+        JSONArray JSONFrontCorners = (JSONArray) JSONcard.get("frontCorners");
+        JSONArray JSONBackCorners = (JSONArray) JSONcard.get("backCorners");
+        PlayableCard card = new StartingCard(new Resource[]{permRes}, null, null, UUID);
+        ((StartingCard) card).setFrontCardCorners(craftCornerArray(JSONFrontCorners, card));
+        ((StartingCard) card).setBackCardCorners(craftCornerArray(JSONBackCorners, card));
+        return (PlayableCard) card;
+    }
+
+    public Resource stringToResource(String resource){
+        return switch (resource) {
+            case "WOLF" -> Resource.WOLF;
+            case "MUSHROOM" -> Resource.MUSHROOM;
+            case "LEAF" -> Resource.LEAF;
+            case "BUTTERFLY" -> Resource.BUTTERFLY;
+            case "FEATHER" -> Resource.FEATHER;
+            case "SCROLL" -> Resource.SCROLL;
+            case "GLASSVIAL" -> Resource.GLASSVIAL;
+            default -> null;
+        };
+    }
+
+    public Corner[] craftCornerArray(JSONArray JSONCorners, PlayableCard card){
+        Corner[] corners = new Corner[4];
+        for(int i = 0; i < 4; i++){
+            if(JSONCorners.get(i) == null){
+                corners[i] = null;
+            } else if(JSONCorners.get(i) == "EMPTY"){
+                corners[i] = new Corner(i, card, Optional.empty());
+            } else {
+                corners[i] = new Corner(i, card, Optional.ofNullable(stringToResource((String) JSONCorners.get(i))));
+            }
+        }
+        return corners;
     }
 
     //Draws a card from the two common cards on the table of the specified type and set to null the related array cell
