@@ -15,7 +15,10 @@ public class GameController {
     }
 
     //Draws a card from the deck passed by parameter
-    public PlayableCard drawPlayableFromDeck(JSONArray deck){
+    public PlayableCard drawPlayableFromDeck(JSONArray deck) {
+        if(deck.isEmpty()){
+            throw new IllegalArgumentException("Deck is empty!");
+        }
         Random random = new Random();
         int randomIndex = random.nextInt(deck.size());
         JSONObject JSONcard = (JSONObject) deck.get(randomIndex);
@@ -34,13 +37,25 @@ public class GameController {
         Random random = new Random();
         int randomIndex = random.nextInt(2);
         if(randomIndex == 0){
-            JSONObject JSONcard = (JSONObject) currentGame.resourcesGoalDeck.get(randomIndex);
-            currentGame.resourcesGoalDeck.remove(randomIndex);
-            return craftResourcesGoalCard(JSONcard);
+            if(!currentGame.resourcesGoalDeck.isEmpty()){
+                JSONObject JSONcard = (JSONObject) currentGame.resourcesGoalDeck.get(randomIndex);
+                currentGame.resourcesGoalDeck.remove(randomIndex);
+                return craftResourcesGoalCard(JSONcard);
+            } else {
+                JSONObject JSONcard = (JSONObject) currentGame.patternGoalDeck.get(randomIndex);
+                currentGame.patternGoalDeck.remove(randomIndex);
+                return craftPatternGoalCard(JSONcard);
+            }
         } else {
-            JSONObject JSONcard = (JSONObject) currentGame.patternGoalDeck.get(randomIndex);
-            currentGame.patternGoalDeck.remove(randomIndex);
-            return craftPatternGoalCard(JSONcard);
+            if(!currentGame.patternGoalDeck.isEmpty()){
+                JSONObject JSONcard = (JSONObject) currentGame.patternGoalDeck.get(randomIndex);
+                currentGame.patternGoalDeck.remove(randomIndex);
+                return craftPatternGoalCard(JSONcard);
+            } else {
+                JSONObject JSONcard = (JSONObject) currentGame.resourcesGoalDeck.get(randomIndex);
+                currentGame.resourcesGoalDeck.remove(randomIndex);
+                return craftResourcesGoalCard(JSONcard);
+            }
         }
     }
 
