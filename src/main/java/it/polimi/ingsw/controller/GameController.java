@@ -218,11 +218,19 @@ public class GameController {
     checks if a position is available and the card is not null, then place it
      */
     public void placeCard(int i,int j,PlayableCard card,Player player) throws SecurityException {
-        if (card.getClass().getName().equals("StartingCard")&& (i!=0 || j!=0)){
-            throw new SecurityException("can't place starting card anywhere else from 0, 0");
-        }
-        if (card != null && player.getPlayerBoard().getCard(i,j).getState()==State.AVAILABLE){
-            player.getPlayerBoard().placeCard(card, i, j);
+        if (card.getClass().getName().equals("StartingCard")) {
+            if (i != 40 || j != 40) {
+                throw new SecurityException("can't place starting card anywhere else from 40, 40");
+            } else { //check if the starting position is already occupied
+                if (player.getPlayerBoard().getCard(i, j).getState() != State.OCCUPIED) {
+                    player.getPlayerBoard().placeCard(card, i, j);
+                } else {
+                    throw new SecurityException("starting card already placed");
+                }
+            }
+            if (card != null && player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
+                player.getPlayerBoard().placeCard(card, i, j);
+            }
         }
     }
 

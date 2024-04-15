@@ -73,8 +73,8 @@ public class PlayerBoard implements Serializable{
     /* Returns all the viewable resources present on the board*/
     public List<Resource> getResources(){
         List<Resource> res = new ArrayList<>();
-        for(int i = 0; i < 80; i++){
-            for(int j = 0; j < 80; j++){
+        for(int i = 0; i < 81; i++){
+            for(int j = 80; j >=0; j--){
                 /* skips the empty cells */
                 if(grid[i][j] == null || grid[i][j].getState() == AVAILABLE || grid[i][j].getState() == UNAVAILABLE) continue;
 

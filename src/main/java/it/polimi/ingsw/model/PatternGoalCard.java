@@ -42,7 +42,7 @@ public class PatternGoalCard extends GoalCard {
         ArrayList<String> usedCard = new ArrayList<>();
         //iterate on all card in the matrix
         for (int i = 0; i <= 80; i++) {
-            for (int j = 0; j <= 80; j++) {
+            for (int j = 80; j >= 0; j--) {
 
                 /*iterate all the cell as starting card of a pattern, z+2 to iterate all pairs [x,y] */
                 for (int z = 0; z < 6; z+=2) {
@@ -52,7 +52,7 @@ public class PatternGoalCard extends GoalCard {
                             break;
                         }
                         /* check if the position is [0,0], because the starting card can not be used in a pattern */
-                        if (i + patternPosition[z]==0 && j + patternPosition[z+1]==0){break;}
+                        if (i + patternPosition[z]==40 && j + patternPosition[z+1]==40){break;}
 
                         /* checks if the resource is the resource we expect in the pattern  */
                         if (!Arrays.asList(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getPermResource()).contains(patternResource[z/2])) {
@@ -62,7 +62,7 @@ public class PatternGoalCard extends GoalCard {
                         if (usedCard.contains(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getUUID())) {
                             break;
                         }
-                        /* pattern matched noo previous case matched, z is 4 so checked last card, add cards used to the list */
+                        /* pattern matched no previous case matched, z is 4 so checked last card, add cards used to the list */
                         if (z == 4) {
                             timesMatched++;
                             usedCard.add(board.getCard(i, j).getUUID());
