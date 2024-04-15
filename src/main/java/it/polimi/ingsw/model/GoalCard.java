@@ -7,6 +7,7 @@ import java.io.Serializable;
  * time the objective is reached.
  */
 public abstract class GoalCard implements Serializable {
+    private final String UUID;
     private final int points;
 
     /**
@@ -14,8 +15,9 @@ public abstract class GoalCard implements Serializable {
      *
      * @param points the points associated to the card
      */
-    public GoalCard(int points) {
+    public GoalCard(int points, String UUID) {
         this.points = points;
+        this.UUID = UUID;
     }
 
     /**

@@ -30,6 +30,51 @@ public class GameController {
         return null;
     }
 
+    public GoalCard drawGoalFromDeck(){
+        Random random = new Random();
+        int randomIndex = random.nextInt(2);
+        if(randomIndex == 0){
+            JSONObject JSONcard = (JSONObject) currentGame.resourcesGoalDeck.get(randomIndex);
+            currentGame.resourcesGoalDeck.remove(randomIndex);
+            return craftResourcesGoalCard(JSONcard);
+        } else {
+            JSONObject JSONcard = (JSONObject) currentGame.patternGoalDeck.get(randomIndex);
+            currentGame.patternGoalDeck.remove(randomIndex);
+            return craftPatternGoalCard(JSONcard);
+        }
+    }
+
+    public GoalCard craftResourcesGoalCard(JSONObject JSONcard){
+        String UUID = (String) JSONcard.get("UUID");
+        int points = (Integer) JSONcard.get("points");
+        Resource[] resources = new Resource[3];
+        Map<Resource, Integer> resourcesMap = new HashMap<>();
+        JSONArray JSONResources = (JSONArray) JSONcard.get("resources");
+        for(int i = 0; i < 3; i++){
+            resources[i] = stringToResource((String) JSONResources.get(i));
+        }
+        for(int i = 0; i < 3; i++){
+            if(resources[i] != null)
+            {
+                if(resourcesMap.containsKey(resources[i])){
+                    resourcesMap.put(resources[i], resourcesMap.get(resources[i]) + 1);
+                } else {
+                    resourcesMap.put(resources[i], 1);
+                }
+            }
+        }
+        return new ResourcesGoalCard(points, resourcesMap, UUID);
+    }
+
+    public GoalCard craftPatternGoalCard(JSONObject JSONCard){
+        String UUID = (String) JSONCard.get("UUID");
+        int points = (Integer) JSONCard.get("points");
+
+        //TODO
+
+        return null;
+    }
+
     public PlayableCard craftResourceCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
         int points = (Integer) JSONcard.get("points");
@@ -64,7 +109,7 @@ public class GameController {
         PlayableCard card = new StartingCard(new Resource[]{permRes}, null, null, UUID);
         ((StartingCard) card).setFrontCardCorners(craftCornerArray(JSONFrontCorners, card));
         ((StartingCard) card).setBackCardCorners(craftCornerArray(JSONBackCorners, card));
-        return (PlayableCard) card;
+        return card;
     }
 
     public Resource stringToResource(String resource){
@@ -248,5 +293,10 @@ public class GameController {
             //We have to wait for everyone to connect
         }
         System.out.println("\nEverything is set up!");
+    }
+
+    //currentGame setter
+    public void setCurrentGame(Game currentGame) {
+        this.currentGame = currentGame;
     }
 }

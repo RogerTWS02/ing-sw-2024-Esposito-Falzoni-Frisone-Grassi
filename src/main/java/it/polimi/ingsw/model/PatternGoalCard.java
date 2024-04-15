@@ -11,6 +11,7 @@ public class PatternGoalCard extends GoalCard {
     private final int[] patternPosition;
    // array of resources, in the order in witch they are expected to be found
     private final Resource[] patternResource;
+    private final String UUID;
 
     /**
      * This method constructs a PatternGoalCard.
@@ -20,10 +21,11 @@ public class PatternGoalCard extends GoalCard {
      * @param patternResource the pattern resources we are looking for (the resources identify the colors).
      */
 
-    public PatternGoalCard(int points, int[] patternPosition, Resource[] patternResource) {
-        super(points);
+    public PatternGoalCard(int points, int[] patternPosition, Resource[] patternResource, String UUID) {
+        super(points, UUID);
         this.patternPosition = patternPosition;
         this.patternResource = patternResource;
+        this.UUID = UUID;
     }
 
     /**

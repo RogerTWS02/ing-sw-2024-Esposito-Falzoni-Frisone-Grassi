@@ -11,6 +11,7 @@ import java.util.Map;
 public class ResourcesGoalCard extends GoalCard{
     private final Map<Resource, Integer> resources;
     private final Map<Resource, Integer> countResources;
+    private final String UUID;
 
     /* how can we combine the fact that has a final attribute to the playerboard with the existence of common goalgard? */
 
@@ -21,9 +22,10 @@ public class ResourcesGoalCard extends GoalCard{
      * @param points the points the card gives each time the player matches the objective
      * @param resources the objective to reach
      */
-    public ResourcesGoalCard(int points, Map<Resource, Integer> resources) {
-        super(points);
-        this.resources = new HashMap<>();
+    public ResourcesGoalCard(int points, Map<Resource, Integer> resources, String UUID) {
+        super(points, UUID);
+        this.resources = resources;
+        this.UUID = UUID;
         this.countResources = new HashMap<>();
     }
 
