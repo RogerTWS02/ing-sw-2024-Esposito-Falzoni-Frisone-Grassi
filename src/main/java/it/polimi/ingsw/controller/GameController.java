@@ -66,13 +66,20 @@ public class GameController {
         return new ResourcesGoalCard(points, resourcesMap, UUID);
     }
 
-    public GoalCard craftPatternGoalCard(JSONObject JSONCard){
-        String UUID = (String) JSONCard.get("UUID");
-        int points = (Integer) JSONCard.get("points");
-
-        //TODO
-
-        return null;
+    public GoalCard craftPatternGoalCard(JSONObject JSONcard){
+        String UUID = (String) JSONcard.get("UUID");
+        int points = (Integer) JSONcard.get("points");
+        JSONArray JSONPattern = (JSONArray) JSONcard.get("pattern");
+        JSONArray JSONResources = (JSONArray) JSONcard.get("resources");
+        int[] pattern = new int[6];
+        Resource[] resources = new Resource[3];
+        for(int i = 0; i < 6; i++){
+            pattern[i] = (Integer) JSONPattern.get(i);
+        }
+        for(int i = 0; i < 3; i++){
+            resources[i] = stringToResource((String) JSONResources.get(i));
+        }
+        return new PatternGoalCard(points, pattern, resources, UUID);
     }
 
     public PlayableCard craftResourceCard(JSONObject JSONcard){

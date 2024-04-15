@@ -2,57 +2,49 @@
     {
         "UUID": "PGC_1",
         "points": 2,
-        "pattern": "diagonal",
-        "orientation": "go_up",
-        "resources": ["MUSHROOM", null]
+        "pattern": [0, 0, 1, 1, 2, 2],
+        "resources": ["MUSHROOM", "MUSHROOM", "MUSHROOM"]
     },
     {
         "UUID": "PGC_2",
         "points": 2,
-        "pattern": "diagonal",
-        "orientation": "go_down",
-        "resources": ["LEAF", null]
+        "pattern": [0, 0, 1, -1, 2, -2],
+        "resources": ["LEAF", "LEAF", "LEAF"]
     },
     {
         "UUID": "PGC_3",
         "points": 2,
-        "pattern": "diagonal",
-        "orientation": "go_up",
-        "resources": ["WOLF", null]
+        "pattern": [0, 0, 1, 1, 2, 2],
+        "resources": ["WOLF", "WOLF", "WOLF"]
     },
     {
         "UUID": "PGC_4",
         "points": 2,
-        "pattern": "diagonal",
-        "orientation": "go_down",
-        "resources": ["BUTTERFLY", null]
+        "pattern": [0, 0, 1, -1 , 2, -2],
+        "resources": ["BUTTERFLY", "BUTTERFLY", "BUTTERFLY"]
     },
     {
         "UUID": "PGC_5",
         "points": 3,
-        "pattern": "vertical",
-        "orientation": "down_right",
-        "resources": ["MUSHROOM", "LEAF"]
+        "pattern": [0, 0, 0, -1, 1, -2],
+        "resources": ["MUSHROOM", "MUSHROOM", "LEAF"]
     },
     {
         "UUID": "PGC_6",
         "points": 3,
-        "pattern": "vertical",
-        "orientation": "down_left",
-        "resources": ["LEAF", "BUTTERFLY"]
+        "pattern": [0, 0, 1, 1, 1, 2],
+        "resources": ["LEAF", "LEAF", "BUTTERFLY"]
     },
     {
         "UUID": "PGC_7",
         "points": 3,
-        "pattern": "vertical",
-        "orientation": "up_right",
-        "resources": ["WOLF", "MUSHROOM"]
+        "pattern": [0, 0, -1, -1, -1, -2],
+        "resources": ["MUSHROOM", "WOLF", "WOLF"]
     },
     {
         "UUID": "PGC_8",
         "points": 3,
-        "pattern": "vertical",
-        "orientation": "up_left",
-        "resources": ["BUTTERFLY", "WOLF"]
+        "pattern": [0, 0, 1, -1, 1, -2],
+        "resources": ["WOLF", "BUTTERFLY", "BUTTERFLY"]
     }
 ]
