@@ -46,7 +46,7 @@ public class PlayerBoard implements Serializable{
                                 new Resource[]{},
                                 new Corner[]{},
                                 0,
-                                0
+                                null
                         );
 
                         /* if the neighbouring cell is empty then its state needs to be

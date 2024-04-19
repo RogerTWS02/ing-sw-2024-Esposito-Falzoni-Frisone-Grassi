@@ -44,15 +44,15 @@ public class ResourcesGoalCard extends GoalCard{
         are there in the board*/
 
         for (Resource r : board.getResources()) {
-            this.countResources.put(r, this.countResources.get(r) + 1);
+            this.countResources.put(r, this.countResources.getOrDefault(r, 0) + 1);
         }
 
         /*Now I have to count the points*/
-
-        resources.forEach((r, i) -> i = countResources.get(r)/i);
-        return resources.values().stream()
-                .mapToInt(v -> v * this.getPoints())
+        int minValue = resources.entrySet().stream()
+                .mapToInt(entry -> countResources.getOrDefault(entry.getKey(), 0) / entry.getValue())
                 .min()
                 .orElse(0);
+
+        return minValue * this.getPoints();
     }
 }
