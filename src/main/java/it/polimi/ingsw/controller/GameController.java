@@ -161,29 +161,31 @@ public class GameController {
         return corners;
     }
 
-    //Draws a card from the two common cards on the table of the specified type and set to null the related array cell
+    //Draws a card from the two common cards on the table of the specified type,
+    //or the card on the top of the specified deck, and replace it if possible
+    //
     //type==0: resourceCard, type==1: goldenCard
-    //card==0: "first" card, card==1: "second" card
-    public PlayableCard drawFromViewable(boolean whichType, boolean whichCard){
+    //card==0: "first" card, card==1: "second" card, card==2: card on the top of the deck
+    public PlayableCard drawCard(boolean whichType, int whichCard){
+        if(whichCard < 0 || whichCard > 2){
+            throw new IllegalArgumentException("Invalid card index!");
+        }
         PlayableCard card;
         if(whichType){
-            if(whichCard){
-                card = currentGame.getViewableGoldenCards()[1];
-                currentGame.viewableGoldenCards[1] = null;
-            } else {
-                card = currentGame.getViewableGoldenCards()[0];
-                currentGame.viewableGoldenCards[0] = null;
-            }
+                card = currentGame.getViewableGoldenCards()[whichCard];
         } else {
-            if(whichCard){
-                card = currentGame.getViewableResourceCards()[1];
-                currentGame.viewableResourceCards[1] = null;
-            } else {
-                card = currentGame.getViewableResourceCards()[0];
-                currentGame.viewableResourceCards[0] = null;
-            }
+                card = currentGame.getViewableResourceCards()[whichCard];
         }
+        setNewViewableCard(whichType, whichCard);
         return card;
+    }
+
+    public void setNewViewableCard(boolean type, int index) {
+        if(type){
+            currentGame.viewableGoldenCards[index] = (GoldenCard) drawPlayableFromDeck(currentGame.goldenDeck);
+        } else {
+            currentGame.viewableResourceCards[index] = (ResourceCard) drawPlayableFromDeck(currentGame.resourceDeck);
+        }
     }
 
     /* not very clear how we can add a new player if the array is private and there's no setPlayer function,
@@ -211,22 +213,20 @@ public class GameController {
                     currentGame.setPlayers(players);
                     break;
                 }
-
             }
-            if(n>=currentGame.getPlayers().size()){
+            if(n >= currentGame.getPlayers().size()){
                 throw new SecurityException(" the lobby is full");
             }
         }
     }
 
-    /*
-    not very clear if there has to be some additional function in this method very useful?
-     */
+
     public PlayableCard[] returnHand(Player player){
-        if (player != null){
-            return player.getHand();
-        }
-    return null;}
+    if(player == null || !currentGame.getPlayers().contains(player)) {
+        throw new IllegalArgumentException("Illegal player parameter!");
+    }
+    return player.getHand();
+    }
 
 
     /*
@@ -303,7 +303,7 @@ public class GameController {
      * @param number the card he chose
      */
     public void chooseSecretGoal(Player p, ArrayList<GoalCard> lis, int number){
-        p.setSecretGoalCard(lis.get(number));
+        //TODO
     }
 
     /**
@@ -328,5 +328,10 @@ public class GameController {
     //currentGame setter
     public void setCurrentGame(Game currentGame) {
         this.currentGame = currentGame;
+    }
+
+    //Check if it's time to begin the end game phase and begin if it's time
+    public void checkEndGamePhase(){
+        //TODO
     }
 }

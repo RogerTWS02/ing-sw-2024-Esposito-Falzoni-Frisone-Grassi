@@ -193,29 +193,4 @@ public class Game implements Serializable{
     public GoldenCard[] getViewableGoldenCards() {
         return viewableGoldenCards;
     }
-
-    //type==1: viewable card from the top of the deck; type==0: common card on the table
-    public void setViewableResourceCards(ResourceCard card, boolean type) {
-        if(type){
-            viewableResourceCards[2] = card;
-        } else {
-            if(viewableResourceCards[0] == null){
-                viewableResourceCards[0] = card;
-            } else {
-                viewableResourceCards[1] = card;
-            }
-        }
-    }
-
-    public void setViewableGoldenCards(GoldenCard card, boolean type) {
-        if(type){
-            viewableGoldenCards[2] = card;
-        } else {
-            if(viewableGoldenCards[0] == null){
-                viewableGoldenCards[0] = card;
-            } else {
-                viewableGoldenCards[1] = card;
-            }
-        }
-    }
 }
