@@ -21,7 +21,7 @@ public class CodexNaturalisApp {
     /**
      * Initializes and launches the Codex Naturalis client app.
      *
-     * @param hasGUI whether to launch the GUI version of the client
+     * @param hasGUI
      */
     private static void launchClient(boolean hasGUI) {
         if (hasGUI) {

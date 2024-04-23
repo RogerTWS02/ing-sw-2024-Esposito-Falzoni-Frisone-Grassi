@@ -10,14 +10,14 @@ import java.net.Socket;
 public class ClientHandler extends Thread {
     private Socket clientSocket;
     private PrintWriter out;
-    private BufferedReader in;
+    private BufferedReader inp;
 
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
         try {
             // Inizializzazione degli stream di input/output
             out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            inp = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -27,16 +27,20 @@ public class ClientHandler extends Thread {
         try {
             // Riceve e invia messaggi al client
             String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                System.out.println("Messaggio ricevuto dal client: " + inputLine);
+
+            //leggo fino a quando non arrivo alla fine del buffer
+            while ((inputLine = inp.readLine()) != null) {
                 out.println("Messaggio ricevuto: " + inputLine);
+
+                //per debugging
+                System.out.println("Messaggio ricevuto dal client: " + inputLine);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                // Chiude le risorse
-                in.close();
+                // Chiude le risorse una volta letto il messaggio
+                inp.close();
                 out.close();
                 clientSocket.close();
             } catch (IOException e) {

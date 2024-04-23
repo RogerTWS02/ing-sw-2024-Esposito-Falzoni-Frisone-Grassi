@@ -11,7 +11,6 @@ public class Client  {
     private final String  ip;
     private final int port;
     private final Socket socket;
-
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
 
@@ -28,6 +27,9 @@ public class Client  {
                 while(true){
                     String recievedMessage = (String) socketInput.readObject();
 
+                    //per debugging
+                    System.out.println(recievedMessage);
+
                 }
 
             }catch(Exception ignored){}
@@ -37,6 +39,8 @@ public class Client  {
         return t;
     }
 
+
+    //funzione per mandare un messaggio al server riutilizzando out
     public synchronized void sendMessage(String message){
         new Thread(() -> {
             try{
@@ -51,6 +55,7 @@ public class Client  {
         }).start();
     }
 
+    // funzione per leggere in ingresso i messaggi del Server e inizializzare out
     public void run(){
         try{
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -64,6 +69,7 @@ public class Client  {
 
     }
 
+    //funzione per chiudere la connessione
     public synchronized void closeSocket(){
         try{
             socket.close();
