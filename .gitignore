@@ -79,3 +79,4 @@ fabric.properties
 
 # Graphics resources:
 /src/main/resources/graphics/**
+/target/**
