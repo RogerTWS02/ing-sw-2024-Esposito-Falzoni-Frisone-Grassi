@@ -17,10 +17,10 @@ public class Game implements Serializable{
     public JSONArray patternGoalDeck;
     public ResourceCard[] viewableResourceCards;
     public GoldenCard[] viewableGoldenCards;
-    private final GoalCard[] commonGoalCards;
+    public final GoalCard[] commonGoalCards;
     private Player currentPlayer;
 
-    /**
+    /**.
      * This is the constructor of the game, which gets to initialize a list of players,
      * it creates decks, and also sets the visible cards on the table.
      */
@@ -137,7 +137,10 @@ public class Game implements Serializable{
     /**
      * This method picks a random player and sets it as the first player in the game
      */
-   public void setFirstPlayer(){
+   public void setStartingPlayer(){
+       if(players == null || players.isEmpty() || players.contains(null)){
+           throw new RuntimeException("No players in the game / a player can't be null!");
+       }
        Random random = new Random();
        int randomNumber = random.nextInt(players.size());
        this.startingPlayer = players.get(randomNumber);
@@ -146,7 +149,6 @@ public class Game implements Serializable{
 
 
     public void setPlayers(ArrayList<Player> players) {
-
        this.players = players;
     }
 
@@ -158,15 +160,9 @@ public class Game implements Serializable{
         return currentPlayer;
     }
 
-    /**
-     * This method sets the common goal cards on the table.
-     *
-     * @param card1 the first card on the table
-     * @param card2 the second card on the table
-     */
-    public void setCommonGoalCards(GoalCard card1, GoalCard card2){
-        commonGoalCards[0] = card1;
-        commonGoalCards[1] = card2;
+    //startingPlayer getter
+    public Player getStartingPlayer(){
+        return startingPlayer;
     }
 
     /**
