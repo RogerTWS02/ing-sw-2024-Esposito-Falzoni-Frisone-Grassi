@@ -8,14 +8,14 @@ public class StartingCard extends PlayableCard{
 
     public StartingCard(Resource[] permResource, Corner[] FrontCardCorners, Corner[] BackCardCorners, String UUID) {
         super(permResource, null, UUID);
+        this.BackCardCorners=BackCardCorners;
+        this.FrontCardCorners=FrontCardCorners;
     }
 
-    public Corner[] getFrontCardCorners() {
-        return FrontCardCorners;
-    }
-
-    public Corner[] getBackCardCorners() {
-        return BackCardCorners;
+    public Corner[] getCardCorners() {
+        if (!this.isFlipped()) {
+            return FrontCardCorners;
+        } else return BackCardCorners;
     }
 
     public void setFrontCardCorners(Corner[] FrontCardCorners) {
