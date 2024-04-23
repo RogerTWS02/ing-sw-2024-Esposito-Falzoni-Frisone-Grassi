@@ -31,7 +31,7 @@ public class CodexNaturalisApp {
     }
 
     /**
-     * Initializes and launches the Santorini server app
+     * Initializes and launches the server app
      */
     private static void launchServer() {
         Server server;
