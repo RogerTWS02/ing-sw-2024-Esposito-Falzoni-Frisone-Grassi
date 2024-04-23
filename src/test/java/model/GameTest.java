@@ -1,5 +1,7 @@
-package it.polimi.ingsw.model;
+package model;
 
+import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.Player;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

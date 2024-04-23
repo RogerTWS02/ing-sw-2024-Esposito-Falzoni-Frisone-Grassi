@@ -1,5 +1,6 @@
-package it.polimi.ingsw.model;
+package model;
 
+import it.polimi.ingsw.model.*;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
