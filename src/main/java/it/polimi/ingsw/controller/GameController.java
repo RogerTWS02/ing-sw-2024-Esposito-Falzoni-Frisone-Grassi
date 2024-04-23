@@ -190,6 +190,12 @@ public class GameController {
         }
     }
 
+    public void setCommonGoalCards(){
+        currentGame.commonGoalCards[0] = drawGoalFromDeck();
+        currentGame.commonGoalCards[1] = drawGoalFromDeck();
+
+    }
+
     /* not very clear how we can add a new player if the array is private and there's no setPlayer function,
     as implemented now it overwrites all the names,
      not sure how we want to implement the port now it`s a random 50 just to have it working
