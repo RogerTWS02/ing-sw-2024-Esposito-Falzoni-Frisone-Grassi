@@ -8,7 +8,7 @@ import java.util.List;
 import static it.polimi.ingsw.model.State.*;
 
 public class PlayerBoard implements Serializable{
-    protected PlayableCard[][] grid = new PlayableCard[80][80];
+    protected PlayableCard[][] grid = new PlayableCard[81][81];
     public Pawn pawn;
 
     public PlayerBoard(Pawn pawn) {
