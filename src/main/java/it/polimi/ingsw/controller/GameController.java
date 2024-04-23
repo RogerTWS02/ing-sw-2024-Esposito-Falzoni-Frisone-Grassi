@@ -166,15 +166,17 @@ public class GameController {
     //
     //type==0: resourceCard, type==1: goldenCard
     //card==0: "first" card, card==1: "second" card, card==2: card on the top of the deck
-    public PlayableCard drawCard(boolean whichType, int whichCard){
+    public PlayableCard drawViewableCard(boolean whichType, int whichCard){
         if(whichCard < 0 || whichCard > 2){
             throw new IllegalArgumentException("Invalid card index!");
         }
         PlayableCard card;
         if(whichType){
                 card = currentGame.getViewableGoldenCards()[whichCard];
+                currentGame.getViewableGoldenCards()[whichCard] = null;
         } else {
                 card = currentGame.getViewableResourceCards()[whichCard];
+                currentGame.getViewableResourceCards()[whichCard] = null;
         }
         setNewViewableCard(whichType, whichCard);
         return card;
@@ -295,15 +297,12 @@ public class GameController {
         }
     }
 
-    /**
-     * This method lets a player choose his secretGoalCard
-     *
-     * @param p the player
-     * @param lis the list of goal cards he can choose from
-     * @param number the card he chose
-     */
-    public void chooseSecretGoal(Player p, ArrayList<GoalCard> lis, int number){
-        //TODO
+    //Returns two goal cards
+    public GoalCard[] drawGoalCardsToChoose(){
+        GoalCard[] cards = new GoalCard[2];
+        cards[0] = drawGoalFromDeck();
+        cards[1] = drawGoalFromDeck();
+        return cards;
     }
 
     /**
@@ -322,7 +321,7 @@ public class GameController {
         while(currentGame.getPlayers().contains(null)){
             //We have to wait for everyone to connect
         }
-        System.out.println("\nEverything is set up!");
+        System.out.println("\nEverything is set up!\n");
     }
 
     //currentGame setter
@@ -332,6 +331,23 @@ public class GameController {
 
     //Check if it's time to begin the end game phase and begin if it's time
     public void checkEndGamePhase(){
-        //TODO
+        if((currentGame.viewableResourceCards[2] == null && currentGame.viewableGoldenCards[2] == null) || checkPlayersScore()){
+            endGamePhase();
+        }
+    }
+
+    //Check players points for checking end game phase beginning
+    public boolean checkPlayersScore(){
+        for(int i = 0; i < currentGame.getPlayers().size(); i++){
+            if(currentGame.getPlayers().get(i).getScore() >= 20){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //End game phase handler
+    public void endGamePhase(){
+        //TODO: Implement end game phase flow
     }
 }
