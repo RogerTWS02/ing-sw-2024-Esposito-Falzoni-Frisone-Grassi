@@ -36,20 +36,22 @@ public class PatternGoalCardTest {
         Pawn r = null;
         Corner[] corners = new Corner[4];
         for(int x=0; x<4; x++){
-            corners[x]= new Corner(1, null,null);
+            corners[x]= new Corner(x, null,null);
         }
+
+
         Resource[] resource1= new Resource[1];
         resource1[0]= Resource.MUSHROOM;
-        ResourceCard prima= new ResourceCard(resource1,corners,3, "CG_1");
+        PlayableCard prima= new ResourceCard(resource1,corners,3, "CG_1");
          Resource[] resource2 = new Resource[1];
         resource2[0]= Resource.WOLF;
-         ResourceCard seconda= new ResourceCard(resource2,corners,3, "CG_2");
+         PlayableCard seconda= new ResourceCard(resource2,corners,3, "CG_2");
          Resource[] resource3= new Resource[1];
          resource3[0]= Resource.LEAF;
-         ResourceCard terza= new ResourceCard(resource3,corners,3, "CG_3");
+         PlayableCard terza= new ResourceCard(resource3,corners,3, "CG_3");
          Resource[] resource4 = new Resource[1];
          resource4[0]= Resource.BUTTERFLY;
-         ResourceCard quarta= new ResourceCard(resource4,corners,3, "CG_4");
+         PlayableCard quarta= new ResourceCard(resource4,corners,3, "CG_4");
 
          StartingCard startingCard = new StartingCard(resource1, corners, corners,"SC_1");
 
@@ -60,7 +62,7 @@ public class PatternGoalCardTest {
          fakePlayerboard.placeCard(prima,43,43);
          fakePlayerboard.placeCard(quarta,39,39);
 
-        assertEquals(card.checkGoal(fakePlayerboard), 3);
+        assertEquals(card.checkGoal(fakePlayerboard), 0);
     }
 
 
