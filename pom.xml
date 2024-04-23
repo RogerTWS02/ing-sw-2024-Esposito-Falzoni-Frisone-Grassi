@@ -16,6 +16,19 @@
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>CodexNaturalis</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <project.outputName>CodexNaturalisApp</project.outputName>
+                <project.mainClass>it.polimi.ingsw.CodexNaturalisApp</project.mainClass>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
