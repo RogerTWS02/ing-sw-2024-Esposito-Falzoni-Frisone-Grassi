@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +26,10 @@ public class PlayerBoard implements Serializable{
     /* When I place a card on the board I have to update the state of the corresponding cell
      * and also the state of the corners of the neighbouring cards that get covered */
     public void placeCard(PlayableCard card, int x, int y){
+        if(grid[x][y] != null && (grid[x][y].getState() == UNAVAILABLE || grid[x][y].getState() == OCCUPIED)){
+            throw new IllegalArgumentException("Unavailable Position!!!");
+        }
+
         grid[x][y] = card;
         /* updates the state of the card when placed */
         grid[x][y].setState(OCCUPIED);
@@ -34,9 +39,9 @@ public class PlayerBoard implements Serializable{
         grid[x-1][y-1] =>  corner 0     grid[x-1][y+1] =>  corner 2
         grid[x+1][y-1] =>  corner 1     grid[x+1][y+1] =>  corner 3
         */
+        int id = -1;
         for(int i = -1; i < 3; i += 2){
             for(int j = -1; j < 3; j += 2){
-                int id = -1;
                 id++;
                 try{
                     /* if the neighbouring cell is empty, it needs to be instantiated to a dummy
