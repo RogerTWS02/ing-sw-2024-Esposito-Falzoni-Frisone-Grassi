@@ -204,10 +204,6 @@ public class GameController {
     public void addPlayer(String nickname, int clientPort) throws SecurityException{
 
         /* check if player already exists */
-
-        if (currentGame.getCurrentPlayer().clientPort != clientPort){
-                throw new SecurityException("wrong clientPort");
-        }
         if (currentGame.getPlayers().stream().map(Player::getNickname).toList().contains(nickname)){
             throw new SecurityException("player already present");
         }
