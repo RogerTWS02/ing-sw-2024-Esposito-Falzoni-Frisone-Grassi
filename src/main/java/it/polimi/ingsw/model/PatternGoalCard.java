@@ -41,8 +41,8 @@ public class PatternGoalCard extends GoalCard {
         int timesMatched = 0;
         ArrayList<String> usedCard = new ArrayList<>();
         //iterate on all card in the matrix
-        for (int i = 0; i <= 80; i++) {
-            for (int j = 80; j >= 0; j--) {
+        for (int i = 0; i < 81; i++) {
+            for (int j = 0; j <81 ; j++) {
 
                 /*iterate all the cell as starting card of a pattern, z+2 to iterate all pairs [x,y] */
                 for (int z = 0; z < 6; z+=2) {
