@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class PlayerBoardTest {
 
@@ -37,10 +38,10 @@ public class PlayerBoardTest {
     }
 
     @Test
-    public void placeCard_placein00_returncorrectcard(){
-        board.placeCard(card, 0,0);
+    public void placeCard_placein4040_returncorrectcard(){
+        board.placeCard(card, 40,40);
 
-        assertEquals(card, board.getCard(0,0));
+        assertEquals(card, board.getCard(40,40));
     }
 
     @Test
@@ -83,6 +84,25 @@ public class PlayerBoardTest {
         PlayableCard card2 = new ResourceCard(permanentResources, corners2, 2, "GC_2");
         board.placeCard(card2, 10,10);
         assertEquals(State.AVAILABLE, board.getState(11,11));
+    }
+
+    @Test
+    public void getResources_correctInput_correctOutput(){
+        Corner[] corners2 = new Corner[4];
+        corners2[0] = new Corner(0, card, Optional.of(Resource.WOLF));
+        corners2[1] = new Corner(1, card, Optional.of(Resource.LEAF));
+        corners2[2] = new Corner(2, card, Optional.of(Resource.SCROLL));
+        corners2[3] = new Corner(3, card, Optional.of(Resource.BUTTERFLY));
+        PlayableCard card2 = new ResourceCard(permanentResources, corners2, 2, "GC_2");
+        board.placeCard(card2,40,40);
+        board.placeCard(card, 41,41);
+        List<Resource> expectedResources = new ArrayList<>();
+        expectedResources.add(Resource.WOLF);
+        expectedResources.add(Resource.LEAF);
+        expectedResources.add(Resource.SCROLL);
+        List<Resource> actualResources= board.getResources();
+        assertEquals(new HashSet<>(expectedResources), new HashSet<>(actualResources));
+
     }
 
 }
