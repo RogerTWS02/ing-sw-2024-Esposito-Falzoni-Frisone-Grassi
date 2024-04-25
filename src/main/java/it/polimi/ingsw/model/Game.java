@@ -90,7 +90,11 @@ public class Game implements Serializable{
     //Implementing persistency
 
     public void saveGame() throws IOException {
-        deleteOldSaving();
+        //Delete old saving if it exists
+        File oldGameFile = new File("savings/game.svs");
+        if(oldGameFile.exists()){
+            deleteOldSaving();
+        }
         //Create a saving folder
         File gameSavingFolder = new File("savings");
         if(!gameSavingFolder.exists()){

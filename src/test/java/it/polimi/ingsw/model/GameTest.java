@@ -19,10 +19,11 @@ public class GameTest {
 
     //Creates an array of array lists: the first one contains 4 players, the second one contains 3 players and one null value, the third one is empty
     public ArrayList<Player>[] createFakePlayers(){
-        ArrayList<Player>[] playersLists = new ArrayList[3];
+        ArrayList<Player>[] playersLists = new ArrayList[4];
         playersLists[0] = new ArrayList<>();
         playersLists[1] = new ArrayList<>();
-        playersLists[2] = new ArrayList<>();
+        playersLists[2] = null;
+        playersLists[3] = new ArrayList<>();
         for(int i = 0; i < 4; i++){
             playersLists[0].add(new Player("Player" + i, 0));
         }
@@ -58,6 +59,13 @@ public class GameTest {
     public void setStartingPlayer_test_3(){
         ArrayList<Player>[] playersLists = createFakePlayers();
         game.setPlayers(playersLists[2]);
+        game.setStartingPlayer();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void setStartingPlayer_test_4(){
+        ArrayList<Player>[] playersLists = createFakePlayers();
+        game.setPlayers(playersLists[3]);
         game.setStartingPlayer();
     }
 
@@ -123,11 +131,25 @@ public class GameTest {
 
     @Test
     public void createDecks_test() {
-        //TODO
+        game.createDecks();
+        assertNotNull(game.resourceDeck);
+        assertNotNull(game.goldenDeck);
+        assertNotNull(game.startingDeck);
+        assertNotNull(game.resourcesGoalDeck);
+        assertNotNull(game.patternGoalDeck);
     }
 
     @Test
-    public void game_Constructor_test() {
-        //TODO
+    public void game_Constructor_test() throws IOException {
+        //If there isn't present an old saving, surely I won't have players (using code reachability for testing, assuming a crash during the match session)
+        assertNull(game.getPlayers());
+
+        ArrayList<Player>[] fakePlayers = createFakePlayers();
+        game.setPlayers(fakePlayers[0]);
+        game.saveGame();
+        this.game = new Game();
+        assertNotNull(game.getPlayers());
+        game.deleteOldSaving();
+        deleteSavingFolder();
     }
 }
