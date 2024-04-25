@@ -1,18 +1,13 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.model.Player;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
-
-//TODO: setStartingPlayer, checkOldGame already tested
 
 public class GameTest {
     Game game;
@@ -20,44 +15,119 @@ public class GameTest {
     @Before
     public void setUp() throws FileNotFoundException {
         this.game = new Game();
-        game.setPlayers(fakePlayersArrayList());
     }
 
-    public ArrayList<Player> fakePlayersArrayList(){
-        ArrayList<Player> players = new ArrayList<>();
+    //Creates an array of array lists: the first one contains 4 players, the second one contains 3 players and one null value, the third one is empty
+    public ArrayList<Player>[] createFakePlayers(){
+        ArrayList<Player>[] playersLists = new ArrayList[3];
+        playersLists[0] = new ArrayList<>();
+        playersLists[1] = new ArrayList<>();
+        playersLists[2] = new ArrayList<>();
         for(int i = 0; i < 4; i++){
-            players.add(new Player("Player" + i, 0));
+            playersLists[0].add(new Player("Player" + i, 0));
         }
-        return players;
+        for(int i = 0; i < 3; i++){
+            playersLists[1].add(new Player("Player" + i, 0));
+        }
+        playersLists[1].add(null);
+        return playersLists;
     }
 
     @After
     public void tearDown() {
         this.game = null;
-        File oldGameFile = new File("savings/game.svs");
-        oldGameFile.delete();
     }
 
     @Test
-    public void SetStartingPlayer_correctInput_correctOutput(){
+    public void setStartingPlayer_test_1(){
+            ArrayList<Player>[] playersLists = createFakePlayers();
+            game.setPlayers(playersLists[0]);
+            game.setStartingPlayer();
+            assertTrue(game.getPlayers().contains(game.getStartingPlayer()));
+            assertNotNull(game.getStartingPlayer());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void setStartingPlayer_test_2(){
+        ArrayList<Player>[] playersLists = createFakePlayers();
+        game.setPlayers(playersLists[1]);
         game.setStartingPlayer();
-        assertNotNull(game.getStartingPlayer());
-        assertTrue(game.getPlayers().contains(game.getStartingPlayer()));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void setStartingPlayer_test_3(){
+        ArrayList<Player>[] playersLists = createFakePlayers();
+        game.setPlayers(playersLists[2]);
+        game.setStartingPlayer();
     }
 
     @Test
-    public void checkOldGame_correctInput_correctOutput(){
+    public void checkOldGame_test(){
+        initSaving();
+        assertTrue(Game.checkOldGame());
+        game.deleteOldSaving();
+        assertFalse(game.checkOldGame());
+        deleteSavingFolder();
+    }
+
+    @Test
+    public void retrieveGame_test() throws IOException {
+        initSaving();
+        assertNull(Game.retrieveGame()); //IOExcpetion because game.svs is empty/corrupted
+        game.saveGame();
+        assertNotNull(Game.retrieveGame());
+        game.deleteOldSaving();
+        deleteSavingFolder();
+    }
+
+    public void initSaving() {
         File oldGameFile = new File("savings/game.svs");
         File directory = oldGameFile.getParentFile();
         if (!directory.exists()){
             directory.mkdirs();
+        } else {
+            for (File file : directory.listFiles()) {
+                file.delete();
+            }
         }
-        assertFalse(Game.checkOldGame());
         try{
             oldGameFile.createNewFile();
         } catch (Exception e){
             System.err.println("Error creating the dummy saving file!");
         }
-        assertTrue(Game.checkOldGame());
+    }
+
+    public void deleteSavingFolder() {
+        File oldGameFile = new File("savings/game.svs");
+        File directory = oldGameFile.getParentFile();
+        directory.delete();
+    }
+
+    @Test
+    public void deleteOldSaving_test() {
+        initSaving();
+        game.deleteOldSaving();
+        assertFalse(game.checkOldGame());
+        deleteSavingFolder();
+    }
+
+    @Test
+    public void saveGame_test() throws IOException {
+        initSaving();
+        game.deleteOldSaving();
+        game.saveGame();
+        assertTrue(game.checkOldGame());
+        game.deleteOldSaving();
+        deleteSavingFolder();
+    }
+
+    @Test
+    public void createDecks_test() {
+        //TODO
+    }
+
+    @Test
+    public void game_Constructor_test() {
+        //TODO
     }
 }

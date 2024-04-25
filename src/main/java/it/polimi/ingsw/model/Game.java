@@ -87,8 +87,10 @@ public class Game implements Serializable{
         }
     }
 
-    //Implements persistency
+    //Implementing persistency
+
     public void saveGame() throws IOException {
+        deleteOldSaving();
         //Create a saving folder
         File gameSavingFolder = new File("savings");
         if(!gameSavingFolder.exists()){
