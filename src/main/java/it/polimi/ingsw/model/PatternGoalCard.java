@@ -47,23 +47,31 @@ public class PatternGoalCard extends GoalCard {
                 /*iterate all the cell as starting card of a pattern, z+2 to iterate all pairs [x,y] */
                 for (int z = 0; z < 6; z+=2) {
                     try {
-                        /*   check if the position is null                         */
+
+                        /*   check if the position is null
+                                           */
                         if (board.getCard(i + patternPosition[z], j + patternPosition[z+1]) == null) {
+                            //System.out.println("esco per posizione non valida");
                             break;
-                        }
+                        };
                         /* check if the position is [0,0], because the starting card can not be used in a pattern */
-                        if (i + patternPosition[z]==40 && j + patternPosition[z+1]==40){break;}
+                        if (i + patternPosition[z]==40 && j + patternPosition[z+1]==40){
+                            //System.out.println("esco per starting card");
+                            break;}
 
                         /* checks if the resource is the resource we expect in the pattern  */
                         if (!Arrays.asList(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getPermResource()).contains(patternResource[z/2])) {
+                            //System.out.println("esco per risorsa non valida");
                             break;
                         }
                         /* checks if the UUID of the card is in the array of card already used */
                         if (usedCard.contains(board.getCard(i + patternPosition[z], j + patternPosition[z+1]).getUUID())) {
+                            //System.out.println("esco per carta already used");
                             break;
                         }
                         /* pattern matched no previous case matched, z is 4 so checked last card, add cards used to the list */
                         if (z == 4) {
+                            //System.out.println("esco per matched");
                             timesMatched++;
                             usedCard.add(board.getCard(i, j).getUUID());
                             usedCard.add(board.getCard(i + patternPosition[2], j + patternPosition[3]).getUUID());

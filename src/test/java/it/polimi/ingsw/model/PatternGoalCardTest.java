@@ -21,8 +21,8 @@ public class PatternGoalCardTest {
         patternResources[2]=Resource.MUSHROOM;
         patternPosition = new int[6];
         for (int x=0; x<3; x++){
-            patternPosition[x]=x;
-            patternPosition[x+1]=x;
+            patternPosition[2*x]=x;
+            patternPosition[2*x+1]=x;
         }
         card = new PatternGoalCard(3, patternPosition,patternResources, "GC_0");
     }
@@ -63,7 +63,7 @@ public class PatternGoalCardTest {
          fakePlayerboard.placeCard(prima,43,43);
          fakePlayerboard.placeCard(quarta,39,39);
 
-        assertEquals(card.checkGoal(fakePlayerboard), 0);
+        assertEquals(card.checkGoal(fakePlayerboard), 3);
     }
 
 
