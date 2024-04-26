@@ -112,7 +112,7 @@ public class PlayerBoard implements Serializable{
                             continue;
                         }
                         /* if the neighbouring corner is present then it has to be set covered */
-                        grid[x+i][y+j].getCardCorners()[id].setCovered(true);
+                        grid[x+i][y+j].getCardCorners()[3-id].setCovered(true);
 
                     }catch(ArrayIndexOutOfBoundsException ignored){}
                 }

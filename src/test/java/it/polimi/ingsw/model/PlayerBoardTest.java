@@ -51,7 +51,7 @@ public class PlayerBoardTest {
     }
 
     @Test
-    public void placeCard_occupiedposition_correctOutput(){
+    public void placeCard_occupiedPosition_correctOutput(){
         board.placeCard(card, 0,0);
         assertEquals(State.OCCUPIED, board.getState(0,0));
     }
