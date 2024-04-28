@@ -61,7 +61,7 @@ public class GameController {
 
     public GoalCard craftResourcesGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        int points = (Integer) JSONcard.get("points");
+        int points = ((Long) JSONcard.get("points")).intValue();
         Resource[] resources = new Resource[3];
         Map<Resource, Integer> resourcesMap = new HashMap<>();
         JSONArray JSONResources = (JSONArray) JSONcard.get("resources");
@@ -83,7 +83,7 @@ public class GameController {
 
     public GoalCard craftPatternGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        int points = (Integer) JSONcard.get("points");
+        int points = ((Long) JSONcard.get("points")).intValue();
         JSONArray JSONPattern = (JSONArray) JSONcard.get("pattern");
         JSONArray JSONResources = (JSONArray) JSONcard.get("resources");
         int[] pattern = new int[6];
@@ -99,7 +99,7 @@ public class GameController {
 
     public PlayableCard craftResourceCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        int points = (Integer) JSONcard.get("points");
+        int points = ((Long) JSONcard.get("points")).intValue();
         Resource permRes = stringToResource((String) JSONcard.get("permRes"));
         JSONArray JSONCorners = (JSONArray) JSONcard.get("corners");
         PlayableCard card = new ResourceCard(new Resource[]{permRes}, null, points, UUID);
@@ -108,11 +108,17 @@ public class GameController {
     }
 
     public PlayableCard craftGoldenCard(JSONObject JSONcard){
+        Object rule;
         String UUID = (String) JSONcard.get("UUID");
-        int points = (Integer) JSONcard.get("points");
+        int points = ((Long) JSONcard.get("points")).intValue();
         Resource permRes = stringToResource((String) JSONcard.get("permRes"));
         JSONArray JSONCorners = (JSONArray) JSONcard.get("corners");
-        Resource rule = stringToResource((String) JSONcard.get("rule"));
+        String temp = (String) JSONcard.get("rule");
+        if(temp != null && temp.equals("CORNERS")){
+            rule = "CORNERS";
+        } else {
+            rule = stringToResource((String) JSONcard.get("rule"));
+        }
         JSONArray JSONRequire = (JSONArray) JSONcard.get("require");
         Resource[] require = new Resource[3];
         for(int i = 0; i < 3; i++){
@@ -135,6 +141,9 @@ public class GameController {
     }
 
     public Resource stringToResource(String resource){
+        if(resource == null){
+            return null;
+        }
         return switch (resource) {
             case "WOLF" -> Resource.WOLF;
             case "MUSHROOM" -> Resource.MUSHROOM;
@@ -152,7 +161,7 @@ public class GameController {
         for(int i = 0; i < 4; i++){
             if(JSONCorners.get(i) == null){
                 corners[i] = null;
-            } else if(JSONCorners.get(i) == "EMPTY"){
+            } else if(JSONCorners.get(i).equals("EMPTY")){
                 corners[i] = new Corner(i, card, Optional.empty());
             } else {
                 corners[i] = new Corner(i, card, Optional.ofNullable(stringToResource((String) JSONCorners.get(i))));
@@ -182,6 +191,7 @@ public class GameController {
         return card;
     }
 
+    //type == 1: goldenCard, type == 0: resourceCard
     public void setNewViewableCard(boolean type, int index) {
         if(type){
             currentGame.viewableGoldenCards[index] = (GoldenCard) drawPlayableFromDeck(currentGame.goldenDeck);
@@ -331,11 +341,13 @@ public class GameController {
         this.currentGame = currentGame;
     }
 
-    //Check if it's time to begin the end game phase and begin if it's time
-    public void checkEndGamePhase(){
+    //Check if it's time to begin the end game phase and begin if it's time; boolean in order to make it testable
+    public boolean checkEndGamePhase(){
         if((currentGame.viewableResourceCards[2] == null && currentGame.viewableGoldenCards[2] == null) || checkPlayersScore()){
             endGamePhase();
+            return true;
         }
+        return false;
     }
 
     //Check players points for checking end game phase beginning
