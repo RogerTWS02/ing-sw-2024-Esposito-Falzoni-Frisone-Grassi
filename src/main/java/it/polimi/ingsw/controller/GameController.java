@@ -4,7 +4,10 @@ import it.polimi.ingsw.model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class GameController {
@@ -89,7 +92,7 @@ public class GameController {
         int[] pattern = new int[6];
         Resource[] resources = new Resource[3];
         for(int i = 0; i < 6; i++){
-            pattern[i] = (Integer) JSONPattern.get(i);
+            pattern[i] = ((Long) JSONPattern.get(i)).intValue();
         }
         for(int i = 0; i < 3; i++){
             resources[i] = stringToResource((String) JSONResources.get(i));
@@ -211,29 +214,23 @@ public class GameController {
      not sure how we want to implement the port now it`s a random 50 just to have it working
      we need to choose the exception
      */
-    public void addPlayer(String nickname, int clientPort) throws SecurityException{
-
+    public void addPlayer(String nickname, int clientPort) throws SecurityException {
         /* check if player already exists */
-        if (currentGame.getPlayers().stream().map(Player::getNickname).toList().contains(nickname)){
-            throw new SecurityException("player already present");
-        }
-        /* if does not exist adds it to the Arraylist */
-        else {
-            ArrayList<Player> players = currentGame.getPlayers();
-            int n;
-            for(n=0 ; n < currentGame.getPlayers().size(); n++) {
-                if (currentGame.getPlayers().get(n) == null) {
-                    players.add(n, new Player(nickname, clientPort));
-                    currentGame.setPlayers(players);
-                    break;
-                }
+        for(int p = 0; p < currentGame.getPlayers().size(); p++){
+            if(currentGame.getPlayers().get(p) != null && currentGame.getPlayers().get(p).getNickname().equals(nickname)){
+                throw new SecurityException("Player already exists!");
             }
-            if(n >= currentGame.getPlayers().size()){
-                throw new SecurityException(" the lobby is full");
+        }
+        ArrayList<Player> players = currentGame.getPlayers();
+        for(int n = 0 ; n < currentGame.getPlayers().size(); n++) {
+            if (currentGame.getPlayers().get(n) == null) {
+                players.add(n, new Player(nickname, clientPort));
+                players.remove(n + 1);
+                currentGame.setPlayers(players);
+                break;
             }
         }
     }
-
 
     public PlayableCard[] returnHand(Player player){
     if(player == null || !currentGame.getPlayers().contains(player)) {
@@ -241,7 +238,6 @@ public class GameController {
     }
     return player.getHand();
     }
-
 
     /*
     checks if a position is available and the card is not null, then place it
@@ -297,10 +293,10 @@ public class GameController {
     }
 
     public void setNumberOfPlayers(int number) throws IllegalArgumentException{
-        if(number <5 && number > 0) {
-            ArrayList<Player> list = new ArrayList<>(number);
+        if(number < 5 && number > 1) {
+            ArrayList<Player> list = new ArrayList<>(); //(number);
             for(int i = 0; i< number; i++){
-                list.add(i, null);
+                list.add(null);
             }
             currentGame.setPlayers(list);
         }else{
@@ -317,28 +313,31 @@ public class GameController {
         return cards;
     }
 
-    /**
-     * The method beginGame initiates a new game by calling the Game constructor
-     * and waits for the players to connect to the game
-     * @throws FileNotFoundException In case the files of the old game have been lost
-     */
-
-    //Maybe it should do something else, right now I don't know
-    public void beginGame() throws FileNotFoundException {
-        this.currentGame = new Game();
-        Scanner scanner = new Scanner(System.in);
+    public void beginGame() throws IOException {
+        this.setCurrentGame(new Game());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Insert the number of players: ");
-        setNumberOfPlayers(scanner.nextInt());
-        scanner.close();
-        while(currentGame.getPlayers().contains(null)){
-            //We have to wait for everyone to connect
-        }
-        System.out.println("\nEverything is set up!\n");
+        setNumberOfPlayers(Integer.parseInt(reader.readLine()));
+        System.out.println("\nWaiting for players to show up...\n");
+        new Thread(() -> {
+            while(currentGame.getPlayers().contains(null)){
+                //We have to wait for everyone to connect
+            }
+        }).start();
+
+        //TODO: initialize the game flow, and some other things to set up
+
+        System.out.println("Everything is set up!\n");
     }
 
     //currentGame setter
     public void setCurrentGame(Game currentGame) {
         this.currentGame = currentGame;
+    }
+
+    //currentGame getter
+    public Game getCurrentGame() {
+        return currentGame;
     }
 
     //Check if it's time to begin the end game phase and begin if it's time; boolean in order to make it testable
