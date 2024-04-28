@@ -1,22 +1,45 @@
 package it.polimi.ingsw.network.server;
 
+import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.network.message.Message;
+import it.polimi.ingsw.network.message.MessageType;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Server {
     private static final int default_port = 666;
     private final ServerSocket serverSocket;
+    private final Logger logger = Logger.getLogger(getClass().getName());
+    private final Map<Integer, ClientHandler> idSocketMap; //id - socket associated
+    private final Map<Integer, GameController> playerControllerMap; // id - controller
+    private int playersCounter;
 
     // prende in ingresso indirizzo di rete e porta, oppure usa la porta di default
     // e genero il server
     public Server(InetAddress ip, int port) throws IOException {
+        this.playerControllerMap = new HashMap<>();
+        this.idSocketMap = new HashMap<>();
         this.serverSocket = new ServerSocket(port, 66, ip);
 
+        playersCounter = 0;
+
     }
+
     public Server() throws IOException {
+        this.playerControllerMap = new HashMap<>();
+        this.idSocketMap = new HashMap<>();
         this.serverSocket = new ServerSocket(default_port);
+
+        playersCounter = 0;
     }
 
 
@@ -27,9 +50,32 @@ public class Server {
             while(true){
                     //uso un clientHandler per evitare azioni bloccanti dal client
                     Socket clientSocket = serverSocket.accept();
-                    ClientHandler clientHandler = new ClientHandler(clientSocket);
-                    clientHandler.start();
+                    ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
+                    Thread t = new Thread(clientHandler,"server");
+                    t.start();
             }
         }catch (Exception ignored){}
+    }
+
+    public boolean checkIdSocket(Message message, ClientHandler socketHandler) {
+        if (message.getMessageType() != MessageType.LOGIN_REQUEST && idSocketMap.get(message.getSenderId()) != socketHandler) {
+            logger.log(Level.SEVERE, "Received message with invalid id");
+            return false;
+        }
+        return true;
+    }
+
+    public void onInitializationMessage(Message message, ClientHandler clientHandler) {
+        if(message.getMessageType() == MessageType.LOGIN_REQUEST){
+            createPlayer(message.toString(), clientHandler);
+        }
+    }
+
+    public void createPlayer(String nickname, ClientHandler clientHandler){
+        if(playersCounter < 5){
+            playersCounter++;
+            Player player = new Player(nickname, serverSocket.getLocalPort());
+            idSocketMap.put(playersCounter, clientHandler);
+        }
     }
 }
