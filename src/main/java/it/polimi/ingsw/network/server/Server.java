@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageType;
+import it.polimi.ingsw.network.message.NickMessage;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -66,16 +67,30 @@ public class Server {
     }
 
     public void onInitializationMessage(Message message, ClientHandler clientHandler) {
-        if(message.getMessageType() == MessageType.LOGIN_REQUEST){
-            createPlayer(message.toString(), clientHandler);
+        logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderId());
+        switch(message.getMessageType()){
+            case LOGIN_REQUEST -> {
+                NickMessage nick = (NickMessage) message;
+                createPlayer(nick.getName(), clientHandler);
+            }
+
+            case NEW_LOBBY -> {
+                //If the player wants to create a new lobby
+            }
+
+            case JOINABLE_LOBBY -> {
+                //If the player wants to join an existing lobby
+            }
+
+            case CHOOSE_LOBBY -> {
+                //The lobby the player has chosen
+            }
         }
     }
 
     public void createPlayer(String nickname, ClientHandler clientHandler){
-        if(playersCounter < 5){
             playersCounter++;
             Player player = new Player(nickname, serverSocket.getLocalPort());
             idSocketMap.put(playersCounter, clientHandler);
-        }
     }
 }

@@ -14,7 +14,7 @@ public class ClientHandler extends Thread {
     private final Server server;
     private ObjectOutputStream out;
     private ObjectInputStream inp;
-    private Object inLock;
+    private final Object inLock;
     private boolean isConnected;
 
     public ClientHandler(Server server, Socket clientSocket) {
