@@ -3,6 +3,7 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.network.message.LobbyCreationMessage;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageType;
 import it.polimi.ingsw.network.message.NickMessage;
@@ -76,6 +77,8 @@ public class Server {
 
             case NEW_LOBBY -> {
                 //If the player wants to create a new lobby
+                LobbyCreationMessage lobby = (LobbyCreationMessage) message;
+                createLobby(LobbyCreationMessage.getSenderId(), LobbyCreationMessage.getLobby());
             }
 
             case JOINABLE_LOBBY -> {
@@ -92,5 +95,8 @@ public class Server {
             playersCounter++;
             Player player = new Player(nickname, serverSocket.getLocalPort());
             idSocketMap.put(playersCounter, clientHandler);
+    }
+
+    public void createLobby(int id, Lobby lobby){
     }
 }

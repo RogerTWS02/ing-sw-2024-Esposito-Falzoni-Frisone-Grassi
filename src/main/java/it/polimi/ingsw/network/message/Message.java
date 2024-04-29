@@ -6,10 +6,10 @@ public abstract class Message{
     private final int id; //id of the client that sends the message
     private final boolean initializationMessage;
 
-    public Message(MessageType messageType, int id, boolean initMessage){
+    public Message(MessageType messageType, int id, boolean initializationMessage){
         this.messageType = messageType;
         this.id = id;
-        this.initializationMessage = initMessage;
+        this.initializationMessage = initializationMessage;
     }
 
     public MessageType getMessageType(){
