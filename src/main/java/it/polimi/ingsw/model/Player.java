@@ -8,6 +8,7 @@ public class Player implements Serializable {
     private int score=0;
     private PlayerBoard playerBoard;
     private GoalCard secretGoalCard;
+    private Pawn pawn;
 
 
     public Player(String nickname, int clientPort) {
@@ -18,6 +19,17 @@ public class Player implements Serializable {
     //Playerboard getter
     public PlayerBoard getPlayerBoard() {
         return playerBoard;
+    }
+
+    //Pawn getter
+    public Pawn getPawn() {
+        return pawn;
+    }
+
+    //Pawn setter
+    public void setPawn(Pawn pawn) {
+        this.pawn = pawn;
+        this.playerBoard = new PlayerBoard(pawn);
     }
 
     public int getScore() {

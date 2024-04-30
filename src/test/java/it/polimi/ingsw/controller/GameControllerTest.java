@@ -34,13 +34,44 @@ public class GameControllerTest {
     }
 
     @Test
-    public void placeCard_test() {
-        //TODO
+    public void placeCard_test_1() {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(69, 69, startingCard, game.getPlayers().get(0));
+        assertEquals(startingCard, game.getPlayers().get(0).getPlayerBoard().getCard(40, 40));
+        assert(game.getPlayers().get(0).getPlayerBoard().getState(40, 40).equals(State.OCCUPIED));
+        PlayableCard card1 = gameController.drawPlayableFromDeck(game.resourceDeck);
+        gameController.placeCard(41, 41, card1, game.getPlayers().get(0));
+        assert(game.getPlayers().get(0).getPlayerBoard().getState(41, 41).equals(State.OCCUPIED));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void placeCard_test_2() {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(81, 81, startingCard, game.getPlayers().get(0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void placeCard_test_3() {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(-4, -56, startingCard, game.getPlayers().get(0));
+    }
+
 
     @Test
     public void showAvailableOnBoard_test() {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(69, 69, startingCard, game.getPlayers().get(0));
+
         //TODO
+
     }
 
     @Test
@@ -348,6 +379,25 @@ public class GameControllerTest {
 
         //TODO: complete testing when the method is complete
 
+    }
+
+    @Test
+    public void addPlayer_test() {
+        ArrayList<Player> fakePlayers = createFakePlayers();
+        fakePlayers.remove(3);
+        game.setPlayers(fakePlayers);
+        String nickname = "testPlayer";
+        int clientPort = 8080;
+        gameController.addPlayer(nickname, clientPort);
+        Player player = null;
+        Player addedPlayer = null;
+        for (int i = 0; i < game.getPlayers().size(); i++) {
+            player = game.getPlayers().get(i);
+            if (player != null && player.getNickname().equals(nickname) && player.clientPort == clientPort) {
+                break;
+            }
+        }
+        assertNotNull(player);
     }
 
     @Test

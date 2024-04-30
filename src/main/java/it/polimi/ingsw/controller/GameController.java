@@ -225,6 +225,12 @@ public class GameController {
                 players.add(n, new Player(nickname, clientPort));
                 players.remove(n + 1);
                 currentGame.setPlayers(players);
+                switch (n) {
+                    case 0 -> players.get(n).setPawn(Pawn.RED);
+                    case 1 -> players.get(n).setPawn(Pawn.GREEN);
+                    case 2 -> players.get(n).setPawn(Pawn.YELLOW);
+                    case 3 -> players.get(n).setPawn(Pawn.BLUE);
+                }
                 break;
             }
         }
@@ -238,25 +244,20 @@ public class GameController {
     }
 
     /*
-    checks if a position is available and the card is not null, then place it
+    Checks if a position is available and the card is not null, then place it
      */
     public void placeCard(int i,int j,PlayableCard card,Player player) throws SecurityException {
-        if (card.getClass().getName().equals("StartingCard")) {
-            if (i != 40 || j != 40) {
-                throw new SecurityException("can't place starting card anywhere else from 40, 40");
-            } else { //check if the starting position is already occupied
-                if (player.getPlayerBoard().getCard(i, j).getState() != State.OCCUPIED) {
-                    player.getPlayerBoard().placeCard(card, i, j);
-                } else {
-                    throw new SecurityException("starting card already placed");
-                }
-            }
-            if (card != null && player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
+        if(i < 0 || i > 80 || j < 0 || j > 80){
+            throw new IllegalArgumentException("Invalid position!");
+        }
+        if(card instanceof StartingCard) {
+            player.getPlayerBoard().placeCard(card, 40, 40);
+        } else {
+            if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
                 player.getPlayerBoard().placeCard(card, i, j);
             }
         }
     }
-
 
     /*
     iterate all the cell of the board, returns them if they are available
