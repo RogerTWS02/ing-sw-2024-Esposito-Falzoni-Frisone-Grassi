@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Server {
-    private static final int default_port = 5000;
+    private static final int default_port = 1234;
     private volatile boolean running = true;
     private final ServerSocket serverSocket;
     private final Logger logger = Logger.getLogger(getClass().getName());

@@ -19,7 +19,7 @@ public class ClientServerTest {
     public void setup() throws IOException {
         //ser = new Server(InetAddress.getByName("127.0.0.1"), 12345);
         ser = new Server();
-        cli = new Client(InetAddress.getLocalHost().getHostName(), 5001);
+        cli = new Client(InetAddress.getLocalHost().getHostName(), 1234);
     }
 
     @Test
@@ -29,7 +29,11 @@ public class ClientServerTest {
 
 
     @Test
-    public void sendMessagetoServer() throws IOException{
+    public void sendMessageToServer() throws IOException, InterruptedException {
+        new Thread(() -> {
+            ser.run();
+        }).start();
+        Thread.sleep(500);
         //avvio la lettura/scrittura al server
         cli.run();
         //mando il messaggio e chiudo la connessione
