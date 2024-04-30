@@ -1,23 +1,20 @@
 package it.polimi.ingsw.network.client;
 
-import com.sun.source.tree.TryTree;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class Client  {
-    private final String  ip;
+    private final String ipServ;
     private final int port;
-    private final Socket socket;
+    private Socket socket = null;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
 
     public Client(String ip, int port) throws IOException {
-        this.ip = ip;
+        this.ipServ = ip;
         this.port = port;
-        this.socket = new Socket(ip, port);
     }
 
 
@@ -56,13 +53,15 @@ public class Client  {
     }
 
     // funzione per leggere in ingresso i messaggi del Server e inizializzare out
-    public void run(){
+    public void run() throws IOException {
+        this.socket = new Socket(ipServ, port);
         try{
             out = new ObjectOutputStream(socket.getOutputStream());
             inp = new ObjectInputStream(socket.getInputStream());
             readFromSocketAsync(inp);
-        }catch (Exception ignored){
-
+        }catch (Exception e){
+            System.out.println("Il client non funziona, motivo: "+e);
+            closeSocket();
         }finally {
             closeSocket();
         }

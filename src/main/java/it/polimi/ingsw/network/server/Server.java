@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Server {
-    private static final int default_port = 666;
+    private static final int default_port = 12345;
     private final ServerSocket serverSocket;
     private final Logger logger = Logger.getLogger(getClass().getName());
     private final Map<Integer, ClientHandler> idSocketMap; //id - socket associated
@@ -53,10 +53,13 @@ public class Server {
                     //uso un clientHandler per evitare azioni bloccanti dal client
                     Socket clientSocket = serverSocket.accept();
                     ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
+                    System.out.println("La porta del client è: "+clientSocket);
                     Thread t = new Thread(clientHandler,"server");
                     t.start();
             }
-        }catch (Exception ignored){}
+        }catch (Exception e){
+            System.out.println("Ha crashato perchè: "+e);
+        }
     }
 
     public boolean checkIdSocket(Message message, ClientHandler socketHandler) {
