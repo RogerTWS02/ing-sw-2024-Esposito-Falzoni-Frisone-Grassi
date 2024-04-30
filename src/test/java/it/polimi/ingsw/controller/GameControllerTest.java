@@ -69,9 +69,14 @@ public class GameControllerTest {
         game.getPlayers().get(0).setPawn(Pawn.BLUE);
         PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
         gameController.placeCard(69, 69, startingCard, game.getPlayers().get(0));
-
-        //TODO
-
+        Corner[] corners = startingCard.getCardCorners();
+        int availableCorners = 0;
+        for (int i = 0; i < corners.length; i++) {
+            if (corners[i] != null) {
+                availableCorners++;
+            }
+        }
+        assertEquals(availableCorners, gameController.showAvailableOnBoard(game.getPlayers().get(0)).size());
     }
 
     @Test
