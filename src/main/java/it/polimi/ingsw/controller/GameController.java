@@ -63,14 +63,7 @@ public class GameController {
 
     public GoalCard craftResourcesGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        Object var;
-        int points;
-        var = JSONcard.get("points");
-        if(var instanceof Long){
-            points = ((Long) var).intValue();
-        } else {
-            points = (int) var;
-        }
+        int points = ((Number) JSONcard.get("points")).intValue();
         Resource[] resources = new Resource[3];
         Map<Resource, Integer> resourcesMap = new HashMap<>();
         JSONArray JSONResources = (JSONArray) JSONcard.get("resources");
@@ -92,25 +85,13 @@ public class GameController {
 
     public GoalCard craftPatternGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        Object var;
-        int points;
-        var = JSONcard.get("points");
-        if(var instanceof Long){
-            points = ((Long) var).intValue();
-        } else {
-            points = (int) var;
-        }
+        int points = ((Number) JSONcard.get("points")).intValue();
         JSONArray JSONPattern = (JSONArray) JSONcard.get("pattern");
         JSONArray JSONResources = (JSONArray) JSONcard.get("resources");
         int[] pattern = new int[6];
         Resource[] resources = new Resource[3];
         for(int i = 0; i < 6; i++){
-            var = JSONPattern.get(i);
-            if(var instanceof Long){
-                pattern[i] = ((Long) var).intValue();
-            } else {
-                pattern[i] = (int) var;
-            }
+            pattern[i] = ((Number) JSONPattern.get(i)).intValue();
         }
         for(int i = 0; i < 3; i++){
             resources[i] = stringToResource((String) JSONResources.get(i));
@@ -120,14 +101,7 @@ public class GameController {
 
     public PlayableCard craftResourceCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        Object var;
-        int points;
-        var = JSONcard.get("points");
-        if(var instanceof Long){
-            points = ((Long) var).intValue();
-        } else {
-            points = (int) var;
-        }
+        int points = ((Number) JSONcard.get("points")).intValue();
         Resource permRes = stringToResource((String) JSONcard.get("permRes"));
         JSONArray JSONCorners = (JSONArray) JSONcard.get("corners");
         PlayableCard card = new ResourceCard(new Resource[]{permRes}, null, points, UUID);
@@ -138,14 +112,7 @@ public class GameController {
     public PlayableCard craftGoldenCard(JSONObject JSONcard){
         Object rule;
         String UUID = (String) JSONcard.get("UUID");
-        Object var;
-        int points;
-        var = JSONcard.get("points");
-        if(var instanceof Long){
-            points = ((Long) var).intValue();
-        } else {
-            points = (int) var;
-        }
+        int points = ((Number) JSONcard.get("points")).intValue();
         Resource permRes = stringToResource((String) JSONcard.get("permRes"));
         JSONArray JSONCorners = (JSONArray) JSONcard.get("corners");
         String temp = (String) JSONcard.get("rule");
@@ -245,11 +212,6 @@ public class GameController {
 
     }
 
-    /* not very clear how we can add a new player if the array is private and there's no setPlayer function,
-    as implemented now it overwrites all the names,
-     not sure how we want to implement the port now it`s a random 50 just to have it working
-     we need to choose the exception
-     */
     public void addPlayer(String nickname, int clientPort) throws SecurityException {
         /* check if player already exists */
         for(int p = 0; p < currentGame.getPlayers().size(); p++){

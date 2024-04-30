@@ -34,6 +34,21 @@ public class GameControllerTest {
     }
 
     @Test
+    public void placeCard_test() {
+        //TODO
+    }
+
+    @Test
+    public void showAvailableOnBoard_test() {
+        //TODO
+    }
+
+    @Test
+    public void getPointsFromGoalCards_test() {
+        //TODO
+    }
+
+    @Test
     public void drawPlayableFromDeck_test_1() {
         assertNotNull(gameController.drawPlayableFromDeck(game.resourceDeck));
         assertNotNull(gameController.drawPlayableFromDeck(game.goldenDeck));
@@ -237,7 +252,20 @@ public class GameControllerTest {
 
     @Test
     public void craftCornerArray_test() {
-        //TODO
+        JSONArray JSONCorners = new JSONArray();
+        JSONCorners.add("WOLF");
+        JSONCorners.add("MUSHROOM");
+        JSONCorners.add(null);
+        JSONCorners.add("EMPTY");
+        PlayableCard card = new ResourceCard(new Resource[]{Resource.WOLF}, null, 99, "testUUID");
+        Corner[] corners = gameController.craftCornerArray(JSONCorners, card);
+
+        assertNotNull(corners);
+        assertEquals(4, corners.length);
+        assertEquals(Resource.WOLF, corners[0].getCornerResource().get());
+        assertEquals(Resource.MUSHROOM, corners[1].getCornerResource().get());
+        assertNull(corners[2]);
+        assertTrue(corners[3].getCornerResource().isEmpty());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -277,21 +305,6 @@ public class GameControllerTest {
         ArrayList<Player> fakePlayers2 = createFakePlayers();
         game.setPlayers(fakePlayers1);
         gameController.returnHand(fakePlayers2.get(0));
-    }
-
-    @Test
-    public void placeCard_test() {
-        //TODO
-    }
-
-    @Test
-    public void showAvailableOnBoard_test() {
-        //TODO
-    }
-
-    @Test
-    public void getPointsFromGoalCards_test() {
-        //TODO
     }
 
     @Test(expected = IllegalArgumentException.class)
