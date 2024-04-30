@@ -1,13 +1,13 @@
 [
     {
         "UUID": "SC_1",
-        "permRes": "BUTTERFLY",
+        "permRes": ["BUTTERFLY"],
         "frontCorners": ["EMPTY", "LEAF", "BUTTERFLY", "EMPTY"],
         "backCorners": ["MUSHROOM", "LEAF", "BUTTERFLY", "WOLF"]
     },
     {
         "UUID": "SC_2",
-        "permRes": "MUSHROOM",
+        "permRes": ["MUSHROOM"],
         "frontCorners": ["WOLF", "EMPTY", "EMPTY", "MUSHROOM"],
         "backCorners": ["LEAF", "WOLF", "MUSHROOM", "BUTTERFLY"]
     },

@@ -8,7 +8,7 @@ public class ResourceCard extends PlayableCard {
         this.points = point;
     }
 
-    public int getPoint() {
+    public int getPoints() {
         return points;
     }
 }

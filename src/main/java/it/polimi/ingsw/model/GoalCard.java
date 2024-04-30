@@ -39,4 +39,9 @@ public abstract class GoalCard implements Serializable {
     public int checkGoal(PlayerBoard board){
         return 0;
     }
+
+    //UUID getter
+    public String getUUID() {
+        return UUID;
+    }
 }

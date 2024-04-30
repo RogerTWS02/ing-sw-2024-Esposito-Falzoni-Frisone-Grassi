@@ -78,7 +78,9 @@ public class Server {
             case NEW_LOBBY -> {
                 //If the player wants to create a new lobby
                 LobbyCreationMessage lobby = (LobbyCreationMessage) message;
-                createLobby(LobbyCreationMessage.getSenderId(), LobbyCreationMessage.getLobby());
+
+                //TODO: fix this
+                //createLobby(LobbyCreationMessage.getSenderId(), LobbyCreationMessage.getLobby());
             }
 
             case JOINABLE_LOBBY -> {

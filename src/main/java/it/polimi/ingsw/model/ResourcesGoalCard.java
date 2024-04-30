@@ -13,7 +13,7 @@ public class ResourcesGoalCard extends GoalCard{
     private final Map<Resource, Integer> countResources;
     private final String UUID;
 
-    /* how can we combine the fact that has a final attribute to the playerboard with the existence of common goalgard? */
+    /* how can we combine the fact that has a final attribute to the playerboard with the existence of common goalcard? */
 
 
     /**
@@ -54,5 +54,14 @@ public class ResourcesGoalCard extends GoalCard{
                 .orElse(0);
 
         return minValue * this.getPoints();
+    }
+
+    // Getters
+    public Map<Resource, Integer> getResourcesMap() {
+        return resources;
+    }
+
+    public Map<Resource, Integer> getCountResources() {
+        return countResources;
     }
 }

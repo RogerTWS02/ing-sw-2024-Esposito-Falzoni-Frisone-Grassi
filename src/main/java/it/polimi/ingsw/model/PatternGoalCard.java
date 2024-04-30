@@ -87,6 +87,14 @@ public class PatternGoalCard extends GoalCard {
 
         return timesMatched * this.getPoints();
     }
+
+    public int[] getPatternPosition() {
+        return patternPosition;
+    }
+
+    public Resource[] getPatternResource() {
+        return patternResource;
+    }
 }
 
 

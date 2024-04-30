@@ -5,7 +5,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -20,7 +19,7 @@ public class GameController {
     //Draws a card from the deck passed by parameter
     public PlayableCard drawPlayableFromDeck(JSONArray deck) {
         if(deck.isEmpty()){
-            throw new IllegalArgumentException("Deck is empty!");
+            throw new IllegalArgumentException("Selected deck is empty!");
         }
         Random random = new Random();
         int randomIndex = random.nextInt(deck.size());
@@ -64,7 +63,14 @@ public class GameController {
 
     public GoalCard craftResourcesGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        int points = ((Long) JSONcard.get("points")).intValue();
+        Object var;
+        int points;
+        var = JSONcard.get("points");
+        if(var instanceof Long){
+            points = ((Long) var).intValue();
+        } else {
+            points = (int) var;
+        }
         Resource[] resources = new Resource[3];
         Map<Resource, Integer> resourcesMap = new HashMap<>();
         JSONArray JSONResources = (JSONArray) JSONcard.get("resources");
@@ -86,13 +92,25 @@ public class GameController {
 
     public GoalCard craftPatternGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        int points = ((Long) JSONcard.get("points")).intValue();
+        Object var;
+        int points;
+        var = JSONcard.get("points");
+        if(var instanceof Long){
+            points = ((Long) var).intValue();
+        } else {
+            points = (int) var;
+        }
         JSONArray JSONPattern = (JSONArray) JSONcard.get("pattern");
         JSONArray JSONResources = (JSONArray) JSONcard.get("resources");
         int[] pattern = new int[6];
         Resource[] resources = new Resource[3];
         for(int i = 0; i < 6; i++){
-            pattern[i] = ((Long) JSONPattern.get(i)).intValue();
+            var = JSONPattern.get(i);
+            if(var instanceof Long){
+                pattern[i] = ((Long) var).intValue();
+            } else {
+                pattern[i] = (int) var;
+            }
         }
         for(int i = 0; i < 3; i++){
             resources[i] = stringToResource((String) JSONResources.get(i));
@@ -102,7 +120,14 @@ public class GameController {
 
     public PlayableCard craftResourceCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        int points = ((Long) JSONcard.get("points")).intValue();
+        Object var;
+        int points;
+        var = JSONcard.get("points");
+        if(var instanceof Long){
+            points = ((Long) var).intValue();
+        } else {
+            points = (int) var;
+        }
         Resource permRes = stringToResource((String) JSONcard.get("permRes"));
         JSONArray JSONCorners = (JSONArray) JSONcard.get("corners");
         PlayableCard card = new ResourceCard(new Resource[]{permRes}, null, points, UUID);
@@ -113,7 +138,14 @@ public class GameController {
     public PlayableCard craftGoldenCard(JSONObject JSONcard){
         Object rule;
         String UUID = (String) JSONcard.get("UUID");
-        int points = ((Long) JSONcard.get("points")).intValue();
+        Object var;
+        int points;
+        var = JSONcard.get("points");
+        if(var instanceof Long){
+            points = ((Long) var).intValue();
+        } else {
+            points = (int) var;
+        }
         Resource permRes = stringToResource((String) JSONcard.get("permRes"));
         JSONArray JSONCorners = (JSONArray) JSONcard.get("corners");
         String temp = (String) JSONcard.get("rule");
@@ -134,10 +166,14 @@ public class GameController {
 
     public PlayableCard craftStartingCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
-        Resource permRes = stringToResource((String) JSONcard.get("permRes"));
+        JSONArray JSONpermRes = (JSONArray) JSONcard.get("permRes");
+        Resource[] permRes = new Resource[JSONpermRes.size()];
+        for(int i = 0; i < JSONpermRes.size(); i++){
+            permRes[i] = stringToResource((String) JSONpermRes.get(i));
+        }
         JSONArray JSONFrontCorners = (JSONArray) JSONcard.get("frontCorners");
         JSONArray JSONBackCorners = (JSONArray) JSONcard.get("backCorners");
-        PlayableCard card = new StartingCard(new Resource[]{permRes}, null, null, UUID);
+        PlayableCard card = new StartingCard(permRes, null, null, UUID);
         ((StartingCard) card).setFrontCardCorners(craftCornerArray(JSONFrontCorners, card));
         ((StartingCard) card).setBackCardCorners(craftCornerArray(JSONBackCorners, card));
         return card;
@@ -233,10 +269,10 @@ public class GameController {
     }
 
     public PlayableCard[] returnHand(Player player){
-    if(player == null || !currentGame.getPlayers().contains(player)) {
-        throw new IllegalArgumentException("Illegal player parameter!");
-    }
-    return player.getHand();
+        if(player == null || !currentGame.getPlayers().contains(player)) {
+            throw new IllegalArgumentException("Illegal player parameter!");
+        }
+        return player.getHand();
     }
 
     /*

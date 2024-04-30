@@ -25,4 +25,14 @@ public class StartingCard extends PlayableCard{
     public void setBackCardCorners(Corner[] BackCardCorners) {
         this.BackCardCorners = BackCardCorners;
     }
+
+    //Getters
+
+    public Corner[] getFrontCardCorners() {
+        return FrontCardCorners;
+    }
+
+    public Corner[] getBackCardCorners() {
+        return BackCardCorners;
+    }
 }
