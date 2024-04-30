@@ -15,25 +15,15 @@ public class ClientServerTest {
     Client cli;
     Server ser;
 
-    InetAddress addr;
-    ServerSocket serverSocket;
-    int port;
-
     @Before
     public void setup() throws IOException {
-        ser = new Server(InetAddress.getByName("127.0.0.1"), 12345);
-
-        //Ottengo una porta libera
-        ServerSocket serverSocket = new ServerSocket(0);
-        port = serverSocket.getLocalPort();
-        serverSocket.close();
-
-        cli = new Client("127.0.0.1", port);
+        //ser = new Server(InetAddress.getByName("127.0.0.1"), 12345);
+        ser = new Server();
+        cli = new Client(InetAddress.getLocalHost().getHostName(), 5001);
     }
 
     @Test
-    public void startServer() throws UnknownHostException {
-        addr = InetAddress.getLocalHost();
+    public void startServer() throws IOException {
         ser.run();
     }
 

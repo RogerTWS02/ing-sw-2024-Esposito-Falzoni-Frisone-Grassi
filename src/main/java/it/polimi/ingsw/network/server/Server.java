@@ -18,7 +18,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Server {
-    private static final int default_port = 12345;
+    private static final int default_port = 5000;
+    private volatile boolean running = true;
     private final ServerSocket serverSocket;
     private final Logger logger = Logger.getLogger(getClass().getName());
     private final Map<Integer, ClientHandler> idSocketMap; //id - socket associated
@@ -33,7 +34,6 @@ public class Server {
         this.serverSocket = new ServerSocket(port, 66, ip);
 
         playersCounter = 0;
-
     }
 
     public Server() throws IOException {
@@ -47,19 +47,27 @@ public class Server {
 
     // funzione che permette al server di accettare connesioni dai client
     public void run(){
-        System.out.println("Il server è avviato e attende che i client si connettano...");
         try{
-            while(true){
+            while(running){
                     //uso un clientHandler per evitare azioni bloccanti dal client
+                    System.out.println("Il server è avviato e attende che i client si connettano...");
                     Socket clientSocket = serverSocket.accept();
+                    System.out.println("Il server ha accettato un client...");
                     ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
                     System.out.println("La porta del client è: "+clientSocket);
                     Thread t = new Thread(clientHandler,"server");
                     t.start();
+
+                    //da togliere se vuoi che continui indefinitamente
+                    running = false;
             }
         }catch (Exception e){
             System.out.println("Ha crashato perchè: "+e);
         }
+    }
+
+    public void stopListening() {
+        running = false;
     }
 
     public boolean checkIdSocket(Message message, ClientHandler socketHandler) {

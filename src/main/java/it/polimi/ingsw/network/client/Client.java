@@ -8,11 +8,11 @@ import java.net.Socket;
 public class Client  {
     private final String ipServ;
     private final int port;
-    private Socket socket = null;
+    private Socket socket;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
 
-    public Client(String ip, int port) throws IOException {
+    public Client(String ip, int port) {
         this.ipServ = ip;
         this.port = port;
     }
@@ -23,14 +23,10 @@ public class Client  {
             try{
                 while(true){
                     String recievedMessage = (String) socketInput.readObject();
-
                     //per debugging
                     System.out.println(recievedMessage);
-
                 }
-
             }catch(Exception ignored){}
-
         });
         t.start();
         return t;
@@ -55,9 +51,12 @@ public class Client  {
     // funzione per leggere in ingresso i messaggi del Server e inizializzare out
     public void run() throws IOException {
         this.socket = new Socket(ipServ, port);
+        out = new ObjectOutputStream(socket.getOutputStream());
+        inp = new ObjectInputStream(socket.getInputStream());
+        System.out.println("Connessione stabilita");
+
         try{
-            out = new ObjectOutputStream(socket.getOutputStream());
-            inp = new ObjectInputStream(socket.getInputStream());
+            System.out.println("Il messaggio del server è:\n");
             readFromSocketAsync(inp);
         }catch (Exception e){
             System.out.println("Il client non funziona, motivo: "+e);
