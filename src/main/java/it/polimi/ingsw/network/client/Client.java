@@ -1,5 +1,7 @@
 package it.polimi.ingsw.network.client;
 
+import it.polimi.ingsw.network.message.Message;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -34,9 +36,10 @@ public class Client  {
 
 
     //funzione per mandare un messaggio al server riutilizzando out
-    public synchronized void sendMessage(String message){
+    public synchronized void sendMessage(Message message){
         new Thread(() -> {
             try{
+                System.out.println("Messaggio mandato: "+message);
                 out.reset();
                 out.writeObject((Object)message);
                 out.flush();

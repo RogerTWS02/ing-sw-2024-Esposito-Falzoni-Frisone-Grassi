@@ -14,11 +14,12 @@ public class ClientHandler extends Thread {
     private final Server server;
     private ObjectOutputStream out;
     private ObjectInputStream inp;
-    private final Object inLock;
+    private final Object inLock, outLock;
     private boolean isConnected;
 
     public ClientHandler(Server server, Socket clientSocket) {
         this.inLock = new Object();
+        this.outLock = new Object();
         this.isConnected = true;
         this.clientSocket = clientSocket;
         this.server = server;
@@ -35,16 +36,21 @@ public class ClientHandler extends Thread {
         try {
             handleClient();
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "boh è successo qualcosa");
             disconnect();
         }
     }
 
+    //metodo che manda il messaggio spedito dal client al server
     public void handleClient() throws IOException{
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (inLock) {
-                    Message message = (Message) inp.readObject();
-                    manageReception(message);
+                    logger.log(Level.SEVERE, "pipipupu");
+                    //messaggio che il server deve ricever
+                    Message msg = (Message) inp.readObject();
+                    //lo mando al server
+                    server.messageHandler(msg, this);
                 }
             }
         } catch (ClassCastException | ClassNotFoundException | NullPointerException e) {
@@ -54,13 +60,17 @@ public class ClientHandler extends Thread {
         disconnect();
     }
 
-    private void manageReception(Message message) {
-        if (message != null && server.checkIdSocket(message, this)) {
-            if (message.isInitializationMessage()) {
-                server.onInitializationMessage(message, this);
-            } else {
-                //We have to send the message to the controller
+    public void sendMessage(Message msg){
+        try{
+            synchronized (outLock){
+                out.writeObject(msg);
+                out.flush();
+                out.reset();
             }
+
+        }catch(IOException e){
+            e.printStackTrace();
+            disconnect();
         }
     }
 

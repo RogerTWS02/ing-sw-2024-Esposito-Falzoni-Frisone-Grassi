@@ -1,12 +1,9 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.network.message.LobbyCreationMessage;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageType;
-import it.polimi.ingsw.network.message.NickMessage;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -47,19 +44,18 @@ public class Server {
 
     // funzione che permette al server di accettare connesioni dai client
     public void run(){
+        System.out.println("Il server è avviato e attende che i client si connettano...");
         try{
-            while(running){
+            while(running && !Thread.currentThread().isInterrupted()){
                     //uso un clientHandler per evitare azioni bloccanti dal client
-                    System.out.println("Il server è avviato e attende che i client si connettano...");
                     Socket clientSocket = serverSocket.accept();
                     System.out.println("Il server ha accettato un client...");
                     ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
-                    System.out.println("La porta del client è: "+clientSocket);
                     Thread t = new Thread(clientHandler,"server");
                     t.start();
 
                     //da togliere se vuoi che continui indefinitamente
-                    running = false;
+                    //running = false;
             }
         }catch (Exception e){
             System.out.println("Ha crashato perchè: "+e);
@@ -78,17 +74,16 @@ public class Server {
         return true;
     }
 
-    public void onInitializationMessage(Message message, ClientHandler clientHandler) {
+    public void messageHandler(Message message, ClientHandler clientHandler) {
         logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderId());
         switch(message.getMessageType()){
+            case TEST_MESSAGE -> {
+                logger.log(Level.SEVERE, (String) message.getObj());
+            }
             case LOGIN_REQUEST -> {
-                NickMessage nick = (NickMessage) message;
-                createPlayer(nick.getName(), clientHandler);
             }
 
             case NEW_LOBBY -> {
-                //If the player wants to create a new lobby
-                LobbyCreationMessage lobby = (LobbyCreationMessage) message;
 
                 //TODO: fix this
                 //createLobby(LobbyCreationMessage.getSenderId(), LobbyCreationMessage.getLobby());
@@ -100,6 +95,9 @@ public class Server {
 
             case CHOOSE_LOBBY -> {
                 //The lobby the player has chosen
+            }
+            default ->{
+                logger.log(Level.SEVERE, "cacapipi");
             }
         }
     }
