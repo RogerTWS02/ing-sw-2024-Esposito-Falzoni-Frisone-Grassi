@@ -82,6 +82,34 @@ public class GameControllerTest {
     @Test
     public void getPointsFromGoalCards_test() {
         //TODO
+        game.setPlayers(createFakePlayers());
+        GoalCard fgc1= new ResourcesGoalCard(5,null, "fgc1"){
+            @Override
+            public int checkGoal(PlayerBoard board) {
+                return this.getPoints();
+            }
+        };
+        GoalCard fgc2= new ResourcesGoalCard(5,null, "fgc2"){
+            @Override
+            public int checkGoal(PlayerBoard board) {
+                return this.getPoints();
+            }
+        };
+        GoalCard fgc3= new ResourcesGoalCard(4,null, "fgc3"){
+            @Override
+            public int checkGoal(PlayerBoard board) {
+                return this.getPoints();
+            }
+
+        };
+
+
+
+
+
+
+
+
     }
 
     @Test
