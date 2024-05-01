@@ -75,12 +75,13 @@ public class Server {
     }
 
     public void messageHandler(Message message, ClientHandler clientHandler) {
-        logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderId());
+        System.out.println(message.getMessageType() + " sent by " + message.getSenderId());
         switch(message.getMessageType()){
-            case TEST_MESSAGE -> {
+            case MessageType.TEST_MESSAGE -> {
                 logger.log(Level.SEVERE, (String) message.getObj());
             }
             case LOGIN_REQUEST -> {
+
             }
 
             case NEW_LOBBY -> {

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.network.message.Message;
+import it.polimi.ingsw.network.message.MessageType;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -46,14 +47,14 @@ public class ClientHandler extends Thread {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (inLock) {
-                    logger.log(Level.SEVERE, "pipipupu");
-                    //messaggio che il server deve ricever
+
+                    //messaggio che il server deve ricevere
                     Message msg = (Message) inp.readObject();
                     //lo mando al server
                     server.messageHandler(msg, this);
                 }
             }
-        } catch (ClassCastException | ClassNotFoundException | NullPointerException e) {
+        } catch (ClassCastException | NullPointerException e) {
             logger.log(Level.SEVERE, "error in reception, closing socket");
             e.printStackTrace();
         }

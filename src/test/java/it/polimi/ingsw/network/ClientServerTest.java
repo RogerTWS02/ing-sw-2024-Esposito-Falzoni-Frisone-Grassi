@@ -57,7 +57,7 @@ public class ClientServerTest {
         cli.run();
         //mando il messaggio e chiudo la connessione
         cli.sendMessage(messaggio);
-        cli.sendMessage(msg);
+        //cli.sendMessage(msg);
         cli.closeSocket();
     }
 }

@@ -24,9 +24,9 @@ public class Client  {
         Thread t = new Thread(() -> {
             try{
                 while(true){
-                    String recievedMessage = (String) socketInput.readObject();
+                    Message recievedMessage = (Message) socketInput.readObject();
                     //per debugging
-                    System.out.println(recievedMessage);
+                    System.out.println(recievedMessage.getObj().toString());
                 }
             }catch(Exception ignored){}
         });
