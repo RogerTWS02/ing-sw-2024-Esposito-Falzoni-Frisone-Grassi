@@ -10,6 +10,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,6 +46,9 @@ public class Server {
     }
 
 
+    /**
+     * Starts the server and waits for connections
+     */
     // funzione che permette al server di accettare connesioni dai client
     public void run(){
         logger.log(Level.INFO, "Server started on port " + serverSocket.getLocalPort() + " and is waiting for connections\n");
@@ -63,6 +67,10 @@ public class Server {
             stop();
         }
     }
+
+    /**
+     * Stops the server
+     */
 
     public void stop(){
         running = false;
@@ -118,7 +126,8 @@ public class Server {
                 break;
 
             case JOINABLE_LOBBY:
-                //If the player wants to join an existing lobby
+                //If the player wants to join an existing lobby, the method displays the available lobbies
+                showAvailableLobbies();
                 break;
 
             case CHOOSE_LOBBY:
@@ -150,10 +159,14 @@ public class Server {
      */
 
     public void createLobby(int id, String lobbyName, int size){
-        GameController controller = new GameController();
-        playerControllerMap.put(id, controller);
-        Lobby lobby= new Lobby(size,1, lobbyName);
-        lobbyPlayerMap.put(lobby, new int[]{id});
+        if(lobbyName != null && lobbyPlayerMap.keySet().stream().anyMatch(lobby -> lobby.getLobbyName().equals(lobbyName))){
+            logger.log(Level.SEVERE, "Lobby name already in use");
+        }else{
+            GameController controller = new GameController();
+            playerControllerMap.put(id, controller);
+            Lobby lobby= new Lobby(size,1, lobbyName);
+            lobbyPlayerMap.put(lobby, new int[]{id});
+        }
     }
 
     /**
@@ -163,12 +176,31 @@ public class Server {
      */
 
     public void addPlayerToLobby(int id, Lobby lobby){
-        int[] currentPlayers = lobbyPlayerMap.get(lobby);
-        int[] updatedPlayers = new int[currentPlayers.length + 1];
+        if(lobby.isFull()){
+            logger.log(Level.SEVERE, "Lobby is full");
+        }else{
+            lobby.incrementPlayersConnected();
+            int[] currentPlayers = lobbyPlayerMap.get(lobby);
+            int[] updatedPlayers = new int[currentPlayers.length + 1];
 
-        System.arraycopy(currentPlayers, 0, updatedPlayers, 0, currentPlayers.length);
+            System.arraycopy(currentPlayers, 0, updatedPlayers, 0, currentPlayers.length);
 
-        updatedPlayers[currentPlayers.length] = id;
-        lobbyPlayerMap.put(lobby, updatedPlayers);
+            updatedPlayers[currentPlayers.length] = id;
+            lobbyPlayerMap.put(lobby, updatedPlayers);
+        }
     }
+
+    /**
+     * Shows the available lobbies
+     */
+    public synchronized List<String> showAvailableLobbies(){
+        List<String> availableLobbies = null;
+        for (Lobby lobby : lobbyPlayerMap.keySet()){
+            if(!lobby.isFull()){
+                availableLobbies.add(lobby.getLobbyName());
+            }
+        }
+        return availableLobbies;
+    }
+
 }
