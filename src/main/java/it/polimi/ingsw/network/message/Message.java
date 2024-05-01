@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public class Message implements Serializable{
     private final MessageType messageType;
-    private final Object obj;
+    private final Object[] obj;
     private final int id;
 
     public Message(MessageType messageType, int id, Object... obj){
@@ -19,7 +19,7 @@ public class Message implements Serializable{
         return messageType;
     }
 
-    public Object getObj() {
+    public Object[] getObj() {
         return obj;
     }
 

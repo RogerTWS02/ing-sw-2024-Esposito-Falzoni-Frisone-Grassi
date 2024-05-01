@@ -80,31 +80,41 @@ public class Server {
     }
 
     public void messageHandler(Message message, ClientHandler clientHandler) {
-        System.out.println(message.getMessageType() + " sent by " + message.getSenderId());
+        logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderId());
         switch(message.getMessageType()){
-            case MessageType.TEST_MESSAGE -> {
-                logger.log(Level.SEVERE, (String) message.getObj());
-            }
-            case LOGIN_REQUEST -> {
+            case TEST_MESSAGE:
+                Object[] test = message.getObj();
+                for (Object obj : test) {
+                    if(obj instanceof String){
+                        String stringObject = (String) obj;
+                        System.out.println(stringObject);
+                    }
+                }
+                break;
 
-            }
+            case LOGIN_REQUEST:
+                Object[] nick = message.getObj();
+                if(nick[0] instanceof String){
+                    createPlayer((String) nick[0], clientHandler);
+                }
 
-            case NEW_LOBBY -> {
+                break;
 
+            case NEW_LOBBY:
                 //TODO: fix this
                 //createLobby(LobbyCreationMessage.getSenderId(), LobbyCreationMessage.getLobby());
-            }
+                break;
 
-            case JOINABLE_LOBBY -> {
+            case JOINABLE_LOBBY:
                 //If the player wants to join an existing lobby
-            }
+                break;
 
-            case CHOOSE_LOBBY -> {
+            case CHOOSE_LOBBY:
                 //The lobby the player has chosen
-            }
-            default ->{
-                logger.log(Level.SEVERE, "cacapipi");
-            }
+                break;
+            default:
+                logger.log(Level.SEVERE, "Message type not recognized");
+                break;
         }
     }
 

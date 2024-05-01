@@ -50,9 +50,9 @@ public class ClientHandler extends Thread {
                 synchronized (inLock) {
 
                     //messaggio che il server deve ricevere
-                    Object msg = (Message) inp.readObject();
+                    Message msg = (Message) inp.readObject();
                     //lo mando al server
-                    server.messageHandler((Message) msg, this);
+                    server.messageHandler( msg, this);
                 }
             }
         } catch (ClassCastException | NullPointerException | ClassNotFoundException e) {

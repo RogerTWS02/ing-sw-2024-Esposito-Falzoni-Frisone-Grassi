@@ -60,17 +60,15 @@ public class Client  {
 
     // funzione per leggere in ingresso i messaggi del Server e inizializzare out
     public void run() throws IOException {
-        this.socket = new Socket(ipServ, port);
-        out = new ObjectOutputStream(socket.getOutputStream());
-        inp = new ObjectInputStream(socket.getInputStream());
-        logger.log(Level.INFO, "Client has connected to the server");
-
         try{
+            this.socket = new Socket(ipServ, port);
+            out = new ObjectOutputStream(socket.getOutputStream());
+            inp = new ObjectInputStream(socket.getInputStream());
+            logger.log(Level.INFO, "Client has connected to the server");
+
             readFromSocketAsync(inp);
         }catch (Exception e){
             logger.log(Level.SEVERE, "Error in reading from socket");
-            closeSocket();
-        }finally {
             closeSocket();
         }
 

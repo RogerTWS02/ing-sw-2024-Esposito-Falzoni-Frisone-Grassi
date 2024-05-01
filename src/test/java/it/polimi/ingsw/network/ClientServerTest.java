@@ -61,9 +61,9 @@ public class ClientServerTest {
 
         Thread.sleep(1000);
         //cli.sendMessage(msg);
+        serverThread.join();
         cli.closeSocket();
 
-        serverThread.join();
     }
 }
 
