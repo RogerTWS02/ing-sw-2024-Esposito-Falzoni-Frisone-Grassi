@@ -280,8 +280,11 @@ public class GameController {
  // update score with goal points
     public void getPointsFromGoalCards(Player player){
         // firstly common goal
-        for (GoalCard gc: currentGame.getCommonGoalCards()){
-            player.setScore(player.getScore() + gc.checkGoal(player.getPlayerBoard()));
+        System.out.println(currentGame);
+        for (GoalCard gc: currentGame.getCommonGoalCards()) {
+            if (gc != null) {
+                player.setScore(player.getScore() + gc.checkGoal(player.getPlayerBoard()));
+            }
         }
         //secondly secret goal
         player.setScore(player.getScore() + player.getSecretGoalCard().checkGoal(player.getPlayerBoard()));

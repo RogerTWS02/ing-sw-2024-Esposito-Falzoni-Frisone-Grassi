@@ -17,7 +17,7 @@ public class Game implements Serializable{
     public JSONArray patternGoalDeck;
     public ResourceCard[] viewableResourceCards;
     public GoldenCard[] viewableGoldenCards;
-    public final GoalCard[] commonGoalCards;
+    public  GoalCard[] commonGoalCards;
     private Player currentPlayer;
 
     /**.
@@ -177,6 +177,11 @@ public class Game implements Serializable{
      */
     public GoalCard[] getCommonGoalCards(){
         return commonGoalCards;
+    }
+
+
+    public void setCommonGoalCards(GoalCard[] commonGoalCards) {
+        this.commonGoalCards = commonGoalCards;
     }
 
     /**

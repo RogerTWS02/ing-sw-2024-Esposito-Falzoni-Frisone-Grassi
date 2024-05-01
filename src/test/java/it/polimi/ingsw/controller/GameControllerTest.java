@@ -80,15 +80,17 @@ public class GameControllerTest {
     }
 
     @Test
-    public void getPointsFromGoalCards_test() {
+    public void updatePlayerPointsFromAllGoalCards_test() throws FileNotFoundException {
         //TODO
-        game.setPlayers(createFakePlayers());
+        Player fakeplayer= new Player("Donnie", 28064212);
+
         GoalCard fgc1= new ResourcesGoalCard(5,null, "fgc1"){
             @Override
             public int checkGoal(PlayerBoard board) {
                 return this.getPoints();
             }
         };
+        fakeplayer.setSecretGoalCard(fgc1);
         GoalCard fgc2= new ResourcesGoalCard(5,null, "fgc2"){
             @Override
             public int checkGoal(PlayerBoard board) {
@@ -103,14 +105,12 @@ public class GameControllerTest {
 
         };
 
+         game.setCommonGoalCards(new GoalCard[]{fgc2, fgc3});
+         GoalCard[] goalCards = game.getCommonGoalCards();
+         gameController.getPointsFromGoalCards(fakeplayer);
+         assertEquals(14, fakeplayer.getScore());
 
-
-
-
-
-
-
-    }
+    };
 
     @Test
     public void drawPlayableFromDeck_test_1() {
