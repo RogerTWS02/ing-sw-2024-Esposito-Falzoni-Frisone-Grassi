@@ -29,7 +29,8 @@ public class ClientHandler extends Thread {
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             inp = new ObjectInputStream(clientSocket.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error in initializing streams");
+            disconnect();
         }
     }
 
@@ -37,7 +38,7 @@ public class ClientHandler extends Thread {
         try {
             handleClient();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "boh è successo qualcosa");
+            logger.log(Level.SEVERE, "An error occurred handling the client");
             disconnect();
         }
     }
@@ -45,20 +46,19 @@ public class ClientHandler extends Thread {
     //metodo che manda il messaggio spedito dal client al server
     public void handleClient() throws IOException{
         try {
-            while (!Thread.currentThread().isInterrupted()) {
+            while (isConnected && !Thread.currentThread().isInterrupted()) {
                 synchronized (inLock) {
 
                     //messaggio che il server deve ricevere
-                    Message msg = (Message) inp.readObject();
+                    Object msg = (Message) inp.readObject();
                     //lo mando al server
-                    server.messageHandler(msg, this);
+                    server.messageHandler((Message) msg, this);
                 }
             }
-        } catch (ClassCastException | NullPointerException e) {
-            logger.log(Level.SEVERE, "error in reception, closing socket");
-            e.printStackTrace();
+        } catch (ClassCastException | NullPointerException | ClassNotFoundException e) {
+            logger.log(Level.SEVERE, "Error in reception, closing socket");
+            disconnect();
         }
-        disconnect();
     }
 
     public void sendMessage(Message msg){
@@ -68,9 +68,8 @@ public class ClientHandler extends Thread {
                 out.flush();
                 out.reset();
             }
-
         }catch(IOException e){
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error in sending message");
             disconnect();
         }
     }

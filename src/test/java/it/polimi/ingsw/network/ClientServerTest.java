@@ -49,16 +49,21 @@ public class ClientServerTest {
 
     @Test
     public void sendMessageToServer() throws IOException, InterruptedException {
-        new Thread(() -> {
+        Thread serverThread = new Thread(() -> {
             ser.run();
-        }).start();
-        Thread.sleep(1);
+        });
+        serverThread.start();
+        Thread.sleep(1000);
         //avvio la lettura/scrittura al server
         cli.run();
         //mando il messaggio e chiudo la connessione
         cli.sendMessage(messaggio);
+
+        Thread.sleep(1000);
         //cli.sendMessage(msg);
         cli.closeSocket();
+
+        serverThread.join();
     }
 }
 

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Client  {
     private final String ipServ;
@@ -13,6 +15,7 @@ public class Client  {
     private Socket socket;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
+    private final Logger logger = Logger.getLogger(getClass().getName());
 
     public Client(String ip, int port) {
         this.ipServ = ip;
@@ -20,18 +23,22 @@ public class Client  {
     }
 
 
-    public Thread readFromSocketAsync(ObjectInputStream socketInput){
+    public void readFromSocketAsync(ObjectInputStream socketInput){
         Thread t = new Thread(() -> {
             try{
-                while(true){
-                    Message recievedMessage = (Message) socketInput.readObject();
-                    //per debugging
-                    System.out.println(recievedMessage.getObj().toString());
+                while(!Thread.currentThread().isInterrupted()){
+                    try {
+                        Message recievedMessage = (Message) socketInput.readObject();
+                        //per debugging
+                        System.out.println(recievedMessage.getObj().toString());
+                    }catch (IOException | ClassNotFoundException e) {
+                    }
                 }
-            }catch(Exception ignored){}
+            }finally {
+                closeSocket();
+            }
         });
         t.start();
-        return t;
     }
 
 
@@ -39,13 +46,13 @@ public class Client  {
     public synchronized void sendMessage(Message message){
         new Thread(() -> {
             try{
-                System.out.println("Messaggio mandato: "+message);
+                logger.log(Level.INFO, "Sending message to server");
                 out.reset();
-                out.writeObject((Object)message);
+                out.writeObject(message);
                 out.flush();
 
             }catch(IOException e){
-                System.out.println("Ci sono problemi nel mandare i messaggi! "+ e.getMessage());
+                logger.log(Level.SEVERE, "Error in sending message to server");
             };
 
         }).start();
@@ -56,13 +63,12 @@ public class Client  {
         this.socket = new Socket(ipServ, port);
         out = new ObjectOutputStream(socket.getOutputStream());
         inp = new ObjectInputStream(socket.getInputStream());
-        System.out.println("Connessione stabilita");
+        logger.log(Level.INFO, "Client has connected to the server");
 
         try{
-            System.out.println("Il messaggio del server è:\n");
             readFromSocketAsync(inp);
         }catch (Exception e){
-            System.out.println("Il client non funziona, motivo: "+e);
+            logger.log(Level.SEVERE, "Error in reading from socket");
             closeSocket();
         }finally {
             closeSocket();
@@ -73,6 +79,8 @@ public class Client  {
     //funzione per chiudere la connessione
     public synchronized void closeSocket(){
         try{
+            inp.close();
+            out.close();
             socket.close();
         }catch(IOException ignored){}
         System.exit(0);

@@ -44,27 +44,32 @@ public class Server {
 
     // funzione che permette al server di accettare connesioni dai client
     public void run(){
-        System.out.println("Il server è avviato e attende che i client si connettano...");
+        logger.log(Level.INFO, "Server started on port " + serverSocket.getLocalPort() + " and is waiting for connections\n");
         try{
             while(running && !Thread.currentThread().isInterrupted()){
                     //uso un clientHandler per evitare azioni bloccanti dal client
                     Socket clientSocket = serverSocket.accept();
-                    System.out.println("Il server ha accettato un client...");
+                    logger.log(Level.INFO,"Client connected");
                     ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
                     Thread t = new Thread(clientHandler,"server");
                     t.start();
-
-                    //da togliere se vuoi che continui indefinitamente
-                    //running = false;
             }
         }catch (Exception e){
-            System.out.println("Ha crashato perchè: "+e);
+            logger.log(Level.SEVERE, "Exception in server run");
+        }finally {
+            stop();
         }
     }
 
-    public void stopListening() {
+    public void stop(){
         running = false;
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Exception while closing server socket");
+        }
     }
+
 
     public boolean checkIdSocket(Message message, ClientHandler socketHandler) {
         if (message.getMessageType() != MessageType.LOGIN_REQUEST && idSocketMap.get(message.getSenderId()) != socketHandler) {
