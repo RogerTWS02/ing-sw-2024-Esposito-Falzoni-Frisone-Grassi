@@ -3,6 +3,7 @@ package it.polimi.ingsw.network;
 import it.polimi.ingsw.model.GoalCard;
 import it.polimi.ingsw.model.PatternGoalCard;
 import it.polimi.ingsw.model.Resource;
+import it.polimi.ingsw.model.ResourcesGoalCard;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageType;
@@ -14,9 +15,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 public class ClientServerTest {
-    GoalCard card = null;
+    GoalCard card, cardResource;
     int[] patternPosition = null;
     Resource[] patternResources = null;
     Message messaggio;
@@ -37,10 +39,12 @@ public class ClientServerTest {
             patternPosition[2*x+1]=x;
         }
         //ho creato la carta da mandare al server come messaggio
-        card = new PatternGoalCard(3, patternPosition,patternResources, "GC_0");
+        card = new PatternGoalCard(3, patternPosition,patternResources, "PGC_0");
+        cardResource = new ResourcesGoalCard(666, Map.of( Resource.LEAF, 2, Resource.WOLF, 3), "RGC_666");
 
         messaggio = new Message(MessageType.TEST_MESSAGE, 666,"Messaggio dal Client");
-        msg = new Message(MessageType.CARD_REQUEST, 666, card);
+        //msg = new Message(MessageType.REQUEST_GOAL_CARD, 667, card);
+        msg = new Message(MessageType.REQUEST_CARD, cli.getSocketPort(), card);
 
         //ser = new Server(InetAddress.getByName("127.0.0.1"), 12345);
         ser = new Server();
@@ -61,6 +65,9 @@ public class ClientServerTest {
 
         Thread.sleep(1000);
         cli.sendMessage(msg);
+
+        Thread.sleep(1000);
+        cli.sendMessage(new Message(MessageType.REQUEST_GOAL_CARD, 668, cardResource));
         serverThread.join();
         cli.closeSocket();
 

@@ -13,6 +13,7 @@ public class Client  {
     private final String ipServ;
     private final int port;
     private Socket socket;
+    private int gameID;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
     private final Logger logger = Logger.getLogger(getClass().getName());
@@ -56,6 +57,10 @@ public class Client  {
             };
 
         }).start();
+    }
+
+    public int getSocketPort() {
+        return socket.getPort();
     }
 
     // funzione per leggere in ingresso i messaggi del Server e inizializzare out

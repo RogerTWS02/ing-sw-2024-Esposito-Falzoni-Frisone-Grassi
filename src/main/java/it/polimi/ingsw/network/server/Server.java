@@ -1,7 +1,7 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageType;
 
@@ -9,11 +9,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class Server {
     private static final int default_port = 1234;
@@ -56,8 +55,15 @@ public class Server {
             while(running && !Thread.currentThread().isInterrupted()){
                     //uso un clientHandler per evitare azioni bloccanti dal client
                     Socket clientSocket = serverSocket.accept();
+
+                    //porta del client
+                    System.out.println(clientSocket.getPort());
+
                     logger.log(Level.INFO,"Client connected");
                     ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
+
+                    //associo alla porta del cliente il suo handler
+                    idSocketMap.put(clientSocket.getPort(), clientHandler);
                     Thread t = new Thread(clientHandler,"server");
                     t.start();
             }
@@ -106,9 +112,68 @@ public class Server {
     public void messageHandler(Message message, ClientHandler clientHandler) {
         logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderId());
         switch(message.getMessageType()){
+
+            //Client requires a card from the game and the game returns it back
+            case REQUEST_CARD:
+                //prende due parametri, uno booleano per il deck, uno per la posizione
+                Object[] request = message.getObj();
+                //PlayableCard replyCard =
+                //Message reply = null;
+                //prendo il suo handler e rispondo di conseguenza
+                //idSocketMap.get(message.getSenderId()).sendMessage(reply);
+
+
+
+
+
             case TEST_MESSAGE:
                 Object[] test = message.getObj();
                 System.out.println((String) test[0]);
+                break;
+
+            case REQUEST_GOAL_CARD:
+
+                if(message.getObj()[0] instanceof PatternGoalCard){
+                    PatternGoalCard card = (PatternGoalCard) message.getObj()[0];
+                    //per debugging
+                    System.out.println(Arrays.toString(card.getPatternResource()));
+                    break;
+                }
+
+                if(message.getObj()[0] instanceof ResourcesGoalCard){
+                    ResourcesGoalCard card = (ResourcesGoalCard) message.getObj()[0];
+                    //per debugging
+                    System.out.println(card.getResourcesMap());
+                    break;
+                }
+
+                System.out.println("E' successa una cazzataaaaaaaa siuuuuuuu");
+                break;
+
+            case REQUEST_PLAYABLE_CARD:
+
+                if(message.getObj()[0] instanceof GoldenCard){
+                    GoldenCard card = (GoldenCard) message.getObj()[0];
+                    //per debugging
+                    System.out.println(card);
+                    break;
+                }
+
+                if(message.getObj()[0] instanceof ResourceCard){
+                    ResourceCard card = (ResourceCard) message.getObj()[0];
+                    //per debugging
+                    System.out.println(card.getState());
+                    break;
+                }
+
+                if(message.getObj()[0] instanceof StartingCard){
+                    StartingCard card = (StartingCard) message.getObj()[0];
+                    //per debugging
+                    System.out.println(Arrays.toString(card.getPermResource()));
+                    break;
+                }
+
+                System.out.println("E' successa una cazzataaaaaaaa siuuuuuuu");
                 break;
 
             case LOGIN_REQUEST:
