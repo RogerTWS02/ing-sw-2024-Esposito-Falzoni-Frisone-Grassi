@@ -187,7 +187,21 @@ public class Server {
 
             case NEW_LOBBY:
                 Object[] lobby = message.getObj();
-                createLobby(message.getSenderId(), (String) lobby[0], (int) lobby[1]);
+                Scanner scanner = new Scanner(System.in);
+                int size;
+                do {
+                    System.out.println("Insert the size of the lobby (between 2 and 4): ");
+                    while (!scanner.hasNextInt()) {
+                        System.out.println("Invalid input, please insert an integer");
+                        scanner.next();
+                    }
+                    size = scanner.nextInt();
+                    if (size < 2 || size > 4) {
+                        System.out.println("Invalid input, please insert a number between 2 and 4");
+                    }
+                } while (size < 2 || size > 4);
+                scanner.close();
+                createLobby(message.getSenderId(), (String) lobby[0], size);
                 break;
 
             case JOINABLE_LOBBY:
@@ -197,7 +211,19 @@ public class Server {
 
             case CHOOSE_LOBBY:
                 //The lobby the player has chosen
+                Object[] lobbyName = message.getObj();
+                Lobby chosenLobby = lobbyPlayerMap
+                        .keySet()
+                        .stream()
+                        .filter(l -> l.getLobbyName().equals(lobbyName[0])).
+                        findFirst().orElse(null);
+                if(chosenLobby == null){
+                    logger.log(Level.SEVERE, "Lobby not found");
+                    break;
+                }
+                addPlayerToLobby(message.getSenderId(), chosenLobby);
                 break;
+
             default:
                 logger.log(Level.SEVERE, "Message type not recognized");
                 break;
@@ -240,7 +266,7 @@ public class Server {
      * @param lobby the lobby to add the player to
      */
 
-    public void addPlayerToLobby(int id, Lobby lobby){
+    public synchronized void addPlayerToLobby(int id, Lobby lobby){
         if(lobby.isFull()){
             logger.log(Level.SEVERE, "Lobby is full");
         }else{
