@@ -259,7 +259,7 @@ public class Server {
      * Shows the available lobbies
      */
     public synchronized List<String> showAvailableLobbies(){
-        List<String> availableLobbies = null;
+        List<String> availableLobbies = new ArrayList<>();
         for (Lobby lobby : lobbyPlayerMap.keySet()){
             if(!lobby.isFull()){
                 availableLobbies.add(lobby.getLobbyName());
