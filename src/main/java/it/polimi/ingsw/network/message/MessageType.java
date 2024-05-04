@@ -24,4 +24,6 @@ public enum MessageType {
     PLAYER_MOVE,
     REPLY_UPDATED_SCORE,
 
+    WINNER,
+
 }

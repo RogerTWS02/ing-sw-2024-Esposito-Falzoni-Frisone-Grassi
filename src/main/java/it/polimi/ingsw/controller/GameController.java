@@ -364,5 +364,18 @@ public class GameController {
     //End game phase handler
     public void endGamePhase(){
         //TODO: Implement end game phase flow
+        new Thread(() -> {
+            //We have to wait until the turn of the last player ends
+            while(currentGame.getCurrentPlayer() != currentGame.getStartingPlayer()){
+                    Thread.onSpinWait();
+            }
+            for(Player p : currentGame.getPlayers()) {
+                for(GoalCard gc : currentGame.getCommonGoalCards()) {
+                    p.setScore(p.getScore() + gc.checkGoal(p.getPlayerBoard()));
+                }
+            }
+
+            currentGame.gameOver();
+            }).start();
     }
 }

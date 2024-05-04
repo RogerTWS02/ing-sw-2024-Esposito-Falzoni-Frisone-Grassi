@@ -19,6 +19,7 @@ public class Game implements Serializable{
     public GoldenCard[] viewableGoldenCards;
     public  GoalCard[] commonGoalCards;
     private Player currentPlayer;
+    private boolean isOver = false;
 
     /**.
      * This is the constructor of the game, which gets to initialize a list of players,
@@ -203,5 +204,19 @@ public class Game implements Serializable{
 
     public GoldenCard[] getViewableGoldenCards() {
         return viewableGoldenCards;
+    }
+
+    public Player getWinner(){
+        Player winner = players.getFirst();
+        for(Player p : players){
+            if(p.getScore() > winner.getScore()){
+                winner = p;
+            }
+        }
+        return winner;
+    }
+
+    public void gameOver(){
+        isOver = true;
     }
 }

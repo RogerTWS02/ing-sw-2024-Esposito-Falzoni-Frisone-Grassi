@@ -168,6 +168,7 @@ public class Server {
                             //aggiungo il nuovo giocatore alla partita
                             Player p = new Player(requestNick, message.getSenderID());
                             playerControllerMap.get(message.getGameID()).getCurrentGame().addPlayer(p);
+                            idSocketMap.put(message.getSenderID(), clientHandler); //Non sono sicuro che l'handler vada preso così
                             idPlayerMap.put(message.getSenderID(), p);
 
                             //se raggiungo il numero stabilito di giocatori, avvio la partita
@@ -219,6 +220,7 @@ public class Server {
                 }else{
                     //genero il nuovo player per il client
                     Player p = new Player(nickName, message.getSenderID());
+                    idSocketMap.put(message.getSenderID(), clientHandler); //Come sopra, non sono sicuro
                     idPlayerMap.put(message.getSenderID(), p);
 
                     //Genero il game controller, lo aggiungo alla map e gli metto il player
@@ -279,8 +281,18 @@ public class Server {
                         )
                 );
 
-                playerControllerMap.get(message.getGameID()).checkEndGamePhase();
+
+                if(playerControllerMap.get(message.getGameID()).checkEndGamePhase()){
+                    sendWinnerMessage(message.getGameID());
+                }
+
                 break;
         }
+    }
+
+    public void sendWinnerMessage(int gameID) throws IOException {
+        Player winner = playerControllerMap.get(gameID).getCurrentGame().getWinner();
+        //TODO: Send a message to all the players of the same game with the winner
+
     }
 }
