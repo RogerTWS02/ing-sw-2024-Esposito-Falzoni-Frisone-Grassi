@@ -20,6 +20,7 @@ public class Game implements Serializable{
     public  GoalCard[] commonGoalCards;
     private Player currentPlayer;
     private boolean isOver = false;
+    private boolean isInLastPhase = false;
 
     /**.
      * This is the constructor of the game, which gets to initialize a list of players,
@@ -218,5 +219,17 @@ public class Game implements Serializable{
 
     public void gameOver(){
         isOver = true;
+    }
+
+    public boolean isInLastPhase(){
+        return isInLastPhase;
+    }
+
+    public boolean isGameOver(){
+        return isOver;
+    }
+
+    public void setLastPhase(){
+        this.isInLastPhase = true;
     }
 }

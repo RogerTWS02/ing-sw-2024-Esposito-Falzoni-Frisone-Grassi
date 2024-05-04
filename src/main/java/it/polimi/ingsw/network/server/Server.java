@@ -281,8 +281,12 @@ public class Server {
                         )
                 );
 
+                if(idPlayerMap.get(message.getSenderID()).getScore() > 20 && !playerControllerMap.get(message.getGameID()).getCurrentGame().isInLastPhase()){
+                    playerControllerMap.get(message.getGameID()).checkEndGamePhase();
+                    playerControllerMap.get(message.getGameID()).getCurrentGame().setLastPhase();
+                }
 
-                if(playerControllerMap.get(message.getGameID()).checkEndGamePhase()){
+                if(playerControllerMap.get(message.getGameID()).getCurrentGame().isGameOver()){
                     sendWinnerMessage(message.getGameID());
                 }
 
