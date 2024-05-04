@@ -254,7 +254,15 @@ public class GameController {
             player.getPlayerBoard().placeCard(card, 40, 40);
         } else {
             if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
-                player.getPlayerBoard().placeCard(card, i, j);
+                int covered = player.getPlayerBoard().placeCard(card, i, j);
+                switch (card.getRule().toString()){
+                    case "NONE":  player.addScore(card.getPoints());
+                    case "CORNERS": player.addScore(covered*card.getPoints());
+                    default: string s= "XXXXXXXXXXXXXXXX";
+
+
+                }
+
             }
         }
     }

@@ -51,6 +51,7 @@ public class Player implements Serializable {
     public GoalCard getSecretGoalCard() {
         return secretGoalCard;
     }
+    public  void  addScore(int score){this.score += score;}
 
     //Secret goal card setter
     public void setSecretGoalCard(GoalCard secretGoalCard) {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static it.polimi.ingsw.model.State.*;
@@ -27,7 +28,14 @@ public class PlayerBoard implements Serializable{
 
     /* When I place a card on the board I have to update the state of the corresponding cell
      * and also the state of the corners of the neighbouring cards that get covered */
-    public void placeCard(PlayableCard card, int x, int y){
+    public int placeCard(PlayableCard card, int x, int y){
+        if (card instanceof GoldenCard){
+            for (Resource resource : ((GoldenCard) card).getRequiredResource()){
+                if (countNumberEqual(((GoldenCard) card).getRequiredResource(),resource) > countNumberEqual(this.getResources(),resource));
+                     throw new IllegalArgumentException("You don't have the resources to place this card");
+            };
+
+        }
 
         if(firstcard){
             grid[x][y] = card;
@@ -71,6 +79,7 @@ public class PlayerBoard implements Serializable{
             }
 
             firstcard = false;
+            return 0;
 
         }else{
 
@@ -88,6 +97,7 @@ public class PlayerBoard implements Serializable{
         grid[x+1][y-1] =>  corner 1     grid[x+1][y+1] =>  corner 3
         */
             int id = -1;
+            int countCovered=0;
             for(int i = -1; i < 3; i += 2){
                 for(int j = -1; j < 3; j += 2){
                     id++;
@@ -112,11 +122,15 @@ public class PlayerBoard implements Serializable{
                             continue;
                         }
                         /* if the neighbouring corner is present then it has to be set covered */
-                        grid[x+i][y+j].getCardCorners()[3-id].setCovered(true);
+                        if(grid[x+i][y+j].getCardCorners()[3-id] != null){
+                            grid[x+i][y+j].getCardCorners()[3-id].setCovered(true);
+                            countCovered++;}
 
                     }catch(ArrayIndexOutOfBoundsException ignored){}
                 }
             }
+            return countCovered;
+
         }
     }
 
@@ -125,8 +139,8 @@ public class PlayerBoard implements Serializable{
     }
 
     /* Returns all the viewable resources present on the board*/
-    public List<Resource> getResources(){
-        List<Resource> res = new ArrayList<>();
+    public ArrayList<Resource> getResources(){
+        ArrayList<Resource> res = new ArrayList<>();
         for(int i = 0; i < 81; i++){
             for(int j = 80; j >=0; j--){
                 /* skips the empty cells */
@@ -147,5 +161,15 @@ public class PlayerBoard implements Serializable{
             }
         }
         return res;
+    }
+
+    private int countNumberEqual(ArrayList<Resource> itemList, Resource itemToCheck) {
+        int count = 0;
+        for (Resource i : itemList) {
+            if (i.equals(itemToCheck)) {
+                count++;
+            }
+        }
+        return count;
     }
 }

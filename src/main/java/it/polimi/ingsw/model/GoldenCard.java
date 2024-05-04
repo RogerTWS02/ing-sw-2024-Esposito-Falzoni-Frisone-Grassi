@@ -1,13 +1,14 @@
 package it.polimi.ingsw.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class GoldenCard extends PlayableCard{
     private final int points;
-    private final Resource[] requiredResource;
+    private final ArrayList<Resource> requiredResource;
     private final Object rule;
 
-    public GoldenCard(Resource[] permResource, Corner[] cardCorners, int points, Resource[] requiredResource, Object rule, String UUID) {
+    public GoldenCard(Resource[] permResource, Corner[] cardCorners, int points, ArrayList<Resource> requiredResource, Object rule, String UUID) {
         super(permResource, cardCorners, UUID);
         this.points = points;
         this.requiredResource = requiredResource;
@@ -18,7 +19,7 @@ public class GoldenCard extends PlayableCard{
         return points;
     }
 
-    public Resource[] getRequiredResource() {
+    public ArrayList<Resource> getRequiredResource() {
         return requiredResource;
     }
 

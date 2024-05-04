@@ -46,4 +46,10 @@ public abstract class PlayableCard  implements Serializable {
     }
 
     public String getUUID() {return UUID;}
+
+
+    public Resource getResource(){return null;}
+
+    public int getPoints(){return 0;}
+    public Object getRule(){return "NONE";}
 }
