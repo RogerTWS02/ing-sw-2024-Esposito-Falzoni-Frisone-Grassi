@@ -268,17 +268,16 @@ public class Server {
 
                 playerControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
 
-                /*
+
                 idSocketMap.get(message.getSenderID()).sendMessage(
                         //TODO: A message with the new score should be sent to the player
                         new Message(
                                 REPLY_UPDATED_SCORE,
                                 this.serverSocket.getLocalPort(),
                                 message.getGameID(),
-                                playerControllerMap.get(message.getGameID()).getCurrentGame().
+                                "New score: " + idPlayerMap.get(message.getSenderID()).getScore()
                         )
                 );
-                 */
 
                 playerControllerMap.get(message.getGameID()).checkEndGamePhase();
                 break;
