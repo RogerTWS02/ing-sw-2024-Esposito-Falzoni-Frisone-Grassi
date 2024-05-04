@@ -20,4 +20,8 @@ public enum MessageType {
     TEST_MESSAGE,
     DISCONNECTION, //generic message
 
+    //messages to make a move
+    PLAYER_MOVE,
+    REPLY_UPDATED_SCORE,
+
 }

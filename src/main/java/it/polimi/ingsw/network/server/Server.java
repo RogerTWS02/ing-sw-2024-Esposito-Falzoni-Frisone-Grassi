@@ -25,7 +25,7 @@ public class Server {
     //la chiave è l'id del gioco, il valore è il gioco stesso
     private final Map<Integer, GameController> playerControllerMap; // id - controller
     private final Map<Lobby, int[]> lobbyPlayerMap; //lobby - playerIds
-    private int playersCounter;
+    private final Map<Integer, Player> idPlayerMap; //playerId - player
 
     // prende in ingresso indirizzo di rete e porta, oppure usa la porta di default
     // e genero il server
@@ -34,17 +34,19 @@ public class Server {
         this.playerControllerMap = new HashMap<>();
         this.idSocketMap = new HashMap<>();
         this.serverSocket = new ServerSocket(port, 66, ip);
-
-        playersCounter = 0;
+        this.idPlayerMap = new HashMap<>();
     }
 
+    /**
+     * Default constructor
+     * @throws IOException if the server cannot be created
+     */
     public Server() throws IOException {
         this.lobbyPlayerMap = new HashMap<>();
         this.playerControllerMap = new HashMap<>();
         this.idSocketMap = new HashMap<>();
         this.serverSocket = new ServerSocket(default_port);
-
-        playersCounter = 0;
+        this.idPlayerMap = new HashMap<>();
     }
 
 
@@ -166,6 +168,7 @@ public class Server {
                             //aggiungo il nuovo giocatore alla partita
                             Player p = new Player(requestNick, message.getSenderID());
                             playerControllerMap.get(message.getGameID()).getCurrentGame().addPlayer(p);
+                            idPlayerMap.put(message.getSenderID(), p);
 
                             //se raggiungo il numero stabilito di giocatori, avvio la partita
                             if(l.isLobbyFull()){
@@ -216,6 +219,7 @@ public class Server {
                 }else{
                     //genero il nuovo player per il client
                     Player p = new Player(nickName, message.getSenderID());
+                    idPlayerMap.put(message.getSenderID(), p);
 
                     //Genero il game controller, lo aggiungo alla map e gli metto il player
                     GameController gc = new GameController();
@@ -253,6 +257,30 @@ public class Server {
                                 "Range given is out of bound!"
                         )
                 );
+                break;
+
+            case PLAYER_MOVE:
+                //Where the player wants to place the card
+                int positionx = (int) message.getObj()[0];
+                int positiony = (int) message.getObj()[1];
+                //Card to place
+                PlayableCard card = (PlayableCard) message.getObj()[2];
+
+                playerControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
+
+                /*
+                idSocketMap.get(message.getSenderID()).sendMessage(
+                        //TODO: A message with the new score should be sent to the player
+                        new Message(
+                                REPLY_UPDATED_SCORE,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                playerControllerMap.get(message.getGameID()).getCurrentGame().
+                        )
+                );
+                 */
+
+                playerControllerMap.get(message.getGameID()).checkEndGamePhase();
                 break;
         }
     }
