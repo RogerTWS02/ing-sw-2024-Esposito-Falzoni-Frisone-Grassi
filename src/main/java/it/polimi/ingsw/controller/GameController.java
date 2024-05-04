@@ -258,7 +258,7 @@ public class GameController {
                 switch (card.getRule().toString()){
                     case "NONE":  player.addScore(card.getPoints());
                     case "CORNERS": player.addScore(covered*card.getPoints());
-                    default: string s= "XXXXXXXXXXXXXXXX";
+                    default: String s= "XXXXXXXXXXXXXXXX";
 
 
                 }
