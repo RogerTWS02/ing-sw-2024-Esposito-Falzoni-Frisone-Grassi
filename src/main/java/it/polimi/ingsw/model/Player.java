@@ -2,10 +2,10 @@ package it.polimi.ingsw.model;
 import java.io.Serializable;
 
 public class Player implements Serializable {
-    protected String nickname;
+    private String nickname;
     public PlayableCard[] hand = new PlayableCard[3];
     public int clientPort;
-    private int score=0;
+    private int score = 0;
     private PlayerBoard playerBoard;
     private GoalCard secretGoalCard;
     private Pawn pawn;
@@ -16,7 +16,7 @@ public class Player implements Serializable {
         this.clientPort = clientPort;
     }
 
-    //Playerboard getter
+    //Player-board getter
     public PlayerBoard getPlayerBoard() {
         return playerBoard;
     }

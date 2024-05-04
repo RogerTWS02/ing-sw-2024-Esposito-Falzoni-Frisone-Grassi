@@ -2,16 +2,22 @@ package it.polimi.ingsw.network.message;
 
 public enum MessageType {
 
-    //messaggi del client per il server
-    REQUEST_CARD,
+    REPLY_BAD_REQUEST, //Per ogni richiesta del client che non va bene
+    REPLY_OK, //Per ogni richiesta semplice andata a buon fine
 
+    //messaggi per richiedere/ricevere playable clards
+    REQUEST_CARD,
+    REPLY_HAND_UPDATE,
+
+    //messaggi per entrare in lobby/avviare la partita/creare una nuova lobby
+    REQUEST_LOGIN,
+    REQUEST_NEW_LOBBY,
+    REPLY_NEW_LOBBY,
+
+    //messaggi per richiedere/ricevere il punteggio dei giocatori
+    REQUEST_PLAYERS_POINT,
+    REPLY_POINTS_UPDATE,
     TEST_MESSAGE,
-    REQUEST_GOAL_CARD, //send a goal card
-    REQUEST_PLAYABLE_CARD, //send a playable card
-    LOGIN_REQUEST, LOGIN_REPLY, //string message, string message
-    NEW_LOBBY, //new lobby message, string message || ---NEW GAME---
-    JOINABLE_LOBBY, AVAILABLE_LOBBIES, //generic message, lobby message || request and get available lobby ---JOIN GAME---
-    CHOOSE_LOBBY, PLAYER_JOIN, //string message, string message
     DISCONNECTION, //generic message
 
 }

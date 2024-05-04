@@ -154,8 +154,12 @@ public class Game implements Serializable{
    }
 
 
+    public void addPlayer(Player p) {
+       this.players.add(p);
+    }
+
     public void setPlayers(ArrayList<Player> players) {
-       this.players = players;
+        this.players = players;
     }
 
     /**
