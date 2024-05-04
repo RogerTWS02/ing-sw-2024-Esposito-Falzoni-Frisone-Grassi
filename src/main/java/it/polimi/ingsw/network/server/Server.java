@@ -146,7 +146,7 @@ public class Server {
 
 
                 if (duplicates || requestNick.isEmpty()){
-                    //se è presente o nullo gli dico di cambiare nick
+                    //se è  presente o nullo gli dico di cambiare nick
                     idSocketMap.get(message.getSenderID()).sendMessage(
                             new Message(
                                     REPLY_BAD_REQUEST,
