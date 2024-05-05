@@ -5,15 +5,16 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
 public class GameController {
-    private Game currentGame;
+    private final Game currentGame;
 
-    public GameController() {
-        this.currentGame = null;
+    public GameController() throws FileNotFoundException {
+        this.currentGame = new Game();
     }
 
     //Draws a card from the deck passed by parameter
@@ -316,7 +317,6 @@ public class GameController {
     }
 
     public void beginGame() throws IOException {
-        this.setCurrentGame(new Game());
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Insert the number of players: ");
         setNumberOfPlayers(Integer.parseInt(reader.readLine()));
@@ -330,11 +330,6 @@ public class GameController {
         //TODO: initialize the game flow, and some other things to set up
 
         System.out.println("Everything is set up!\n");
-    }
-
-    //currentGame setter
-    public void setCurrentGame(Game currentGame) {
-        this.currentGame = currentGame;
     }
 
     //currentGame getter
