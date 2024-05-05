@@ -56,4 +56,8 @@ public class Player implements Serializable {
     public void setSecretGoalCard(GoalCard secretGoalCard) {
         this.secretGoalCard = secretGoalCard;
     }
+
+    public int getClientPort() {
+        return clientPort;
+    }
 }
