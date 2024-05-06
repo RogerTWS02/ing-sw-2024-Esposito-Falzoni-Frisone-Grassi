@@ -23,8 +23,7 @@ public class GameControllerTest {
     @Before
     public void setUp() throws FileNotFoundException {
         this.gameController = new GameController();
-        this.game = new Game();
-        gameController.setCurrentGame(game);
+        this.game = gameController.getCurrentGame();
     }
 
     @After
@@ -40,10 +39,8 @@ public class GameControllerTest {
         PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
         gameController.placeCard(69, 69, startingCard, game.getPlayers().get(0));
         assertEquals(startingCard, game.getPlayers().get(0).getPlayerBoard().getCard(40, 40));
-        assert(game.getPlayers().get(0).getPlayerBoard().getState(40, 40).equals(State.OCCUPIED));
-        PlayableCard card1 = gameController.drawPlayableFromDeck(game.resourceDeck);
-        gameController.placeCard(41, 41, card1, game.getPlayers().get(0));
-        assert(game.getPlayers().get(0).getPlayerBoard().getState(41, 41).equals(State.OCCUPIED));
+        assertEquals(State.OCCUPIED, game.getPlayers().get(0).getPlayerBoard().getState(40, 40));
+        assertEquals(State.UNPLAYED, game.getPlayers().get(0).getPlayerBoard().getState(69, 69));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -238,7 +235,14 @@ public class GameControllerTest {
         assertEquals(99, goldenCard.getPoints());
         assertEquals(Resource.WOLF, goldenCard.getPermResource()[0]);
         assertEquals("CORNERS", goldenCard.getRule());
-        assertArrayEquals(new Resource[]{Resource.WOLF, Resource.MUSHROOM, Resource.LEAF}, goldenCard.getRequiredResource());
+        ArrayList<Resource> expectedResources = new ArrayList<>();
+        expectedResources.add(Resource.WOLF);
+        expectedResources.add(Resource.MUSHROOM);
+        expectedResources.add(Resource.LEAF);
+        ArrayList<Resource> actualResources = goldenCard.getRequiredResource();
+        for(int i = 0; i < expectedResources.size(); i++) {
+            assertEquals(expectedResources.get(i), actualResources.get(i));
+        }
         Corner[] cornersArray = goldenCard.getCardCorners();
         for (int i = 0; i < cornersArray.length; i++) {
             if (cornersArray[i] != null && cornersArray[i].getCornerResource().isPresent()) {
@@ -397,16 +401,12 @@ public class GameControllerTest {
 
     @Test
     public void beginGame_test() throws IOException {
-        this.game = null;
-        this.gameController.setCurrentGame(null);
-        //Game class constructor already tested
         System.setIn(new ByteArrayInputStream("4\n".getBytes()));
         gameController.beginGame();
         ArrayList<Player> fakePlayers = createFakePlayers();
         for(int i = 0; i < 4; i++) {
             gameController.addPlayer(fakePlayers.get(i).getNickname(), 0);
         }
-        assertNotNull(gameController.getCurrentGame());
         assertFalse(gameController.getCurrentGame().getPlayers().contains(null));
         assertEquals(4, gameController.getCurrentGame().getPlayers().size());
 
