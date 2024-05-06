@@ -54,7 +54,11 @@ public class ClientServerTest {
     @Test
     public void sendMessageToServer() throws IOException, InterruptedException {
         Thread serverThread = new Thread(() -> {
-            ser.run();
+            try {
+                ser.run();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
         serverThread.start();
         Thread.sleep(1000);
