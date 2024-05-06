@@ -60,17 +60,13 @@ public class Server extends UnicastRemoteObject {
      * Starts the server and waits for connections
      */
     // funzione che permette al server di accettare connesioni dai client
-    public void run(Optional<InetAddress> ip, Optional<Integer> port) throws IOException {
-
-        InetAddress serverIP = ip.orElse(InetAddress.getLocalHost());
-        int serverPort = port.orElse(default_port);
-
+    public void run() throws IOException {
         //Do we have to choose if we want to use socket or RMI?
 
         if(/* socket */){
-            startSocket(serverIP, serverPort);
+            startSocket(this.ip, this.port);
         }else{
-            startRMI(serverPort);
+            startRMI(this.port);
         }
     }
 
