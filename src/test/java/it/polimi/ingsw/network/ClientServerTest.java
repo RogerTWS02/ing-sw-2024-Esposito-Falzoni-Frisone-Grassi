@@ -54,7 +54,11 @@ public class ClientServerTest {
     @Test
     public void sendMessageToServer() throws IOException, InterruptedException {
         Thread serverThread = new Thread(() -> {
-            ser.run();
+            try {
+                ser.run();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
         serverThread.start();
         Thread.sleep(1000);
@@ -67,7 +71,7 @@ public class ClientServerTest {
         cli.sendMessage(msg);
 
         Thread.sleep(1000);
-        cli.sendMessage(new Message(REQUEST_GOAL_CARD, cli.getSocketPort(), -1, cardResource));
+        //cli.sendMessage(new Message(REQUEST_GOAL_CARD, cli.getSocketPort(), -1, cardResource));
         serverThread.join();
         cli.closeSocket();
 

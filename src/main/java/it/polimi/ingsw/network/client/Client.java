@@ -1,11 +1,16 @@
 package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.network.message.Message;
+import it.polimi.ingsw.network.server.RMIServerInterface;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,17 +69,28 @@ public class Client  {
     }
 
     // funzione per leggere in ingresso i messaggi del Server e inizializzare out
-    public void run() throws IOException {
-        try{
-            this.socket = new Socket(ipServ, port);
-            out = new ObjectOutputStream(socket.getOutputStream());
-            inp = new ObjectInputStream(socket.getInputStream());
-            logger.log(Level.INFO, "Client has connected to the server");
+    public void run(boolean useSocket){
+        if(useSocket){
+            try{
+                this.socket = new Socket(ipServ, port);
+                out = new ObjectOutputStream(socket.getOutputStream());
+                inp = new ObjectInputStream(socket.getInputStream());
+                logger.log(Level.INFO, "Client has connected to the server");
 
-            readFromSocketAsync(inp);
-        }catch (Exception e){
-            logger.log(Level.SEVERE, "Error in reading from socket");
-            closeSocket();
+                readFromSocketAsync(inp);
+            }catch (IOException e){
+                logger.log(Level.SEVERE, "Error in reading from socket");
+                closeSocket();
+            }
+        }else{
+            try{
+                Registry registry = LocateRegistry.getRegistry(ipServ, port);
+                RMIServerInterface stub = (RMIServerInterface) LocateRegistry.getRegistry(ipServ, port).lookup("Codex_server");
+                logger.log(Level.INFO, "Client has connected to the server using RMI");
+            }catch (RemoteException | NotBoundException e) {
+                logger.log(Level.SEVERE, "Error in connecting to server using RMI");
+                closeSocket();
+            }
         }
 
     }

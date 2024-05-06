@@ -1,15 +1,11 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.*;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ResourcesGoalCardTest {
     GoalCard card = null;
@@ -30,25 +26,32 @@ public class ResourcesGoalCardTest {
     @Test
     public void checkGoal_correctInput_correctOutput(){
         Pawn r = null;
-        List<Resource> resources = Arrays.asList(Resource.WOLF, Resource.LEAF, Resource.LEAF, Resource.FEATHER, Resource.BUTTERFLY, Resource.WOLF);
-
+        ArrayList<Resource> resources = new ArrayList<>();
+        resources.add(Resource.WOLF);
+        resources.add(Resource.LEAF);
+        resources.add(Resource.LEAF);
+        resources.add(Resource.FEATHER);
+        resources.add(Resource.BUTTERFLY);
+        resources.add(Resource.WOLF);
         PlayerBoard fakePlayerboard = new PlayerBoard(r){
-            public List<Resource> getResources(){
+            public ArrayList<Resource> getResources(){
                 return resources;
             }
         };
 
-        assertEquals(card.checkGoal(fakePlayerboard), 3);
+        assertEquals(((ResourcesGoalCard) card).checkGoal(fakePlayerboard), 3);
     }
 
     @Test
     public void checkGoal_zeroPointsInput_correctOutput(){
         Pawn r = null;
-        List<Resource> resources = Arrays.asList(Resource.WOLF, Resource.LEAF);
+        ArrayList<Resource> resources = new ArrayList<>();
+        resources.add(Resource.WOLF);
+        resources.add(Resource.LEAF);
 
         PlayerBoard fakePlayerboard = new PlayerBoard(r){
-            public List<Resource> getResources(){
-                return resources;
+            public ArrayList<Resource> getResources(){
+                return (ArrayList<Resource>) resources;
             }
         };
 
@@ -58,14 +61,13 @@ public class ResourcesGoalCardTest {
     @Test
     public void checkGoal_emptyResourcesListInput_correctOutput(){
         Pawn r = null;
-        List<Resource> resources = Arrays.asList();
+        ArrayList<Resource> resources = new ArrayList<>();
 
         PlayerBoard fakePlayerboard = new PlayerBoard(r){
-            public List<Resource> getResources(){
-                return resources;
+            public ArrayList<Resource> getResources(){
+                return (ArrayList<Resource>) resources;
             }
         };
-
         assertEquals(card.checkGoal(fakePlayerboard), 0);
     }
 

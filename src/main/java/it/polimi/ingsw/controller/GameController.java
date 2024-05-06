@@ -248,7 +248,7 @@ public class GameController {
     Checks if a position is available and the card is not null, then place it,
     check if the card contains some rule to obtain the points and then update the score
      */
-    public void placeCard(int i,int j,PlayableCard card,Player player) throws SecurityException {
+    public void placeCard(int i, int j, PlayableCard card, Player player) throws SecurityException {
         try {
             if (i < 0 || i > 80 || j < 0 || j > 80) {
                 throw new IllegalArgumentException("Invalid position!");
@@ -257,7 +257,6 @@ public class GameController {
                 player.getPlayerBoard().placeCard(card, 40, 40);
             } else {
                 if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
-
                     switch (card.getRule().toString()) {
                         case "NONE":
                             player.getPlayerBoard().placeCard(card, i, j);
@@ -275,9 +274,7 @@ public class GameController {
                             }
                             player.getPlayerBoard().placeCard(card, i, j);
                             player.addScore(occurency * card.getPoints());
-
                     }
-
                 }
             }
         }
@@ -285,8 +282,6 @@ public class GameController {
             System.err.println(e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }
-
-
     }
 
     /*
@@ -346,6 +341,7 @@ public class GameController {
     }
 
     public void beginGame() throws IOException {
+        /*
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Insert the number of players: ");
         setNumberOfPlayers(Integer.parseInt(reader.readLine()));
@@ -355,6 +351,9 @@ public class GameController {
                 //We have to wait for everyone to connect
             }
         }).start();
+
+        This method is called when all the players are connected so the stuff up here is useless
+         */
 
         //TODO: initialize the game flow, and some other things to set up
 
@@ -399,7 +398,6 @@ public class GameController {
                     p.setScore(p.getScore() + gc.checkGoal(p.getPlayerBoard()));
                 }
             }
-
             currentGame.gameOver();
             }).start();
     }

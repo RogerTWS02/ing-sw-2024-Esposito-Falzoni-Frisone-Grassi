@@ -3,24 +3,31 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.network.message.Message;
+
 import static it.polimi.ingsw.network.message.MessageType.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Server {
+public class Server extends UnicastRemoteObject {
     private static final int default_port = 1234;
+    private final InetAddress ip;
+    private final int port;
     private volatile boolean running = true;
-    private final ServerSocket serverSocket;
+    private ServerSocket serverSocket;
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     //la chiave è il socket del player, il valore è il suo handler
-    private final Map<Integer, ClientHandler> idSocketMap; //id - socket associated
+    private Map<Integer, ClientHandler> idSocketMap; //id - socket associated
 
     //la chiave è l'id del gioco, il valore è il gioco stesso
     private final Map<Integer, GameController> gameControllerMap; // gameId - controller
@@ -33,7 +40,8 @@ public class Server {
         this.lobbyPlayerMap = new HashMap<>();
         this.gameControllerMap = new HashMap<>();
         this.idSocketMap = new HashMap<>();
-        this.serverSocket = new ServerSocket(port, 66, ip);
+        this.ip = ip;
+        this.port = port;
         this.idPlayerMap = new HashMap<>();
     }
 
@@ -45,8 +53,9 @@ public class Server {
         this.lobbyPlayerMap = new HashMap<>();
         this.gameControllerMap = new HashMap<>();
         this.idSocketMap = new HashMap<>();
-        this.serverSocket = new ServerSocket(default_port);
         this.idPlayerMap = new HashMap<>();
+        this.ip = InetAddress.getLocalHost();
+        this.port = default_port;
     }
 
 
@@ -54,28 +63,13 @@ public class Server {
      * Starts the server and waits for connections
      */
     // funzione che permette al server di accettare connesioni dai client
-    public void run(){
-        logger.log(Level.INFO, "Server started on port " + serverSocket.getLocalPort() + " and is waiting for connections\n");
-        try{
-            while(running && !Thread.currentThread().isInterrupted()){
-                    //uso un clientHandler per evitare azioni bloccanti dal client
-                    Socket clientSocket = serverSocket.accept();
+    public void run() throws IOException {
+        //Do we have to choose if we want to use socket or RMI?
 
-                    //porta del client
-                    System.out.println(clientSocket.getPort());
-
-                    logger.log(Level.INFO,"Client connected");
-                    ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
-
-                    //associo alla porta del cliente il suo handler
-                    idSocketMap.put(clientSocket.getPort(), clientHandler);
-                    Thread t = new Thread(clientHandler,"server");
-                    t.start();
-            }
-        }catch (Exception e){
-            logger.log(Level.SEVERE, "Exception in server run");
-        }finally {
-            stop();
+        if(/* socket */){
+            startSocket(this.ip, this.port);
+        }else{
+            startRMI(this.port);
         }
     }
 
@@ -312,6 +306,61 @@ public class Server {
                     )
             );
         }
+
+    }
+
+    public void startSocket(InetAddress ip, int port){
+
+        try{
+
+            this.serverSocket = new ServerSocket(port, 66, ip);
+
+        }catch (IOException e){
+            logger.log(Level.SEVERE, "Exception while creating server socket");
+        }
+
+        logger.log(Level.INFO, "Server started on port " + serverSocket.getLocalPort() + " and is waiting for connections\n");
+        try{
+            while(running && !Thread.currentThread().isInterrupted()){
+                //uso un clientHandler per evitare azioni bloccanti dal client
+                Socket clientSocket = serverSocket.accept();
+
+                //porta del client
+                System.out.println(clientSocket.getPort());
+
+                logger.log(Level.INFO,"Client connected");
+                ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
+
+                //associo alla porta del cliente il suo handler
+                idSocketMap.put(clientSocket.getPort(), clientHandler);
+                Thread t = new Thread(clientHandler,"server");
+                t.start();
+            }
+        }catch (Exception e){
+            logger.log(Level.SEVERE, "Exception in server run");
+        }finally {
+            stop();
+        }
+    }
+
+    public void startRMI(int port){
+
+        Thread rmiThread = new Thread(() -> {
+            try {
+                RMIServerImpl rmiServer = new RMIServerImpl(this);
+                RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(rmiServer, 0);
+                LocateRegistry.createRegistry(port);
+                Registry registry = LocateRegistry.getRegistry(port);
+                registry.rebind("Codex_server", stub);
+
+                logger.log(Level.INFO, "Server started on port " + port + " and is waiting for connections\n");
+            }catch (RemoteException e) {
+                logger.log(Level.SEVERE, "Exception while creating RMI server");
+                throw new RuntimeException(e);
+            }
+        });
+
+        rmiThread.start();
 
     }
 }
