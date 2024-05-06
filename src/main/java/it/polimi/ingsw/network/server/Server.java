@@ -3,6 +3,7 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.network.message.Message;
+
 import static it.polimi.ingsw.network.message.MessageType.*;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class Server extends UnicastRemoteObject {
     public Server(InetAddress ip, int port) throws IOException {
         this.lobbyPlayerMap = new HashMap<>();
         this.gameControllerMap = new HashMap<>();
+        this.idSocketMap = new HashMap<>();
         this.ip = ip;
         this.port = port;
         this.idPlayerMap = new HashMap<>();
@@ -50,6 +52,7 @@ public class Server extends UnicastRemoteObject {
     public Server() throws IOException {
         this.lobbyPlayerMap = new HashMap<>();
         this.gameControllerMap = new HashMap<>();
+        this.idSocketMap = new HashMap<>();
         this.idPlayerMap = new HashMap<>();
         this.ip = InetAddress.getLocalHost();
         this.port = default_port;
@@ -307,7 +310,6 @@ public class Server extends UnicastRemoteObject {
     }
 
     public void startSocket(InetAddress ip, int port){
-        this.idSocketMap = new HashMap<>();
 
         try{
 
@@ -344,12 +346,16 @@ public class Server extends UnicastRemoteObject {
     public void startRMI(int port){
 
         Thread rmiThread = new Thread(() -> {
-            logger.log(Level.INFO, "Server started on port " + port + " and is waiting for connections\n");
             try {
+                RMIServerImpl rmiServer = new RMIServerImpl(this);
+                RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(rmiServer, 0);
                 LocateRegistry.createRegistry(port);
                 Registry registry = LocateRegistry.getRegistry(port);
-                registry.rebind("Codex_server", this);
+                registry.rebind("Codex_server", stub);
+
+                logger.log(Level.INFO, "Server started on port " + port + " and is waiting for connections\n");
             }catch (RemoteException e) {
+                logger.log(Level.SEVERE, "Exception while creating RMI server");
                 throw new RuntimeException(e);
             }
         });
