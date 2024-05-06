@@ -41,6 +41,26 @@ public class GameControllerTest {
         assertEquals(startingCard, game.getPlayers().get(0).getPlayerBoard().getCard(40, 40));
         assertEquals(State.OCCUPIED, game.getPlayers().get(0).getPlayerBoard().getState(40, 40));
         assertEquals(State.UNPLAYED, game.getPlayers().get(0).getPlayerBoard().getState(69, 69));
+        if(startingCard.getCardCorners()[0] != null) {
+            assertEquals(State.AVAILABLE, game.getPlayers().get(0).getPlayerBoard().getState(39, 41));
+        } else {
+            assertEquals(State.UNAVAILABLE, game.getPlayers().get(0).getPlayerBoard().getState(39, 41));
+        }
+        if(startingCard.getCardCorners()[1] != null) {
+            assertEquals(State.AVAILABLE, game.getPlayers().get(0).getPlayerBoard().getState(41, 41));
+        } else {
+            assertEquals(State.UNAVAILABLE, game.getPlayers().get(0).getPlayerBoard().getState(41, 41));
+        }
+        if(startingCard.getCardCorners()[2] != null) {
+            assertEquals(State.AVAILABLE, game.getPlayers().get(0).getPlayerBoard().getState(39, 39));
+        } else {
+            assertEquals(State.UNAVAILABLE, game.getPlayers().get(0).getPlayerBoard().getState(39, 39));
+        }
+        if(startingCard.getCardCorners()[3] != null) {
+            assertEquals(State.AVAILABLE, game.getPlayers().get(0).getPlayerBoard().getState(41, 39));
+        } else {
+            assertEquals(State.UNAVAILABLE, game.getPlayers().get(0).getPlayerBoard().getState(41, 39));
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)

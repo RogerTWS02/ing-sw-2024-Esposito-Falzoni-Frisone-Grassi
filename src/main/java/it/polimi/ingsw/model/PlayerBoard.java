@@ -38,7 +38,7 @@ public class PlayerBoard implements Serializable{
         if (firstcard) {
             grid[x][y] = card;
             /* updates the state of the card when placed */
-            grid[x][y].setState(OCCUPIED);
+            grid[x][y].setState(State.OCCUPIED);
             /*
             grid[x-1][y-1] =>  corner 0     grid[x-1][y+1] =>  corner 2
             grid[x+1][y-1] =>  corner 1     grid[x+1][y+1] =>  corner 3
@@ -110,6 +110,7 @@ public class PlayerBoard implements Serializable{
                             countCovered++;
                         }
                     } catch (ArrayIndexOutOfBoundsException ignored) {
+                        //Ignored
                     }
                 }
             }
