@@ -124,7 +124,7 @@ public class GameController {
         }
         JSONArray JSONRequire = (JSONArray) JSONcard.get("require");
         ArrayList<Resource> require = new ArrayList<>();
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < JSONRequire.size(); i++){
             require.add(stringToResource((String) JSONRequire.get(i)));
         }
         PlayableCard card = new GoldenCard(new Resource[]{permRes}, null, points, require, rule, UUID);
@@ -293,8 +293,8 @@ public class GameController {
     iterate all the cell of the board, returns them if they are available
      */
     public List<int[]> showAvailableOnBoard(Player player){
-    List<int []> availablePosition = new ArrayList<>();
-    int[] possiblePosition = new int[2];
+        List<int[]> availablePosition = new ArrayList<>();
+        int[] possiblePosition = new int[2];
         for (int i = 0; i <= 80; i++) {
             for (int j = 0; j <= 80; j++) {
                 if (player.getPlayerBoard().getState(i,j) == State.AVAILABLE) {
@@ -304,7 +304,7 @@ public class GameController {
                 }
             }
         }
-                return availablePosition;
+        return availablePosition;
     }
 
  // update score with goal points
