@@ -14,11 +14,25 @@ public class PlayerBoardTest {
     Resource[] permanentResources = null;
     Corner[] corners = null;
     PlayerBoard board = null;
+    PlayerBoard board2 = null;
     PlayableCard card = null;
+
+
+
     @Before
     public void setUp(){
         Pawn r = Pawn.BLUE;
         board = new PlayerBoard(r);
+        board2 = new PlayerBoard(r){
+            @Override
+            public ArrayList<Resource> getResources(){
+                ArrayList<Resource> resources = new ArrayList<>();
+                resources.add(Resource.WOLF);
+                resources.add(Resource.LEAF);
+                resources.add(Resource.MUSHROOM);
+                return resources;
+            }
+        };
         permanentResources = new Resource[1];
         permanentResources[0] = Resource.WOLF;
         corners = new Corner[4];
@@ -103,6 +117,28 @@ public class PlayerBoardTest {
         List<Resource> actualResources= board.getResources();
         assertEquals(new HashSet<>(expectedResources), new HashSet<>(actualResources));
 
+    }
+
+
+    @Test
+
+    public void placeGOldenCardNoEnoughtResources(){
+        ArrayList<Resource> requiredResources = new ArrayList<>();
+        Object NONE = "NONE";
+        requiredResources.add(Resource.WOLF);
+        requiredResources.add(Resource.LEAF);
+        requiredResources.add(Resource.LEAF);
+        GoldenCard goldenCard = new GoldenCard(permanentResources, null, 2,requiredResources, NONE, "GC_4" );
+        Corner[] cornerstarting = new Corner[4];
+        cornerstarting[0] = new Corner(0, card, null);
+        cornerstarting[1] = new Corner(1, card, null);
+        cornerstarting[2] = new Corner(2, card, null);
+        cornerstarting[3] = new Corner(3, card, null);
+
+        StartingCard startingCard = new StartingCard(permanentResources, cornerstarting, null, "GC_1");
+        board2.placeCard(startingCard, 40,40);
+        board2.placeCard(goldenCard, 41,41);
+        assertEquals(State.AVAILABLE, board2.getState(41,41));
     }
 
 }

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 public class GameControllerTest {
     GameController gameController;
@@ -238,7 +239,11 @@ public class GameControllerTest {
         assertEquals(99, goldenCard.getPoints());
         assertEquals(Resource.WOLF, goldenCard.getPermResource()[0]);
         assertEquals("CORNERS", goldenCard.getRule());
-        assertArrayEquals(new Resource[]{Resource.WOLF, Resource.MUSHROOM, Resource.LEAF}, goldenCard.getRequiredResource());
+        ArrayList<Resource> resources = null;
+        resources.add(Resource.WOLF);
+        resources.add(Resource.MUSHROOM);
+        resources.add(Resource.LEAF);
+        assertIterableEquals(resources, goldenCard.getRequiredResource());
         Corner[] cornersArray = goldenCard.getCardCorners();
         for (int i = 0; i < cornersArray.length; i++) {
             if (cornersArray[i] != null && cornersArray[i].getCornerResource().isPresent()) {
