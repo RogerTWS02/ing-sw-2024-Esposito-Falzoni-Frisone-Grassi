@@ -123,9 +123,9 @@ public class GameController {
             rule = stringToResource((String) JSONcard.get("rule"));
         }
         JSONArray JSONRequire = (JSONArray) JSONcard.get("require");
-        Resource[] require = new Resource[3];
+        ArrayList<Resource> require = new ArrayList<>();
         for(int i = 0; i < 3; i++){
-            require[i] = stringToResource((String) JSONRequire.get(i));
+            require.add(stringToResource((String) JSONRequire.get(i)));
         }
         PlayableCard card = new GoldenCard(new Resource[]{permRes}, null, points, require, rule, UUID);
         card.setCorners(craftCornerArray(JSONCorners, card));
@@ -245,27 +245,48 @@ public class GameController {
     }
 
     /*
-    Checks if a position is available and the card is not null, then place it
+    Checks if a position is available and the card is not null, then place it,
+    check if the card contains some rule to obtain the points and then update the score
      */
     public void placeCard(int i,int j,PlayableCard card,Player player) throws SecurityException {
-        if(i < 0 || i > 80 || j < 0 || j > 80){
-            throw new IllegalArgumentException("Invalid position!");
-        }
-        if(card instanceof StartingCard) {
-            player.getPlayerBoard().placeCard(card, 40, 40);
-        } else {
-            if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
-                int covered = player.getPlayerBoard().placeCard(card, i, j);
-                switch (card.getRule().toString()){
-                    case "NONE":  player.addScore(card.getPoints());
-                    case "CORNERS": player.addScore(covered*card.getPoints());
-                    default: String s= "XXXXXXXXXXXXXXXX";
+        try {
+            if (i < 0 || i > 80 || j < 0 || j > 80) {
+                throw new IllegalArgumentException("Invalid position!");
+            }
+            if (card instanceof StartingCard) {
+                player.getPlayerBoard().placeCard(card, 40, 40);
+            } else {
+                if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
 
+                    switch (card.getRule().toString()) {
+                        case "NONE":
+                            player.getPlayerBoard().placeCard(card, i, j);
+                            player.addScore(card.getPoints());
+                        case "CORNERS":
+                            int covered = player.getPlayerBoard().placeCard(card, i, j);
+                            player.addScore(covered * card.getPoints());
+                        default:
+                            String s = card.getRule().toString();
+                            int occurency = 1;
+                            for (Resource element : player.getPlayerBoard().getResources()) {
+                                if (element == Resource.valueOf(s)) {
+                                    occurency++;
+                                }
+                            }
+                            player.getPlayerBoard().placeCard(card, i, j);
+                            player.addScore(occurency * card.getPoints());
+
+                    }
 
                 }
-
             }
         }
+        catch (IllegalArgumentException e){
+            System.err.println(e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
+
     }
 
     /*
