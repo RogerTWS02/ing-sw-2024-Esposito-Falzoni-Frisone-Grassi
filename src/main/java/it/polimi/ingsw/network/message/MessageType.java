@@ -6,6 +6,7 @@ public enum MessageType {
     REPLY_OK, //Per ogni richiesta semplice andata a buon fine
 
     //messaggi per richiedere/ricevere playable clards
+    REQUEST_INFO_CARD,
     REQUEST_CARD,
     REPLY_HAND_UPDATE,
 
