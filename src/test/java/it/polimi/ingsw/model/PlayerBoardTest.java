@@ -122,7 +122,7 @@ public class PlayerBoardTest {
 
     @Test
 
-    public void placeGOldenCardNoEnoughtResources(){
+    public void placeGoldenCardNotEnoughtResources(){
         ArrayList<Resource> requiredResources = new ArrayList<>();
         Object NONE = "NONE";
         requiredResources.add(Resource.WOLF);
@@ -137,7 +137,10 @@ public class PlayerBoardTest {
 
         StartingCard startingCard = new StartingCard(permanentResources, cornerstarting, null, "GC_1");
         board2.placeCard(startingCard, 40,40);
-        board2.placeCard(goldenCard, 41,41);
+        try {
+        board2.placeCard(goldenCard, 41,41);}
+        catch (IllegalArgumentException e){ };
+
         assertEquals(State.AVAILABLE, board2.getState(41,41));
     }
 
