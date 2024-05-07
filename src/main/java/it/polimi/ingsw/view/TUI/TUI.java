@@ -5,6 +5,7 @@ import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageListener;
 
 import java.util.Scanner;
+import java.util.logging.Level;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
 
@@ -14,7 +15,12 @@ public class TUI implements MessageListener {
     //Faccio l'update della tui in base ai messaggi ricevuti
     @Override
     public Message onMessageReceived(Message message) {
+        System.out.println(message.getMessageType() + " sent by " + message.getSenderID());
+        switch(message.getMessageType()){
+            //quando si raggiunge il numero prefissato di persone nella lobby
+            case REPLY_BEGIN_GAME:
 
+        }
         return message;
     }
     private  String printTui(){
@@ -50,13 +56,8 @@ public class TUI implements MessageListener {
                             /TEMPLATE PARAM_1, PARAM_2
                             """;
 
-                    cli.sendMessage(
-                            new Message(
-                                    TEST_MESSAGE,
-                                    cli.getSocketPort(),
-                                    cli.getGameID(),
-                                    message)
-                    );
+                    System.out.println(message);
+                    break;
 
                 //chiedo l'UUID della carta al server e genero i dati dal JSON
                 // messaggio del tipo: /infoCard posX posY

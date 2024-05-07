@@ -31,7 +31,7 @@ public class Server extends UnicastRemoteObject {
     private Map<Integer, ClientHandler> idSocketMap; //id - socket associated
 
     //la chiave è l'id del gioco, il valore è il gioco stesso
-    private final Map<Integer, GameController> gameControllerMap; // gameId - controller
+    private static Map<Integer, GameController> gameControllerMap; // gameId - controller
     private final Map<Lobby, int[]> lobbyPlayerMap; //lobby - playerIds
     private final Map<Integer, Player> idPlayerMap; //playerId - player
 
@@ -44,6 +44,11 @@ public class Server extends UnicastRemoteObject {
         this.ip = ip;
         this.port = port;
         this.idPlayerMap = new HashMap<>();
+    }
+
+    //gameControllerMap getter
+    public static Map<Integer, GameController> getGameControllerMap() {
+        return gameControllerMap;
     }
 
     /**
@@ -174,6 +179,7 @@ public class Server extends UnicastRemoteObject {
 
     public void sendWinnerMessage(int gameID) throws IOException {
         Player winner = gameControllerMap.get(gameID).getCurrentGame().getWinner();
+
         //Send a message to all the players of the same game with the winner
         for(int id: gameControllerMap.get(gameID)
                 .getCurrentGame()
@@ -183,7 +189,7 @@ public class Server extends UnicastRemoteObject {
                 .toArray(Integer[]::new)){
             idSocketMap.get(id).sendMessage(
                     new Message(
-                            WINNER,
+                            REPLY_END_GAME,
                             this.serverSocket.getLocalPort(),
                             gameID,
                             winner.getNickname()
@@ -292,10 +298,37 @@ public class Server extends UnicastRemoteObject {
                     //se raggiungo il numero stabilito di giocatori, avvio la partita
                     if(l.isLobbyFull()){
                         l.setGameStarted(true);
+                        //inizializza le mani di tutti
                         gameControllerMap.get(message.getGameID()).beginGame();
+
 
                         //TODO: Messaggio per tutti i client per aggiornare il game id (Id di chi crea la lobby)
                         // il client per visualizzare mano, punteggio, colore pedina ecc...
+
+                        //per ogni giocatore della lobby
+                        for(int pID : lobbyPlayerMap.get(l)){
+                            //mando un messaggio per aggiornare l'interfaccia
+                            idSocketMap.get(message.getSenderID()).sendMessage(
+                                    new Message(
+                                            REPLY_BEGIN_GAME,
+                                            this.serverSocket.getLocalPort(),
+                                            message.getGameID(),
+
+                                            new Object[]{
+                                                    //mando a tutti il gameID come primo parametro
+                                                    message.getSenderID(),
+
+                                                    //mando a tutti l'UUID delle carte delle loro mani
+                                                    Arrays.stream(gameControllerMap.get(message.getGameID())
+                                                            .returnHand(idPlayerMap.get(pID)))
+                                                            .map(PlayableCard::getUUID)
+                                            }
+
+
+                                    )
+                            );
+
+                        }
 
                     }
                     found = true;
@@ -342,7 +375,8 @@ public class Server extends UnicastRemoteObject {
             idPlayerMap.put(message.getSenderID(), p);
 
             //Genero il game controller, lo aggiungo alla map e gli metto il player
-            GameController gc = new GameController();
+            GameController gc = new GameController(message.getGameID());
+            gc.setNumberOfPlayers(lobbySize);
             gc.getCurrentGame().addPlayer(p);
             gameControllerMap.put(message.getGameID(), gc);
 

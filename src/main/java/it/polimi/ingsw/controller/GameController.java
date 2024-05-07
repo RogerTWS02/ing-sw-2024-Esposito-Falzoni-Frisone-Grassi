@@ -13,8 +13,8 @@ import java.util.*;
 public class GameController {
     private final Game currentGame;
 
-    public GameController() throws FileNotFoundException {
-        this.currentGame = new Game();
+    public GameController(int gameID) throws FileNotFoundException {
+        this.currentGame = new Game(gameID);
     }
 
     //Draws a card from the deck passed by parameter
@@ -341,7 +341,6 @@ public class GameController {
     }
 
     public void beginGame() throws IOException {
-        /*
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Insert the number of players: ");
         setNumberOfPlayers(Integer.parseInt(reader.readLine()));
@@ -351,9 +350,6 @@ public class GameController {
                 //We have to wait for everyone to connect
             }
         }).start();
-
-        This method is called when all the players are connected so the stuff up here is useless
-         */
 
         //TODO: initialize the game flow, and some other things to set up
 

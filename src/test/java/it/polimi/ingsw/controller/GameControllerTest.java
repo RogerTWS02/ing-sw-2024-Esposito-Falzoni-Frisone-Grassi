@@ -22,7 +22,7 @@ public class GameControllerTest {
 
     @Before
     public void setUp() throws FileNotFoundException {
-        this.gameController = new GameController();
+        this.gameController = new GameController(123);
         this.game = gameController.getCurrentGame();
     }
 
