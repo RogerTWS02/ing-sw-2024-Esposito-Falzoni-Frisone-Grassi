@@ -94,11 +94,16 @@ public class Client  {
                 Registry registry = LocateRegistry.getRegistry(ipServ, port);
                 RMIServerInterface stub = (RMIServerInterface) LocateRegistry.getRegistry(ipServ, port).lookup("Codex_server");
                 logger.log(Level.INFO, "Client has connected to the server using RMI");
+                playGame(stub);
             }catch (RemoteException | NotBoundException e) {
                 logger.log(Level.SEVERE, "Error in connecting to server using RMI");
                 closeSocket();
             }
         }
+
+    }
+
+    public void playGame(RMIServerInterface stub) {
 
     }
 

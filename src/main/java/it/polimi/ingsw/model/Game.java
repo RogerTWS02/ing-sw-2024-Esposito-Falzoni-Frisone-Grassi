@@ -154,8 +154,6 @@ public class Game implements Serializable{
        this.startingPlayer = players.get(randomNumber);
        currentPlayer = this.startingPlayer;
    }
-
-
     public void addPlayer(Player p) {
        this.players.add(p);
     }
