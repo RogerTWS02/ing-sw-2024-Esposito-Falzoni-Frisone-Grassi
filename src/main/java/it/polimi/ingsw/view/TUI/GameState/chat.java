@@ -3,7 +3,12 @@ package it.polimi.ingsw.view.TUI.GameState;
 public class chat {
 
         public static void main(String[] args) {
-                String[] test =new String[]{ "ciao", "Prova", "test"};
+
+        System.out.println("\uD83D\uDC3A");
+        System.out.println("\uD83C\uDF44");
+        System.out.println("🐺");
+
+
 
 
         }
