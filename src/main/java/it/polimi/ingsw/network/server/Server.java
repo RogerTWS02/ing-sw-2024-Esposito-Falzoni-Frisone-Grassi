@@ -174,6 +174,7 @@ public class Server extends UnicastRemoteObject {
 
     public void sendWinnerMessage(int gameID) throws IOException {
         Player winner = gameControllerMap.get(gameID).getCurrentGame().getWinner();
+
         //Send a message to all the players of the same game with the winner
         for(int id: gameControllerMap.get(gameID)
                 .getCurrentGame()
@@ -183,7 +184,7 @@ public class Server extends UnicastRemoteObject {
                 .toArray(Integer[]::new)){
             idSocketMap.get(id).sendMessage(
                     new Message(
-                            WINNER,
+                            REPLY_END_GAME,
                             this.serverSocket.getLocalPort(),
                             gameID,
                             winner.getNickname()
@@ -292,10 +293,37 @@ public class Server extends UnicastRemoteObject {
                     //se raggiungo il numero stabilito di giocatori, avvio la partita
                     if(l.isLobbyFull()){
                         l.setGameStarted(true);
+                        //inizializza le mani di tutti
                         gameControllerMap.get(message.getGameID()).beginGame();
+
 
                         //TODO: Messaggio per tutti i client per aggiornare il game id (Id di chi crea la lobby)
                         // il client per visualizzare mano, punteggio, colore pedina ecc...
+
+                        //per ogni giocatore della lobby
+                        for(int pID : lobbyPlayerMap.get(l)){
+                            //mando un messaggio per aggiornare l'interfaccia
+                            idSocketMap.get(message.getSenderID()).sendMessage(
+                                    new Message(
+                                            REPLY_BEGIN_GAME,
+                                            this.serverSocket.getLocalPort(),
+                                            message.getGameID(),
+
+                                            new Object[]{
+                                                    //mando a tutti il gameID come primo parametro
+                                                    message.getSenderID(),
+
+                                                    //mando a tutti l'UUID delle carte delle loro mani
+                                                    Arrays.stream(gameControllerMap.get(message.getGameID())
+                                                            .returnHand(idPlayerMap.get(pID)))
+                                                            .map(PlayableCard::getUUID)
+                                            }
+
+
+                                    )
+                            );
+
+                        }
 
                     }
                     found = true;

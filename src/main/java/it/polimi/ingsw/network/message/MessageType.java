@@ -15,10 +15,14 @@ public enum MessageType {
     REQUEST_CARD,
     REPLY_HAND_UPDATE,
 
-    //messaggi per entrare in lobby/avviare la partita/creare una nuova lobby
+    //messaggi per entrare in lobby/creare una nuova lobby
     REQUEST_LOGIN,
     REQUEST_NEW_LOBBY,
     REPLY_NEW_LOBBY,
+
+    //messaggi per iniziare il gioco
+    REPLY_BEGIN_GAME,
+    REPLY_END_GAME,
 
     //messaggi per richiedere/ricevere il punteggio dei giocatori
     REQUEST_PLAYERS_POINT,

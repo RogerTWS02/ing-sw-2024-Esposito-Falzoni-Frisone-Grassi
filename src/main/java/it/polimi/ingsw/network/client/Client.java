@@ -22,6 +22,7 @@ public class Client  {
 
     private final int port;
     private Socket socket;
+    private String lobbyName;
     private int gameID;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
@@ -119,5 +120,13 @@ public class Client  {
 
     public int getGameID() {
         return gameID;
+    }
+
+    public String getLobbyName() {
+        return lobbyName;
+    }
+
+    public void setLobbyName(String lobbyName) {
+        this.lobbyName = lobbyName;
     }
 }
