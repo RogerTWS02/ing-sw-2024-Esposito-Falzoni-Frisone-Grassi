@@ -15,6 +15,9 @@ public class TUI implements MessageListener {
     public Message onMessageReceived(Message message) {
         return message;
     }
+    private  String printTui(){
+        return "tui";
+    }
     public static void main(String[] args) {
         // Inizializza lo scanner per leggere da console
         Scanner scanner = new Scanner(System.in);
@@ -23,6 +26,11 @@ public class TUI implements MessageListener {
 
         while(true){
             //stampo il layout
+            //System.out.println(printTui());
+
+
+
+
 
             //chiedo all'utente di inserire un comando
             System.out.println("Inserisci un comando (/help per lista comandi):");
