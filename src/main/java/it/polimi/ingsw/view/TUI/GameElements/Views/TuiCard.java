@@ -56,10 +56,10 @@ public class TuiCard {
 
         String cards = """
                         ╔═════════════════════╗╔═════════════════════╗╔═════════════════════╗
+                        ║                   W ║║                     ║║                     ║
                         ║                     ║║                     ║║                     ║
                         ║                     ║║                     ║║                     ║
-                        ║                     ║║                     ║║                     ║
-                        ║                     ║║                     ║║                     ║
+                        ║ G                 L ║║                     ║║                     ║
                         ╚═════════════════════╝╚═════════════════════╝╚═════════════════════╝
                      
                             
@@ -132,19 +132,20 @@ public class TuiCard {
             default -> null;
         };
     }
-   /* private String cornerToImage(Corner corner){
+
+    private String cornerToImage(Corner corner){
         if (corner == null){return "   ";}
-        return switch (corner.getCornerResource()){
-            case "WOLF" -> "🐺";
-            case "MUSHROOM" -> "\uD83C\uDF44";
-            case "LEAF" -> "";
-            case "BUTTERFLY" -> "";
-            case "FEATHER" -> "";
-            case "SCROLL" -> "";
-            case "GLASSVIAL" -> "";
-            default -> null;
+        return switch (corner.getCornerResource().toString()){
+            case "WOLF" -> "W ";
+            case "MUSHROOM" -> "M ";
+            case "LEAF" -> "L";
+            case "BUTTERFLY" -> "B";
+            case "FEATHER" -> "F";
+            case "SCROLL" -> "S";
+            case "GLASSVIAL" -> "I";
+            default -> "░░";
         };
-    }  */
+    }
 
 
 
