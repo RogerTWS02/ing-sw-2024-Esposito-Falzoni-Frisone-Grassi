@@ -10,7 +10,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class TuiCard {
-    public void printCard(String[] uuid){
+    public void printCard(String[] uuid) {
         InputStream inputresource = getClass().getResourceAsStream("/" + "ResourceDeck.json");
         InputStream inputgold = getClass().getResourceAsStream("/" + "ResourceDeck.json");
 
@@ -27,6 +27,7 @@ public class TuiCard {
                      
                             
                 """;
-        String corner=  " ▒▒▒" ;
+        String corner = " ▒▒▒";
 
+    }
 }

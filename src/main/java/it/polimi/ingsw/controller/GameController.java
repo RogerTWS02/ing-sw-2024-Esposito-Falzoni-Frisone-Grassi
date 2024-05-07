@@ -12,10 +12,8 @@ import java.util.*;
 
 public class GameController {
     private final Game currentGame;
-    private int gameID;
 
     public GameController(int gameID) throws FileNotFoundException {
-        this.gameID = gameID;
         this.currentGame = new Game(gameID);
     }
 
