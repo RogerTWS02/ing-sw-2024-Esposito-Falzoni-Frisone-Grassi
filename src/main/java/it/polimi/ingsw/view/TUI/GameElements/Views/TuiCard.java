@@ -19,6 +19,17 @@ public class TuiCard {
     JSONArray resourceJSONArray;
     JSONArray goldJSONArray;
 
+    public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
+    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
+    public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
+    public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
+    public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+
+
+
 
 
     public TuiCard() throws IOException, ParseException {
@@ -39,32 +50,52 @@ public class TuiCard {
 
     public void printCard(String[] uuid) throws IOException, ParseException {
         PlayableCard[] hand = new PlayableCard[3];
+        String[] cardColor = new String[3];
+        String[] cardBackground = new String [3];
         for(int x =0; x< 3; x++){
             int index = Integer.parseInt(uuid[x].substring(3, uuid.length));
             if(uuid[x].charAt(0)=='R'){
                 JSONObject JSONcard = (JSONObject) resourceJSONArray.get(index-1);
                 hand[x]= craftResourceCard(JSONcard);
+                cardColor[x]=ANSI_WHITE;
             }
             else {
                 JSONObject JSONcard = (JSONObject) goldJSONArray.get(index-1);
                 hand[x]= craftResourceCard(JSONcard);
+                cardColor[x]=ANSI_YELLOW;
                 
             }
+            switch (hand[x].getPermResource()[0]){
+
+                case WOLF -> cardBackground[x]=ANSI_BLUE_BACKGROUND;
+                case LEAF -> cardBackground[x]=ANSI_GREEN_BACKGROUND;
+                case MUSHROOM -> cardBackground[x]=ANSI_RED_BACKGROUND;
+                case BUTTERFLY -> cardBackground[x]=ANSI_PURPLE_BACKGROUND;
+
+            }
+
+
         }
 
 
+        ArrayList<String> cards= new ArrayList<String>();
+         cards.add(cardBackground[0]+cardColor[0]+"          ╔═══════════════════════════╗"+cardBackground[1]+cardColor[1]+"╔═══════════════════════════╗"+cardBackground[2]+cardColor[2]+"╔═══════════════════════════╗");
 
-        String cards = """
-                        ╔═════════════════════╗╔═════════════════════╗╔═════════════════════╗
-                        ║                   W ║║                     ║║                     ║
-                        ║                     ║║                     ║║                     ║
-                        ║                     ║║                     ║║                     ║
-                        ║ G                 L ║║                     ║║                     ║
-                        ╚═════════════════════╝╚═════════════════════╝╚═════════════════════╝
-                     
-                            
-                """;
-        String corner = " ▒▒▒";
+        String t = cardBackground[0]+cardColor[0]+"          ║ "+ANSI_RESET+cornerToString(hand[0].getCardCorners()[0]) + "          "+cardToPoint(hand[0])+"        " + cornerToString(hand[0].getCardCorners()[1])+cardBackground[0]+cardColor[0]+"║"+
+                   cardBackground[1]+cardColor[1]+"          ║ "+ANSI_RESET+cornerToString(hand[1].getCardCorners()[0]) + "          "+cardToPoint(hand[1])+"        " + cornerToString(hand[1].getCardCorners()[1])+cardBackground[1]+cardColor[1]+"║"+
+                   cardBackground[2]+cardColor[2]+"          ║ "+ANSI_RESET+cornerToString(hand[2].getCardCorners()[0]) + "          "+cardToPoint(hand[2])+"        " + cornerToString(hand[2].getCardCorners()[1])+cardBackground[2]+cardColor[2]+"║"
+                ;
+        cards.add(t);
+        for (int i = 0; i < 2; i++) {
+            cards.add(cardBackground[0]+cardColor[0]+"          ║                           ║"+cardBackground[1]+cardColor[1]+"║                           ║"+cardBackground[2]+cardColor[2]+"║                           ║");
+        }
+        String b = cardBackground[0]+cardColor[0]+"          ║ "+ANSI_RESET+cornerToString(hand[0].getCardCorners()[2]) + "         "+cardToRequiredResource(hand[0])+"        " + cornerToString(hand[0].getCardCorners()[3])+cardBackground[0]+cardColor[0]+"║"+
+                   cardBackground[1]+cardColor[1]+"          ║ "+ANSI_RESET+cornerToString(hand[1].getCardCorners()[2]) + "         "+cardToRequiredResource(hand[1])+"        " + cornerToString(hand[1].getCardCorners()[3])+cardBackground[1]+cardColor[1]+"║"+
+                   cardBackground[2]+cardColor[2]+"          ║ "+ANSI_RESET+cornerToString(hand[2].getCardCorners()[2]) + "         "+cardToRequiredResource(hand[2])+"        " + cornerToString(hand[2].getCardCorners()[3])+cardBackground[2]+cardColor[2]+"║"
+                ;
+        cards.add(b);
+        cards.add(cardBackground[0]+cardColor[0]+"          ╚═══════════════════════════╝"+cardBackground[1]+cardColor[1]+"╚═══════════════════════════╝"+cardBackground[2]+cardColor[2]+"╚═══════════════════════════╝");
+
 
     }
 
@@ -133,19 +164,67 @@ public class TuiCard {
         };
     }
 
-    private String cornerToImage(Corner corner){
+    private String cornerToString(Corner corner){
         if (corner == null){return "   ";}
         return switch (corner.getCornerResource().toString()){
-            case "WOLF" -> "W ";
-            case "MUSHROOM" -> "M ";
-            case "LEAF" -> "L";
-            case "BUTTERFLY" -> "B";
-            case "FEATHER" -> "F";
-            case "SCROLL" -> "S";
-            case "GLASSVIAL" -> "I";
+            case "WOLF" -> "🐺 ";
+            case "MUSHROOM" -> "🍄 ";
+            case "LEAF" -> "🍃 ";
+            case "BUTTERFLY" -> "🦋 ";
+            case "FEATHER" -> "🪶 ";
+            case "SCROLL" -> "📜 ";
+            case "GLASSVIAL" -> "🫙 ";
             default -> "░░";
         };
+
     }
+
+
+
+    private String resourceToEmoji(Resource resource){
+        return switch (resource.toString()){
+            case "WOLF" -> "🐺 ";
+            case "MUSHROOM" -> "🍄 ";
+            case "LEAF" -> "🍃 ";
+            case "BUTTERFLY" -> "🦋 ";
+            default -> throw new IllegalStateException("Unexpected value: " + resource.toString());
+        };
+    }
+    private String cardToPoint(PlayableCard card){
+        if(card instanceof GoldenCard){
+            if(card.getRule().toString()=="NONE"){
+                return card.getPoints()+" p ";
+            }
+            else return switch (card.getRule().toString()){
+                case "CORNERS" -> card.getPoints()+"p ◲";
+                case "SCROLL"  -> card.getPoints()+"p 📜";
+                case "FEATHER" -> card.getPoints()+"p 🪶";
+                case "GLASSVIAL" -> card.getPoints()+"p 🫙";
+                default -> throw new IllegalStateException("Unexpected value: " + card.getRule().toString());
+
+            };
+        }
+
+        return switch (card.getPoints()){
+            case 0 -> "    ";
+            default -> card.getPoints()+" p ";
+
+        };
+    }
+    private String cardToRequiredResource(PlayableCard card){
+        if (card instanceof GoldenCard){
+            String required="     ";
+            for(Resource resource: ((GoldenCard) card).getRequiredResource()){
+                required=required+resourceToEmoji(resource);
+            }
+            required= required+" ".repeat((5-required.length()));
+            return  required;
+
+        }
+        else return "     ";
+    }
+
+
 
 
 
