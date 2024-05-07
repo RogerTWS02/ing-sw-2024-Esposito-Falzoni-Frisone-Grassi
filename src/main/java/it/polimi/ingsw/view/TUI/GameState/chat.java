@@ -8,14 +8,13 @@ public class chat {
 
         }
 public void chat(String[] msg){
-                for (){}
         System.out.println("┌──────────────────────────────────────────────────────────────────────────────────────────────────────────┐");
         System.out.println("│                                                   CHAT                                                   │");
         System.out.println("├──────────────────────────────────────────────────────────────────────────────────────────────────────────┤");
         System.out.println("│                                                                                                          │");
         for(int line=25; line>0; line--){
 
-                System.out.println("│ "+ msg[-line] +" │");
+                System.out.println("│ "+ msg[msg.length-line] +" │");
                 System.out.println("│                                                                                                          │");
         }
 }

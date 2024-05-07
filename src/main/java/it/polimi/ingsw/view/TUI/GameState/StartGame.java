@@ -5,6 +5,7 @@ import javax.xml.transform.stream.StreamSource;
 public class StartGame {
 
     public void StartGame(){
+
         System.out.println("┌──────────────────────────────────────────────────────────────────────────────────────────────────────────┐");
         System.out.println("│                                                                                                          │");
         System.out.println("│                                                                                                          │");
