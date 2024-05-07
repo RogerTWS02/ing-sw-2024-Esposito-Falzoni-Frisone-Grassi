@@ -11,8 +11,10 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 public class TUI implements MessageListener {
     public static Client cli;
 
+    //Faccio l'update della tui in base ai messaggi ricevuti
     @Override
     public Message onMessageReceived(Message message) {
+
         return message;
     }
     public static void main(String[] args) {
@@ -25,34 +27,33 @@ public class TUI implements MessageListener {
             //stampo il layout
 
             //chiedo all'utente di inserire un comando
-            System.out.println("Inserisci un comando (/help per lista comandi):");
+            System.out.println("Type '/help' to view the Commands List):");
 
             //Leggi il messaggio inserito dall'utente
             command = scanner.nextLine().split(" ");
             switch(command[0]){
                 case "/help":
-                    message = "Lista dei comandi: \n" +
-                              "/infoCard posX posY - restituisce info su una carta nel PlayerBoard\n"+
-                              "/placeCard posX posY - prova a posizionare una carta nel Playerboard\n"+
-                              "/drawCardFromDeck Golden/Resource - pesca dal deck in base al tipo\n"+
-                              "/drawCardFromViewable - pesca dalle carte visibili\n"+
-                              "/TEMPLATE PARAM_1, PARAM_2\n";
+                    message = """
+                            Commands List:\s
+                            /infoCard posX posY - return info on a card on the playerBoard
+                            /placeCard posX posY - try to place a card on the playerBoard
+                            /drawCardFromDeck Golden/Resource - draws a card form Deck according to te specified type
+                            /drawCardFromViewable Golden/Resource 1/2 - draws from the viewable cards according to the specified index
+                            /TEMPLATE PARAM_1, PARAM_2
+                            """;
 
                     cli.sendMessage(
                             new Message(
                                     TEST_MESSAGE,
                                     cli.getSocketPort(),
-                                    -1,
+                                    cli.getGameID(),
                                     message)
                     );
 
                 //chiedo l'UUID della carta al server e genero i dati dal JSON
                 // messaggio del tipo: /infoCard posX posY
                 case "/infoCard":
-                    if(command.length < 3) {
-                        System.out.println("Comando non segue la sintassi corretta (prova /help)");
-                        break;
-                    }
+                    if(command.length < 3) break;
                     int posX = 0, posY = 0;
                     try {
                         posX = Integer.parseInt(command[1]);
@@ -71,6 +72,87 @@ public class TUI implements MessageListener {
                                     cli.getGameID(),
                                     new Object[]{posX, posY})
                     );
+                    break;
+
+                case "/placeCard":
+                    if(command.length < 3) break;
+
+                    int positionX= 0, positionY = 0;
+                    try {
+                        positionX = Integer.parseInt(command[1]);
+                        positionY = Integer.parseInt(command[2]);
+
+                    }catch(NumberFormatException e){
+                        System.out.println(e);
+                        break;
+                    }
+
+                    cli.sendMessage(
+                            new Message(
+                                    REQUEST_CARD,
+                                    cli.getSocketPort(),
+                                    cli.getGameID(),
+                                    new Object[]{positionX, positionY})
+                    );
+                    break;
+
+                case "/drawCardFromDeck":
+                    if(command.length < 2) break;
+                    String type = command[1].toLowerCase();
+                    int pos = 0;
+                    try {
+                        pos = Integer.parseInt(command[2]);
+                        if(pos > 2) break;
+                    }catch(NumberFormatException e){
+                        System.out.println(e);
+                        break;
+                    }
+                    if(type.equals("golden")){
+                        cli.sendMessage(
+                                new Message(
+                                        REQUEST_DRAW_FROM_DECK,
+                                        cli.getSocketPort(),
+                                        cli.getGameID(),
+                                        new Object[]{true, pos - 1})
+                        );
+                    }
+                    if(type.equals("resource")){
+                        cli.sendMessage(
+                                new Message(
+                                        REQUEST_DRAW_FROM_DECK,
+                                        cli.getSocketPort(),
+                                        cli.getGameID(),
+                                        new Object[]{false, pos - 1})
+                        );
+                    }
+                    break;
+
+                case "/drawCardFromViewable":
+                    if(command.length < 2) break;
+                    String ty = command[1].toLowerCase();
+
+                    if(ty.equals("golden")){
+                        cli.sendMessage(
+                                new Message(
+                                        REQUEST_DRAW_FROM_VIEWABLE,
+                                        cli.getSocketPort(),
+                                        cli.getGameID(),
+                                        new Object[]{true, 2})
+                        );
+                    }
+                    if(ty.equals("resource")){
+                        cli.sendMessage(
+                                new Message(
+                                        REQUEST_DRAW_FROM_VIEWABLE,
+                                        cli.getSocketPort(),
+                                        cli.getGameID(),
+                                        new Object[]{false, 2})
+                        );
+                    }
+                    break;
+
+                default:
+                    System.out.println("Command not valid (try '/help')");
             }
 
 

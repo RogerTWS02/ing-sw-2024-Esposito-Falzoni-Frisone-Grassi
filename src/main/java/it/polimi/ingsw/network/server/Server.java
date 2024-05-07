@@ -147,6 +147,25 @@ public class Server extends UnicastRemoteObject {
                 requestCard(message);
                 break;
 
+            //Client requests info of a card on the playerBoard
+            case REQUEST_INFO_CARD:
+                //Where the player wants to place the card
+                int posX = (int) message.getObj()[0];
+                int posY = (int) message.getObj()[1];
+
+                String cardID = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posX, posY).getUUID();
+
+                idSocketMap.get(message.getSenderID()).sendMessage(
+                        //TODO: A message with the new score should be sent to the player
+                        new Message(
+                                REPLY_INFO_CARD,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                cardID
+                        )
+                );
+
+                break;
             case PLAYER_MOVE:
                 playerMove(message);
                 break;

@@ -6,7 +6,12 @@ public enum MessageType {
     REPLY_OK, //Per ogni richiesta semplice andata a buon fine
 
     //messaggi per richiedere/ricevere playable clards
+    REQUEST_DRAW_FROM_DECK,
+    REPLY_DRAW_FROM_DECK,
+    REQUEST_DRAW_FROM_VIEWABLE,
+    REPLY_DRAW_FROM_VIEWABLE,
     REQUEST_INFO_CARD,
+    REPLY_INFO_CARD,
     REQUEST_CARD,
     REPLY_HAND_UPDATE,
 
