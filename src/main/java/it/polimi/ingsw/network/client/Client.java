@@ -1,6 +1,7 @@
 package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.network.message.Message;
+import it.polimi.ingsw.network.message.MessageListener;
 import it.polimi.ingsw.network.server.RMIServerInterface;
 
 import java.io.IOException;
@@ -15,7 +16,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Client  {
+
+    private MessageListener messageListener;
     private final String ipServ;
+
     private final int port;
     private Socket socket;
     private int gameID;
@@ -35,8 +39,11 @@ public class Client  {
                 while(!Thread.currentThread().isInterrupted()){
                     try {
                         Message recievedMessage = (Message) socketInput.readObject();
+
+                        //inoltro il messaggio al client estraendo dal tipo di interfaccia
+                        messageListener.onMessageReceived(recievedMessage);
                         //per debugging
-                        System.out.println(recievedMessage.getObj().toString());
+                        //System.out.println(recievedMessage.getObj().toString());
                     }catch (IOException | ClassNotFoundException e) {
                     }
                 }
@@ -105,5 +112,7 @@ public class Client  {
         System.exit(0);
     }
 
-
+    public int getGameID() {
+        return gameID;
+    }
 }

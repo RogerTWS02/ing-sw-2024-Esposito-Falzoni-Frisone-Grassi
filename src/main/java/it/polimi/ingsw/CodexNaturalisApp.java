@@ -2,19 +2,32 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.server.Server;
+import it.polimi.ingsw.view.TUI.TUI;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class CodexNaturalisApp {
 
     public static void main(String[] args) {
+        //parametri iniziali: <gui/tui/server> <socket/rmi>
+        String param = args.length > 0 ? args[0].toLowerCase() : "tui";
+        String network = args.length > 1 ? args[1].toLowerCase() : "socket";
 
-        String param = args.length > 0 ? args[0].toLowerCase() : "gui";
-
-        switch (param) {
-            case "cli" -> launchClient(false);
-            case "gui" -> launchClient(true);
-            case "server" -> launchServer();
+        switch(network) {
+            case "rmi":
+                        switch (param) {
+                            case "cli" -> launchClient(false, false);
+                            case "gui" -> launchClient(true, false);
+                            case "server" -> launchServer(false);
+                        }
+                        break;
+            case "socket":
+                        switch (param) {
+                            case "cli" -> launchClient(false, true);
+                            case "gui" -> launchClient(true, true);
+                            case "server" -> launchServer(true);
+                        }
         }
     }
 
@@ -23,25 +36,29 @@ public class CodexNaturalisApp {
      *
      * @param hasGUI
      */
-    private static void launchClient(boolean hasGUI) {
+    private static void launchClient(boolean hasGUI, boolean hasSocket) {
         if (hasGUI) {
+            //TODO: tutta la parte della GUI con JavaFX
+        } else {
+            TUI tui = new TUI();
+            try {
+                //per il momento funziona solo su localHost con porta di default
+                tui.cli  = new Client(InetAddress.getLocalHost().getHostName(), 1234);
+                tui.cli.run(hasSocket);
+            }catch(Exception e){
+                System.out.println("c'è un problema col clienttttt: "+e);
+            }
         }
-        else {
-        }
-        try {
-            Client client = new Client("", 0);
-            client.run();
-        }catch(Exception ignored){}
     }
 
     /**
      * Initializes and launches the Codex Naturalis server app
      */
-    private static void launchServer() {
+    private static void launchServer(Boolean hasSocket) {
         Server server;
         try{
             server = new Server();
-            server.run();
+            server.run(hasSocket);
         } catch (IOException e){
             System.exit(1);
         }

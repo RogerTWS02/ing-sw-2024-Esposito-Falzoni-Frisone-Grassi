@@ -55,7 +55,7 @@ public class ClientServerTest {
     public void sendMessageToServer() throws IOException, InterruptedException {
         Thread serverThread = new Thread(() -> {
             try {
-                ser.run();
+                ser.run(true);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -63,7 +63,7 @@ public class ClientServerTest {
         serverThread.start();
         Thread.sleep(1000);
         //avvio la lettura/scrittura al server
-        cli.run();
+        cli.run(true);
         //mando il messaggio e chiudo la connessione
         cli.sendMessage(messaggio);
 

@@ -63,10 +63,10 @@ public class Server extends UnicastRemoteObject {
      * Starts the server and waits for connections
      */
     // funzione che permette al server di accettare connesioni dai client
-    public void run() throws IOException {
+    public void run(Boolean hasSocket) throws IOException {
         //Do we have to choose if we want to use socket or RMI?
 
-        if(/* socket */){
+        if(hasSocket){
             startSocket(this.ip, this.port);
         }else{
             startRMI(this.port);
@@ -142,7 +142,7 @@ public class Server extends UnicastRemoteObject {
 
 
                 if (duplicates || requestNick.isEmpty()){
-                    //se è  presente o nullo gli dico di cambiare nick
+                    //se è presente o nullo gli dico di cambiare nick
                     idSocketMap.get(message.getSenderID()).sendMessage(
                             new Message(
                                     REPLY_BAD_REQUEST,
@@ -348,7 +348,7 @@ public class Server extends UnicastRemoteObject {
         Thread rmiThread = new Thread(() -> {
             try {
                 RMIServerImpl rmiServer = new RMIServerImpl(this);
-                RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(rmiServer, 0);
+                RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(rmiServer, 1099);
                 LocateRegistry.createRegistry(port);
                 Registry registry = LocateRegistry.getRegistry(port);
                 registry.rebind("Codex_server", stub);
