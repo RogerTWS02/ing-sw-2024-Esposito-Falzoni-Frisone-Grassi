@@ -31,7 +31,7 @@ public class Server extends UnicastRemoteObject {
     private Map<Integer, ClientHandler> idSocketMap; //id - socket associated
 
     //la chiave è l'id del gioco, il valore è il gioco stesso
-    private final Map<Integer, GameController> gameControllerMap; // gameId - controller
+    private static Map<Integer, GameController> gameControllerMap; // gameId - controller
     private final Map<Lobby, int[]> lobbyPlayerMap; //lobby - playerIds
     private final Map<Integer, Player> idPlayerMap; //playerId - player
 
@@ -44,6 +44,11 @@ public class Server extends UnicastRemoteObject {
         this.ip = ip;
         this.port = port;
         this.idPlayerMap = new HashMap<>();
+    }
+
+    //gameControllerMap getter
+    public static Map<Integer, GameController> getGameControllerMap() {
+        return gameControllerMap;
     }
 
     /**
@@ -370,7 +375,8 @@ public class Server extends UnicastRemoteObject {
             idPlayerMap.put(message.getSenderID(), p);
 
             //Genero il game controller, lo aggiungo alla map e gli metto il player
-            GameController gc = new GameController();
+            GameController gc = new GameController(message.getGameID());
+            gc.setNumberOfPlayers(lobbySize);
             gc.getCurrentGame().addPlayer(p);
             gameControllerMap.put(message.getGameID(), gc);
 

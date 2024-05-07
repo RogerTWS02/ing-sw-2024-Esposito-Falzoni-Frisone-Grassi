@@ -3,6 +3,9 @@ package it.polimi.ingsw.model;
 import java.io.*;
 import java.util.Random;
 import java.util.ArrayList;
+
+import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.network.server.Server;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -10,6 +13,7 @@ import org.json.simple.parser.ParseException;
 public class Game implements Serializable{
     private Player startingPlayer;
     private ArrayList<Player> players;
+    private int gameID;
     public JSONArray resourceDeck;
     public JSONArray goldenDeck;
     public JSONArray startingDeck;
@@ -26,9 +30,10 @@ public class Game implements Serializable{
      * This is the constructor of the game, which gets to initialize a list of players,
      * it creates decks, and also sets the visible cards on the table.
      */
-    public Game() throws FileNotFoundException {
-        if(checkOldGame()){
-            Game oldGame = retrieveGame();
+    public Game(int gameID) throws FileNotFoundException {
+        this.gameID = gameID;
+        if(checkOldGame(gameID)){
+            Game oldGame = retrieveGame(gameID);
             if (oldGame == null) {
                 throw new FileNotFoundException("Unable to retrieve old saving file!");
             }
@@ -43,6 +48,7 @@ public class Game implements Serializable{
             this.viewableGoldenCards = oldGame.viewableGoldenCards;
             this.commonGoalCards = oldGame.commonGoalCards;
             this.currentPlayer = oldGame.currentPlayer;
+            this.gameID = gameID;
         } else {
             createDecks();
             viewableResourceCards = new ResourceCard[3];
@@ -93,7 +99,7 @@ public class Game implements Serializable{
 
     public void saveGame() throws IOException {
         //Delete old saving if it exists
-        File oldGameFile = new File("savings/game.svs");
+        File oldGameFile = new File("savings/" + gameID + "game.svs");
         if(oldGameFile.exists()){
             deleteOldSaving();
         }
@@ -105,7 +111,7 @@ public class Game implements Serializable{
             }
         }
         //Save game
-        try(ObjectOutputStream gameSave = new ObjectOutputStream(new FileOutputStream("savings/game.svs"))){
+        try(ObjectOutputStream gameSave = new ObjectOutputStream(new FileOutputStream("savings/" + gameID + "game.svs"))){
             gameSave.writeObject(this);
         } catch (IOException e){
             System.err.println("Error trying saving the game!");
@@ -114,7 +120,7 @@ public class Game implements Serializable{
 
     //Deletes old saving
     public void deleteOldSaving(){
-        File old = new File("savings/game.svs");
+        File old = new File("savings/" + gameID + "game.svs");
         if(old.exists()){
             if(!old.delete()){
                 throw new RuntimeException("Error trying deleting old saving!");
@@ -123,8 +129,8 @@ public class Game implements Serializable{
     }
 
     //Retrieve a saved game
-    public static Game retrieveGame(){
-        try(ObjectInputStream saving = new ObjectInputStream(new FileInputStream("savings/game.svs"))){
+    public static Game retrieveGame(int gameID){
+        try(ObjectInputStream saving = new ObjectInputStream(new FileInputStream("savings/" + gameID + "game.svs"))){
             return (Game) saving.readObject();
         } catch (IOException | ClassNotFoundException e){
             System.err.println("Error trying restoring the game!");
@@ -133,8 +139,8 @@ public class Game implements Serializable{
     }
 
     //Check if there's an old game saving
-    public static boolean checkOldGame(){
-        File old = new File("savings/game.svs");
+    public static boolean checkOldGame(int gameID){
+        File old = new File("savings/" + gameID + "game.svs");
         if(old.exists()){
             return true;
         } else {
