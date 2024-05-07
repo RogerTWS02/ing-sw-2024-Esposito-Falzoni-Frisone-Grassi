@@ -1,7 +1,10 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.model.PlayableCard;
+import it.polimi.ingsw.network.message.Message;
 
+import java.io.IOException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -13,8 +16,8 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServerInter
     }
 
     @Override
-    public void loginRequest(String nickname, int gameID) throws RemoteException {
-        //Need to implement the login request
+    public void loginRequest(Message message) throws IOException {
+        server.serverLogin(message);
     }
 
     @Override
