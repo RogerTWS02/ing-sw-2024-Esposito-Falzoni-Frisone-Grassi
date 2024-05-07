@@ -13,10 +13,10 @@ public void chat(String[] msg){
         System.out.println("├──────────────────────────────────────────────────────────────────────────────────────────────────────────┤");
         System.out.println("│                                                                                                          │");
         for(int line=25; line>0; line--){
-
                 System.out.println("│ "+ msg[msg.length-line] +" │");
                 System.out.println("│                                                                                                          │");
         }
+        System.out.println("└──────────────────────────────────────────────────────────────────────────────────────────────────────────┘");
 }
 
 };
