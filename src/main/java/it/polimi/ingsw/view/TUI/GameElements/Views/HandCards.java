@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
@@ -51,56 +52,80 @@ public class HandCards implements Views {
     }
 
     public void showHand(String[] uuid) throws IOException, ParseException {
+        String[][] stringCard = new String[10][3];
 
         // create the cards from the UUID
+            /*
+        stringCard[][3 cards in the hand]
+        stringCard[0][] = Type
+        stringCard[1][] = Points
+        stringCard[2][] = Permanent Resource
+        stringCard[3][] = Corner 0
+        stringCard[4][] = Corner 1
+        stringCard[5][] = Corner 2
+        stringCard[6][] = Corner 3
+        stringCard[7][] = RULE to obtain the points
+        stringCard[8][] = Required Resources
+        stringCard[9][] = Border color + Background color
+         */
         PlayableCard[] hand = new PlayableCard[3];
-        String[] cardColor = new String[3];
-        String[] cardBackground = new String [3];
         for(int x =0; x< 3; x++){
-            int index = Integer.parseInt(uuid[x].substring(3, uuid.length));
+            int index = Integer.parseInt(uuid[x].substring(3, uuid[x].length()));
+            JSONObject JSONCard;
             if(uuid[x].charAt(0)=='R'){
                 // create the resource card and set the color
-                JSONObject JSONcard = (JSONObject) resourceJSONArray.get(index-1);
-                hand[x]= Views.craftResourceCard(JSONcard);
-                cardColor[x]=ANSI_WHITE;
+                JSONCard = (JSONObject) resourceJSONArray.get(index-1);
+                stringCard[0][x]="Resource Card";
+                stringCard[9][x]=ANSI_WHITE;}
+            else { // create the golden card and set the color
+                    JSONCard = (JSONObject) goldJSONArray.get(index-1);
+                    stringCard[0][x]="Golden Card";
+                    stringCard[9][x]=ANSI_YELLOW;
             }
-            else {
-                // create the golden card and set the color
-                JSONObject JSONcard = (JSONObject) goldJSONArray.get(index-1);
-                hand[x]= Views.craftGoldenCard(JSONcard);
-                cardColor[x]=ANSI_YELLOW;
-                
-            }
-            switch (hand[x].getPermResource()[0]){
+                stringCard[1][x]=(String) JSONCard.get("points");
+                stringCard[2][x]=Views.stringToEmoji((String) JSONCard.get("permRes"));
+                for(int i = 0; i < 4; i++){
+                        stringCard[i+3][x] =Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
+                }
+                stringCard[7][x]= (String) JSONCard.get("rule");
+                JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
+                 for(int i = 0; i < JSONRequire.size(); i++){
+                    stringCard[8][x].concat((Views.stringToEmoji((String) JSONRequire.get(i))));
+                    }
+                 stringCard[8][x].concat(" ".repeat(5-JSONRequire.size()));
+            switch (stringCard[2][x]){
 
-                case WOLF -> cardBackground[x]=ANSI_BLUE_BACKGROUND;
-                case LEAF -> cardBackground[x]=ANSI_GREEN_BACKGROUND;
-                case MUSHROOM -> cardBackground[x]=ANSI_RED_BACKGROUND;
-                case BUTTERFLY -> cardBackground[x]=ANSI_PURPLE_BACKGROUND;
+                case "WOLF" -> stringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
+                case "LEAF" -> stringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
+                case "MUSHROOM" -> stringCard[9][x].concat(ANSI_RED_BACKGROUND);
+                case "BUTTERFLY" -> stringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
 
             }
 
 
         }
+
 
         // actively create the3 cards to print with color and attributes
         ArrayList<String> cards= new ArrayList<String>();
-         cards.add(cardBackground[0]+cardColor[0]+"          ╔═══════════════════════════╗"+cardBackground[1]+cardColor[1]+"╔═══════════════════════════╗"+cardBackground[2]+cardColor[2]+"╔═══════════════════════════╗");
+         cards.add(stringCard[9][0]+"          ╔═══════════════════════════╗"+stringCard[9][1]+"╔═══════════════════════════╗"+stringCard[9][2]+"╔═══════════════════════════╗");
 
-        String t = cardBackground[0]+cardColor[0]+"          ║ "+ANSI_RESET+ Views.cornerToString(hand[0].getCardCorners()[0]) + "          "+Views.cardToPoint(hand[0])+"        " + Views.cornerToString(hand[0].getCardCorners()[1])+cardBackground[0]+cardColor[0]+"║"+
-                   cardBackground[1]+cardColor[1]+"          ║ "+ANSI_RESET+Views.cornerToString(hand[1].getCardCorners()[0]) + "          "+Views.cardToPoint(hand[1])+"        " + Views.cornerToString(hand[1].getCardCorners()[1])+cardBackground[1]+cardColor[1]+"║"+
-                   cardBackground[2]+cardColor[2]+"          ║ "+ANSI_RESET+Views.cornerToString(hand[2].getCardCorners()[0]) + "          "+Views.cardToPoint(hand[2])+"        " + Views.cornerToString(hand[2].getCardCorners()[1])+cardBackground[2]+cardColor[2]+"║"
+        String t =
+                stringCard[9][0]+"          ║ "+ANSI_RESET+stringCard[3][0]+ "          "+Views.cardToPoint(stringCard[1][0],stringCard[7][0])+"        " + stringCard[4][0]+stringCard[9][0]+"║"+
+                stringCard[9][1]+"          ║ "+ANSI_RESET+stringCard[3][1]+ "          "+Views.cardToPoint(stringCard[1][1],stringCard[7][1])+"        " + stringCard[4][1]+stringCard[9][1]+"║"+
+                stringCard[9][2]+"          ║ "+ANSI_RESET+stringCard[3][2]+ "          "+Views.cardToPoint(stringCard[1][2],stringCard[7][2])+"        " + stringCard[4][2]+stringCard[9][2]+"║"
                 ;
         cards.add(t);
         for (int i = 0; i < 2; i++) {
-            cards.add(cardBackground[0]+cardColor[0]+"          ║                           ║"+cardBackground[1]+cardColor[1]+"║                           ║"+cardBackground[2]+cardColor[2]+"║                           ║");
+            cards.add(stringCard[9][0]+"          ║                           ║"+stringCard[9][1]+"║                           ║"+stringCard[9][2]+"║                           ║");
         }
-        String b = cardBackground[0]+cardColor[0]+"          ║ "+ANSI_RESET+Views.cornerToString(hand[0].getCardCorners()[2]) + "         "+Views.cardToRequiredResource(hand[0])+"        " + Views.cornerToString(hand[0].getCardCorners()[3])+cardBackground[0]+cardColor[0]+"║"+
-                   cardBackground[1]+cardColor[1]+"          ║ "+ANSI_RESET+Views.cornerToString(hand[1].getCardCorners()[2]) + "         "+Views.cardToRequiredResource(hand[1])+"        " + Views.cornerToString(hand[1].getCardCorners()[3])+cardBackground[1]+cardColor[1]+"║"+
-                   cardBackground[2]+cardColor[2]+"          ║ "+ANSI_RESET+Views.cornerToString(hand[2].getCardCorners()[2]) + "         "+Views.cardToRequiredResource(hand[2])+"        " + Views.cornerToString(hand[2].getCardCorners()[3])+cardBackground[2]+cardColor[2]+"║"
+        String b =
+                stringCard[9][0]+"          ║ "+ANSI_RESET+stringCard[5][0] + "         "+stringCard[8][0]+"        " + stringCard[6][0]+stringCard[9][0]+"║"+
+                stringCard[9][1]+"          ║ "+ANSI_RESET+stringCard[5][1] + "         "+stringCard[8][1]+"        " + stringCard[6][1]+stringCard[9][1]+"║"+
+                stringCard[9][2]+"          ║ "+ANSI_RESET+stringCard[5][2] + "         "+stringCard[8][2]+"        " + stringCard[6][2]+stringCard[9][2]+"║"
                 ;
         cards.add(b);
-        cards.add(cardBackground[0]+cardColor[0]+"          ╚═══════════════════════════╝"+cardBackground[1]+cardColor[1]+"╚═══════════════════════════╝"+cardBackground[2]+cardColor[2]+"╚═══════════════════════════╝");
+        cards.add(stringCard[9][0]+"          ╚═══════════════════════════╝"+stringCard[9][1]+"╚═══════════════════════════╝"+stringCard[9][2]+"╚═══════════════════════════╝");
 
 
 

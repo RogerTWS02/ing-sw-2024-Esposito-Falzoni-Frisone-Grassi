@@ -3,7 +3,15 @@ package it.polimi.ingsw.view.TUI.GameState;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.GoldenCard;
 import it.polimi.ingsw.model.PlayableCard;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class InfoCard  implements Views{
@@ -17,67 +25,84 @@ public class InfoCard  implements Views{
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
+    // read the JSON file with the cards
+    InputStream inputresource = getClass().getResourceAsStream("/" + "ResourceDeck.json");
+    InputStream inputgold = getClass().getResourceAsStream("/" + "ResourceDeck.json");
+
+    JSONParser parserGold = new JSONParser();
+    BufferedReader buffergold = new BufferedReader(new InputStreamReader(inputgold));
+    Object JSONObjectGold = parserGold.parse(buffergold);
+    JSONArray goldJSONArray = (JSONArray) JSONObjectGold;
+    JSONParser parserResource = new JSONParser();
+    BufferedReader bufferResource = new BufferedReader(new InputStreamReader(inputresource));
+    Object JSONObjectResource = parserResource.parse(bufferResource);
+    JSONArray resourceJSONArray = (JSONArray) JSONObjectResource;
+
+    public InfoCard() throws IOException, ParseException {
+    }
+
 
     // method to print the card and its info
 
-    public ArrayList<String> showInfoCard(PlayableCard card){
+    public ArrayList<String> showInfoCard(String uuid){
+        String[] stringCard = new String[10];
+        // create the card from the UUID
+            /*
+        stringCard[0] = Type
+        stringCard[1] = Points
+        stringCard[2] = Permanent Resource
+        stringCard[3] = Corner 0
+        stringCard[4] = Corner 1
+        stringCard[5] = Corner 2
+        stringCard[6] = Corner 3
+        stringCard[7] = RULE to obtain the points
+        stringCard[8] = Required Resources
+        stringCard[9] = Border color + Background color
+         */
+        int index = Integer.parseInt(uuid.substring(3, uuid.length()));
+        JSONObject JSONCard;
+        if(uuid.charAt(0)=='R'){
+            // create the resource card and set the color
+            JSONCard = (JSONObject) resourceJSONArray.get(index-1);
+            stringCard[0]="Resource Card";
+            stringCard[9]=ANSI_WHITE;}
+        else { // create the golden card and set the color
+            JSONCard = (JSONObject) goldJSONArray.get(index-1);
+            stringCard[0]="Golden Card";
+            stringCard[9]=ANSI_YELLOW;
+        }
+        stringCard[1]=(String) JSONCard.get("points");
+        stringCard[2]=Views.stringToEmoji((String) JSONCard.get("permRes"));
+        for(int i = 0; i < 4; i++){
+            stringCard[i+3] =Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
+        }
+        stringCard[7]= (String) JSONCard.get("rule");
+        JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
+        for(int i = 0; i < JSONRequire.size(); i++){
+            stringCard[8].concat((Views.stringToEmoji((String) JSONRequire.get(i))));
+        }
+        stringCard[8].concat(" ".repeat(5-JSONRequire.size()));
+        switch (stringCard[2]){
 
-        //create attribute for the info
-        String[] cardInfo= new String[8];
-        // its useful later
-        cardInfo[3]= "Required Resources: ";
-
-
-        // state if it's a golden card or a resource card ant the required resource
-        if (card instanceof GoldenCard){
-            cardInfo[0]= "Golden Card";
-            cardInfo[6]=ANSI_YELLOW;
-            for (int i=0; i<((GoldenCard) card).getRequiredResource().size(); i++){
-                cardInfo[3]= cardInfo[3]+Views.resourceToEmoji(((GoldenCard) card).getRequiredResource().get(i))+" ";
-            }
+            case "WOLF" -> stringCard[9].concat(ANSI_BLUE_BACKGROUND);
+            case "LEAF" -> stringCard[9].concat(ANSI_GREEN_BACKGROUND);
+            case "MUSHROOM" -> stringCard[9].concat(ANSI_RED_BACKGROUND);
+            case "BUTTERFLY" -> stringCard[9].concat(ANSI_PURPLE_BACKGROUND);
 
         }
-        else {cardInfo[0]= "Resource Card";
-            cardInfo[3]= cardInfo[3]+" NONE";
-            cardInfo[6]= ANSI_WHITE;
-        }
-
-        // set the color of the card based on the permanent resource
-        switch (card.getPermResource()[0]){
-
-            case WOLF -> cardInfo[7]=ANSI_BLUE_BACKGROUND;
-            case LEAF -> cardInfo[7]=ANSI_GREEN_BACKGROUND;
-            case MUSHROOM -> cardInfo[7]=ANSI_RED_BACKGROUND;
-            case BUTTERFLY -> cardInfo[7]=ANSI_PURPLE_BACKGROUND;
-
-        }
-
-        // set the info of the card like points, rule to obtain those points, permanent resource and corners
-        cardInfo[1]= "Points: "+((GoldenCard) card).getPoints();
-        cardInfo[4]= "Rule: "+((GoldenCard) card).getRule().toString();
-        cardInfo[2]= "Permanent Resource: "+Views.resourceToEmoji(((GoldenCard) card).getPermResource()[0]);
-        cardInfo[5]= "Corners: ";
-        for (int i=0; i<4; i++){
-            if (((GoldenCard) card).getCardCorners()[i]==null){cardInfo[5]= cardInfo[5]+"EMPTY ";
-            }
-            else {cardInfo[5]= cardInfo[5]+i+": "+Views.cornerToString(card.getCardCorners()[i])+"  ";
-            }
-        };
-
-
 
 
         // actively creating the array to print
         ArrayList<String> printedCard= new ArrayList<String>();
-        printedCard.add("   "+cardInfo[7]+cardInfo[6]+"╔══════════════════════════════════╗");
-        String t= "   "+cardInfo[7]+cardInfo[6]+"║ "+ANSI_RESET+Views.cornerToString(card.getCardCorners()[0])+"            "+Views.cardToPoint(card)+"            "+Views.cornerToString(card.getCardCorners()[1])+cardInfo[7]+cardInfo[6]+"║";
+        printedCard.add("   "+stringCard[9]+"╔══════════════════════════════════╗");
+        String t= "   "+stringCard[9]+"║ "+ANSI_RESET+stringCard[3]+"             "+Views.cardToPoint(stringCard[1], stringCard[7])+"            "+stringCard[4]+stringCard[9]+" ║";
         printedCard.add(t);
         for(int x=0;x<5;x++) {
-            printedCard.add("   " + cardInfo[7] + cardInfo[6] + "║" + ANSI_RESET + "                                  " + cardInfo[7] + cardInfo[6] + "║"+cardInfo[x]);
+            printedCard.add("   " + stringCard[9]+ "║" + ANSI_RESET + "                                  " + stringCard[9] + "║");
         };
-        String b= "   "+cardInfo[7]+cardInfo[6]+"║ "+ANSI_RESET+Views.cornerToString(card.getCardCorners()[2])+"            "+Views.cardToRequiredResource(card)+"            "+Views.cornerToString(card.getCardCorners()[3])+cardInfo[7]+cardInfo[6]+"║";
+        String b= "   "+stringCard[9]+"║ "+ANSI_RESET+stringCard[5]+"            "+stringCard[8]+"            "+stringCard[5]+stringCard[9]+"║";
         printedCard.add(b);
-        printedCard.add("   "+cardInfo[7]+cardInfo[6]+"╚══════════════════════════════════╝");
+        printedCard.add("   "+stringCard[9]+"╚══════════════════════════════════╝");
 
 
 
