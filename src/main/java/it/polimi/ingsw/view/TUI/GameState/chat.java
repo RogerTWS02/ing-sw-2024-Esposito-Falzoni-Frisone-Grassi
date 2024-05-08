@@ -1,11 +1,14 @@
 package it.polimi.ingsw.view.TUI.GameState;
 
-public class chat {
+public class chat implements Views{
 
         public static void main(String[] args) {
 
         }
-public void chat(String[] msg){
+public void showChat(String[] msg){
+
+                //clear the screen before printing something
+                Views.clearScreen();
                 System.out.println("┌──────────────────────────────────────────────────────────────────────────────────────────────────────────┐");
                 System.out.println("│                                                   CHAT                                                   │");
                 System.out.println("├──────────────────────────────────────────────────────────────────────────────────────────────────────────┤");
