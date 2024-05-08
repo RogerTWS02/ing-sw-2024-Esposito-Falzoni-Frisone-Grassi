@@ -9,6 +9,7 @@ public class Player implements Serializable {
     private PlayerBoard playerBoard;
     private GoalCard secretGoalCard;
     private Pawn pawn;
+    private int gameID;
 
 
     public Player(String nickname, int clientPort) {
@@ -60,5 +61,9 @@ public class Player implements Serializable {
 
     public int getClientPort() {
         return clientPort;
+    }
+
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
     }
 }

@@ -236,4 +236,8 @@ public class Game implements Serializable{
     public void setLastPhase(){
         this.isInLastPhase = true;
     }
+
+    public int getGameID(){
+        return gameID;
+    }
 }

@@ -3,6 +3,8 @@ package it.polimi.ingsw.network.client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageListener;
 import it.polimi.ingsw.network.server.RMIServerInterface;
+import it.polimi.ingsw.network.server.Server;
+import it.polimi.ingsw.view.TUI.RMIGameFlow;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -92,11 +94,13 @@ public class Client  {
             }
         }else{
             try{
-                Registry registry = LocateRegistry.getRegistry(ipServ, port);
-                RMIServerInterface stub = (RMIServerInterface) LocateRegistry.getRegistry(ipServ, port).lookup("Codex_server");
+                out = new ObjectOutputStream(socket.getOutputStream());
+                inp = new ObjectInputStream(socket.getInputStream());
+                RMIServerInterface stub = (RMIServerInterface) LocateRegistry.getRegistry(ipServ, port).lookup(Server.NAME);
                 logger.log(Level.INFO, "Client has connected to the server using RMI");
-                playGame(stub);
-            }catch (RemoteException | NotBoundException e) {
+
+                RMIGameFlow play = new RMIGameFlow(stub);
+            }catch (NotBoundException | IOException e) {
                 logger.log(Level.SEVERE, "Error in connecting to server using RMI");
                 closeSocket();
             }
@@ -104,7 +108,21 @@ public class Client  {
 
     }
 
-    public void playGame(RMIServerInterface stub) {
+    public void playGame(RMIServerInterface stub) throws IOException {
+        Thread t = new Thread(() -> {
+            try{
+                while(!Thread.currentThread().isInterrupted()){
+                    try {
+                        Message recievedMessage = (Message) inp.readObject();
+
+                    }catch (IOException | ClassNotFoundException e) {
+                    }
+                }
+            }finally {
+                closeSocket();
+            }
+        });
+        t.start();
 
     }
 

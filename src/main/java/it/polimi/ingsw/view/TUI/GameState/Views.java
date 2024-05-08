@@ -109,7 +109,7 @@ public interface Views {
     // converts a card points and its rule for the TUI
      static String cardToPoint(PlayableCard card){
         if(card instanceof GoldenCard){
-            if(card.getRule().toString()=="NONE"){
+            if(card.getRule().toString().equals("NONE")){
                 return card.getPoints()+" p ";
             }
             else return switch (card.getRule().toString()){

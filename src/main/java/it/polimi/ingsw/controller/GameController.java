@@ -389,9 +389,7 @@ public class GameController {
                     Thread.onSpinWait();
             }
             for(Player p : currentGame.getPlayers()) {
-                for(GoalCard gc : currentGame.getCommonGoalCards()) {
-                    p.setScore(p.getScore() + gc.checkGoal(p.getPlayerBoard()));
-                }
+                getPointsFromGoalCards(p);
             }
             currentGame.gameOver();
             }).start();

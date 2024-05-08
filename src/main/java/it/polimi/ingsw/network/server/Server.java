@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 public class Server extends UnicastRemoteObject {
     private static final int default_port = 1234;
+    public static final String NAME = "Codex_server";
     private final InetAddress ip;
     private final int port;
     private volatile boolean running = true;
@@ -34,6 +35,8 @@ public class Server extends UnicastRemoteObject {
     private static Map<Integer, GameController> gameControllerMap; // gameId - controller
     private final Map<Lobby, int[]> lobbyPlayerMap; //lobby - playerIds
     private final Map<Integer, Player> idPlayerMap; //playerId - player
+    private boolean hasSocket = false;
+    private int playersConnectedToServer = 0; //This will be the identifier for the players connected with RMI
 
     // prende in ingresso indirizzo di rete e porta, oppure usa la porta di default
     // e genero il server
@@ -71,7 +74,7 @@ public class Server extends UnicastRemoteObject {
     // funzione che permette al server di accettare connesioni dai client
     public void run(Boolean hasSocket) throws IOException {
         //Do we have to choose if we want to use socket or RMI?
-
+        this.hasSocket = hasSocket;
         if(hasSocket){
             startSocket(this.ip, this.port);
         }else{
@@ -238,10 +241,10 @@ public class Server extends UnicastRemoteObject {
         Thread rmiThread = new Thread(() -> {
             try {
                 RMIServerImpl rmiServer = new RMIServerImpl(this);
-                RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(rmiServer, 1099);
+                RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(rmiServer, port);
                 LocateRegistry.createRegistry(port);
                 Registry registry = LocateRegistry.getRegistry(port);
-                registry.rebind("Codex_server", stub);
+                registry.rebind(NAME, stub);
 
                 logger.log(Level.INFO, "Server started on port " + port + " and is waiting for connections\n");
             }catch (RemoteException e) {
@@ -260,7 +263,7 @@ public class Server extends UnicastRemoteObject {
      */
     //NOTA BENE: i giocatori di una lobby non hanno un proprio gameID fino a quando
     //la partita non ha inizio!!!
-    public void serverLogin(Message message) throws IOException {
+    public synchronized void serverLogin(Message message) throws IOException {
         String requestNick = (String) message.getObj()[0];
 
         //controllo se il nome è già presente
@@ -272,38 +275,54 @@ public class Server extends UnicastRemoteObject {
 
         if (duplicates || requestNick.isEmpty()){
             //se è presente o nullo gli dico di cambiare nick
-            idSocketMap.get(message.getSenderID()).sendMessage(
-                    new Message(
-                            REPLY_BAD_REQUEST,
-                            this.serverSocket.getLocalPort(),
-                            message.getGameID(),
-                            "Nickname non valid, try a different nickname!"
-                    )
-            );
+            if(hasSocket){
+                idSocketMap.get(message.getSenderID()).sendMessage(
+                        new Message(
+                                REPLY_BAD_REQUEST,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                "Invalid nickname, please try a different one!"
+                        )
+                );
+            }else{
+                System.out.println("Invalid nickname, please try a different one!");
+            }
         }else{
             //se non è presente lo registro nella prima lobby valida
             boolean found = false;
             for(Lobby l: lobbyPlayerMap.keySet()) {
                 if(!l.isGameStarted() && !l.isLobbyFull()) {
-
-                    //comunico il nome della lobby e il gameID
-                    idSocketMap.get(message.getSenderID()).sendMessage(
-                            new Message(
-                                    REPLY_LOBBY_NAME,
-                                    this.serverSocket.getLocalPort(),
-                                    -1,
-                                    new Object[]{l.getLobbyName()}
-                            )
-                    );
+                    if(hasSocket){
+                        //comunico il nome della lobby e il gameID
+                        idSocketMap.get(message.getSenderID()).sendMessage(
+                                new Message(
+                                        REPLY_LOBBY_NAME,
+                                        this.serverSocket.getLocalPort(),
+                                        -1,
+                                        new Object[]{l.getLobbyName()}
+                                )
+                        );
+                    }
 
                     //aggiungo il playerID alla lobby
-                    lobbyPlayerMap.get(l)[l.getPlayersConnected()] = message.getSenderID();
+                    if(hasSocket){
+                        lobbyPlayerMap.get(l)[l.getPlayersConnected()] = message.getSenderID();
+                    }else{
+                        lobbyPlayerMap.get(l)[l.getPlayersConnected()] = playersConnectedToServer;
+                    }
                     l.incrementPlayersConnected();
 
                     //aggiungo il nuovo giocatore alla partita
-                    Player p = new Player(requestNick, message.getSenderID());
-                    gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame().addPlayer(p);
-                    idPlayerMap.put(message.getSenderID(), p);
+                    if(hasSocket){
+                        Player p = new Player(requestNick, message.getSenderID());
+                        gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame().addPlayer(p);
+                        idPlayerMap.put(message.getSenderID(), p);
+                    }else{
+                        Player p = new Player(requestNick, playersConnectedToServer);
+                        gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame().addPlayer(p);
+                        idPlayerMap.put(playersConnectedToServer, p);
+                        playersConnectedToServer++;
+                    }
 
                     //se raggiungo il numero stabilito di giocatori, avvio la partita
                     if(l.isLobbyFull()){
@@ -314,31 +333,33 @@ public class Server extends UnicastRemoteObject {
 
                         //TODO: Messaggio per tutti i client per aggiornare il game id (Id di chi crea la lobby)
                         // il client per visualizzare mano, punteggio, colore pedina ecc...
+                        if(hasSocket) {
 
-                        //per ogni giocatore della lobby
-                        for(int pID : lobbyPlayerMap.get(l)){
-                            //mando un messaggio per aggiornare l'interfaccia
-                            idSocketMap.get(message.getSenderID()).sendMessage(
-                                    new Message(
-                                            REPLY_BEGIN_GAME,
-                                            serverSocket.getLocalPort(),
-                                            //mando a tutti il gameID come primo parametro per la prima volta
-                                            lobbyPlayerMap.get(l)[0],
+                            //per ogni giocatore della lobby
+                            for (int pID : lobbyPlayerMap.get(l)) {
+                                //mando un messaggio per aggiornare l'interfaccia
+                                idSocketMap.get(message.getSenderID()).sendMessage(
+                                        new Message(
+                                                REPLY_BEGIN_GAME,
+                                                serverSocket.getLocalPort(),
+                                                //mando a tutti il gameID come primo parametro per la prima volta
+                                                lobbyPlayerMap.get(l)[0],
 
-                                            new Object[]{
-                                                    //mando a tutti l'UUID delle carte delle loro mani
-                                                    Arrays.stream(gameControllerMap.get(message.getGameID())
-                                                            .returnHand(idPlayerMap.get(pID)))
-                                                            .map(PlayableCard::getUUID),
+                                                new Object[]{
+                                                        //mando a tutti l'UUID delle carte delle loro mani
+                                                        Arrays.stream(gameControllerMap.get(message.getGameID())
+                                                                .returnHand(idPlayerMap.get(pID)))
+                                                                .map(PlayableCard::getUUID),
 
-                                                    //mando a tutti l'UUID delle common goal cards
-                                                    Arrays.stream(gameControllerMap.get(message.getGameID())
-                                                            .getCurrentGame()
-                                                            .getCommonGoalCards())
-                                                            .map(GoalCard::getUUID)
-                                            }
-                                    )
-                            );
+                                                        //mando a tutti l'UUID delle common goal cards
+                                                        Arrays.stream(gameControllerMap.get(message.getGameID())
+                                                                .getCurrentGame()
+                                                                .getCommonGoalCards())
+                                                                .map(GoalCard::getUUID)
+                                                }
+                                        )
+                                );
+                            }
                         }
                     }
                     found = true;
@@ -346,15 +367,21 @@ public class Server extends UnicastRemoteObject {
                 }
             }
             //se non ho lobby gli chiedo di generarla
-            if(!found){
-                idSocketMap.get(message.getSenderID()).sendMessage(
-                        new Message(
-                                REPLY_NEW_LOBBY,
-                                this.serverSocket.getLocalPort(),
-                                message.getGameID(),
-                                "Inserisci dimensione lobby (4 giocatori max)"
-                        )
-                );
+            if(!found) {
+                if (hasSocket) {
+
+                    idSocketMap.get(message.getSenderID()).sendMessage(
+                            new Message(
+                                    REPLY_NEW_LOBBY,
+                                    this.serverSocket.getLocalPort(),
+                                    message.getGameID(),
+                                    "Inserisci dimensione lobby (4 giocatori max)"
+                            )
+                    );
+                }
+            }else{
+                System.out.println("No lobby found!\n" +
+                        "Please create a new lobby");
             }
         }
     }
@@ -364,36 +391,59 @@ public class Server extends UnicastRemoteObject {
      * @param message the message received
      */
 
-    public void requestNewLobby(Message message) throws FileNotFoundException {
+    public synchronized void requestNewLobby(Message message) throws FileNotFoundException {
         String nickName = (String) message.getObj()[0];
         String lobbyName = (String) message.getObj()[1];
         int lobbySize = (Integer) message.getObj()[2];
 
         //se il nome non è valido gli mando un bad request
         if(lobbyName.isEmpty() || lobbyPlayerMap.keySet().stream().anyMatch(lobby -> lobby.getLobbyName().equals(lobbyName)) || lobbySize > 4 || lobbySize < 2){
-            idSocketMap.get(message.getSenderID()).sendMessage(
-                    new Message(
-                            REPLY_BAD_REQUEST,
-                            this.serverSocket.getLocalPort(),
-                            message.getGameID(),
-                            "Invalid lobby name or size!!"
-                    )
-            );
+            if(hasSocket) {
+
+                idSocketMap.get(message.getSenderID()).sendMessage(
+                        new Message(
+                                REPLY_BAD_REQUEST,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                "Invalid lobby name or size!!"
+                        )
+                );
+            }else{
+                System.out.println("Invalid lobby name or size!!");
+            }
         }else{
             //genero il nuovo player per il client
-            Player p = new Player(nickName, message.getSenderID());
-            idPlayerMap.put(message.getSenderID(), p);
+            if(hasSocket){
+                Player p = new Player(nickName, message.getSenderID());
+                idPlayerMap.put(message.getSenderID(), p);
 
-            //Genero il game controller, lo aggiungo alla map e gli metto il player
-            GameController gc = new GameController(message.getGameID());
-            gc.setNumberOfPlayers(lobbySize);
-            gc.getCurrentGame().addPlayer(p);
-            gameControllerMap.put(message.getGameID(), gc);
+                //Genero il game controller, lo aggiungo alla map e gli metto il player
+                GameController gc = new GameController(message.getGameID());
+                gc.setNumberOfPlayers(lobbySize);
+                gc.getCurrentGame().addPlayer(p);
+                gameControllerMap.put(message.getGameID(), gc);
+            }else{
+                Player p = new Player(nickName, playersConnectedToServer);
+                idPlayerMap.put(playersConnectedToServer, p);
+
+                //Genero il game controller, lo aggiungo alla map e gli metto il player
+                //GameID is the same as the id of the player that has created the lobby
+                GameController gc = new GameController(playersConnectedToServer);
+                gc.setNumberOfPlayers(lobbySize);
+                gc.getCurrentGame().addPlayer(p);
+                gameControllerMap.put(playersConnectedToServer, gc);
+            }
+
 
             //inizializzo la nuova lobby e gli metto il nuovo playerID
             Lobby lobby = new Lobby(lobbySize,1, lobbyName);
             int[] players = new int[lobbySize];
-            players[0] = message.getSenderID();
+            if(hasSocket) {
+                players[0] = message.getSenderID();
+            }else{
+                players[0] = playersConnectedToServer;
+                playersConnectedToServer++;
+            }
             lobbyPlayerMap.put(lobby, players);
         }
     }
@@ -405,26 +455,38 @@ public class Server extends UnicastRemoteObject {
 
     public void requestCard(Message message) {
         Object[] params = message.getObj();
-        PlayableCard replyCard = gameControllerMap
-                .get(message.getGameID())
-                .drawViewableCard((Boolean) params[0], (Integer) params[1]);
-
-        idSocketMap.get(message.getSenderID()).sendMessage(
-                ((Integer) params[1] < 0 || (Integer) params[1] > 2)?
-                        new Message(
-                                REPLY_HAND_UPDATE,
-                                this.serverSocket.getLocalPort(),
-                                message.getGameID(),
-                                replyCard.getUUID()
-                        )
-                        :
+        if((Integer) params[1] < 0 || (Integer) params[1] > 2){
+            if(hasSocket) {
+                idSocketMap.get(message.getSenderID()).sendMessage(
                         new Message(
                                 REPLY_BAD_REQUEST,
                                 this.serverSocket.getLocalPort(),
                                 message.getGameID(),
                                 "Range given is out of bound!"
                         )
-        );
+                );
+            }else{
+                //Should update the hand of the player even with RMI
+            }
+            return;
+        }
+        PlayableCard replyCard = gameControllerMap
+                .get(message.getGameID())
+                .drawViewableCard((Boolean) params[0], (Integer) params[1]);
+
+        if(hasSocket) {
+
+            idSocketMap.get(message.getSenderID()).sendMessage(
+                    new Message(
+                            REPLY_HAND_UPDATE,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            replyCard.getUUID()
+                    )
+            );
+        }else{
+            //Should update the hand of the player even with RMI
+        }
     }
 
     /**
@@ -441,16 +503,20 @@ public class Server extends UnicastRemoteObject {
 
         gameControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
 
+        if(hasSocket) {
 
-        idSocketMap.get(message.getSenderID()).sendMessage(
-                //TODO: A message with the new score should be sent to the player
-                new Message(
-                        REPLY_UPDATED_SCORE,
-                        this.serverSocket.getLocalPort(),
-                        message.getGameID(),
-                        "New score: " + idPlayerMap.get(message.getSenderID()).getScore()
-                )
-        );
+            idSocketMap.get(message.getSenderID()).sendMessage(
+                    //TODO: A message with the new score should be sent to the player
+                    new Message(
+                            REPLY_UPDATED_SCORE,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            "New score: " + idPlayerMap.get(message.getSenderID()).getScore()
+                    )
+            );
+        }else{
+            //Should update the score of the player even with RMI
+        }
 
         if(idPlayerMap.get(message.getSenderID()).getScore() > 20 && !gameControllerMap.get(message.getGameID()).getCurrentGame().isInLastPhase()){
             gameControllerMap.get(message.getGameID()).checkEndGamePhase();
@@ -461,4 +527,13 @@ public class Server extends UnicastRemoteObject {
             sendWinnerMessage(message.getGameID());
         }
     }
+
+    /**
+     * This will be the identifier for the players connected with RMI
+     * @return the number of players connected to the server
+     */
+    public synchronized int getPlayersConnectedToServer() {
+        return playersConnectedToServer;
+    }
+
 }
