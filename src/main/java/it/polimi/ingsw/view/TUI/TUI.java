@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.TUI;
 
+import it.polimi.ingsw.model.GoalCard;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageListener;
@@ -11,15 +12,38 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 
 public class TUI implements MessageListener {
     public static Client cli;
+    private String[] gcs;
 
     //Faccio l'update della tui in base ai messaggi ricevuti
     @Override
     public Message onMessageReceived(Message message) {
-        System.out.println(message.getMessageType() + " sent by " + message.getSenderID());
+        //System.out.println(message.getMessageType() + " sent by " + message.getSenderID());
+        String srvRep;
         switch(message.getMessageType()){
+            case REPLY_BAD_REQUEST:
+                srvRep = (String) message.getObj()[0];
+                System.out.println("Bad request: "+srvRep);
+                break;
+
+            case REPLY_LOBBY_NAME:
+                srvRep = (String) message.getObj()[0];
+                cli.setLobbyName(srvRep);
+                System.out.println("You joined the lobby "+srvRep+"!");
+                break;
+
             //quando si raggiunge il numero prefissato di persone nella lobby
             case REPLY_BEGIN_GAME:
+                //imposto il gameID nel client
+                cli.setGameID(message.getGameID());
 
+                //vado alla scena di gioco impostando i parametri ricevuti
+                //ovvero le carte della mano e le common goal cards
+                break;
+
+            //quando ricevo la risposta della scelta delle secret goal card
+            case REPLY_SECRET_GC:
+                gcs = (String[]) message.getObj();
+                break;
         }
         return message;
     }
@@ -32,13 +56,54 @@ public class TUI implements MessageListener {
         String[] command;
         String message;
 
+
+        //inizialmente mando i messaggi per far avviare il gioco
+        while(cli.getLobbyName().isEmpty()){
+            System.out.print("Insert a valid Nickname to start a game:");
+            //metodo bloccante che aspetta l'ingresso dell'utente
+            command = scanner.nextLine().split(" ");
+            cli.sendMessage(
+                    new Message(
+                            REQUEST_LOGIN,
+                            cli.getSocketPort(),
+                            -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
+                            new Object[]{command}
+                    )
+            );
+        }
+
+        //se l'utente manda messaggi in fase di attesa non faccio nulla
+        while(cli.getGameID() == -1){
+            scanner.nextLine();
+            System.out.println("Waiting for other players to start the game...");
+        }
+
+        //richiedo all'utente di scegliere le secretGoalCards
+        cli.sendMessage(
+                new Message(
+                        REQUEST_SECRET_GC,
+                        cli.getSocketPort(),
+                        -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
+                        ""
+                )
+        );
+        //adesso l'array di string gcs è inizializzato con dei valori validi!!!
+
+
+        boolean valid = false;
+        while(!valid){
+            System.out.print("Select your secret goal card between the 2 (type 1 or 2 to choose):");
+            command = scanner.nextLine().split(" ");
+            if(command[0].equals("1") || command[0].equals("2")){
+                //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
+                valid = true;
+            }
+        }
+
+        //vera fase di gioco
         while(true){
             //stampo il layout
             //System.out.println(printTui());
-
-
-
-
 
             //chiedo all'utente di inserire un comando
             System.out.println("Type '/help' to view the Commands List):");

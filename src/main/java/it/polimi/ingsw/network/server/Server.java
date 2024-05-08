@@ -258,11 +258,10 @@ public class Server extends UnicastRemoteObject {
      * Method to handle the login of the client
      * @param message the message received
      */
-
+    //NOTA BENE: i giocatori di una lobby non hanno un proprio gameID fino a quando
+    //la partita non ha inizio!!!
     public void serverLogin(Message message) throws IOException {
-        Object[] request = message.getObj();
-        String requestNick = (String) request[0];
-
+        String requestNick = (String) message.getObj()[0];
 
         //controllo se il nome è già presente
         boolean duplicates = gameControllerMap.values().stream()
@@ -278,7 +277,7 @@ public class Server extends UnicastRemoteObject {
                             REPLY_BAD_REQUEST,
                             this.serverSocket.getLocalPort(),
                             message.getGameID(),
-                            "Nickname non valido"
+                            "Nickname non valid, try a different nickname!"
                     )
             );
         }else{
@@ -286,19 +285,30 @@ public class Server extends UnicastRemoteObject {
             boolean found = false;
             for(Lobby l: lobbyPlayerMap.keySet()) {
                 if(!l.isGameStarted() && !l.isLobbyFull()) {
+
+                    //comunico il nome della lobby e il gameID
+                    idSocketMap.get(message.getSenderID()).sendMessage(
+                            new Message(
+                                    REPLY_LOBBY_NAME,
+                                    this.serverSocket.getLocalPort(),
+                                    -1,
+                                    new Object[]{l.getLobbyName()}
+                            )
+                    );
+
+                    //aggiungo il playerID alla lobby
                     lobbyPlayerMap.get(l)[l.getPlayersConnected()] = message.getSenderID();
                     l.incrementPlayersConnected();
 
                     //aggiungo il nuovo giocatore alla partita
                     Player p = new Player(requestNick, message.getSenderID());
-                    gameControllerMap.get(message.getGameID()).getCurrentGame().addPlayer(p);
-                    //idSocketMap.put(message.getSenderID(), clientHandler); non so come fare, ma dovremmo metterlo
+                    gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame().addPlayer(p);
                     idPlayerMap.put(message.getSenderID(), p);
 
                     //se raggiungo il numero stabilito di giocatori, avvio la partita
                     if(l.isLobbyFull()){
                         l.setGameStarted(true);
-                        //inizializza le mani di tutti
+                        //inizializza le mani di tutti i giocatori
                         gameControllerMap.get(message.getGameID()).beginGame();
 
 
@@ -311,25 +321,25 @@ public class Server extends UnicastRemoteObject {
                             idSocketMap.get(message.getSenderID()).sendMessage(
                                     new Message(
                                             REPLY_BEGIN_GAME,
-                                            this.serverSocket.getLocalPort(),
-                                            message.getGameID(),
+                                            serverSocket.getLocalPort(),
+                                            //mando a tutti il gameID come primo parametro per la prima volta
+                                            lobbyPlayerMap.get(l)[0],
 
                                             new Object[]{
-                                                    //mando a tutti il gameID come primo parametro
-                                                    message.getSenderID(),
-
                                                     //mando a tutti l'UUID delle carte delle loro mani
                                                     Arrays.stream(gameControllerMap.get(message.getGameID())
                                                             .returnHand(idPlayerMap.get(pID)))
-                                                            .map(PlayableCard::getUUID)
+                                                            .map(PlayableCard::getUUID),
+
+                                                    //mando a tutti l'UUID delle common goal cards
+                                                    Arrays.stream(gameControllerMap.get(message.getGameID())
+                                                            .getCurrentGame()
+                                                            .getCommonGoalCards())
+                                                            .map(GoalCard::getUUID)
                                             }
-
-
                                     )
                             );
-
                         }
-
                     }
                     found = true;
                     break;

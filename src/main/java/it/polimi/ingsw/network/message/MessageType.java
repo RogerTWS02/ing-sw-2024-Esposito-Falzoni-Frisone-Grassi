@@ -18,10 +18,13 @@ public enum MessageType {
     //messaggi per entrare in lobby/creare una nuova lobby
     REQUEST_LOGIN,
     REQUEST_NEW_LOBBY,
+    REQUEST_SECRET_GC,
+    REPLY_LOBBY_NAME,
     REPLY_NEW_LOBBY,
 
     //messaggi per iniziare il gioco
     REPLY_BEGIN_GAME,
+    REPLY_SECRET_GC,
     REPLY_END_GAME,
 
     //messaggi per richiedere/ricevere il punteggio dei giocatori

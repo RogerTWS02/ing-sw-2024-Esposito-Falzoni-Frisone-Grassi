@@ -22,8 +22,8 @@ public class Client  {
 
     private final int port;
     private Socket socket;
-    private String lobbyName;
-    private int gameID;
+    private String lobbyName = "";
+    private int gameID = -1;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
     private final Logger logger = Logger.getLogger(getClass().getName());
@@ -120,6 +120,10 @@ public class Client  {
 
     public int getGameID() {
         return gameID;
+    }
+
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
     }
 
     public String getLobbyName() {
