@@ -6,13 +6,12 @@ import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageListener;
 
 import java.util.Scanner;
-import java.util.logging.Level;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
 
 public class TUI implements MessageListener {
     public static Client cli;
-    private String[] gcs;
+    private static String[] gcs;
 
     //Faccio l'update della tui in base ai messaggi ricevuti
     @Override
@@ -38,6 +37,8 @@ public class TUI implements MessageListener {
 
                 //vado alla scena di gioco impostando i parametri ricevuti
                 //ovvero le carte della mano e le common goal cards
+                System.out.println("Gioco iniziato! Stampo mano, goal comuni e quello privato, mazzi, board e punteggio ecc...");
+
                 break;
 
             //quando ricevo la risposta della scelta delle secret goal card
@@ -96,6 +97,7 @@ public class TUI implements MessageListener {
             command = scanner.nextLine().split(" ");
             if(command[0].equals("1") || command[0].equals("2")){
                 //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
+                System.out.println("Il giocatore ha scelto la carta: "+((command[0].equals("1"))? gcs[0] : gcs[1]));
                 valid = true;
             }
         }
@@ -118,6 +120,8 @@ public class TUI implements MessageListener {
                             /placeCard posX posY - try to place a card on the playerBoard
                             /drawCardFromDeck Golden/Resource - draws a card form Deck according to te specified type
                             /drawCardFromViewable Golden/Resource 1/2 - draws from the viewable cards according to the specified index
+                            /openChat - opens the chat tab where you can type messages to the lobby and watch the messages from others players
+                            /closeChat - closes the chat tab and resume the game interface
                             /TEMPLATE PARAM_1, PARAM_2
                             """;
 
@@ -170,13 +174,13 @@ public class TUI implements MessageListener {
                     );
                     break;
 
-                case "/drawCardFromDeck":
+                case "/drawCardFromViewable":
                     if(command.length < 2) break;
-                    String type = command[1].toLowerCase();
+                    String type = command[0].toLowerCase();
                     int pos = 0;
                     try {
-                        pos = Integer.parseInt(command[2]);
-                        if(pos > 2) break;
+                        pos = Integer.parseInt(command[1]);
+                        if(pos > 2 || pos < 1) break;
                     }catch(NumberFormatException e){
                         System.out.println(e);
                         break;
@@ -184,7 +188,7 @@ public class TUI implements MessageListener {
                     if(type.equals("golden")){
                         cli.sendMessage(
                                 new Message(
-                                        REQUEST_DRAW_FROM_DECK,
+                                        REQUEST_DRAW_FROM_VIEWABLE,
                                         cli.getSocketPort(),
                                         cli.getGameID(),
                                         new Object[]{true, pos - 1})
@@ -193,7 +197,7 @@ public class TUI implements MessageListener {
                     if(type.equals("resource")){
                         cli.sendMessage(
                                 new Message(
-                                        REQUEST_DRAW_FROM_DECK,
+                                        REQUEST_DRAW_FROM_VIEWABLE,
                                         cli.getSocketPort(),
                                         cli.getGameID(),
                                         new Object[]{false, pos - 1})
@@ -201,14 +205,13 @@ public class TUI implements MessageListener {
                     }
                     break;
 
-                case "/drawCardFromViewable":
-                    if(command.length < 2) break;
-                    String ty = command[1].toLowerCase();
+                case "/drawCardFromDeck":
+                    String ty = command[0].toLowerCase();
 
                     if(ty.equals("golden")){
                         cli.sendMessage(
                                 new Message(
-                                        REQUEST_DRAW_FROM_VIEWABLE,
+                                        REQUEST_DRAW_FROM_DECK,
                                         cli.getSocketPort(),
                                         cli.getGameID(),
                                         new Object[]{true, 2})
@@ -217,7 +220,7 @@ public class TUI implements MessageListener {
                     if(ty.equals("resource")){
                         cli.sendMessage(
                                 new Message(
-                                        REQUEST_DRAW_FROM_VIEWABLE,
+                                        REQUEST_DRAW_FROM_DECK,
                                         cli.getSocketPort(),
                                         cli.getGameID(),
                                         new Object[]{false, 2})
