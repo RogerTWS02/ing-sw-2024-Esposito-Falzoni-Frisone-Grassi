@@ -3,8 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * This class is a subclass of GoalCard, and particularly it includes all the cards
- * which have a pattern objective.
+ * This class represents the PatternGoalCard, a type of GoalCard that checks if a certain pattern is matched on the board.
  */
 public class PatternGoalCard extends GoalCard {
     // array [0,0,x1,y1,x2,y2]  of relative position of the card in the pattern related to the first card
@@ -14,13 +13,13 @@ public class PatternGoalCard extends GoalCard {
     private final String UUID;
 
     /**
-     * This method constructs a PatternGoalCard.
+     * The constructor of the class, it creates a new PatternGoalCard with the given parameters.
      *
-     * @param points the points the card gives for each objective
-     * @param patternPosition the pattern positions we are looking for.
-     * @param patternResource the pattern resources we are looking for (the resources identify the colors).
+     * @param points The points that the player will get if the pattern is matched.
+     * @param patternPosition The relative position of the card in the pattern related to the card.
+     * @param patternResource The resources that are expected to be found in the pattern.
+     * @param UUID The UUID of the card, which identifies it uniquely.
      */
-
     public PatternGoalCard(int points, int[] patternPosition, Resource[] patternResource, String UUID) {
         super(points, UUID);
         this.patternPosition = patternPosition;
@@ -29,13 +28,11 @@ public class PatternGoalCard extends GoalCard {
     }
 
     /**
-     * This method iterates all the board, and it returns the points scored summing how many times
-     * the pattern given is matched.
+     * Returns the points scored summing how many times the card pattern is matched.
      *
-     * @param board the board in which we are looking for the goal
-     * @return an int of how many points the player has actually scored
+     * @param board The player board to check the goal on.
+     * @return The points scored by the player.
      */
-
     @Override
     public int checkGoal(PlayerBoard board) {
         int timesMatched = 0;
@@ -88,10 +85,20 @@ public class PatternGoalCard extends GoalCard {
         return timesMatched * this.getPoints();
     }
 
+    /**
+     * Returns the pattern of the card.
+     *
+     * @return The pattern of the card.
+     */
     public int[] getPatternPosition() {
         return patternPosition;
     }
 
+    /**
+     * Returns the resources that are expected to be found in the pattern.
+     *
+     * @return The array of resources that are expected to be found in the pattern.
+     */
     public Resource[] getPatternResource() {
         return patternResource;
     }

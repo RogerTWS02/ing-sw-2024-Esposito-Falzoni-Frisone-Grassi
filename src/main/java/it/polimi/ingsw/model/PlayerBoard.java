@@ -1,20 +1,25 @@
 package it.polimi.ingsw.model;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static it.polimi.ingsw.model.State.*;
 
+/**
+ * This class represents the player's board in the game.
+ */
 public class PlayerBoard implements Serializable{
     protected PlayableCard[][] grid = new PlayableCard[81][81];
     public Pawn pawn;
 
     private boolean firstcard = true;
 
+    /**
+     * The constructor creates a player board, given the panw of the player.
+     *
+     * @param pawn The pawn of the player.
+     */
     public PlayerBoard(Pawn pawn) {
         this.pawn = pawn;
     }

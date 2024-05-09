@@ -1,8 +1,6 @@
 package it.polimi.ingsw.network.message;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Optional;
 
 public class Message implements Serializable{
     private final MessageType messageType;

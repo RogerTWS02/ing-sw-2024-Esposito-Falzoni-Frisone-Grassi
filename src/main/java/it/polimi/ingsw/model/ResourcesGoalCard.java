@@ -1,26 +1,22 @@
 package it.polimi.ingsw.model;
 
-import java.lang.reflect.MalformedParameterizedTypeException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This is a GoalCard subclass which includes all the GoalCards which have an array of
- * resources as objective.
+ * This class represents the goal cards that require the player to have a certain amount of resources in oder to score points.
  */
 public class ResourcesGoalCard extends GoalCard{
     private final Map<Resource, Integer> resources;
     private final Map<Resource, Integer> countResources;
     private final String UUID;
 
-    /* how can we combine the fact that has a final attribute to the playerboard with the existence of common goalcard? */
-
-
     /**
-     * This is the constructor of these cards.
+     * The constructor creates a goal card, given the points, the resources and the UUID of the card.
      *
-     * @param points the points the card gives each time the player matches the objective
-     * @param resources the objective to reach
+     * @param points The points given by the goal card.
+     * @param resources The resources required by the goal card in order to score points.
+     * @param UUID The UUID of the goal card, which identifies it uniquely.
      */
     public ResourcesGoalCard(int points, Map<Resource, Integer> resources, String UUID) {
         super(points, UUID);

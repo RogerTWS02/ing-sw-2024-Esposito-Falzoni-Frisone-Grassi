@@ -5,7 +5,6 @@ import it.polimi.ingsw.network.message.Message;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 

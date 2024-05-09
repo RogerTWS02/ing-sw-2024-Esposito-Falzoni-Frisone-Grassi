@@ -1,6 +1,9 @@
 package it.polimi.ingsw.model;
 import java.io.Serializable;
 
+/**
+ * This class represents a player in the game.
+ */
 public class Player implements Serializable {
     private String nickname;
     public PlayableCard[] hand = new PlayableCard[3];
@@ -11,7 +14,12 @@ public class Player implements Serializable {
     private Pawn pawn;
     private int gameID;
 
-
+    /**
+     * The constructor crates a player with a nickname and a client port, passed as parameters.
+     *
+     * @param nickname The nickname of the player.
+     * @param clientPort The client port of the player.
+     */
     public Player(String nickname, int clientPort) {
         this.nickname = nickname;
         this.clientPort = clientPort;

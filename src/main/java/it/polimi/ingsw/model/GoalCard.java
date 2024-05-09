@@ -3,17 +3,18 @@ package it.polimi.ingsw.model;
 import java.io.Serializable;
 
 /**
- *The abstract class GoalCard represents those cards which have an amount of points for each
- * time the objective is reached.
+ * The abstract class GoalCard is the superclass of the GoalCards, which are the cards that give points for the objectives.
+
  */
 public abstract class GoalCard implements Serializable {
     private final String UUID;
     private final int points;
 
     /**
-     * Builder of a new GoalCard.
+     * The constructor creates a GoalCard object, setting the points and the UUID.
      *
-     * @param points the points associated to the card
+     * @param points the points the card gives for the objective.
+     * @param UUID the UUID of the card, which identifies it uniquely.
      */
     public GoalCard(int points, String UUID) {
         this.points = points;
@@ -21,26 +22,29 @@ public abstract class GoalCard implements Serializable {
     }
 
     /**
-     * This method returns the points a card gives for each objective.
+     * Returns the points the GoalCard gives for the objective.
      *
-     * @return points
+     * @return the points the GoalCard gives for the objective.
      */
     public int getPoints(){
         return points;
    }
 
     /**
-     * This is the function that actually checks how many points the player has scored
-     * counting how many objectives he has reached.
+     * Overriden by the subclasses, checks if the GoalCard relative objective is reached.
      *
-     * @param board the board in which we are looking for the goal
-     * @return 0 this is a standard returning, in the subclasses it is overridden, returning the points scored.
+     * @param board the PlayerBoard to check the objective on.
+     * @return the points the GoalCard gives for the objective.
      */
     public int checkGoal(PlayerBoard board){
         return 0;
     }
 
-    //UUID getter
+    /**
+     * Returns the UUID of the GoalCard, which identifies it uniquely.
+     *
+     * @return the UUID of the GoalCard.
+     */
     public String getUUID() {
         return UUID;
     }

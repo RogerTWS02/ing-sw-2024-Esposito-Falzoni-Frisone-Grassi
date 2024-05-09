@@ -10,13 +10,29 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
+
+/**
+ * GameController class controls the game, by managing decks, players, cards.
+*/
 public class GameController {
     private final Game currentGame;
+
+    /**
+     * Constructor of the GameController class. It creates a new Game object.
+     *
+     * @param gameID The ID of the game to be created, which identifies it uniquely.
+     * @throws FileNotFoundException in case error occurs in retrieving an old saving file.
+     */
     public GameController(int gameID) throws FileNotFoundException {
         this.currentGame = new Game(gameID);
     }
 
-    //Draws a card from the deck passed by parameter
+    /**
+     * Draws a random PlayableCard from the deck passed by parameter.
+     *
+     * @param deck The deck from which the card is drawn.
+     * @return the PlayableCard object drawn from the deck and instantiated.
+     */
     public PlayableCard drawPlayableFromDeck(JSONArray deck) {
         if(deck.isEmpty()){
             throw new IllegalArgumentException("Selected deck is empty!");
@@ -35,6 +51,11 @@ public class GameController {
         return null;
     }
 
+    /**
+     * Draws a random GoalCard from the deck, which can be either a ResourcesGoalCard or a PatternGoalCard.
+     *
+     * @return the GoalCard object drawn from the deck and instantiated.
+     */
     public GoalCard drawGoalFromDeck(){
         Random random = new Random();
         int randomIndex = random.nextInt(2);
@@ -61,6 +82,12 @@ public class GameController {
         }
     }
 
+    /**
+     * Crafts a ResourcesGoalCard object from a JSON object, passed by parameter.
+     *
+     * @param JSONcard The JSON object from which the GoalCard is instantiated.
+     * @return the ResourcesGoalCard object crafted from the JSON object.
+     */
     public GoalCard craftResourcesGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
         int points = ((Number) JSONcard.get("points")).intValue();
@@ -83,6 +110,12 @@ public class GameController {
         return new ResourcesGoalCard(points, resourcesMap, UUID);
     }
 
+    /**
+     * Crafts a PatternGoalCard object from a JSON object, passed by parameter.
+     *
+     * @param JSONcard The JSON object from which the GoalCard is instantiated.
+     * @return the PatternGoalCard object crafted from the JSON object.
+     */
     public GoalCard craftPatternGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
         int points = ((Number) JSONcard.get("points")).intValue();
@@ -99,6 +132,12 @@ public class GameController {
         return new PatternGoalCard(points, pattern, resources, UUID);
     }
 
+    /**
+     * Crafts a ResourceCard object from a JSON object, passed by parameter.
+     *
+     * @param JSONcard The JSON object from which the PlayableCard is instantiated.
+     * @return the ResourceCard object crafted from the JSON object.
+     */
     public PlayableCard craftResourceCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
         int points = ((Number) JSONcard.get("points")).intValue();
@@ -109,6 +148,12 @@ public class GameController {
         return card;
     }
 
+    /**
+     * Crafts a GoldenCard object from a JSON object, passed by parameter.
+     *
+     * @param JSONcard The JSON object from which the PlayableCard is instantiated.
+     * @return the GoldenCard object crafted from the JSON object.
+     */
     public PlayableCard craftGoldenCard(JSONObject JSONcard){
         Object rule;
         String UUID = (String) JSONcard.get("UUID");
@@ -131,6 +176,12 @@ public class GameController {
         return card;
     }
 
+    /**
+     * Crafts a StartingCard object from a JSON object, passed by parameter.
+     *
+     * @param JSONcard The JSON object from which the PlayableCard is instantiated.
+     * @return the StartingCard object crafted from the JSON object.
+     */
     public PlayableCard craftStartingCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
         JSONArray JSONpermRes = (JSONArray) JSONcard.get("permRes");
@@ -146,6 +197,12 @@ public class GameController {
         return card;
     }
 
+    /**
+     * Converts a string to a Resource object.
+     *
+     * @param resource The string to be converted.
+     * @return the Resource object converted from the string.
+     */
     public Resource stringToResource(String resource){
         if(resource == null){
             return null;
@@ -162,6 +219,13 @@ public class GameController {
         };
     }
 
+    /**
+     * Crafts a Corner array from a JSON array and a PlayableCard object, passed by parameter.
+     *
+     * @param JSONCorners The JSON array from which the Corner array is instantiated.
+     * @param card The PlayableCard object to which the Corner array belongs.
+     * @return the Corner array crafted from the JSON array.
+     */
     public Corner[] craftCornerArray(JSONArray JSONCorners, PlayableCard card){
         Corner[] corners = new Corner[4];
         for(int i = 0; i < 4; i++){
@@ -176,11 +240,12 @@ public class GameController {
         return corners;
     }
 
-    //Draws a card from the two common cards on the table of the specified type,
-    //or the card on the top of the specified deck, and replace it if possible
-    //
-    //type==0: resourceCard, type==1: goldenCard
-    //card==0: "first" card, card==1: "second" card, card==2: card on the top of the deck
+    /**
+     * Draws a card picked from the viewable cards, which can be either a golden card, a resource card or a card on the top of the decks.
+     * Also, replaces the drawn card with a new one.
+     *
+     * @return the picked PlayableCard object drawn from the viewable cards.
+     */
     public PlayableCard drawViewableCard(boolean whichType, int whichCard){
         if(whichCard < 0 || whichCard > 2){
             throw new IllegalArgumentException("Invalid card index!");
@@ -197,7 +262,12 @@ public class GameController {
         return card;
     }
 
-    //type == 1: goldenCard, type == 0: resourceCard
+    /**
+     * Sets a new viewable card in the deck and position specified by the parameters.
+     *
+     * @param type The type of the card to be set.
+     * @param index The index of the card to be set.
+     */
     public void setNewViewableCard(boolean type, int index) {
         if(type){
             currentGame.viewableGoldenCards[index] = (GoldenCard) drawPlayableFromDeck(currentGame.goldenDeck);
@@ -206,12 +276,21 @@ public class GameController {
         }
     }
 
+    /**
+     * Sets the two random common goal cards of the game.
+     */
     public void setCommonGoalCards(){
         currentGame.commonGoalCards[0] = drawGoalFromDeck();
         currentGame.commonGoalCards[1] = drawGoalFromDeck();
 
     }
 
+    /**
+     * Adds a player to the game, with the nickname and the client port passed by parameter.
+     *
+     * @param nickname The nickname of the player to be added.
+     * @param clientPort The client port of the player to be added.
+     */
     public void addPlayer(String nickname, int clientPort) throws SecurityException {
         /* check if player already exists */
         for(int p = 0; p < currentGame.getPlayers().size(); p++){
@@ -236,6 +315,13 @@ public class GameController {
         }
     }
 
+    /**
+     * Player's hand getter.
+     *
+     * @param player The player whose hand is to be returned.
+     * @return the PlayableCard array representing the player's hand.
+     * @throws IllegalArgumentException in case the player is null or not in the game.
+     */
     public PlayableCard[] returnHand(Player player){
         if(player == null || !currentGame.getPlayers().contains(player)) {
             throw new IllegalArgumentException("Illegal player parameter!");
@@ -243,9 +329,15 @@ public class GameController {
         return player.getHand();
     }
 
-    /*
-    Checks if a position is available and the card is not null, then place it,
-    check if the card contains some rule to obtain the points and then update the score
+    /**
+     * Places a card on the player's board, at the position passed by parameter.
+     *
+     * @param i The X coordinate of the position where the card is to be placed.
+     * @param j The Y coordinate of the position where the card is to be placed.
+     * @param card The card to be placed on the board.
+     * @param player The player who is placing the card.
+     * @throws SecurityException in case the position is invalid or the card cannot be placed.
+     * @throws IllegalArgumentException in case the position is invalid.
      */
     public void placeCard(int i, int j, PlayableCard card, Player player) throws SecurityException {
         try {
@@ -283,8 +375,11 @@ public class GameController {
         }
     }
 
-    /*
-    iterate all the cell of the board, returns them if they are available
+    /**
+     * Shows the available positions on the board where the player can place a card.
+     *
+     * @param player The player whose available positions are to be shown.
+     * @return the list of int arrays representing the available positions.
      */
     public List<int[]> showAvailableOnBoard(Player player){
         List<int[]> availablePosition = new ArrayList<>();
@@ -301,7 +396,11 @@ public class GameController {
         return availablePosition;
     }
 
- // update score with goal points
+    /**
+     * Calculates the player's score, considering the common goal cards.
+     *
+     * @param player The player whose score is to be calculated.
+     */
     public void getPointsFromGoalCards(Player player){
         // firstly common goal
         System.out.println(currentGame);
@@ -314,10 +413,22 @@ public class GameController {
         player.setScore(player.getScore() + player.getSecretGoalCard().checkGoal(player.getPlayerBoard()));
     }
 
+    /**
+     * Player's PlayerBoard getter.
+     *
+     * @param p The player whose PlayerBoard is to be returned.
+     * @return the PlayerBoard object representing the player's board.
+     */
     public PlayerBoard viewPlayerBoard(Player p){
         return p.getPlayerBoard();
     }
 
+    /**
+     * Sets the number of players in the game.
+     *
+     * @param number The number of players to be set.
+     * @throws IllegalArgumentException in case the number of players is invalid.
+     */
     public void setNumberOfPlayers(int number) throws IllegalArgumentException{
         if(number < 5 && number > 1) {
             ArrayList<Player> list = new ArrayList<>(); //(number);
@@ -331,7 +442,11 @@ public class GameController {
         }
     }
 
-    //Returns two goal cards
+    /**
+     * Draws two goal cards from the deck.
+     *
+     * @return the array of GoalCard objects drawn from the deck.
+     */
     public GoalCard[] drawGoalCardsToChoose(){
         GoalCard[] cards = new GoalCard[2];
         cards[0] = drawGoalFromDeck();
@@ -339,6 +454,11 @@ public class GameController {
         return cards;
     }
 
+    /**
+     * Performs a series of actions useful to begin the game.
+     *
+     * @throws IOException in case an error occurs during the game setup.
+     */
     public void beginGame() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Insert the number of players: ");
@@ -355,12 +475,20 @@ public class GameController {
         System.out.println("Everything is set up!\n");
     }
 
-    //currentGame getter
+    /**
+     * Returns the current game.
+     *
+     * @return the Game object representing the current game.
+     */
     public Game getCurrentGame() {
         return currentGame;
     }
 
-    //Check if it's time to begin the end game phase and begin if it's time; boolean in order to make it testable
+    /**
+     * Checks if it's time to begin the end game phase flow.
+     *
+     * @return true if the end game phase has to be begun, false otherwise.
+     */
     public boolean checkEndGamePhase(){
         if((currentGame.viewableResourceCards[2] == null && currentGame.viewableGoldenCards[2] == null) || checkPlayersScore()){
             endGamePhase();
@@ -369,7 +497,11 @@ public class GameController {
         return false;
     }
 
-    //Check players points for checking end game phase beginning
+    /**
+     * Checks if a player has reached a score of 20 points.
+     *
+     * @return true if a player has reached a score of 20 points, false otherwise.
+     */
     public boolean checkPlayersScore(){
         for(int i = 0; i < currentGame.getPlayers().size(); i++){
             if(currentGame.getPlayers().get(i).getScore() >= 20){
@@ -379,7 +511,9 @@ public class GameController {
         return false;
     }
 
-    //End game phase handler
+    /**
+     * Performs the end game phase flow.
+     */
     public void endGamePhase(){
         //TODO: Implement end game phase flow
         currentGame.setLastPhase();

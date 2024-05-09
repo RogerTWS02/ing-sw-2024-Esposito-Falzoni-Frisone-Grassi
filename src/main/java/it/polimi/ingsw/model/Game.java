@@ -4,12 +4,13 @@ import java.io.*;
 import java.util.Random;
 import java.util.ArrayList;
 
-import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.network.server.Server;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+/**
+ * The class Game represents a game and manages the game's data.
+ */
 public class Game implements Serializable{
     private Player startingPlayer;
     private ArrayList<Player> players;
@@ -26,9 +27,11 @@ public class Game implements Serializable{
     private boolean isOver = false;
     private boolean isInLastPhase = false;
 
-    /**.
-     * This is the constructor of the game, which gets to initialize a list of players,
-     * it creates decks, and also sets the visible cards on the table.
+    /**
+     * This constructor creates a new game with the given gameID, retrieving it from a previous saving if it exists.
+     *
+     * @param gameID The gameID of the game, which identifies it uniquely.
+     * @throws FileNotFoundException If the old saving file exists but can't be retrieved.
      */
     public Game(int gameID) throws FileNotFoundException {
         this.gameID = gameID;
@@ -58,7 +61,7 @@ public class Game implements Serializable{
     }
 
     /**
-     * This method generates all the different decks as JSONArrays.
+     * Instantiate the JSON array decks of the game by reading JSON files.
      */
     public void createDecks(){
         JSONParser parser = new JSONParser();
@@ -95,8 +98,12 @@ public class Game implements Serializable{
         }
     }
 
-    //Implementing persistency
 
+    /**
+     * Saves the game in a file named after the gameID.
+     *
+     * @throws IOException If the file can't be saved.
+     */
     public void saveGame() throws IOException {
         //Delete old saving if it exists
         File oldGameFile = new File("savings/" + gameID + "game.svs");
@@ -118,7 +125,9 @@ public class Game implements Serializable{
         }
     }
 
-    //Deletes old saving
+    /**
+     * Deletes the old saving file of the game.
+     */
     public void deleteOldSaving(){
         File old = new File("savings/" + gameID + "game.svs");
         if(old.exists()){
@@ -128,7 +137,12 @@ public class Game implements Serializable{
         }
     }
 
-    //Retrieve a saved game
+    /**
+     * Retrieves the game from the file named after the gameID.
+     *
+     * @param gameID The gameID of the game to retrieve.
+     * @return The game retrieved from the file.
+     */
     public static Game retrieveGame(int gameID){
         try(ObjectInputStream saving = new ObjectInputStream(new FileInputStream("savings/" + gameID + "game.svs"))){
             return (Game) saving.readObject();
@@ -138,7 +152,12 @@ public class Game implements Serializable{
         return null;
     }
 
-    //Check if there's an old game saving
+    /**
+     * Checks if an old game with the given gameID exists.
+     *
+     * @param gameID The gameID of the game to check.
+     * @return true if the game exists, false otherwise.
+     */
     public static boolean checkOldGame(int gameID){
         File old = new File("savings/" + gameID + "game.svs");
         if(old.exists()){
@@ -149,9 +168,9 @@ public class Game implements Serializable{
     }
 
     /**
-     * This method picks a random player and sets it as the first player in the game
+     * Sets a random player as the starting player.
      */
-   public void setStartingPlayer(){
+    public void setStartingPlayer(){
        if(players == null || players.isEmpty() || players.contains(null)){
            throw new RuntimeException("No players in the game / a player can't be null!");
        }
@@ -160,57 +179,82 @@ public class Game implements Serializable{
        this.startingPlayer = players.get(randomNumber);
        currentPlayer = this.startingPlayer;
    }
-    public void addPlayer(Player p) {
-       this.players.add(p);
-    }
 
+    /**
+     * Sets an array of players as the players of the game.
+     *
+     * @param players The array of players to set.
+     */
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
 
     /**
-     * This method returns the active player on this turn.
-     * @return the player
+     * Returns the player who is currently playing.
+     *
+     * @return The player who is currently playing.
      */
     public Player getCurrentPlayer(){
         return currentPlayer;
     }
 
-    //startingPlayer getter
+    /**
+     * Returns the starting player of the game.
+     *
+     * @return The starting player of the game.
+     */
     public Player getStartingPlayer(){
         return startingPlayer;
     }
 
     /**
-     *  A call to this method is made when someone wants to get the two common goal cards.
-     * @return the array of goal cards which are in common
+     * Returns the two common goal cards of the game.
+     *
+     * @return The two common goal cards of the game.
      */
     public GoalCard[] getCommonGoalCards(){
         return commonGoalCards;
     }
 
-
+    /**
+     * Sets the common goal cards of the game.
+     *
+     * @param commonGoalCards The common goal cards to set.
+     */
     public void setCommonGoalCards(GoalCard[] commonGoalCards) {
         this.commonGoalCards = commonGoalCards;
     }
 
     /**
-     * A call to this method is made when someone wants to get all the players in the game.
-     *
-     * @return the list of players who are connected to the game
+     * Returns the players of the game.
      */
     public ArrayList<Player> getPlayers() {
         return players;
     }
 
+    /**
+     * Returns the viewable resource cards of the game.
+     *
+     * @return The viewable resource cards of the game.
+     */
     public ResourceCard[] getViewableResourceCards() {
         return viewableResourceCards;
     }
 
+    /**
+     * Returns the viewable golden cards of the game.
+     *
+     * @return The viewable golden cards of the game.
+     */
     public GoldenCard[] getViewableGoldenCards() {
         return viewableGoldenCards;
     }
 
+    /**
+     * Returns the player who won the game.
+     *
+     * @return The player who won the game.
+     */
     public Player getWinner(){
         Player winner = players.getFirst();
         for(Player p : players){
@@ -221,22 +265,43 @@ public class Game implements Serializable{
         return winner;
     }
 
+    /**
+     * Sets the state of the game to "over".
+     */
     public void gameOver(){
         isOver = true;
     }
 
+    /**
+     * Returns if the game is in the last phase.
+     *
+     * @return true if the game is in the last phase, false otherwise.
+     */
     public boolean isInLastPhase(){
         return isInLastPhase;
     }
 
+    /**
+     * Returns if the game is over.
+     *
+     * @return true if the game is over, false otherwise.
+     */
     public boolean isGameOver(){
         return isOver;
     }
 
+    /**
+     * Sets the game state as "in the last phase".
+     */
     public void setLastPhase(){
         this.isInLastPhase = true;
     }
 
+    /**
+     * Returns the gameID of the game.
+     *
+     * @return The gameID of the game.
+     */
     public int getGameID(){
         return gameID;
     }
