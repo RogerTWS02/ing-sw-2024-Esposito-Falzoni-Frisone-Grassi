@@ -13,7 +13,7 @@ public class TUI implements MessageListener {
     public static Client cli;
     private static String[] gcs;
 
-    //Faccio l'update della tui in base ai messaggi ricevuti
+    //Faccio l'aggiornamento della tui in base ai messaggi ricevuti
     @Override
     public Message onMessageReceived(Message message) {
         //System.out.println(message.getMessageType() + " sent by " + message.getSenderID());
@@ -45,6 +45,19 @@ public class TUI implements MessageListener {
             case REPLY_SECRET_GC:
                 gcs = (String[]) message.getObj();
                 break;
+
+            //in risposta ai comandi di /drawCardFromDeck e /drawCardFromViewable
+            case REPLY_HAND_UPDATE:
+                String newCardUUID = (String) message.getObj()[0];
+
+                //con l'UUID aggiorno lo stato dello schermo della console
+
+                break;
+
+            case REPLY_UPDATED_SCORE:
+                int newScore = (Integer) message.getObj()[0];
+
+                //aggiorno l'interfaccia tui che gestisce il punteggio
         }
         return message;
     }
@@ -92,14 +105,29 @@ public class TUI implements MessageListener {
 
 
         boolean valid = false;
-        while(!valid){
-            System.out.print("Select your secret goal card between the 2 (type 1 or 2 to choose):");
+        while(true){
+            System.out.print("Select your secret goal card between the two (type 1 or 2 to choose):");
             command = scanner.nextLine().split(" ");
             if(command[0].equals("1") || command[0].equals("2")){
+                String selectedUUID = (command[0].equals("1"))? gcs[0] : gcs[1];
+
                 //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
-                System.out.println("Il giocatore ha scelto la carta: "+((command[0].equals("1"))? gcs[0] : gcs[1]));
+
+                System.out.println("Il giocatore ha scelto la carta: "+selectedUUID);
                 valid = true;
+
+                //notifico il server per la scelta fatta
+                cli.sendMessage(
+                        new Message(
+                                NOTIFY_SECRET_GC,
+                                cli.getSocketPort(),
+                                cli.getGameID(),
+                                new Object[]{selectedUUID}
+                        )
+                );
             }
+            if(valid) break;
+            System.out.print("Input given is incorrect! Try again.");
         }
 
         //vera fase di gioco
@@ -167,7 +195,7 @@ public class TUI implements MessageListener {
 
                     cli.sendMessage(
                             new Message(
-                                    REQUEST_CARD,
+                                    REQUEST_PLAYER_MOVE,
                                     cli.getSocketPort(),
                                     cli.getGameID(),
                                     new Object[]{positionX, positionY})
@@ -188,7 +216,7 @@ public class TUI implements MessageListener {
                     if(type.equals("golden")){
                         cli.sendMessage(
                                 new Message(
-                                        REQUEST_DRAW_FROM_VIEWABLE,
+                                        REQUEST_CARD,
                                         cli.getSocketPort(),
                                         cli.getGameID(),
                                         new Object[]{true, pos - 1})
@@ -197,7 +225,7 @@ public class TUI implements MessageListener {
                     if(type.equals("resource")){
                         cli.sendMessage(
                                 new Message(
-                                        REQUEST_DRAW_FROM_VIEWABLE,
+                                        REQUEST_CARD,
                                         cli.getSocketPort(),
                                         cli.getGameID(),
                                         new Object[]{false, pos - 1})
@@ -211,7 +239,7 @@ public class TUI implements MessageListener {
                     if(ty.equals("golden")){
                         cli.sendMessage(
                                 new Message(
-                                        REQUEST_DRAW_FROM_DECK,
+                                        REQUEST_CARD,
                                         cli.getSocketPort(),
                                         cli.getGameID(),
                                         new Object[]{true, 2})
@@ -220,7 +248,7 @@ public class TUI implements MessageListener {
                     if(ty.equals("resource")){
                         cli.sendMessage(
                                 new Message(
-                                        REQUEST_DRAW_FROM_DECK,
+                                        REQUEST_CARD,
                                         cli.getSocketPort(),
                                         cli.getGameID(),
                                         new Object[]{false, 2})
@@ -233,7 +261,7 @@ public class TUI implements MessageListener {
             }
 
 
-            if(command.equals("exit")){
+            if(command[0].equals("exit")){
                 // Chiudo lo scanner
                 scanner.close();
                 break;

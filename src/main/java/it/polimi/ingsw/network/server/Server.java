@@ -174,7 +174,7 @@ public class Server extends UnicastRemoteObject {
                 );
 
                 break;
-            case PLAYER_MOVE:
+            case REQUEST_PLAYER_MOVE:
                 playerMove(message);
                 break;
         }
@@ -501,7 +501,20 @@ public class Server extends UnicastRemoteObject {
         //Card to place
         PlayableCard card = (PlayableCard) message.getObj()[2];
 
-        gameControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
+        try {
+            gameControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
+        }catch(SecurityException e){
+            //se ho fatto una mossa non valida mando un messaggio di bad request
+            idSocketMap.get(message.getSenderID()).sendMessage(
+                    new Message(
+                            REPLY_BAD_REQUEST,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            new Object[]{e}
+                    )
+            );
+            return;
+        }
 
         if(hasSocket) {
 
@@ -511,7 +524,7 @@ public class Server extends UnicastRemoteObject {
                             REPLY_UPDATED_SCORE,
                             this.serverSocket.getLocalPort(),
                             message.getGameID(),
-                            "New score: " + idPlayerMap.get(message.getSenderID()).getScore()
+                            idPlayerMap.get(message.getSenderID()).getScore()
                     )
             );
         }else{
