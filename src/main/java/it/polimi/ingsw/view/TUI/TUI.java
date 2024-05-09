@@ -4,7 +4,10 @@ import it.polimi.ingsw.model.GoalCard;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.message.MessageListener;
+import it.polimi.ingsw.view.TUI.GameState.InfoCard;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
@@ -12,6 +15,11 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 public class TUI implements MessageListener {
     public static Client cli;
     private static String[] gcs;
+    InfoCard infoC = new InfoCard();
+
+    public TUI() throws IOException, ParseException {
+    }
+
 
     //Faccio l'aggiornamento della tui in base ai messaggi ricevuti
     @Override
@@ -58,12 +66,19 @@ public class TUI implements MessageListener {
                 int newScore = (Integer) message.getObj()[0];
 
                 //aggiorno l'interfaccia tui che gestisce il punteggio
+                break;
+
+            case REPLY_INFO_CARD:
+                String infoUUID = (String) message.getObj()[0];
+
+                //stampo l'info della carta
+                System.out.print(infoC.showInfoCard(infoUUID));
+
+                break;
         }
         return message;
     }
-    private  String printTui(){
-        return "tui";
-    }
+
     public static void main(String[] args) {
         // Inizializza lo scanner per leggere da console
         Scanner scanner = new Scanner(System.in);

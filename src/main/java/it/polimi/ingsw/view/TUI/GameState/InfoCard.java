@@ -35,6 +35,7 @@ public class InfoCard  implements Views{
     JSONArray goldJSONArray = (JSONArray) JSONObjectGold;
     JSONParser parserResource = new JSONParser();
     BufferedReader bufferResource = new BufferedReader(new InputStreamReader(inputresource));
+
     Object JSONObjectResource = parserResource.parse(bufferResource);
     JSONArray resourceJSONArray = (JSONArray) JSONObjectResource;
 
