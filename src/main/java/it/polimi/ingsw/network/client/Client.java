@@ -29,6 +29,7 @@ public class Client  {
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
     private final Logger logger = Logger.getLogger(getClass().getName());
+    private static final String remoteHost = "172.17.0.2";
 
     public Client(String ip, int port) {
         this.ipServ = ip;
@@ -94,15 +95,13 @@ public class Client  {
             }
         }else{
             try{
-                out = new ObjectOutputStream(socket.getOutputStream());
-                inp = new ObjectInputStream(socket.getInputStream());
-                RMIServerInterface stub = (RMIServerInterface) LocateRegistry.getRegistry(ipServ, port).lookup(Server.NAME);
+                Registry registry = LocateRegistry.getRegistry();
+                RMIServerInterface stub = (RMIServerInterface) registry.lookup(Server.NAME);
                 logger.log(Level.INFO, "Client has connected to the server using RMI");
 
                 RMIGameFlow play = new RMIGameFlow(stub);
             }catch (NotBoundException | IOException e) {
                 logger.log(Level.SEVERE, "Error in connecting to server using RMI");
-                closeSocket();
             }
         }
 
@@ -119,7 +118,7 @@ public class Client  {
                     }
                 }
             }finally {
-                closeSocket();
+               return;
             }
         });
         t.start();

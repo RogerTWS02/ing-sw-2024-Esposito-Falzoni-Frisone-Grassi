@@ -37,6 +37,7 @@ public class Server extends UnicastRemoteObject {
     private final Map<Integer, Player> idPlayerMap; //playerId - player
     private boolean hasSocket = false;
     private int playersConnectedToServer = 0; //This will be the identifier for the players connected with RMI
+    private static final String remoteHost = "172.17.0.2";
 
     // prende in ingresso indirizzo di rete e porta, oppure usa la porta di default
     // e genero il server
@@ -240,13 +241,12 @@ public class Server extends UnicastRemoteObject {
 
         Thread rmiThread = new Thread(() -> {
             try {
+                Registry registry = LocateRegistry.createRegistry(1099);
                 RMIServerImpl rmiServer = new RMIServerImpl(this);
-                RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(rmiServer, port);
-                LocateRegistry.createRegistry(port);
-                Registry registry = LocateRegistry.getRegistry(port);
-                registry.rebind(NAME, stub);
 
-                logger.log(Level.INFO, "Server started on port " + port + " and is waiting for connections\n");
+                registry.rebind(NAME, rmiServer);
+
+                logger.log(Level.INFO, "Server started on port " + 1099 + " and is waiting for connections\n");
             }catch (RemoteException e) {
                 logger.log(Level.SEVERE, "Exception while creating RMI server");
                 throw new RuntimeException(e);

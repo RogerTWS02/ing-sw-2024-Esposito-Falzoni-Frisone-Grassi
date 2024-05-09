@@ -3,13 +3,14 @@ package it.polimi.ingsw;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.server.Server;
 import it.polimi.ingsw.view.TUI.TUI;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.InetAddress;
 
 public class CodexNaturalisApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ParseException {
         //parametri iniziali: <gui/tui/server> <socket/rmi>
         String param = args.length > 0 ? args[0].toLowerCase() : "tui";
         String network = args.length > 1 ? args[1].toLowerCase() : "socket";
@@ -36,7 +37,7 @@ public class CodexNaturalisApp {
      *
      * @param hasGUI
      */
-    private static void launchClient(boolean hasGUI, boolean hasSocket) {
+    private static void launchClient(boolean hasGUI, boolean hasSocket) throws IOException, ParseException {
         if (hasGUI) {
             //TODO: tutta la parte della GUI con JavaFX
         } else {

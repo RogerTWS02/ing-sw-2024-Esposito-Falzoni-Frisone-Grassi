@@ -43,12 +43,12 @@ public class ClientServerTest {
         card = new PatternGoalCard(3, patternPosition,patternResources, "PGC_0");
         cardResource = new ResourcesGoalCard(666, Map.of( Resource.LEAF, 2, Resource.WOLF, 3), "RGC_666");
 
-        messaggio = new Message(TEST_MESSAGE, cli.getSocketPort(),-1, "Messaggio dal Client");
-        msg = new Message( REQUEST_CARD, cli.getSocketPort(), -1, card);
+        //messaggio = new Message(TEST_MESSAGE, cli.getSocketPort(),-1, "Messaggio dal Client");
+        //msg = new Message( REQUEST_CARD, cli.getSocketPort(), -1, card);
 
         //ser = new Server(InetAddress.getByName("127.0.0.1"), 12345);
         ser = new Server();
-        cli = new Client(InetAddress.getLocalHost().getHostName(), 1234);
+        cli = new Client(InetAddress.getLocalHost().getHostAddress(), 1234);
     }
 
     @Test
@@ -75,6 +75,31 @@ public class ClientServerTest {
         serverThread.join();
         cli.closeSocket();
 
+    }
+
+    @Test
+    public void RMIserverconnection() throws IOException, InterruptedException {
+        try {
+            ser.run(false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        //avvio la lettura/scrittura al server
+        cli.run(false);
+        /*
+        //mando il messaggio e chiudo la connessione
+        cli.sendMessage(messaggio);
+
+        Thread.sleep(1000);
+        cli.sendMessage(msg);
+
+        Thread.sleep(1000);
+        //cli.sendMessage(new Message( REQUEST_GOAL_CARD, cli.getSocketPort(), -1, cardResource));
+        serverThread.join();
+        cli.closeSocket();
+        */
     }
 }
 
