@@ -26,8 +26,8 @@ public class InfoCard  implements Views{
     public static final String ANSI_WHITE = "\u001B[37m";
 
     // read the JSON file with the cards
-    InputStream inputresource = getClass().getResourceAsStream("/" + "ResourceDeck.json");
-    InputStream inputgold = getClass().getResourceAsStream("/" + "ResourceDeck.json");
+    InputStream inputresource = getClass().getResourceAsStream("/" + "resourceDeck.json");
+    InputStream inputgold = getClass().getResourceAsStream("/" + "goldenDeck.json");
 
     JSONParser parserGold = new JSONParser();
     BufferedReader buffergold = new BufferedReader(new InputStreamReader(inputgold));

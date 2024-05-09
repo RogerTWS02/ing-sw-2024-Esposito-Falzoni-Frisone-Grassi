@@ -38,8 +38,8 @@ public class HandCards implements Views {
     public HandCards() throws IOException, ParseException {
 
         // read the JSON file with the cards
-        InputStream inputresource = getClass().getResourceAsStream("/" + "ResourceDeck.json");
-        InputStream inputgold = getClass().getResourceAsStream("/" + "ResourceDeck.json");
+        InputStream inputresource = getClass().getResourceAsStream("/" + "resourceDeck.json");
+        InputStream inputgold = getClass().getResourceAsStream("/" + "goldenDeck.json");
 
         JSONParser parserGold = new JSONParser();
         BufferedReader buffergold = new BufferedReader(new InputStreamReader(inputgold));
@@ -51,7 +51,7 @@ public class HandCards implements Views {
         JSONArray resourceJSONArray = (JSONArray) JSONObjectResource;
     }
 
-    public void showHand(String[] uuid) throws IOException, ParseException {
+    public ArrayList<String> showHand(String[] uuid) throws IOException, ParseException {
         String[][] stringCard = new String[10][3];
 
         // create the cards from the UUID
@@ -108,31 +108,33 @@ public class HandCards implements Views {
 
         // actively create the3 cards to print with color and attributes
         ArrayList<String> cards= new ArrayList<String>();
-         cards.add(stringCard[9][0]+"          ╔═══════════════════════════╗"+stringCard[9][1]+"╔═══════════════════════════╗"+stringCard[9][2]+"╔═══════════════════════════╗");
 
-        String t =
-                stringCard[9][0]+"          ║ "+ANSI_RESET+stringCard[3][0]+ "          "+Views.cardToPoint(stringCard[1][0],stringCard[7][0])+"        " + stringCard[4][0]+stringCard[9][0]+"║"+
-                stringCard[9][1]+"          ║ "+ANSI_RESET+stringCard[3][1]+ "          "+Views.cardToPoint(stringCard[1][1],stringCard[7][1])+"        " + stringCard[4][1]+stringCard[9][1]+"║"+
-                stringCard[9][2]+"          ║ "+ANSI_RESET+stringCard[3][2]+ "          "+Views.cardToPoint(stringCard[1][2],stringCard[7][2])+"        " + stringCard[4][2]+stringCard[9][2]+"║"
+        cards.add("        ┌─────────────────────────────────────────────────────────────────────────────────────────┐ ");
+        cards.add("        │ Hand cards                                                                              │ ");
+        cards.add("        ├─────────────────────────────────────────────────────────────────────────────────────────┤ ");
+         cards.add("        │ "+stringCard[9][0]+"╔═══════════════════════════╗"+stringCard[9][1]+"╔═══════════════════════════╗"+stringCard[9][2]+"╔═══════════════════════════╗"+ANSI_RESET+" │ ");
+
+        String t ="        │ "+
+                stringCard[9][0]+"║ "+ANSI_RESET+stringCard[3][0]+ "          "+Views.cardToPoint(stringCard[1][0],stringCard[7][0])+"        " + stringCard[4][0]+stringCard[9][0]+"║"+
+                stringCard[9][1]+"║ "+ANSI_RESET+stringCard[3][1]+ "          "+Views.cardToPoint(stringCard[1][1],stringCard[7][1])+"        " + stringCard[4][1]+stringCard[9][1]+"║"+
+                stringCard[9][2]+"║ "+ANSI_RESET+stringCard[3][2]+ "          "+Views.cardToPoint(stringCard[1][2],stringCard[7][2])+"        " + stringCard[4][2]+stringCard[9][2]+"║"+ANSI_RESET+" │ "
                 ;
         cards.add(t);
-        for (int i = 0; i < 2; i++) {
-            cards.add(stringCard[9][0]+"          ║                           ║"+stringCard[9][1]+"║                           ║"+stringCard[9][2]+"║                           ║");
+        for (int i = 0; i < 3; i++) {
+            cards.add("        │ "+stringCard[9][0]+"║                           ║"+stringCard[9][1]+"║                           ║"+stringCard[9][2]+"║                           ║"+ANSI_RESET+" │ ");
         }
-        String b =
-                stringCard[9][0]+"          ║ "+ANSI_RESET+stringCard[5][0] + "         "+stringCard[8][0]+"        " + stringCard[6][0]+stringCard[9][0]+"║"+
-                stringCard[9][1]+"          ║ "+ANSI_RESET+stringCard[5][1] + "         "+stringCard[8][1]+"        " + stringCard[6][1]+stringCard[9][1]+"║"+
-                stringCard[9][2]+"          ║ "+ANSI_RESET+stringCard[5][2] + "         "+stringCard[8][2]+"        " + stringCard[6][2]+stringCard[9][2]+"║"
+        String b ="        │ "+
+                stringCard[9][0]+"║ "+ANSI_RESET+stringCard[5][0] + "         "+stringCard[8][0]+"        " + stringCard[6][0]+stringCard[9][0]+"║"+
+                stringCard[9][1]+"║ "+ANSI_RESET+stringCard[5][1] + "         "+stringCard[8][1]+"        " + stringCard[6][1]+stringCard[9][1]+"║"+
+                stringCard[9][2]+"║ "+ANSI_RESET+stringCard[5][2] + "         "+stringCard[8][2]+"        " + stringCard[6][2]+stringCard[9][2]+"║  "
                 ;
         cards.add(b);
-        cards.add(stringCard[9][0]+"          ╚═══════════════════════════╝"+stringCard[9][1]+"╚═══════════════════════════╝"+stringCard[9][2]+"╚═══════════════════════════╝");
+        cards.add("        │ "+stringCard[9][0]+"╚═══════════════════════════╝"+stringCard[9][1]+"╚═══════════════════════════╝"+stringCard[9][2]+"╚═══════════════════════════╝"+ANSI_RESET+" │ ");
 
 
 
-        // prints the card
-        for(int i = 0; i < cards.size(); i++) {
-            System.out.print(cards.get(i));
-        }
+
+        return cards;
     }
 
 
@@ -144,4 +146,9 @@ public class HandCards implements Views {
 
 
 
-};
+
+    }
+
+
+
+
