@@ -15,4 +15,5 @@ public interface RMIServerInterface extends Remote {
     void newLobbyRequest(String nickname, String lobbyName, int lobbySize) throws RemoteException, FileNotFoundException;
     void cardRequest(boolean visible, int index,int playerID) throws RemoteException;
     void playerMove(int senderID, PlayableCard card, int x, int y) throws IOException;
+    void requestinfoCard(int x, int y) throws RemoteException;
 }

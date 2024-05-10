@@ -29,7 +29,6 @@ public class Client  {
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
     private final Logger logger = Logger.getLogger(getClass().getName());
-    private static final String remoteHost = "172.17.0.2";
 
     public Client(String ip, int port) {
         this.ipServ = ip;
@@ -99,7 +98,8 @@ public class Client  {
                 RMIServerInterface stub = (RMIServerInterface) registry.lookup(Server.NAME);
                 logger.log(Level.INFO, "Client has connected to the server using RMI");
 
-                RMIGameFlow play = new RMIGameFlow(stub);
+                RMIGameFlow play = new RMIGameFlow(stub, this);
+                play.run();
             }catch (NotBoundException | IOException e) {
                 logger.log(Level.SEVERE, "Error in connecting to server using RMI");
             }
@@ -107,23 +107,6 @@ public class Client  {
 
     }
 
-    public void playGame(RMIServerInterface stub) throws IOException {
-        Thread t = new Thread(() -> {
-            try{
-                while(!Thread.currentThread().isInterrupted()){
-                    try {
-                        Message recievedMessage = (Message) inp.readObject();
-
-                    }catch (IOException | ClassNotFoundException e) {
-                    }
-                }
-            }finally {
-               return;
-            }
-        });
-        t.start();
-
-    }
 
     //funzione per chiudere la connessione
     public synchronized void closeSocket(){

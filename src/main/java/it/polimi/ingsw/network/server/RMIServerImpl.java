@@ -47,4 +47,9 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServerInter
     public void playerMove(int senderID, PlayableCard card, int x, int y) throws IOException {
         server.playerMove(new Message(null, senderID, server.getGameControllerMap().get(senderID).getCurrentGame().getGameID(), new Object[]{card, x, y}));
     }
+
+    @Override
+    public void requestinfoCard(int x, int y) throws RemoteException {
+        server.requestInfoCard(new Message(null, , -1, new Object[]{x, y}));
+    }
 }

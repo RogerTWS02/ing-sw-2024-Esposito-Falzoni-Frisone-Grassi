@@ -157,23 +157,9 @@ public class Server extends UnicastRemoteObject {
 
             //Client requests info of a card on the playerBoard
             case REQUEST_INFO_CARD:
-                //Where the player wants to place the card
-                int posX = (int) message.getObj()[0];
-                int posY = (int) message.getObj()[1];
-
-                String cardID = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posX, posY).getUUID();
-
-                idSocketMap.get(message.getSenderID()).sendMessage(
-                        //TODO: A message with the new score should be sent to the player
-                        new Message(
-                                REPLY_INFO_CARD,
-                                this.serverSocket.getLocalPort(),
-                                message.getGameID(),
-                                cardID
-                        )
-                );
-
+                requestInfoCard(message);
                 break;
+
             case REQUEST_PLAYER_MOVE:
                 playerMove(message);
                 break;
@@ -427,7 +413,7 @@ public class Server extends UnicastRemoteObject {
 
                 //Genero il game controller, lo aggiungo alla map e gli metto il player
                 //GameID is the same as the id of the player that has created the lobby
-                GameController gc = new GameController(playersConnectedToServer);
+                GameController gc = new GameController(message.getGameID());
                 gc.setNumberOfPlayers(lobbySize);
                 gc.addPlayer(p);
                 gameControllerMap.put(playersConnectedToServer, gc);
@@ -546,6 +532,26 @@ public class Server extends UnicastRemoteObject {
      */
     public synchronized int getPlayersConnectedToServer() {
         return playersConnectedToServer;
+    }
+
+    public void requestInfoCard(Message message){
+        //Where the player wants to place the card
+        int posX = (int) message.getObj()[0];
+        int posY = (int) message.getObj()[1];
+
+        String cardID = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posX, posY).getUUID();
+
+        if(hasSocket) {
+            idSocketMap.get(message.getSenderID()).sendMessage(
+                    //TODO: A message with the new score should be sent to the player
+                    new Message(
+                            REPLY_INFO_CARD,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            cardID
+                    )
+            );
+        }
     }
 
 }
