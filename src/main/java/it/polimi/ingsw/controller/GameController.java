@@ -288,20 +288,19 @@ public class GameController {
     /**
      * Adds a player to the game, with the nickname and the client port passed by parameter.
      *
-     * @param nickname The nickname of the player to be added.
-     * @param clientPort The client port of the player to be added.
+     * @param p The player to be added to the game.
      */
-    public void addPlayer(String nickname, int clientPort) throws SecurityException {
+    public void addPlayer(Player p) throws SecurityException {
         /* check if player already exists */
-        for(int p = 0; p < currentGame.getPlayers().size(); p++){
-            if(currentGame.getPlayers().get(p) != null && currentGame.getPlayers().get(p).getNickname().equals(nickname)){
+        for(int pl = 0; pl < currentGame.getPlayers().size(); pl++){
+            if(currentGame.getPlayers().get(pl) != null){
                 throw new SecurityException("Player already exists!");
             }
         }
         ArrayList<Player> players = currentGame.getPlayers();
         for(int n = 0 ; n < currentGame.getPlayers().size(); n++) {
             if (currentGame.getPlayers().get(n) == null) {
-                players.add(n, new Player(nickname, clientPort));
+                players.add(n, p);
                 players.remove(n + 1);
                 currentGame.setPlayers(players);
                 switch (n) {

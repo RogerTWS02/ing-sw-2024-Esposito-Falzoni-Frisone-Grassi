@@ -29,7 +29,7 @@ public class Server extends UnicastRemoteObject {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     //la chiave è il socket del player, il valore è il suo handler
-    private Map<Integer, ClientHandler> idSocketMap; //id - socket associated
+    private final Map<Integer, ClientHandler> idSocketMap; //id - socket associated
 
     //la chiave è l'id del gioco, il valore è il gioco stesso
     private static Map<Integer, GameController> gameControllerMap; // gameId - controller
@@ -37,7 +37,6 @@ public class Server extends UnicastRemoteObject {
     private final Map<Integer, Player> idPlayerMap; //playerId - player
     private boolean hasSocket = false;
     private int playersConnectedToServer = 0; //This will be the identifier for the players connected with RMI
-    private static final String remoteHost = "172.17.0.2";
 
     // prende in ingresso indirizzo di rete e porta, oppure usa la porta di default
     // e genero il server
@@ -315,11 +314,11 @@ public class Server extends UnicastRemoteObject {
                     //aggiungo il nuovo giocatore alla partita
                     if(hasSocket){
                         Player p = new Player(requestNick, message.getSenderID());
-                        gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame().addPlayer(p);
+                        gameControllerMap.get(lobbyPlayerMap.get(l)[0]).addPlayer(p);
                         idPlayerMap.put(message.getSenderID(), p);
                     }else{
                         Player p = new Player(requestNick, playersConnectedToServer);
-                        gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame().addPlayer(p);
+                        gameControllerMap.get(lobbyPlayerMap.get(l)[0]).addPlayer(p);
                         idPlayerMap.put(playersConnectedToServer, p);
                         playersConnectedToServer++;
                     }
@@ -420,7 +419,7 @@ public class Server extends UnicastRemoteObject {
                 //Genero il game controller, lo aggiungo alla map e gli metto il player
                 GameController gc = new GameController(message.getGameID());
                 gc.setNumberOfPlayers(lobbySize);
-                gc.getCurrentGame().addPlayer(p);
+                gc.addPlayer(p);
                 gameControllerMap.put(message.getGameID(), gc);
             }else{
                 Player p = new Player(nickName, playersConnectedToServer);
@@ -430,7 +429,7 @@ public class Server extends UnicastRemoteObject {
                 //GameID is the same as the id of the player that has created the lobby
                 GameController gc = new GameController(playersConnectedToServer);
                 gc.setNumberOfPlayers(lobbySize);
-                gc.getCurrentGame().addPlayer(p);
+                gc.addPlayer(p);
                 gameControllerMap.put(playersConnectedToServer, gc);
             }
 
