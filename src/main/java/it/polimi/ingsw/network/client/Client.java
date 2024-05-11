@@ -9,7 +9,9 @@ import it.polimi.ingsw.view.TUI.RMIGameFlow;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -29,6 +31,7 @@ public class Client  {
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
     private final Logger logger = Logger.getLogger(getClass().getName());
+    private int clientID;
 
     public Client(String ip, int port) {
         this.ipServ = ip;
@@ -132,5 +135,18 @@ public class Client  {
 
     public void setLobbyName(String lobbyName) {
         this.lobbyName = lobbyName;
+    }
+
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
+    }
+
+    public int getClientID() {
+        return clientID;
+    }
+
+    public static void main(String[] args) throws UnknownHostException {
+        Client client = new Client(InetAddress.getLocalHost().getHostAddress(), 1234);
+        client.run(false);
     }
 }

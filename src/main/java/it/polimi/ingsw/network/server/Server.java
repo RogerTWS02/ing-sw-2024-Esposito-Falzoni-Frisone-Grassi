@@ -430,6 +430,7 @@ public class Server extends UnicastRemoteObject {
                 playersConnectedToServer++;
             }
             lobbyPlayerMap.put(lobby, players);
+            System.out.println("Lobby created with name: " + lobbyName + " and size: " + lobbySize);
         }
     }
 
@@ -451,7 +452,7 @@ public class Server extends UnicastRemoteObject {
                         )
                 );
             }else{
-                //Should update the hand of the player even with RMI
+                System.out.println("Range given is outof bound!");
             }
             return;
         }
@@ -551,6 +552,15 @@ public class Server extends UnicastRemoteObject {
                             cardID
                     )
             );
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            Server server = new Server();
+            server.run(false);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

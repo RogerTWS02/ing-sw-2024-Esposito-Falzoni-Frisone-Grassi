@@ -87,7 +87,6 @@ public class ClientServerTest {
 
 
         //avvio la lettura/scrittura al server
-        cli.run(false);
         /*
         //mando il messaggio e chiudo la connessione
         cli.sendMessage(messaggio);

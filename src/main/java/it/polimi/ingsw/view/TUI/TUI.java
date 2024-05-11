@@ -214,6 +214,7 @@ public class TUI implements MessageListener {
                                     REQUEST_PLAYER_MOVE,
                                     cli.getSocketPort(),
                                     cli.getGameID(),
+                                    //Manca la carta da piazzare oltre alla posizione dove piazzarla
                                     new Object[]{positionX, positionY})
                     );
                     break;
