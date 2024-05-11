@@ -425,7 +425,7 @@ public class GameControllerTest {
         gameController.beginGame();
         ArrayList<Player> fakePlayers = createFakePlayers();
         for(int i = 0; i < 4; i++) {
-            gameController.addPlayer(fakePlayers.get(i).getNickname(), 0);
+            gameController.addPlayer(fakePlayers.get(i));
         }
         assertFalse(gameController.getCurrentGame().getPlayers().contains(null));
         assertEquals(4, gameController.getCurrentGame().getPlayers().size());
@@ -441,7 +441,7 @@ public class GameControllerTest {
         game.setPlayers(fakePlayers);
         String nickname = "testPlayer";
         int clientPort = 8080;
-        gameController.addPlayer(nickname, clientPort);
+        //gameController.addPlayer(nickname);
         Player player = null;
         Player addedPlayer = null;
         for (int i = 0; i < game.getPlayers().size(); i++) {

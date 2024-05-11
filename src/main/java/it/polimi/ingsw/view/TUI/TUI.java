@@ -80,6 +80,7 @@ public class TUI implements MessageListener {
     }
 
     public static void main(String[] args) {
+        System.out.println("String di debug: "+args[0]);
         // Inizializza lo scanner per leggere da console
         Scanner scanner = new Scanner(System.in);
         String[] command;

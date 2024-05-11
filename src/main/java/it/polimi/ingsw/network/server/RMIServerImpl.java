@@ -50,6 +50,6 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServerInter
 
     @Override
     public void requestinfoCard(int x, int y) throws RemoteException {
-        server.requestInfoCard(new Message(null, , -1, new Object[]{x, y}));
+        server.requestInfoCard(new Message(null,-1, -1, new Object[]{x, y}));
     }
 }
