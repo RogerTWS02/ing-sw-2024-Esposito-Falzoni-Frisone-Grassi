@@ -2,7 +2,6 @@ package it.polimi.ingsw.view.TUI;
 
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
-import it.polimi.ingsw.network.server.RMIServerImpl;
 import it.polimi.ingsw.network.server.RMIServerInterface;
 
 import java.net.InetAddress;
@@ -60,7 +59,7 @@ public class RMIGameFlow {
                                 System.out.println("Invalid command. Please type '/help' for a list of commands.\n");
                                 break;
                             }
-                            stub.requestinfoCard(posX, posY);
+                            stub.requestinfoCard(posX, posY, client.getClientID());
                             break;
 
                         case "/placeCard":
@@ -121,7 +120,7 @@ public class RMIGameFlow {
                                 break;
                             }
 
-                            stub.newLobbyRequest(command[1], command[2],Integer.parseInt(command[3]));
+                            stub.newLobbyRequest(command[1], command[2],Integer.parseInt(command[3]), client.getClientListener(), client.getClientID());
                             break;
 
                         case "/joinLobby":
@@ -129,8 +128,9 @@ public class RMIGameFlow {
                                 System.out.println("Invalid command. Please type '/help' for a list of commands.\n");
                                 break;
                             }
-                            stub.loginRequest(command[1]);
+                            stub.loginRequest(command[1], client.getClientListener(), client.getClientID());
                             break;
+
                         case "/openChat":
                             //The chat is opened in the client side
 
@@ -139,6 +139,7 @@ public class RMIGameFlow {
                         case "/closeChat":
                             //The chat is closed in the client side
                             break;
+
                         default:
                             System.out.println("Invalid command. Please type '/help' for a list of commands.\n");
                             break;

@@ -16,6 +16,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,14 +32,29 @@ public class Client  {
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
     private final Logger logger = Logger.getLogger(getClass().getName());
-    private int clientID;
+    private final int clientID; //Client identifier for RMI
+    private static int lastID = 0;
+    private final ClientListenerInterface clientListener;
 
-    public Client(String ip, int port) {
+    public Client(String ip, int port) throws RemoteException {
         this.ipServ = ip;
         this.port = port;
+        this.clientListener = new ClientListener();
+        this.clientID = generateNewClientID();
     }
 
+    /**
+     * This method is used to generate a new client ID.
+     * @return the new client ID.
+     */
+    private synchronized static int generateNewClientID() {
+        return ++lastID;
+    }
 
+    /**
+     * This method is used to read messages from the client using socket.
+     * @param socketInput the input stream from the socket.
+     */
     public void readFromSocketAsync(ObjectInputStream socketInput){
         Thread t = new Thread(() -> {
             try{
@@ -61,7 +77,10 @@ public class Client  {
     }
 
 
-    //funzione per mandare un messaggio al server riutilizzando out
+    /**
+     * This method is used to send a message to the server.
+     * @param message the message to be sent to the server.
+     */
     public synchronized void sendMessage(Message message){
         new Thread(() -> {
             try{
@@ -81,7 +100,10 @@ public class Client  {
         return socket.getPort();
     }
 
-    // funzione per leggere in ingresso i messaggi del Server e inizializzare out
+    /**
+     * This method is used to connect to the server using either RMI or socket.
+     * @param useSocket true if the client wants to connect using socket, false if the client wants to connect using RMI.
+     */
     public void run(boolean useSocket){
         if(useSocket){
             try{
@@ -111,7 +133,9 @@ public class Client  {
     }
 
 
-    //funzione per chiudere la connessione
+    /**
+     * This method is used to close the socket and the streams.
+     */
     public synchronized void closeSocket(){
         try{
             inp.close();
@@ -137,16 +161,36 @@ public class Client  {
         this.lobbyName = lobbyName;
     }
 
-    public void setClientID(int clientID) {
-        this.clientID = clientID;
-    }
-
     public int getClientID() {
         return clientID;
     }
 
-    public static void main(String[] args) throws UnknownHostException {
+    public ClientListenerInterface getClientListener() {
+        return clientListener;
+    }
+
+    /**
+     * This class is used to listen to messages from the server using RMI.
+     */
+    public class ClientListener extends UnicastRemoteObject implements ClientListenerInterface {
+
+        public ClientListener() throws RemoteException {
+            super();
+        }
+
+        /**
+         * This method is used to receive a message from the server.
+         * @param message the message received from the server.
+         */
+        @Override
+        public void receiveMessage(String message) {
+            System.out.println(message);
+        }
+    }
+
+    public static void main(String[] args) throws UnknownHostException, RemoteException {
         Client client = new Client(InetAddress.getLocalHost().getHostAddress(), 1234);
         client.run(false);
     }
+
 }
