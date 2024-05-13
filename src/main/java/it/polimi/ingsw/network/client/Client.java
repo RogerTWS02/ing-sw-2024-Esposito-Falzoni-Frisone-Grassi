@@ -188,9 +188,13 @@ public class Client  {
         }
     }
 
-    public static void main(String[] args) throws UnknownHostException, RemoteException {
-        Client client = new Client(InetAddress.getLocalHost().getHostAddress(), 1234);
-        client.run(false);
+    public static void main(String[] args) {
+        try {
+            Client client = new Client(InetAddress.getLocalHost().getHostName(), 1234);
+            client.run(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

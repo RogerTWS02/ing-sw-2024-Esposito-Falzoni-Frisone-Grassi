@@ -28,7 +28,7 @@ public class RMIGameFlow {
             String[] command;
             System.out.println("WELCOME TO CODEX NATURALIS!!\n");
             System.out.println("To create a new lobby type '/newLobby nickname lobbyname lobbysize'\n" +
-                                "To join an existing lobby type '/joinLobby lobbyName'\n" );
+                                "To join an existing lobby type '/joinLobby nickname'\n" );
 
             while(true){
                 command = scanner.nextLine().split(" ");
@@ -71,7 +71,7 @@ public class RMIGameFlow {
                                 positionY = Integer.parseInt(command[2]);
 
                             }catch(NumberFormatException e){
-                                System.out.println(e);
+                                System.out.println("Invalid command. Please type '/help' for a list of commands.\n");
                                 break;
                             }
                             //Commented because we have to parse the card to pass it to the server method(?)
@@ -90,7 +90,7 @@ public class RMIGameFlow {
                             break;
 
                         case "/drawCardFromViewable":
-                            if(command.length < 2){
+                            if(command.length < 2 || command.length > 3){
                                 System.out.println("Invalid command. Please type '/help' for a list of commands.\n");
                                 break;
                             }
@@ -103,7 +103,12 @@ public class RMIGameFlow {
                                     break;
                                 }
                             }catch(NumberFormatException e){
-                                System.out.println(e);
+                                System.out.println("Invalid command. Please type '/help' for a list of commands.\n");
+                                break;
+                            }
+
+                            if(!type.equals("resource") && !type.equals("golden")){
+                                System.out.println("Invalid command. Please type '/help' for a list of commands.\n");
                                 break;
                             }
                             if(type.equals("golden")){
@@ -115,7 +120,7 @@ public class RMIGameFlow {
                             break;
 
                         case "/newLobby":
-                            if(command.length < 3){
+                            if(command.length < 3 || command.length > 4){
                                 System.out.println("Invalid command. Please type '/help' for a list of commands.\n");
                                 break;
                             }
@@ -124,7 +129,7 @@ public class RMIGameFlow {
                             break;
 
                         case "/joinLobby":
-                            if(command.length < 2){
+                            if(command.length < 2 || command.length > 2){
                                 System.out.println("Invalid command. Please type '/help' for a list of commands.\n");
                                 break;
                             }

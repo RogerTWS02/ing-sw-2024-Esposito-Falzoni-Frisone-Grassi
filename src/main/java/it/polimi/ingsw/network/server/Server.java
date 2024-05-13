@@ -4,8 +4,6 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.network.client.ClientListenerInterface;
 import it.polimi.ingsw.network.message.Message;
-import it.polimi.ingsw.network.message.MessageType;
-
 import static it.polimi.ingsw.network.message.MessageType.*;
 
 import java.io.FileNotFoundException;
@@ -38,8 +36,6 @@ public class Server extends UnicastRemoteObject {
     private final Map<Lobby, int[]> lobbyPlayerMap; //lobby - playerIds
     private final Map<Integer, Player> idPlayerMap; //playerId - player
     private boolean hasSocket = false;
-    private int gameNumber = 0; //This will be the identifier for the players connected with RMI
-
 
     // prende in ingresso indirizzo di rete e porta, oppure usa la porta di default
     // e genero il server
@@ -117,10 +113,9 @@ public class Server extends UnicastRemoteObject {
     /**
      * Handles the message received from the client with a switch case
      * @param message the message received
-     * @param clientHandler the clientHandler that received the message
      */
 
-    public void messageHandler(Message message, ClientHandler clientHandler) throws IOException {
+    public void messageHandler(Message message) throws IOException {
         logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderID());
         switch(message.getMessageType()){
             
@@ -773,16 +768,4 @@ public class Server extends UnicastRemoteObject {
             }
         }
     }
-
-
-
-    public static void main(String[] args) {
-        try {
-            Server server = new Server();
-            server.run(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
