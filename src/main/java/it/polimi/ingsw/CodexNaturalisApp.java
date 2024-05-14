@@ -30,6 +30,8 @@ public class CodexNaturalisApp {
                             case "gui" -> launchClient(true, true);
                             case "server" -> launchServer(true);
                         }
+            default:
+                launchClient(false, true);
         }
     }
 
@@ -45,8 +47,9 @@ public class CodexNaturalisApp {
             TUI tui = new TUI();
             try {
                 //per il momento funziona solo su localHost con porta di default
-                tui.cli  = new Client(InetAddress.getLocalHost().getHostName(), 1234);
+                tui.cli  = new Client(InetAddress.getLocalHost().getHostName(), 1234, tui);
                 tui.cli.run(hasSocket);
+                tui.main(new String[]{});
             }catch(Exception e){
                 System.out.println("c'è un problema col clienttttt: "+e);
             }

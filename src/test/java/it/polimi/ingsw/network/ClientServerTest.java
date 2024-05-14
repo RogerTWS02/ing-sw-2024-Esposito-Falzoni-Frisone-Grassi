@@ -48,7 +48,7 @@ public class ClientServerTest {
 
         //ser = new Server(InetAddress.getByName("127.0.0.1"), 12345);
         ser = new Server();
-        cli = new Client(InetAddress.getLocalHost().getHostAddress(), 1234);
+        cli = new Client(InetAddress.getLocalHost().getHostAddress(), 1234, null);
     }
 
     @Test

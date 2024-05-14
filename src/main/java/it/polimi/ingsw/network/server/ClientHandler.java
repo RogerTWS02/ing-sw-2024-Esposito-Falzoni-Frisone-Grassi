@@ -36,7 +36,7 @@ public class ClientHandler extends Thread {
         try {
             handleClient();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "An error occurred handling the client");
+            logger.log(Level.SEVERE, "An error occurred handling the client: "+e);
             disconnect();
         }
     }
@@ -46,7 +46,6 @@ public class ClientHandler extends Thread {
         try {
             while (isConnected && !Thread.currentThread().isInterrupted()) {
                 synchronized (inLock) {
-
                     //messaggio che il server deve ricevere
                     Message msg = (Message) inp.readObject();
                     //lo mando al server
@@ -54,7 +53,7 @@ public class ClientHandler extends Thread {
                 }
             }
         } catch (ClassCastException | NullPointerException | ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "Error in reception, closing socket");
+            logger.log(Level.SEVERE, "Error in reception, closing socket because: "+e);
             disconnect();
         }
     }

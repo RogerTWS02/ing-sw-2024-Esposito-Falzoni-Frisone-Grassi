@@ -200,14 +200,12 @@ public class Server extends UnicastRemoteObject {
     public void startSocket(InetAddress ip, int port){
 
         try{
-
             this.serverSocket = new ServerSocket(port, 66, ip);
-
         }catch (IOException e){
             logger.log(Level.SEVERE, "Exception while creating server socket");
         }
 
-        logger.log(Level.INFO, "Server started on port " + serverSocket.getLocalPort() + " and is waiting for connections\n");
+        logger.log(Level.INFO, "Server started on port " + serverSocket.getLocalPort() + " and is waiting for connections");
         try{
             while(running && !Thread.currentThread().isInterrupted()){
                 //uso un clientHandler per evitare azioni bloccanti dal client
@@ -263,6 +261,7 @@ public class Server extends UnicastRemoteObject {
     //la partita non ha inizio!!!
     public synchronized Message serverLogin(Message message) throws IOException {
         String requestNick = (String) message.getObj()[0];
+        System.out.println("Il nickRicevuto è: "+requestNick);
 
         //controllo se il nome è già presente
         boolean duplicates = gameControllerMap.values().stream()
@@ -283,7 +282,7 @@ public class Server extends UnicastRemoteObject {
                                 this.serverSocket.getLocalPort(),
                                 message.getGameID(),
                                 "Invalid nickname, please try a different one!\n" +
-                                        "REMINDER: If you're already in a lobby you cannot join another one"
+                                      "REMINDER: If you're already in a lobby you cannot join another one"
                         )
                 );
 
@@ -294,11 +293,12 @@ public class Server extends UnicastRemoteObject {
                         message.getSenderID(),
                         message.getGameID(),
                         "Invalid nickname, please try a different one!\n" +
-                                "REMINDER: If you're already in a lobby you cannot join another one"
+                              "REMINDER: If you're already in a lobby you cannot join another one"
                 );
             }
         }else{
             //se non è presente lo registro nella prima lobby valida
+            System.out.println("Il nome non è presente!!!");
             boolean found = false;
             for(Lobby l: lobbyPlayerMap.keySet()) {
                 if(!l.isGameStarted() && !l.isLobbyFull()) {
@@ -393,13 +393,16 @@ public class Server extends UnicastRemoteObject {
             //se non ho lobby gli chiedo di generarla
             if(!found) {
                 if (hasSocket) {
-
+                    //System.out.println("Non ho nemmeno trovato una lobby!!!");
+                    //System.out.println("Sto coso è nullo o no?:"+ idSocketMap.get(message.getSenderID())+ " "+message.getSenderID());
                     idSocketMap.get(message.getSenderID()).sendMessage(
                             new Message(
                                     REPLY_NEW_LOBBY,
                                     this.serverSocket.getLocalPort(),
                                     message.getGameID(),
-                                    "Inserisci dimensione lobby (4 giocatori max)"
+                                    new Object[]{
+                                            UUID.randomUUID().toString(), //nome della nuova lobby
+                                            "Inserisci dimensione lobby (4 giocatori max): "}
                             )
                     );
 

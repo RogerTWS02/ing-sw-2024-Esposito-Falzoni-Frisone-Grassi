@@ -1,17 +1,15 @@
 package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.network.message.Message;
-import it.polimi.ingsw.network.message.MessageListener;
 import it.polimi.ingsw.network.server.RMIServerInterface;
 import it.polimi.ingsw.network.server.Server;
 import it.polimi.ingsw.view.TUI.RMIGameFlow;
+import it.polimi.ingsw.view.TUI.TUI;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -21,10 +19,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Client  {
-
-    private MessageListener messageListener;
     private final String ipServ;
 
+    private final TUI tui;
     private final int port;
     private Socket socket;
     private String lobbyName = "";
@@ -36,7 +33,8 @@ public class Client  {
     private static int lastID = 0;
     private final ClientListenerInterface clientListener;
 
-    public Client(String ip, int port) throws RemoteException {
+    public Client(String ip, int port, TUI tui) throws RemoteException {
+        this.tui = tui;
         this.ipServ = ip;
         this.port = port;
         this.clientListener = new ClientListener();
@@ -61,9 +59,8 @@ public class Client  {
                 while(!Thread.currentThread().isInterrupted()){
                     try {
                         Message recievedMessage = (Message) socketInput.readObject();
-
                         //inoltro il messaggio al client estraendo dal tipo di interfaccia
-                        messageListener.onMessageReceived(recievedMessage);
+                        tui.onMessageReceived(recievedMessage);
                         //per debugging
                         //System.out.println(recievedMessage.getObj().toString());
                     }catch (IOException | ClassNotFoundException e) {
@@ -84,7 +81,7 @@ public class Client  {
     public synchronized void sendMessage(Message message){
         new Thread(() -> {
             try{
-                logger.log(Level.INFO, "Sending message to server");
+                //logger.log(Level.INFO, "Sending message to server");
                 out.reset();
                 out.writeObject(message);
                 out.flush();
@@ -97,7 +94,7 @@ public class Client  {
     }
 
     public int getSocketPort() {
-        return socket.getPort();
+        return socket.getLocalPort();
     }
 
     /**
@@ -188,13 +185,10 @@ public class Client  {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            Client client = new Client(InetAddress.getLocalHost().getHostName(), 1234);
-            client.run(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    /**public static void main(String[] args) throws UnknownHostException, RemoteException {
+        Client client = new Client(InetAddress.getLocalHost().getHostAddress(), 1234);
+        client.run(false);
     }
+     */
 
 }

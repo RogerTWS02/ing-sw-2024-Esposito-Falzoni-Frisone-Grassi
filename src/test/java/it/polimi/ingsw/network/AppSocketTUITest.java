@@ -52,7 +52,7 @@ public class AppSocketTUITest {
         //avvio la lettura/scrittura al server
         try {
             //per il momento funziona solo su localHost con porta di default
-            tui.cli  = new Client(InetAddress.getLocalHost().getHostName(), 1234);
+            tui.cli  = new Client(InetAddress.getLocalHost().getHostName(), 1234, tui);
             tui.cli.run(true);
             TUI.main(new String[]{"pipicaca"});
         }catch(Exception e){

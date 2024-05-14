@@ -1,9 +1,7 @@
 package it.polimi.ingsw.view.TUI;
 
-import it.polimi.ingsw.model.GoalCard;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
-import it.polimi.ingsw.network.message.MessageListener;
 import it.polimi.ingsw.view.TUI.GameState.InfoCard;
 import org.json.simple.parser.ParseException;
 
@@ -12,7 +10,7 @@ import java.util.Scanner;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
 
-public class TUI implements MessageListener {
+public class TUI {
     public static Client cli;
     private static String[] gcs;
     InfoCard infoC = new InfoCard();
@@ -22,8 +20,7 @@ public class TUI implements MessageListener {
 
 
     //Faccio l'aggiornamento della tui in base ai messaggi ricevuti
-    @Override
-    public Message onMessageReceived(Message message) {
+    public void onMessageReceived(Message message) {
         //System.out.println(message.getMessageType() + " sent by " + message.getSenderID());
         String srvRep;
         switch(message.getMessageType()){
@@ -34,7 +31,6 @@ public class TUI implements MessageListener {
 
             case REPLY_LOBBY_NAME:
                 srvRep = (String) message.getObj()[0];
-                cli.setLobbyName(srvRep);
                 System.out.println("You joined the lobby "+srvRep+"!");
                 break;
 
@@ -75,8 +71,12 @@ public class TUI implements MessageListener {
                 System.out.print(infoC.showInfoCard(infoUUID));
 
                 break;
+
+            case REPLY_NEW_LOBBY:
+                String LobbyName = (String) message.getObj()[0];
+                cli.setLobbyName(LobbyName);
+                System.out.print((String) message.getObj()[1]);
         }
-        return message;
     }
 
     public static void main(String[] args) {
@@ -86,24 +86,21 @@ public class TUI implements MessageListener {
         String[] command;
         String message;
 
-
         //inizialmente mando i messaggi per far avviare il gioco
-        while(cli.getLobbyName().isEmpty()){
-            System.out.print("Insert a valid Nickname to start a game:");
-            //metodo bloccante che aspetta l'ingresso dell'utente
-            command = scanner.nextLine().split(" ");
-            cli.sendMessage(
-                    new Message(
-                            REQUEST_LOGIN,
-                            cli.getSocketPort(),
-                            -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
-                            new Object[]{command}
-                    )
-            );
-        }
+        System.out.print("Insert a valid Nickname to start a game:");
+        //metodo bloccante che aspetta l'ingresso dell'utente
+        command = scanner.nextLine().split(" ");
+        cli.sendMessage(
+                new Message(
+                        REQUEST_LOGIN,
+                        cli.getSocketPort(),
+                        -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
+                        command[0])
+        );
 
         //se l'utente manda messaggi in fase di attesa non faccio nulla
         while(cli.getGameID() == -1){
+            System.out.println("Waiting for other players to start the game...");
             scanner.nextLine();
             System.out.println("Waiting for other players to start the game...");
         }
