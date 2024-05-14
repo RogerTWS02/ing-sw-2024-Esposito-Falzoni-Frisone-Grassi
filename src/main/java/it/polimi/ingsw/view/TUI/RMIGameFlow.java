@@ -137,12 +137,12 @@ public class RMIGameFlow {
                             break;
 
                         case "/openChat":
-                            //The chat is opened in the client side
+                            //The Chat is opened in the client side
 
                             break;
 
                         case "/closeChat":
-                            //The chat is closed in the client side
+                            //The Chat is closed in the client side
                             break;
 
                         default:

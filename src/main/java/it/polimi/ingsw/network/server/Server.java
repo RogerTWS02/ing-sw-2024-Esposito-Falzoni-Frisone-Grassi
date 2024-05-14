@@ -4,8 +4,6 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.network.client.ClientListenerInterface;
 import it.polimi.ingsw.network.message.Message;
-import it.polimi.ingsw.network.message.MessageType;
-
 import static it.polimi.ingsw.network.message.MessageType.*;
 
 import java.io.FileNotFoundException;
@@ -38,8 +36,6 @@ public class Server extends UnicastRemoteObject {
     private final Map<Lobby, int[]> lobbyPlayerMap; //lobby - playerIds
     private final Map<Integer, Player> idPlayerMap; //playerId - player
     private boolean hasSocket = false;
-    private int gameNumber = 0; //This will be the identifier for the players connected with RMI
-
 
     // prende in ingresso indirizzo di rete e porta, oppure usa la porta di default
     // e genero il server
@@ -117,13 +113,12 @@ public class Server extends UnicastRemoteObject {
     /**
      * Handles the message received from the client with a switch case
      * @param message the message received
-     * @param clientHandler the clientHandler that received the message
      */
 
-    public void messageHandler(Message message, ClientHandler clientHandler) throws IOException {
+    public void messageHandler(Message message) throws IOException {
         logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderID());
         switch(message.getMessageType()){
-
+            
             case TEST_MESSAGE:
                 Object[] test = message.getObj();
                 System.out.println((String) test[0]);
@@ -138,7 +133,7 @@ public class Server extends UnicastRemoteObject {
                         )
                 );
                 break;
-
+            
             //Client requires to log-in (al momento non tengo conto della persistenza)
             //Puts the client in an available lobby if the nickname is valid
             case REQUEST_LOGIN:
@@ -205,12 +200,14 @@ public class Server extends UnicastRemoteObject {
     public void startSocket(InetAddress ip, int port){
 
         try{
+
             this.serverSocket = new ServerSocket(port, 66, ip);
+
         }catch (IOException e){
             logger.log(Level.SEVERE, "Exception while creating server socket");
         }
 
-        logger.log(Level.INFO, "Server started on port " + serverSocket.getLocalPort() + " and is waiting for connections");
+        logger.log(Level.INFO, "Server started on port " + serverSocket.getLocalPort() + " and is waiting for connections\n");
         try{
             while(running && !Thread.currentThread().isInterrupted()){
                 //uso un clientHandler per evitare azioni bloccanti dal client
@@ -266,7 +263,6 @@ public class Server extends UnicastRemoteObject {
     //la partita non ha inizio!!!
     public synchronized Message serverLogin(Message message) throws IOException {
         String requestNick = (String) message.getObj()[0];
-        System.out.println("Il nickRicevuto è: "+requestNick);
 
         //controllo se il nome è già presente
         boolean duplicates = gameControllerMap.values().stream()
@@ -287,7 +283,7 @@ public class Server extends UnicastRemoteObject {
                                 this.serverSocket.getLocalPort(),
                                 message.getGameID(),
                                 "Invalid nickname, please try a different one!\n" +
-                                      "REMINDER: If you're already in a lobby you cannot join another one"
+                                        "REMINDER: If you're already in a lobby you cannot join another one"
                         )
                 );
 
@@ -298,12 +294,11 @@ public class Server extends UnicastRemoteObject {
                         message.getSenderID(),
                         message.getGameID(),
                         "Invalid nickname, please try a different one!\n" +
-                              "REMINDER: If you're already in a lobby you cannot join another one"
+                                "REMINDER: If you're already in a lobby you cannot join another one"
                 );
             }
         }else{
             //se non è presente lo registro nella prima lobby valida
-            System.out.println("Il nome non è presente!!!");
             boolean found = false;
             for(Lobby l: lobbyPlayerMap.keySet()) {
                 if(!l.isGameStarted() && !l.isLobbyFull()) {
@@ -311,7 +306,7 @@ public class Server extends UnicastRemoteObject {
                         //comunico il nome della lobby e il gameID
                         idSocketMap.get(message.getSenderID()).sendMessage(
                                 new Message(
-                                        REPLY_LOBBY_INFO,
+                                        REPLY_LOBBY_NAME,
                                         this.serverSocket.getLocalPort(),
                                         //In the gameController constructor a new game is created with the gameID,
                                         //so also the gameID is the gameID of the first player
@@ -401,16 +396,13 @@ public class Server extends UnicastRemoteObject {
             //se non ho lobby gli chiedo di generarla
             if(!found) {
                 if (hasSocket) {
-                    //System.out.println("Non ho nemmeno trovato una lobby!!!");
-                    //System.out.println("Sto coso è nullo o no?:"+ idSocketMap.get(message.getSenderID())+ " "+message.getSenderID());
+
                     idSocketMap.get(message.getSenderID()).sendMessage(
                             new Message(
                                     REPLY_NEW_LOBBY,
                                     this.serverSocket.getLocalPort(),
                                     message.getGameID(),
-                                    new Object[]{
-                                            UUID.randomUUID().toString(), //nome della nuova lobby
-                                            "Inserisci dimensione lobby (4 giocatori max): "}
+                                    "Inserisci dimensione lobby (4 giocatori max)"
                             )
                     );
 
@@ -796,16 +788,4 @@ public class Server extends UnicastRemoteObject {
             }
         }
     }
-
-
-
-    public static void main(String[] args) {
-        try {
-            Server server = new Server();
-            server.run(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

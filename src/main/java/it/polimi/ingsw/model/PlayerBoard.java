@@ -24,6 +24,13 @@ public class PlayerBoard implements Serializable{
         this.pawn = pawn;
     }
 
+    /**
+     * Checks if the player has a card in the given position and returns the state of the cell.
+     *
+     * @param x The X coordinate of the cell.
+     * @param y The Y coordinate of the cell.
+     * @return The state of the cell.
+     */
     public State getState(int x, int y){
         /* If the cell is empty then the player hasn't placed a card there yet */
         if(grid[x][y] == null) return UNPLAYED;
@@ -31,8 +38,14 @@ public class PlayerBoard implements Serializable{
         return grid[x][y].getState();
     }
 
-    /* When I place a card on the board I have to update the state of the corresponding cell
-     * and also the state of the corners of the neighbouring cards that get covered */
+    /**
+     * Places a card on the board in the given position.
+     *
+     * @param card The card to place.
+     * @param x The X coordinate of the cell.
+     * @param y The Y coordinate of the cell.
+     * @return The number of corners that get covered by the card.
+     */
     public int placeCard(PlayableCard card, int x, int y) {
         if (card instanceof GoldenCard) {
             for (Resource resource : ((GoldenCard) card).getRequiredResource()) {
@@ -123,11 +136,22 @@ public class PlayerBoard implements Serializable{
         }
     }
 
+    /**
+     * Returns the card in the given position.
+     *
+     * @param x The X coordinate of the cell.
+     * @param y The Y coordinate of the cell.
+     * @return The card in the given position.
+     */
     public PlayableCard getCard(int x, int y){
         return grid[x][y];
     }
 
-    /* Returns all the viewable resources present on the board*/
+    /**
+     * Returns all the viewable resources present on the board.
+     *
+     * @return All the viewable resources present on the board.
+     */
     public ArrayList<Resource> getResources(){
         ArrayList<Resource> res = new ArrayList<>();
         for(int i = 0; i < 81; i++){
@@ -150,6 +174,13 @@ public class PlayerBoard implements Serializable{
         return res;
     }
 
+    /**
+     * Checks the number of times a resource is present in a list.
+     *
+     * @param itemList The list of resources.
+     * @param itemToCheck The resource to check.
+     * @return The number of times the resource is present in the list.
+     */
     private int countNumberEqual(ArrayList<Resource> itemList, Resource itemToCheck) {
         int count = 0;
         for (Resource i : itemList) {

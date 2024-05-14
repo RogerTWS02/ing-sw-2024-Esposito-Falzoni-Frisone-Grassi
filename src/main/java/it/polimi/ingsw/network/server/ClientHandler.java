@@ -7,6 +7,9 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Class which handles the connection with a client.
+ */
 public class ClientHandler extends Thread {
     private final Logger logger = Logger.getLogger(getClass().getName());
     private Socket clientSocket;
@@ -16,6 +19,12 @@ public class ClientHandler extends Thread {
     private final Object inLock, outLock;
     private boolean isConnected;
 
+    /**
+     * The constructor initializes the client handler with the server and the client socket.
+     *
+     * @param server The server which the client is connected to.
+     * @param clientSocket The socket of the client.
+     */
     public ClientHandler(Server server, Socket clientSocket) {
         this.inLock = new Object();
         this.outLock = new Object();
@@ -32,6 +41,9 @@ public class ClientHandler extends Thread {
         }
     }
 
+    /**
+     * Runs the client handler process.
+     */
     public void run() {
         try {
             handleClient();
@@ -41,7 +53,11 @@ public class ClientHandler extends Thread {
         }
     }
 
-    //metodo che manda il messaggio spedito dal client al server
+    /**
+     * Sends the message sent from the client to the server.
+     *
+     * @throws IOException if an error occurs while sending the message.
+     */
     public void handleClient() throws IOException{
         try {
             while (isConnected && !Thread.currentThread().isInterrupted()) {
@@ -58,6 +74,11 @@ public class ClientHandler extends Thread {
         }
     }
 
+    /**
+     * Sends a message to the client.
+     *
+     * @param msg The message to be sent.
+     */
     public void sendMessage(Message msg){
         try{
             synchronized (outLock){
@@ -71,8 +92,9 @@ public class ClientHandler extends Thread {
         }
     }
 
-
-
+    /**
+     * Disconnects the client from the server.
+     */
     public void disconnect() {
         if (isConnected) {
             try {

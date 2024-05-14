@@ -6,6 +6,9 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Class which handles the server side of the connection.
+ */
 public class ServerHandler implements Runnable {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
@@ -13,11 +16,20 @@ public class ServerHandler implements Runnable {
     private final Server server;
     private final int port;
 
+    /**
+     * The constructor which creates a new ServerHandler with the given parameters.
+     *
+     * @param server The server which the handler is connected to.
+     * @param port The port on which the server is listening.
+     */
     public ServerHandler(Server server, int port){
         this.server = server;
         this.port = port;
     }
 
+    /**
+     * Starts the server process and listens for incoming connections.
+     */
     public void run(){
         try{
             serverSocket = new ServerSocket(port);
