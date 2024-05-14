@@ -28,7 +28,7 @@ public class StartGame {
         System.out.println("│                                                                                                          │");
         System.out.println("│                                                                                                          │");
         System.out.println("└──────────────────────────────────────────────────────────────────────────────────────────────────────────┘");
-        System.out.println("                           ...Type: JOIN or START for new gamer...                                          ");
+        System.out.println("                           ...Type: JOIN or START for a new game...                                          ");
 
     }
 }
