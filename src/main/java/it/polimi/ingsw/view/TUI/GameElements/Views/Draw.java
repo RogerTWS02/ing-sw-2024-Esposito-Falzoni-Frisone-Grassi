@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 public class Draw implements Views {
      JSONArray resourceJSONArray;
@@ -25,8 +24,8 @@ public class Draw implements Views {
      public static final String ANSI_YELLOW = "\u001B[33m";
      public static final String ANSI_WHITE = "\u001B[37m";
 
-
-     public void showDrawable throws IOException, ParseException(String[] Guuids, String[] Ruuids, String[] resources){
+    /**
+     public void showDrawable throws IOException, void ParseException(String[] Guuids, String[] Ruuids, String[] resources){
           // uuid gold card, uuid resource card, color covered card, first gold then resource one
 
 
@@ -47,7 +46,6 @@ public class Draw implements Views {
      public void showDraw(String[] uuid) throws IOException, ParseException {
           String[][] gStringCard = new String[10][2];
           String[][] rStringCard = new String[10][2];
-          String
 
           // create the cards from the UUID
             /*
@@ -62,7 +60,7 @@ public class Draw implements Views {
         gStringCard[7][] = RULE to obtain the points
         gStringCard[8][] = Required Resources
         gStringCard[9][] = Border color + Background color
-         */
+
           PlayableCard[] hand = new PlayableCard[3];
                  for(int x =0; x< 2; x++){
 
@@ -136,32 +134,5 @@ public class Draw implements Views {
 
 
      }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+     */
 }

@@ -306,7 +306,7 @@ public class Server extends UnicastRemoteObject {
                         //comunico il nome della lobby e il gameID
                         idSocketMap.get(message.getSenderID()).sendMessage(
                                 new Message(
-                                        REPLY_LOBBY_NAME,
+                                        REPLY_LOBBY_INFO,
                                         this.serverSocket.getLocalPort(),
                                         //In the gameController constructor a new game is created with the gameID,
                                         //so also the gameID is the gameID of the first player
@@ -402,7 +402,10 @@ public class Server extends UnicastRemoteObject {
                                     REPLY_NEW_LOBBY,
                                     this.serverSocket.getLocalPort(),
                                     message.getGameID(),
-                                    "Inserisci dimensione lobby (4 giocatori max)"
+                                    new Object[]{
+                                            UUID.randomUUID().toString(), //nome della nuova lobby
+                                            "Insert lobby size (4 players max): "
+                                    }
                             )
                     );
 
