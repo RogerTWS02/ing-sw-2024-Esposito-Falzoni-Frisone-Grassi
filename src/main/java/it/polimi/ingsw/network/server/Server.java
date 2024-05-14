@@ -318,7 +318,10 @@ public class Server extends UnicastRemoteObject {
                                         //and we cannot assign a gameID to the player when the game starts otherwise
                                         //the file saving will not work
                                         message.getSenderID(),
-                                        new Object[]{l.getLobbyName()}
+                                        new Object[]{
+                                                l.getLobbyName(),
+                                                l.getSize()
+                                        }
                                 )
                         );
                     }
@@ -346,7 +349,7 @@ public class Server extends UnicastRemoteObject {
                         //TODO:
                         // il client per visualizzare mano, punteggio, colore pedina ecc...
 
-                            //per ogni giocatore della lobby
+                        //per ogni giocatore della lobby
                         for (int pID : lobbyPlayerMap.get(l)) {
                             //mando un messaggio per aggiornare l'interfaccia
                             if (hasSocket) {
@@ -434,6 +437,7 @@ public class Server extends UnicastRemoteObject {
         String nickName = (String) message.getObj()[0];
         String lobbyName = (String) message.getObj()[1];
         int lobbySize = (Integer) message.getObj()[2];
+        System.out.println("Valori ricevuti: "+nickName+" "+lobbyName+" "+lobbySize);
         boolean isIDPresent = lobbyPlayerMap.values().stream()
                 .flatMapToInt(Arrays::stream)
                 .anyMatch(id -> id == message.getSenderID());
@@ -462,33 +466,49 @@ public class Server extends UnicastRemoteObject {
                 );
             }
         }else{
-            //genero il nuovo player per il client
-            if(hasSocket){
-                Player p = new Player(nickName, message.getSenderID());
-                idPlayerMap.put(message.getSenderID(), p);
 
-                //Genero il game controller, lo aggiungo alla map e gli metto il player
-                //If the player generates the lobby it becomes the gameID
-                GameController gc = new GameController(message.getSenderID());
-                gc.setNumberOfPlayers(lobbySize);
-                gc.addPlayer(p);
-                gameControllerMap.put(message.getGameID(), gc);
-            }
+            //genero il nuovo player per il client
+            Player p = new Player(nickName, message.getSenderID());
+            idPlayerMap.put(message.getSenderID(), p);
+
+            //Genero il game controller, lo aggiungo alla map e gli metto il player
+            //If the player generates the lobby it becomes the gameID
+            GameController gc = new GameController(message.getSenderID());
+            gc.setNumberOfPlayers(lobbySize);
+            gc.addPlayer(p);
+            gameControllerMap.put(message.getGameID(), gc);
 
             //inizializzo la nuova lobby e gli metto il nuovo playerID
             Lobby lobby = new Lobby(lobbySize,1, lobbyName);
             int[] players = new int[lobbySize];
-
             players[0] = message.getSenderID();
-
             lobbyPlayerMap.put(lobby, players);
+        }
 
+        if(hasSocket) {
+            idSocketMap.get(message.getSenderID()).sendMessage(
+                    new Message(
+                            REPLY_LOBBY_INFO,
+                            message.getSenderID(),
+                            message.getGameID(),
+                            new Object[]{
+                                    lobbyName,
+                                    lobbySize,
+                                    "You just joined the lobby "+lobbyName
+                            })
+            );
+
+        }else{
             return new Message(
-                    REPLY_NEW_LOBBY,
+                    REPLY_LOBBY_INFO,
                     message.getSenderID(),
                     message.getGameID(),
-                    "Lobby created successfully!\n" +
-                            "Lobby name: " + lobbyName
+                    new Object[]{
+                            lobbyName,
+                            lobbySize,
+                            "You just joined the lobby "+lobbyName
+                    }
+
             );
         }
         return null;

@@ -111,9 +111,8 @@ public class TUI extends Thread{
         }
 
         String nameP = command[0];
-
         //nel caso di una lobby nuova devo inserire il numero di giocatori
-        while(cli.getLobbySize() == 0){
+        while(cli.getLobbySize() == -1){
             int size = scanner.nextInt();
             if(size < 2 || size > 4){
                 System.out.println("A game needs a number of players between 2 and 4 included!!!");
@@ -142,7 +141,6 @@ public class TUI extends Thread{
         while(cli.getGameID() == -1){
             System.out.println("Waiting for other players to start the game...");
             scanner.nextLine();
-            System.out.println("Waiting for other players to start the game...");
         }
 
         //richiedo all'utente di scegliere le secretGoalCards

@@ -29,7 +29,7 @@ public class Client  {
     private Socket socket;
     private String lobbyName = "";
 
-    private int lobbySize = 0;
+    private int lobbySize = -1;
     private int gameID = -1;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
