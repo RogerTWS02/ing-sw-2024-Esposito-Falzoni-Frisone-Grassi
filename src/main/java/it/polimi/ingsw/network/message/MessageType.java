@@ -1,5 +1,8 @@
 package it.polimi.ingsw.network.message;
 
+/**
+ * Enumeration which contains all the possible types of messages that can be sent between client and server.
+ */
 public enum MessageType {
 
     REPLY_BAD_REQUEST, //Per ogni richiesta del client che non va bene
@@ -35,5 +38,4 @@ public enum MessageType {
     REPLY_UPDATED_SCORE,
 
     WINNER,
-
 }

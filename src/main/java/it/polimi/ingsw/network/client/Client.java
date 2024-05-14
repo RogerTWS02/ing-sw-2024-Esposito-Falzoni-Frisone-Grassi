@@ -1,10 +1,10 @@
 package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.network.message.Message;
+import it.polimi.ingsw.network.message.MessageListener;
 import it.polimi.ingsw.network.server.RMIServerInterface;
 import it.polimi.ingsw.network.server.Server;
 import it.polimi.ingsw.view.TUI.RMIGameFlow;
-import it.polimi.ingsw.view.TUI.TUI;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,15 +21,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Client  {
+
+    private MessageListener messageListener;
     private final String ipServ;
 
     private final int port;
-
-    private TUI tui = null;
     private Socket socket;
     private String lobbyName = "";
-
-    private int lobbySize = 0;
     private int gameID = -1;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
@@ -38,8 +36,7 @@ public class Client  {
     private static int lastID = 0;
     private final ClientListenerInterface clientListener;
 
-    public Client(String ip, int port, TUI tui) throws RemoteException {
-        this.tui = tui;
+    public Client(String ip, int port) throws RemoteException {
         this.ipServ = ip;
         this.port = port;
         this.clientListener = new ClientListener();
@@ -66,7 +63,7 @@ public class Client  {
                         Message recievedMessage = (Message) socketInput.readObject();
 
                         //inoltro il messaggio al client estraendo dal tipo di interfaccia
-                        tui.onMessageReceived(recievedMessage);
+                        messageListener.onMessageReceived(recievedMessage);
                         //per debugging
                         //System.out.println(recievedMessage.getObj().toString());
                     }catch (IOException | ClassNotFoundException e) {
@@ -87,7 +84,7 @@ public class Client  {
     public synchronized void sendMessage(Message message){
         new Thread(() -> {
             try{
-                //logger.log(Level.INFO, "Sending message to server");
+                logger.log(Level.INFO, "Sending message to server");
                 out.reset();
                 out.writeObject(message);
                 out.flush();
@@ -100,7 +97,7 @@ public class Client  {
     }
 
     public int getSocketPort() {
-        return socket.getLocalPort();
+        return socket.getPort();
     }
 
     /**
@@ -164,14 +161,6 @@ public class Client  {
         this.lobbyName = lobbyName;
     }
 
-    public int getLobbySize() {
-        return lobbySize;
-    }
-
-    public void setLobbySize(int lobbySize) {
-        this.lobbySize = lobbySize;
-    }
-
     public int getClientID() {
         return clientID;
     }
@@ -180,21 +169,32 @@ public class Client  {
         return clientListener;
     }
 
+    /**
+     * This class is used to listen to messages from the server using RMI.
+     */
     public class ClientListener extends UnicastRemoteObject implements ClientListenerInterface {
 
         public ClientListener() throws RemoteException {
             super();
         }
 
-
+        /**
+         * This method is used to receive a message from the server.
+         * @param message the message received from the server.
+         */
+        @Override
         public void receiveMessage(String message) {
             System.out.println(message);
         }
     }
 
-    public static void main(String[] args) throws UnknownHostException, RemoteException {
-        Client client = new Client(InetAddress.getLocalHost().getHostAddress(), 1234, null);
-        client.run(false);
+    public static void main(String[] args) {
+        try {
+            Client client = new Client(InetAddress.getLocalHost().getHostName(), 1234);
+            client.run(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

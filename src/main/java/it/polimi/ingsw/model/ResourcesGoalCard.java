@@ -27,11 +27,10 @@ public class ResourcesGoalCard extends GoalCard{
 
 
     /**
-     * This method is an override of the previous method in GoalCard.
-     * It checks whether in the board the pattern is matched and how many times it is reached.
+     * Checks if the player has the required resources to score points with this goal card and how many times and returns the points scored.
      *
-     * @param board the board in which we are looking for the goal
-     * @return the points the player has actually scored
+     * @param board The PlayerBoard to check the objective on.
+     * @return The points scored by the player with this goal card.
      */
     @Override
     public int checkGoal(PlayerBoard board) {
@@ -52,11 +51,20 @@ public class ResourcesGoalCard extends GoalCard{
         return minValue * this.getPoints();
     }
 
-    // Getters
+    /**
+     * Returns the resources required by the goal card.
+     *
+     * @return The resources required by the goal card.
+     */
     public Map<Resource, Integer> getResourcesMap() {
         return resources;
     }
 
+    /**
+     * Returns the amount of each resource required by the goal card.
+     *
+     * @return The amount of each resource required by the goal card.
+     */
     public Map<Resource, Integer> getCountResources() {
         return countResources;
     }
