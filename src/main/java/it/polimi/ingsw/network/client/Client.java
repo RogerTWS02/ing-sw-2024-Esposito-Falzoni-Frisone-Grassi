@@ -9,7 +9,9 @@ import it.polimi.ingsw.view.TUI.TUI;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -21,10 +23,13 @@ import java.util.logging.Logger;
 public class Client  {
     private final String ipServ;
 
-    private final TUI tui;
     private final int port;
+
+    private TUI tui = null;
     private Socket socket;
     private String lobbyName = "";
+
+    private int lobbySize = 0;
     private int gameID = -1;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
@@ -59,6 +64,7 @@ public class Client  {
                 while(!Thread.currentThread().isInterrupted()){
                     try {
                         Message recievedMessage = (Message) socketInput.readObject();
+
                         //inoltro il messaggio al client estraendo dal tipo di interfaccia
                         tui.onMessageReceived(recievedMessage);
                         //per debugging
@@ -158,6 +164,14 @@ public class Client  {
         this.lobbyName = lobbyName;
     }
 
+    public int getLobbySize() {
+        return lobbySize;
+    }
+
+    public void setLobbySize(int lobbySize) {
+        this.lobbySize = lobbySize;
+    }
+
     public int getClientID() {
         return clientID;
     }
@@ -166,29 +180,21 @@ public class Client  {
         return clientListener;
     }
 
-    /**
-     * This class is used to listen to messages from the server using RMI.
-     */
     public class ClientListener extends UnicastRemoteObject implements ClientListenerInterface {
 
         public ClientListener() throws RemoteException {
             super();
         }
 
-        /**
-         * This method is used to receive a message from the server.
-         * @param message the message received from the server.
-         */
-        @Override
+
         public void receiveMessage(String message) {
             System.out.println(message);
         }
     }
 
-    /**public static void main(String[] args) throws UnknownHostException, RemoteException {
-        Client client = new Client(InetAddress.getLocalHost().getHostAddress(), 1234);
+    public static void main(String[] args) throws UnknownHostException, RemoteException {
+        Client client = new Client(InetAddress.getLocalHost().getHostAddress(), 1234, null);
         client.run(false);
     }
-     */
 
 }

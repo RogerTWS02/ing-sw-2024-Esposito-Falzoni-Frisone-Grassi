@@ -37,4 +37,7 @@ public class Lobby {
         return gameStarted;
     }
 
+    public int getSize() {
+        return size;
+    }
 }

@@ -16,7 +16,7 @@ public enum MessageType {
     REQUEST_NEW_LOBBY,
     REQUEST_SECRET_GC,
     NOTIFY_SECRET_GC,
-    REPLY_LOBBY_NAME,
+    REPLY_LOBBY_INFO,
     REPLY_NEW_LOBBY,
 
     //messaggi per iniziare il gioco

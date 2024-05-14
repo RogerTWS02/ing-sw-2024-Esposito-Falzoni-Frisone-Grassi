@@ -10,9 +10,10 @@ import java.util.Scanner;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
 
-public class TUI {
+public class TUI extends Thread{
     public static Client cli;
     private static String[] gcs;
+    Scanner scanner = new Scanner(System.in);
     InfoCard infoC = new InfoCard();
 
     public TUI() throws IOException, ParseException {
@@ -23,15 +24,19 @@ public class TUI {
     public void onMessageReceived(Message message) {
         //System.out.println(message.getMessageType() + " sent by " + message.getSenderID());
         String srvRep;
-        switch(message.getMessageType()){
+        switch (message.getMessageType()) {
             case REPLY_BAD_REQUEST:
                 srvRep = (String) message.getObj()[0];
-                System.out.println("Bad request: "+srvRep);
+                System.out.println("Bad request: " + srvRep);
                 break;
 
-            case REPLY_LOBBY_NAME:
-                srvRep = (String) message.getObj()[0];
-                System.out.println("You joined the lobby "+srvRep+"!");
+            case REPLY_LOBBY_INFO:
+                cli.setLobbyName((String) message.getObj()[0]);
+                cli.setLobbySize((Integer) message.getObj()[1]);
+                if(message.getObj().length == 3){
+                    srvRep = (String) message.getObj()[2];
+                    System.out.println(srvRep);
+                }
                 break;
 
             //quando si raggiunge il numero prefissato di persone nella lobby
@@ -76,27 +81,62 @@ public class TUI {
                 String LobbyName = (String) message.getObj()[0];
                 cli.setLobbyName(LobbyName);
                 System.out.print((String) message.getObj()[1]);
+
+                //vado nello stato di richiesta nuova lobby
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println("String di debug: "+args[0]);
+    public synchronized void run(){
         // Inizializza lo scanner per leggere da console
-        Scanner scanner = new Scanner(System.in);
-        String[] command;
+        String[] command = null;
         String message;
 
-        //inizialmente mando i messaggi per far avviare il gioco
-        System.out.print("Insert a valid Nickname to start a game:");
-        //metodo bloccante che aspetta l'ingresso dell'utente
-        command = scanner.nextLine().split(" ");
-        cli.sendMessage(
-                new Message(
-                        REQUEST_LOGIN,
-                        cli.getSocketPort(),
-                        -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
-                        command[0])
-        );
+        while(cli.getLobbyName().isEmpty()) {
+            //inizialmente mando i messaggi per far avviare il gioco
+            System.out.print("Insert a valid Nickname to start a game:");
+            //metodo bloccante che aspetta l'ingresso dell'utente
+            command = scanner.nextLine().split(" ");
+            cli.sendMessage(
+                    new Message(
+                            REQUEST_LOGIN,
+                            cli.getSocketPort(),
+                            -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
+                            command[0])
+            );
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        String nameP = command[0];
+
+        //nel caso di una lobby nuova devo inserire il numero di giocatori
+        while(cli.getLobbySize() == 0){
+            int size = scanner.nextInt();
+            if(size < 2 || size > 4){
+                System.out.println("A game needs a number of players between 2 and 4 included!!!");
+                System.out.print("Insert lobby size (4 players max): ");
+                continue;
+            }
+            cli.sendMessage(
+                    new Message(
+                            REQUEST_NEW_LOBBY,
+                            cli.getSocketPort(),
+                            -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
+                            new Object[]{
+                                    nameP,
+                                    cli.getLobbyName(),
+                                    size
+                            })
+            );
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         //se l'utente manda messaggi in fase di attesa non faccio nulla
         while(cli.getGameID() == -1){

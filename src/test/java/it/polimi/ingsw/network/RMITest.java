@@ -34,7 +34,7 @@ public class RMITest {
         // Crea un nuovo client
         Thread serverThread = new Thread(() -> {
             try {
-                Client client = new Client(serverIP, serverPort);
+                Client client = new Client(serverIP, serverPort, null);
                 client.run(false);
             } catch (IOException e) {
                 throw new RuntimeException(e);

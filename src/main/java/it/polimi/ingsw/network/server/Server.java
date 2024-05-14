@@ -4,6 +4,8 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.network.client.ClientListenerInterface;
 import it.polimi.ingsw.network.message.Message;
+import it.polimi.ingsw.network.message.MessageType;
+
 import static it.polimi.ingsw.network.message.MessageType.*;
 
 import java.io.FileNotFoundException;
@@ -36,6 +38,8 @@ public class Server extends UnicastRemoteObject {
     private final Map<Lobby, int[]> lobbyPlayerMap; //lobby - playerIds
     private final Map<Integer, Player> idPlayerMap; //playerId - player
     private boolean hasSocket = false;
+    private int gameNumber = 0; //This will be the identifier for the players connected with RMI
+
 
     // prende in ingresso indirizzo di rete e porta, oppure usa la porta di default
     // e genero il server
@@ -113,12 +117,13 @@ public class Server extends UnicastRemoteObject {
     /**
      * Handles the message received from the client with a switch case
      * @param message the message received
+     * @param clientHandler the clientHandler that received the message
      */
 
-    public void messageHandler(Message message) throws IOException {
+    public void messageHandler(Message message, ClientHandler clientHandler) throws IOException {
         logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderID());
         switch(message.getMessageType()){
-            
+
             case TEST_MESSAGE:
                 Object[] test = message.getObj();
                 System.out.println((String) test[0]);
@@ -133,7 +138,7 @@ public class Server extends UnicastRemoteObject {
                         )
                 );
                 break;
-            
+
             //Client requires to log-in (al momento non tengo conto della persistenza)
             //Puts the client in an available lobby if the nickname is valid
             case REQUEST_LOGIN:
@@ -306,7 +311,7 @@ public class Server extends UnicastRemoteObject {
                         //comunico il nome della lobby e il gameID
                         idSocketMap.get(message.getSenderID()).sendMessage(
                                 new Message(
-                                        REPLY_LOBBY_NAME,
+                                        REPLY_LOBBY_INFO,
                                         this.serverSocket.getLocalPort(),
                                         //In the gameController constructor a new game is created with the gameID,
                                         //so also the gameID is the gameID of the first player
@@ -771,4 +776,16 @@ public class Server extends UnicastRemoteObject {
             }
         }
     }
+
+
+
+    public static void main(String[] args) {
+        try {
+            Server server = new Server();
+            server.run(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

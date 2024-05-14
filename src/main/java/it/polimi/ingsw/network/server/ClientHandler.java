@@ -49,7 +49,7 @@ public class ClientHandler extends Thread {
                     //messaggio che il server deve ricevere
                     Message msg = (Message) inp.readObject();
                     //lo mando al server
-                    server.messageHandler(msg);
+                    server.messageHandler( msg, this);
                 }
             }
         } catch (ClassCastException | NullPointerException | ClassNotFoundException e) {
