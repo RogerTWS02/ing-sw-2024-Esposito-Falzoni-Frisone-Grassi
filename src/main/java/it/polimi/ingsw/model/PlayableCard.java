@@ -27,9 +27,9 @@ public abstract class PlayableCard  implements Serializable {
     }
 
     /**
-     * Returns the card's state.
+     * Sets the card's state.
      *
-     * @param state The card's state.
+     * @param state The card's state to be set.
      */
     public void setState(State state) {
         this.state = state;

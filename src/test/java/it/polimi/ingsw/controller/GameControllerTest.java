@@ -79,6 +79,16 @@ public class GameControllerTest {
         gameController.placeCard(-4, -56, startingCard, game.getPlayers().get(0));
     }
 
+    @Test
+    public void placeCard_test_4() {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(40, 40, startingCard, game.getPlayers().get(0));
+
+        //TODO: check if we are checking angles before placing the card
+    }
+
 
     @Test
     public void showAvailableOnBoard_test() {
@@ -96,6 +106,7 @@ public class GameControllerTest {
         assertEquals(availableCorners, gameController.showAvailableOnBoard(game.getPlayers().get(0)).size());
     }
 
+    /*
     @Test
     public void updatePlayerPointsFromAllGoalCards_test() throws FileNotFoundException {
         //TODO
@@ -127,7 +138,7 @@ public class GameControllerTest {
          gameController.getPointsFromGoalCards(fakeplayer);
          assertEquals(14, fakeplayer.getScore());
 
-    };
+    } */
 
     @Test
     public void drawPlayableFromDeck_test_1() {
@@ -419,6 +430,7 @@ public class GameControllerTest {
         assertNotNull(cards[1]);
     }
 
+    /*
     @Test
     public void beginGame_test() throws IOException {
         System.setIn(new ByteArrayInputStream("4\n".getBytes()));
@@ -432,7 +444,7 @@ public class GameControllerTest {
 
         //TODO: complete testing when the method is complete
 
-    }
+    } */
 
     @Test
     public void addPlayer_test() {

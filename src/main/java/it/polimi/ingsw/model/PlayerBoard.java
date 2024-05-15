@@ -39,6 +39,49 @@ public class PlayerBoard implements Serializable{
     }
 
     /**
+     * Checks if the given card can be placed on the board, by checking the requirements of the card.
+     *
+     * @param card The card to be placed.
+     * @return True if the card can be placed, false otherwise.
+     */
+    public boolean checkGoldenCardRequirements(GoldenCard card) {
+        for (Resource resource : card.getRequiredResource()) {
+            if (countNumberEqual(card.getRequiredResource(), resource) > countNumberEqual(this.getResources(), resource))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns the coordinates of the corners of the card in the given position.
+     *
+     * @param index The index of the corner of the card.
+     * @return The coordinates of the corner of the card.
+     */
+    public int[] cornerCoordLookup(int index) {
+        int coord[] = new int[2];
+        switch (index) {
+            case 0:
+                coord[0] = -1;
+                coord[1] = 1;
+                break;
+            case 1:
+                coord[0] = 1;
+                coord[1] = 1;
+                break;
+            case 2:
+                coord[0] = -1;
+                coord[1] = -1;
+                break;
+            case 3:
+                coord[0] = 1;
+                coord[1] = -1;
+                break;
+        }
+        return coord;
+    }
+
+    /**
      * Places a card on the board in the given position.
      *
      * @param card The card to place.
@@ -47,93 +90,47 @@ public class PlayerBoard implements Serializable{
      * @return The number of corners that get covered by the card.
      */
     public int placeCard(PlayableCard card, int x, int y) {
-        if (card instanceof GoldenCard) {
-            for (Resource resource : ((GoldenCard) card).getRequiredResource()) {
-                if (countNumberEqual(((GoldenCard) card).getRequiredResource(), resource) > countNumberEqual(this.getResources(), resource))
-                    throw new IllegalArgumentException("You don't have the required resources to place this card!");
+        //If the card is a GoldenCard, check if the player has the required resources
+        if(card instanceof GoldenCard){
+            if(!checkGoldenCardRequirements((GoldenCard) card)){
+                throw new IllegalArgumentException("You don't have the required resources to place this card!");
             }
         }
-        if (firstcard) {
-            grid[x][y] = card;
-            /* updates the state of the card when placed */
-            grid[x][y].setState(State.OCCUPIED);
-            /*
-            grid[x-1][y-1] =>  corner 0     grid[x-1][y+1] =>  corner 2
-            grid[x+1][y-1] =>  corner 1     grid[x+1][y+1] =>  corner 3
-            */
-            /*
-            grid[x-1][y+1] =>  corner 0     grid[x+1][y+1] =>  corner 1
-            grid[x-1][y-1] =>  corner 2     grid[x+1][y-1] =>  corner 3
-            */
-            int id = -1;
-            for (int i = -1; i < 3; i += 2) {
-                for (int j = -1; j < 3; j += 2) {
-                    id++;
-                    try {
-                        /* if the neighbouring cell is empty, it needs to be instantiated to a dummy
-                         * ResourceCard to update the state of the PlayerBoard */
-                        if (grid[x + i][y + j] == null) {
-                            grid[x + i][y + j] = new ResourceCard(new Resource[]{}, new Corner[]{}, 0, null);
-                            /* if the neighbouring cell is empty then its state needs to be
-                             * changed according to the presence of the corresponding corner */
-                            if (grid[x][y].getCardCorners()[id] == null) {
-                                grid[x + i][y + j].setState(UNAVAILABLE);
-                            } else {
-                                grid[x + i][y + j].setState(AVAILABLE);
-                            }
-                            continue;
-                        }
-                        /* if the neighbouring corner is present then it has to be set covered */
-                        grid[x + i][y + j].getCardCorners()[id].setCovered(true);
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-                        //Ignored
-                    }
-                }
-            }
-            firstcard = false;
-            return 0;
-        } else {
-            if (grid[x][y] == null || grid[x][y].getState() == UNAVAILABLE || grid[x][y].getState() == OCCUPIED) {
+
+        //If the card isn't a StartingCard, check if the cell is available. If it isn't, make sure it's placed in the center
+        if(!(card instanceof StartingCard)) {
+            if(!grid[x][y].getState().equals(AVAILABLE)) {
                 throw new IllegalArgumentException("Unavailable Position! Try again!\n");
             }
-            grid[x][y] = card;
-            /* updates the state of the card when placed */
-            grid[x][y].setState(OCCUPIED);
-            /*
-            grid[x-1][y-1] =>  corner 0     grid[x-1][y+1] =>  corner 2
-            grid[x+1][y-1] =>  corner 1     grid[x+1][y+1] =>  corner 3
-            */
-            int id = -1;
-            int countCovered = 0;
-            for (int i = -1; i < 3; i += 2) {
-                for (int j = -1; j < 3; j += 2) {
-                    id++;
-                    try {
-                        /* if the neighbouring cell is empty, it needs to be instantiated to a dummy
-                         * ResourceCard to update the state of the PlayerBoard */
-                        if (grid[x + i][y + j] == null) {
-                            grid[x + i][y + j] = new ResourceCard(new Resource[]{}, new Corner[]{}, 0, null);
-                            /* if the neighbouring cell is empty then its state needs to be
-                             * changed according to the presence of the corresponding corner */
-                            if (grid[x][y].getCardCorners()[id] == null) {
-                                grid[x + i][y + j].setState(UNAVAILABLE);
-                            } else {
-                                grid[x + i][y + j].setState(AVAILABLE);
-                            }
-                            continue;
-                        }
-                        /* if the neighbouring corner is present then it has to be set covered */
-                        if (grid[x + i][y + j].getCardCorners()[3 - id] != null) {
-                            grid[x + i][y + j].getCardCorners()[3 - id].setCovered(true);
-                            countCovered++;
-                        }
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-                        //Ignored
-                    }
-                }
-            }
-            return countCovered;
+        } else {
+            x = 40;
+            y = 40;
         }
+
+        //Place the card
+        grid[x][y] = card;
+        grid[x][y].setState(State.OCCUPIED);
+
+        int coveredCorners = 0;
+
+        //Update the state of the neighbouring cells
+        for(int i = 0; i < 4; i++) {
+            int[] tempCoord = cornerCoordLookup(i);
+            if(grid[x + tempCoord[0]][y + tempCoord[1]] == null) {
+                grid[x + tempCoord[0]][y + tempCoord[1]] = new ResourceCard(new Resource[]{}, new Corner[]{}, 0, null);
+                if(card.getCardCorners()[i] != null) {
+                    grid[x + tempCoord[0]][y + tempCoord[1]].setState(AVAILABLE);
+                } else {
+                    grid[x + tempCoord[0]][y + tempCoord[1]].setState(UNAVAILABLE);
+                }
+            } else {
+                grid[x + tempCoord[0]][y + tempCoord[1]].getCardCorners()[Math.abs(i - 3)].setCovered(true);
+                grid[x + tempCoord[0]][y + tempCoord[1]].setState(State.OCCUPIED);
+                coveredCorners++;
+            }
+        }
+
+        return coveredCorners;
     }
 
     /**
