@@ -19,7 +19,6 @@ public class TUI extends Thread{
     public TUI() throws IOException, ParseException {
     }
 
-
     //Faccio l'aggiornamento della tui in base ai messaggi ricevuti
     public void onMessageReceived(Message message) {
         //System.out.println(message.getMessageType() + " sent by " + message.getSenderID());

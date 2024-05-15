@@ -22,16 +22,16 @@ public class Game implements Serializable{
     public JSONArray patternGoalDeck;
     public ResourceCard[] viewableResourceCards;
     public GoldenCard[] viewableGoldenCards;
-    public  GoalCard[] commonGoalCards;
+    public GoalCard[] commonGoalCards;
     private Player currentPlayer;
     private boolean isOver = false;
     private boolean isInLastPhase = false;
 
     /**
-     * This constructor creates a new game with the given gameID, retrieving it from a previous saving if it exists.
+     * The constructor creates a new game with the given gameID, retrieving it from a previous saving if it exists.
      *
      * @param gameID The gameID of the game, which identifies it uniquely.
-     * @throws FileNotFoundException If the old saving file exists but can't be retrieved.
+     * @throws FileNotFoundException if the old saving file exists but can't be retrieved.
      */
     public Game(int gameID) throws FileNotFoundException {
         this.gameID = gameID;
@@ -51,7 +51,6 @@ public class Game implements Serializable{
             this.viewableGoldenCards = oldGame.viewableGoldenCards;
             this.commonGoalCards = oldGame.commonGoalCards;
             this.currentPlayer = oldGame.currentPlayer;
-            this.gameID = gameID;
         } else {
             createDecks();
             viewableResourceCards = new ResourceCard[3];

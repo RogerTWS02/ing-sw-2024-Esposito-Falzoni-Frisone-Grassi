@@ -57,14 +57,13 @@ public class PlayerBoard implements Serializable{
             grid[x][y] = card;
             /* updates the state of the card when placed */
             grid[x][y].setState(State.OCCUPIED);
-            /*
-            grid[x-1][y-1] =>  corner 0     grid[x-1][y+1] =>  corner 2
-            grid[x+1][y-1] =>  corner 1     grid[x+1][y+1] =>  corner 3
-            */
+
+            //TODO: fix
             /*
             grid[x-1][y+1] =>  corner 0     grid[x+1][y+1] =>  corner 1
             grid[x-1][y-1] =>  corner 2     grid[x+1][y-1] =>  corner 3
             */
+            // 0: -1, -1; 1: -1, 1; 2: 1, -1; 3: 1, 1
             int id = -1;
             for (int i = -1; i < 3; i += 2) {
                 for (int j = -1; j < 3; j += 2) {
