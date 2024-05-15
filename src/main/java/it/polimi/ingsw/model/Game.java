@@ -216,15 +216,6 @@ public class Game implements Serializable{
     }
 
     /**
-     * Sets the common goal cards of the game.
-     *
-     * @param commonGoalCards The common goal cards to set.
-     */
-    public void setCommonGoalCards(GoalCard[] commonGoalCards) {
-        this.commonGoalCards = commonGoalCards;
-    }
-
-    /**
      * Returns the players of the game.
      */
     public ArrayList<Player> getPlayers() {

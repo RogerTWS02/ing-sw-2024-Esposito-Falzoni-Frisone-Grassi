@@ -1,12 +1,13 @@
 package it.polimi.ingsw.model;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * This class represents a player in the game.
  */
 public class Player implements Serializable {
     private String nickname;
-    public PlayableCard[] hand = new PlayableCard[3];
+    private ArrayList<PlayableCard> hand = new ArrayList<>();
     public int clientPort;
     private int score = 0;
     private PlayerBoard playerBoard;
@@ -88,7 +89,7 @@ public class Player implements Serializable {
      *
      * @return The player's hand.
      */
-    public PlayableCard[] getHand() {
+    public ArrayList<PlayableCard> getHand() {
         return hand;
     }
 
@@ -142,5 +143,14 @@ public class Player implements Serializable {
      */
     public int getGameID() {
         return gameID;
+    }
+
+    /**
+     * Adds a given card to the player's hand.
+     *
+     * @param handCard The player's card to add to the player's hand.
+     */
+    public void setHand(PlayableCard handCard) {
+        hand.add(handCard);
     }
 }

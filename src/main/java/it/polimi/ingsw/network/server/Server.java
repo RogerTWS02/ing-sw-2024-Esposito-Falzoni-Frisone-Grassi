@@ -265,16 +265,16 @@ public class Server extends UnicastRemoteObject {
         String requestNick = (String) message.getObj()[0];
 
         //controllo se il nome è già presente
+        /*
         boolean duplicates = gameControllerMap.values().stream()
                 .flatMap(g -> g.getCurrentGame().getPlayers().stream())
                 .map(Player::getNickname)
                 .anyMatch(nick -> Objects.equals(nick, requestNick));
+         */
 
-        boolean isIDPresent = lobbyPlayerMap.values().stream()
-                .flatMapToInt(Arrays::stream)
-                .anyMatch(id -> id == message.getSenderID());
+        boolean duplicates = false;
 
-        if (duplicates || requestNick.isEmpty() || isIDPresent) {
+        if (duplicates || requestNick.isEmpty() ) {
             //se è presente o nullo gli dico di cambiare nick
             if(hasSocket){
                 idSocketMap.get(message.getSenderID()).sendMessage(
@@ -282,24 +282,23 @@ public class Server extends UnicastRemoteObject {
                                 REPLY_BAD_REQUEST,
                                 this.serverSocket.getLocalPort(),
                                 message.getGameID(),
-                                "Invalid nickname, please try a different one!\n" +
-                                        "REMINDER: If you're already in a lobby you cannot join another one"
+                                "Invalid nickname, please try a different one!"
                         )
                 );
-
                 return null;
             }else{
                 return new Message(
                         REPLY_BAD_REQUEST,
                         message.getSenderID(),
                         message.getGameID(),
-                        "Invalid nickname, please try a different one!\n" +
-                                "REMINDER: If you're already in a lobby you cannot join another one"
+                        "Invalid nickname, please try a different one!"
                 );
             }
         }else{
+
             //se non è presente lo registro nella prima lobby valida
             boolean found = false;
+
             for(Lobby l: lobbyPlayerMap.keySet()) {
                 if(!l.isGameStarted() && !l.isLobbyFull()) {
                     if(hasSocket) {
@@ -319,15 +318,14 @@ public class Server extends UnicastRemoteObject {
                                         }
                                 )
                         );
+                        found = true;
                     }
+
                     //aggiungo il playerID alla lobby
                     lobbyPlayerMap.get(l)[l.getPlayersConnected()] = message.getSenderID();
-
-
                     l.incrementPlayersConnected();
 
                     //aggiungo il nuovo giocatore alla partita
-
                     Player p = new Player(requestNick, message.getSenderID());
                     gameControllerMap.get(lobbyPlayerMap.get(l)[0]).addPlayer(p);
                     idPlayerMap.put(message.getSenderID(), p);
@@ -337,19 +335,19 @@ public class Server extends UnicastRemoteObject {
                     //se raggiungo il numero stabilito di giocatori, avvio la partita
                     if(l.isLobbyFull()){
                         l.setGameStarted(true);
-                        //inizializza le mani di tutti i giocatori
-                        gameControllerMap.get(p.getGameID()).beginGame();
+
+                        //inizializza le mani di tutti i giocatori e imposta le GoalCards comuni
+                        gameControllerMap.get(p.getGameID()).inizializeHandsAndCommons();
 
 
                         //TODO:
                         // il client per visualizzare mano, punteggio, colore pedina ecc...
-
                         //per ogni giocatore della lobby
                         for (int pID : lobbyPlayerMap.get(l)) {
                             //mando un messaggio per aggiornare l'interfaccia
                             if (hasSocket) {
 
-                                idSocketMap.get(message.getSenderID()).sendMessage(
+                                idSocketMap.get(pID).sendMessage(
                                         new Message(
                                                 REPLY_BEGIN_GAME,
                                                 serverSocket.getLocalPort(),
@@ -357,16 +355,24 @@ public class Server extends UnicastRemoteObject {
                                                 lobbyPlayerMap.get(l)[0],
 
                                                 new Object[]{
+                                                        /*
                                                         //mando a tutti l'UUID delle carte delle loro mani
-                                                        Arrays.stream(gameControllerMap.get(message.getGameID())
-                                                                .returnHand(idPlayerMap.get(pID)))
+                                                        gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                                .returnHand(idPlayerMap.get(pID)).stream()
                                                                 .map(PlayableCard::getUUID),
+                                                         */
+
 
                                                         //mando a tutti l'UUID delle common goal cards
-                                                        Arrays.stream(gameControllerMap.get(message.getGameID())
+                                                        Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                                 .getCurrentGame()
                                                                 .getCommonGoalCards())
                                                                 .map(GoalCard::getUUID)
+
+                                                        //mando a tutti la starting card e le secret goal cards da scegliere
+                                                        //gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                        //        .cardToChoose()
+
                                                 }
                                         )
                                 );
@@ -375,24 +381,14 @@ public class Server extends UnicastRemoteObject {
                                         REPLY_BEGIN_GAME,
                                         pID,
                                         message.getGameID(),
-                                        new Object[]{
-                                                //Here I send the UUID of the cards in the hand of the player
-                                                Arrays.stream(gameControllerMap.get(message.getGameID())
-                                                        .returnHand(idPlayerMap.get(pID)))
-                                                        .map(PlayableCard::getUUID),
-
-                                                //mando a tutti l'UUID delle common goal cards
-                                                Arrays.stream(gameControllerMap.get(message.getGameID())
-                                                        .getCurrentGame()
-                                                        .getCommonGoalCards())
-                                                        .map(GoalCard::getUUID)
-                                        }
+                                        new Object[]{}
                                 );
                             }
                         }
                     }
                 }
             }
+
             //se non ho lobby gli chiedo di generarla
             if(!found) {
                 if (hasSocket) {
@@ -433,15 +429,10 @@ public class Server extends UnicastRemoteObject {
         String lobbyName = (String) message.getObj()[1];
         int lobbySize = (Integer) message.getObj()[2];
         System.out.println("Valori ricevuti: "+nickName+" "+lobbyName+" "+lobbySize);
-        boolean isIDPresent = lobbyPlayerMap.values().stream()
-                .flatMapToInt(Arrays::stream)
-                .anyMatch(id -> id == message.getSenderID());
 
         //se il nome non è valido gli mando un bad request
-        if(lobbyName.isEmpty() || lobbyPlayerMap.keySet().stream().anyMatch(lobby -> lobby.getLobbyName().equals(lobbyName)) || lobbySize > 4 || lobbySize < 2
-            || isIDPresent){
+        if(lobbyName.isEmpty()){
             if(hasSocket) {
-
                 idSocketMap.get(message.getSenderID()).sendMessage(
                         new Message(
                                 REPLY_BAD_REQUEST,
@@ -471,7 +462,7 @@ public class Server extends UnicastRemoteObject {
             GameController gc = new GameController(message.getSenderID());
             gc.setNumberOfPlayers(lobbySize);
             gc.addPlayer(p);
-            gameControllerMap.put(message.getGameID(), gc);
+            gameControllerMap.put(message.getSenderID(), gc);
 
             //inizializzo la nuova lobby e gli metto il nuovo playerID
             Lobby lobby = new Lobby(lobbySize,1, lobbyName);

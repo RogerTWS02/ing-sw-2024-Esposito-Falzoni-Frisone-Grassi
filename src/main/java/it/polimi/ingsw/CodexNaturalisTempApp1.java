@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.text.ParseException;
 
-public class CodexNaturalisTempApp {
+public class CodexNaturalisTempApp1 {
 
     public static void main(String[] args) throws IOException, ParseException, org.json.simple.parser.ParseException {
         //parametri iniziali: <gui/tui/server> <socket/rmi>

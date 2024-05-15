@@ -290,13 +290,8 @@ public class GameController {
      *
      * @param p The player to be added to the game.
      */
-    public void addPlayer(Player p) throws SecurityException {
-        /* check if player already exists */
-        for(int pl = 0; pl < currentGame.getPlayers().size(); pl++){
-            if(currentGame.getPlayers().get(pl) != null){
-                throw new SecurityException("Player already exists!");
-            }
-        }
+    public void addPlayer(Player p){
+
         ArrayList<Player> players = currentGame.getPlayers();
         for(int n = 0 ; n < currentGame.getPlayers().size(); n++) {
             if (currentGame.getPlayers().get(n) == null) {
@@ -321,7 +316,7 @@ public class GameController {
      * @return the PlayableCard array representing the player's hand.
      * @throws IllegalArgumentException in case the player is null or not in the game.
      */
-    public PlayableCard[] returnHand(Player player){
+    public ArrayList<PlayableCard> returnHand(Player player){
         if(player == null || !currentGame.getPlayers().contains(player)) {
             throw new IllegalArgumentException("Illegal player parameter!");
         }
@@ -454,25 +449,38 @@ public class GameController {
     }
 
     /**
-     * Performs a series of actions useful to begin the game.
-     *
-     * @throws IOException in case an error occurs during the game setup.
+     * Performs a series of useful actions to begin the game.
      */
-    public void beginGame() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Insert the number of players: ");
-        setNumberOfPlayers(Integer.parseInt(reader.readLine()));
-        System.out.println("\nWaiting for players to show up...\n");
-        new Thread(() -> {
-            while(currentGame.getPlayers().contains(null)){
-                //We have to wait for everyone to connect
-            }
-        }).start();
+    public void inizializeHandsAndCommons() {
+        //per ogni player
+        for(Player p: currentGame.getPlayers()){
+            //imposto la mano iniziale
 
-        //TODO: initialize the game flow, and some other things to set up
+            //una GoldenCard
+            p.setHand(drawPlayableFromDeck(currentGame.goldenDeck));
+            //due ResourceCard
+            p.setHand(drawPlayableFromDeck(currentGame.resourceDeck));
+            p.setHand(drawPlayableFromDeck(currentGame.resourceDeck));
 
-        System.out.println("Everything is set up!\n");
+        }
+
+        //gli mando le carte obbiettivo comuni
+        setCommonGoalCards();
+
     }
+   
+    // restituisce le carte per cui il giocatore deve effettuare
+    // una scelta prima di inziare la partita
+    public Object[] cardToChoose(){
+        GoalCard[] temp = drawGoalCardsToChoose();
+        return new Object[]{
+                drawPlayableFromDeck(currentGame.startingDeck).getUUID(),
+                temp[0].getUUID(),
+                temp[1].getUUID()
+        };
+    }
+    
+    
 
     /**
      * Returns the current game.

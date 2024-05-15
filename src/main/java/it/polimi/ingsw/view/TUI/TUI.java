@@ -40,8 +40,14 @@ public class TUI extends Thread{
 
             //quando si raggiunge il numero prefissato di persone nella lobby
             case REPLY_BEGIN_GAME:
+                //PER DEBUGGING STAMPO SOLO LA STARTING CARD
+                System.out.println(((String[]) message.getObj()[0])[0]);
+
                 //imposto il gameID nel client
                 cli.setGameID(message.getGameID());
+
+                //Stampo il gameID
+                System.out.println(message.getGameID());
 
                 //vado alla scena di gioco impostando i parametri ricevuti
                 //ovvero le carte della mano e le common goal cards

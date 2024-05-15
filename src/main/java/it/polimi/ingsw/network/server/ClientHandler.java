@@ -64,6 +64,10 @@ public class ClientHandler extends Thread {
                 synchronized (inLock) {
                     //messaggio che il server deve ricevere
                     Message msg = (Message) inp.readObject();
+
+                    //PER DEBUGGING
+                    System.out.println(msg.getMessageType());
+
                     //lo mando al server
                     server.messageHandler(msg);
                 }
