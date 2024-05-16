@@ -16,6 +16,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 
 public class HandCards implements Views {
+
+
+
+
     JSONArray resourceJSONArray;
     JSONArray goldJSONArray;
 
@@ -51,7 +55,7 @@ public class HandCards implements Views {
         JSONArray resourceJSONArray = (JSONArray) JSONObjectResource;
     }
 
-    public ArrayList<String> showHand(String[] uuid) throws IOException, ParseException {
+    public  ArrayList<String> showHand(String[] uuid) throws IOException, ParseException {
         String[][] stringCard = new String[10][3];
 
         // create the cards from the UUID
@@ -68,7 +72,7 @@ public class HandCards implements Views {
         stringCard[8][] = Required Resources
         stringCard[9][] = Border color + Background color
          */
-        PlayableCard[] hand = new PlayableCard[3];
+
         for(int x =0; x< 3; x++){
             int index = Integer.parseInt(uuid[x].substring(3, uuid[x].length()));
             JSONObject JSONCard;
@@ -115,21 +119,22 @@ public class HandCards implements Views {
          cards.add("        │ "+stringCard[9][0]+"╔═══════════════════════════╗"+stringCard[9][1]+"╔═══════════════════════════╗"+stringCard[9][2]+"╔═══════════════════════════╗"+ANSI_RESET+" │ ");
 
         String t ="        │ "+
-                stringCard[9][0]+"║ "+ANSI_RESET+stringCard[3][0]+ "          "+Views.cardToPoint(stringCard[1][0],stringCard[7][0])+"        " + stringCard[4][0]+stringCard[9][0]+"║"+
-                stringCard[9][1]+"║ "+ANSI_RESET+stringCard[3][1]+ "          "+Views.cardToPoint(stringCard[1][1],stringCard[7][1])+"        " + stringCard[4][1]+stringCard[9][1]+"║"+
-                stringCard[9][2]+"║ "+ANSI_RESET+stringCard[3][2]+ "          "+Views.cardToPoint(stringCard[1][2],stringCard[7][2])+"        " + stringCard[4][2]+stringCard[9][2]+"║"+ANSI_RESET+" │ "
+                stringCard[9][0]+"║"+ANSI_RESET+stringCard[3][0]+ "           "+Views.cardToPoint(stringCard[1][0],stringCard[7][0])+"        " + stringCard[4][0]+stringCard[9][0]+"║"+
+                stringCard[9][1]+"║"+ANSI_RESET+stringCard[3][1]+ "           "+Views.cardToPoint(stringCard[1][1],stringCard[7][1])+"        " + stringCard[4][1]+stringCard[9][1]+"║"+
+                stringCard[9][2]+"║"+ANSI_RESET+stringCard[3][2]+ "           "+Views.cardToPoint(stringCard[1][2],stringCard[7][2])+"        " + stringCard[4][2]+stringCard[9][2]+"║"+ANSI_RESET+" │ "
                 ;
         cards.add(t);
         for (int i = 0; i < 3; i++) {
             cards.add("        │ "+stringCard[9][0]+"║                           ║"+stringCard[9][1]+"║                           ║"+stringCard[9][2]+"║                           ║"+ANSI_RESET+" │ ");
         }
         String b ="        │ "+
-                stringCard[9][0]+"║ "+ANSI_RESET+stringCard[5][0] + "         "+stringCard[8][0]+"        " + stringCard[6][0]+stringCard[9][0]+"║"+
-                stringCard[9][1]+"║ "+ANSI_RESET+stringCard[5][1] + "         "+stringCard[8][1]+"        " + stringCard[6][1]+stringCard[9][1]+"║"+
-                stringCard[9][2]+"║ "+ANSI_RESET+stringCard[5][2] + "         "+stringCard[8][2]+"        " + stringCard[6][2]+stringCard[9][2]+"║  "
+                stringCard[9][0]+"║"+ANSI_RESET+stringCard[5][0] + "          "+stringCard[8][0]+"        " + stringCard[6][0]+stringCard[9][0]+"║"+
+                stringCard[9][1]+"║"+ANSI_RESET+stringCard[5][1] + "          "+stringCard[8][1]+"        " + stringCard[6][1]+stringCard[9][1]+"║"+
+                stringCard[9][2]+"║"+ANSI_RESET+stringCard[5][2] + "          "+stringCard[8][2]+"        " + stringCard[6][2]+stringCard[9][2]+"║  "
                 ;
         cards.add(b);
         cards.add("        │ "+stringCard[9][0]+"╚═══════════════════════════╝"+stringCard[9][1]+"╚═══════════════════════════╝"+stringCard[9][2]+"╚═══════════════════════════╝"+ANSI_RESET+" │ ");
+        cards.add("        └─────────────────────────────────────────────────────────────────────────────────────────┘ ");
 
 
 

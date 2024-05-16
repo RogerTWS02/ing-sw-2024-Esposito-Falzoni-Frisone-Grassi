@@ -11,19 +11,21 @@ public class LogInPort {
         StringBuilder sb = new StringBuilder();
         sb
                 .append("┌")
-                .append("─".repeat(106))
+                .append("─".repeat(46))
                 .append("┐")
                 .append("\n")
                 .append("│")
-                .append(" ".repeat(46))
-                .append("Insert game IP")
-                .append(" ".repeat(46))
+                .append(" ".repeat(15))
+                .append("Insert server IP:")
+                .append(" ".repeat(14))
                 .append("│")
                 .append("\n")
                 .append("└")
-                .append("─".repeat(106))
+                .append("─".repeat(46))
                 .append("┘");
 
+
+        System.out.println(sb);
 
     }
 }

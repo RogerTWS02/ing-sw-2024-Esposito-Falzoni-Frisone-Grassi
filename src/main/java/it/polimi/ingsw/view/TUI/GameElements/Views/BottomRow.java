@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.TUI.GameElements.Views;
 
+import it.polimi.ingsw.view.TUI.GameState.Views;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -17,7 +18,8 @@ public class BottomRow {
     public void showBottomRow(String[] uuidHand, String[]uuidGoals) throws IOException, ParseException {
         ArrayList<String>hand=handCards.showHand(uuidHand);
         ArrayList<String>goal=goalCards.showObjective(uuidGoals);
-
+        //clear the screen before printing something
+        Views.clearScreen();
         // prints hand card + goal card
         for (int i = 0; i < 10; i++) {
             System.out.print(hand.get(i)+"  "+goal.get(i));

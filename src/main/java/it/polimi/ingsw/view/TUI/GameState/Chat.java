@@ -2,17 +2,13 @@ package it.polimi.ingsw.view.TUI.GameState;
 
 public class Chat implements Views{
 
-        public static void main(String[] args) {
-
-        }
 public void showChat(String[] msg){
 
-                //clear the screen before printing something
-                Views.clearScreen();
 
 
 
-                // print the Chat
+
+
     StringBuilder sb = new StringBuilder();
     sb
             .append("┌")
@@ -40,6 +36,9 @@ public void showChat(String[] msg){
             .append("└")
             .append("─".repeat(106))
             .append("┘");
+    // Clear the screen before printing something
+    Views.clearScreen();
+    // print the Chat
     System.out.println(sb);}
 
 

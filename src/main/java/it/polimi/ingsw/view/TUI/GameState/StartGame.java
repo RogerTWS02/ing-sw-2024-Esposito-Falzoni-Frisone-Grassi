@@ -6,7 +6,13 @@ import javax.xml.transform.stream.StreamSource;
 
 public class StartGame {
 
-    public void StartGame(){
+
+
+    public void ShowStartGame(){
+
+        //clear the screen before printing something
+        Views.clearScreen();
+        // print StartGame
 
         System.out.println("┌──────────────────────────────────────────────────────────────────────────────────────────────────────────┐");
         System.out.println("│                                                                                                          │");
