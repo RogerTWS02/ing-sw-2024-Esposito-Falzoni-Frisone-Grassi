@@ -18,6 +18,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Server extends UnicastRemoteObject {
     private static final int default_port = 1234;
@@ -339,9 +341,6 @@ public class Server extends UnicastRemoteObject {
                         //inizializza le mani di tutti i giocatori e imposta le GoalCards comuni
                         gameControllerMap.get(p.getGameID()).inizializeHandsAndCommons();
 
-
-                        //TODO:
-                        // il client per visualizzare mano, punteggio, colore pedina ecc...
                         //per ogni giocatore della lobby
                         for (int pID : lobbyPlayerMap.get(l)) {
                             //mando un messaggio per aggiornare l'interfaccia
@@ -355,24 +354,24 @@ public class Server extends UnicastRemoteObject {
                                                 lobbyPlayerMap.get(l)[0],
 
                                                 new Object[]{
-                                                        /*
-                                                        //mando a tutti l'UUID delle carte delle loro mani
-                                                        gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                                .returnHand(idPlayerMap.get(pID)).stream()
-                                                                .map(PlayableCard::getUUID),
-                                                         */
 
+                                                    //mando a tutti l'UUID delle carte delle loro mani
+                                                    gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                            .returnHand(idPlayerMap.get(pID)).stream()
+                                                            .map(PlayableCard::getUUID)
+                                                            .toList(),
 
-                                                        //mando a tutti l'UUID delle common goal cards
-                                                        Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                                .getCurrentGame()
-                                                                .getCommonGoalCards())
-                                                                .map(GoalCard::getUUID)
+                                                    //mando a tutti l'UUID delle common goal cards
+                                                    Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                            .getCurrentGame()
+                                                            .getCommonGoalCards())
+                                                            .map(GoalCard::getUUID)
+                                                            .toList(),
 
-                                                        //mando a tutti la starting card e le secret goal cards da scegliere
-                                                        //gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                        //        .cardToChoose()
-
+                                                    //mando a tutti la starting card e le secret goal cards da scegliere
+                                                    Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                            .cardToChoose())
+                                                            .toList()
                                                 }
                                         )
                                 );

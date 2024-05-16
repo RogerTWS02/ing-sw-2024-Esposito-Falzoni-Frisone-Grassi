@@ -6,6 +6,7 @@ import it.polimi.ingsw.view.TUI.GameState.InfoCard;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
@@ -40,8 +41,10 @@ public class TUI extends Thread{
 
             //quando si raggiunge il numero prefissato di persone nella lobby
             case REPLY_BEGIN_GAME:
-                //PER DEBUGGING STAMPO SOLO LA STARTING CARD
-                System.out.println(((String[]) message.getObj()[0])[0]);
+                //PER DEBUGGING STAMPO TUTTO
+                System.out.println(message.getObj()[0].toString());
+                System.out.println(message.getObj()[1].toString());
+                System.out.println(message.getObj()[2].toString());
 
                 //imposto il gameID nel client
                 cli.setGameID(message.getGameID());

@@ -471,9 +471,9 @@ public class GameController {
    
     // restituisce le carte per cui il giocatore deve effettuare
     // una scelta prima di inziare la partita
-    public Object[] cardToChoose(){
+    public String[] cardToChoose(){
         GoalCard[] temp = drawGoalCardsToChoose();
-        return new Object[]{
+        return new String[]{
                 drawPlayableFromDeck(currentGame.startingDeck).getUUID(),
                 temp[0].getUUID(),
                 temp[1].getUUID()
