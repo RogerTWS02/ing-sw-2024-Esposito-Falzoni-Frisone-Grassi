@@ -13,7 +13,7 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 
 public class TUI extends Thread{
     public static Client cli;
-    private static String[] gcs;
+    private static List<String> cardToChooseUUID;
     Scanner scanner = new Scanner(System.in);
     InfoCard infoC = new InfoCard();
 
@@ -33,34 +33,29 @@ public class TUI extends Thread{
             case REPLY_LOBBY_INFO:
                 cli.setLobbyName((String) message.getObj()[0]);
                 cli.setLobbySize((Integer) message.getObj()[1]);
-                if(message.getObj().length == 3){
+                /*if(message.getObj().length == 3){
                     srvRep = (String) message.getObj()[2];
                     System.out.println(srvRep);
-                }
+                }*/
                 break;
 
             //quando si raggiunge il numero prefissato di persone nella lobby
             case REPLY_BEGIN_GAME:
                 //PER DEBUGGING STAMPO TUTTO
-                System.out.println(message.getObj()[0].toString());
-                System.out.println(message.getObj()[1].toString());
-                System.out.println(message.getObj()[2].toString());
+                System.out.println("Player's hand: "+message.getObj()[0].toString());
+                System.out.println("Player's common goals: "+message.getObj()[1].toString());
+                System.out.println("Player's cards to choose: "+message.getObj()[2].toString());
 
                 //imposto il gameID nel client
                 cli.setGameID(message.getGameID());
 
-                //Stampo il gameID
-                System.out.println(message.getGameID());
+                //carte da scegliere
+                cardToChooseUUID = (List<String>) message.getObj()[2];
 
                 //vado alla scena di gioco impostando i parametri ricevuti
                 //ovvero le carte della mano e le common goal cards
                 System.out.println("Gioco iniziato! Stampo mano, goal comuni e quello privato, mazzi, board e punteggio ecc...");
 
-                break;
-
-            //quando ricevo la risposta della scelta delle secret goal card
-            case REPLY_SECRET_GC:
-                gcs = (String[]) message.getObj();
                 break;
 
             //in risposta ai comandi di /drawCardFromDeck e /drawCardFromViewable
@@ -89,7 +84,6 @@ public class TUI extends Thread{
                 String LobbyName = (String) message.getObj()[0];
                 cli.setLobbyName(LobbyName);
                 System.out.print((String) message.getObj()[1]);
-
                 //vado nello stato di richiesta nuova lobby
         }
     }
@@ -145,49 +139,66 @@ public class TUI extends Thread{
             }
         }
 
+        System.out.println("You just joined the lobby: "+cli.getLobbyName());
+
         //se l'utente manda messaggi in fase di attesa non faccio nulla
+        if(cli.getGameID() == -1) System.out.println("Waiting for other players to start the game...");
         while(cli.getGameID() == -1){
-            System.out.println("Waiting for other players to start the game...");
-            scanner.nextLine();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        //richiedo all'utente di scegliere le secretGoalCards
-        cli.sendMessage(
-                new Message(
-                        REQUEST_SECRET_GC,
-                        cli.getSocketPort(),
-                        -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
-                        ""
-                )
-        );
-        //adesso l'array di string gcs è inizializzato con dei valori validi!!!
 
+        String selectedUUID = "";
+        boolean side;
 
-        boolean valid = false;
         while(true){
+            //sezione per scegliere la secret goal card
             System.out.print("Select your secret goal card between the two (type 1 or 2 to choose):");
             command = scanner.nextLine().split(" ");
             if(command[0].equals("1") || command[0].equals("2")){
-                String selectedUUID = (command[0].equals("1"))? gcs[0] : gcs[1];
+                selectedUUID = (command[0].equals("1"))? cardToChooseUUID.get(1) : cardToChooseUUID.get(2);
+                System.out.println("\nIl giocatore ha scelto la carta: "+selectedUUID);
 
-                //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
+                while(true){
+                    //sezione per scegliere che lato mettere la starting card
+                    System.out.print("Select which side to place the starting card (type 1 for frontside or 2 for backside):");
+                    command = scanner.nextLine().split(" ");
+                    if(command[0].equals("1") || command[0].equals("2")){
+                        side = command[0].equals("2");
+                        break;
+                    }
+                    System.out.println("\nInput given '"+command[0]+"' is incorrect! Try again.");
+                }
 
-                System.out.println("Il giocatore ha scelto la carta: "+selectedUUID);
-                valid = true;
-
-                //notifico il server per la scelta fatta
-                cli.sendMessage(
-                        new Message(
-                                NOTIFY_SECRET_GC,
-                                cli.getSocketPort(),
-                                cli.getGameID(),
-                                new Object[]{selectedUUID}
-                        )
-                );
+                break;
             }
-            if(valid) break;
-            System.out.print("Input given is incorrect! Try again.");
+            System.out.println("\nInput given '"+command[0]+"' is incorrect! Try again.");
         }
+
+        //notifico il server per la scelta fatta
+        cli.sendMessage(
+                new Message(
+                        NOTIFY_CHOICES_MADE,
+                        cli.getSocketPort(),
+                        cli.getGameID(),
+                        new Object[]{
+                                cardToChooseUUID.get(0), //UUID della starting card
+                                side,                    //lato scelto
+                                selectedUUID             //secret goal card scelta
+                        }
+                )
+        );
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
 
         //vera fase di gioco
         while(true){
@@ -195,7 +206,7 @@ public class TUI extends Thread{
             //System.out.println(printTui());
 
             //chiedo all'utente di inserire un comando
-            System.out.println("Type '/help' to view the Commands List):");
+            System.out.print("Type '/help' to view the Commands List):");
 
             //Leggi il messaggio inserito dall'utente
             command = scanner.nextLine().split(" ");
@@ -317,7 +328,7 @@ public class TUI extends Thread{
                     break;
 
                 default:
-                    System.out.println("Command not valid (try '/help')");
+                    System.out.println("Command not valid, try '/help'");
             }
 
 

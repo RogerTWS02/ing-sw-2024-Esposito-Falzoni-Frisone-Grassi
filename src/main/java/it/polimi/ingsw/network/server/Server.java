@@ -163,6 +163,11 @@ public class Server extends UnicastRemoteObject {
             case REQUEST_PLAYER_MOVE:
                 playerMove(message);
                 break;
+
+            //in base alle scelte fatte dal giocatore, aggiorno il game
+            case NOTIFY_CHOICES_MADE:
+                System.out.println("The player has made some moves (NEEDS WORK!!!)");
+                break;
         }
     }
 
@@ -311,7 +316,7 @@ public class Server extends UnicastRemoteObject {
                                         this.serverSocket.getLocalPort(),
                                         //In the gameController constructor a new game is created with the gameID,
                                         //so also the gameID is the gameID of the first player
-                                        //and we cannot assign a gameID to the player when the game starts otherwise
+                                        //We cannot assign a gameID to the player when the game starts otherwise
                                         //the file saving will not work
                                         message.getSenderID(),
                                         new Object[]{
