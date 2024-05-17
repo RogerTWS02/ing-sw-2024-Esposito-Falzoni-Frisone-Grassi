@@ -22,7 +22,8 @@ public class LogInPort {
                 .append("\n")
                 .append("└")
                 .append("─".repeat(46))
-                .append("┘");
+                .append("┘")
+                .append("\n");
 
 
         System.out.println(sb);

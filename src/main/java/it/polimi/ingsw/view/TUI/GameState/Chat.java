@@ -35,7 +35,8 @@ public void showChat(String[] msg){
     sb
             .append("└")
             .append("─".repeat(106))
-            .append("┘");
+            .append("┘")
+            .append("\n");
     // Clear the screen before printing something
     Views.clearScreen();
     // print the Chat
