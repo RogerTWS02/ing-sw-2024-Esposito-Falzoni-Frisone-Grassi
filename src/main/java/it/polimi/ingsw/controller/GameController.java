@@ -471,10 +471,20 @@ public class GameController {
    
     // restituisce le carte per cui il giocatore deve effettuare
     // una scelta prima di inziare la partita
-    public String[] cardToChoose(){
+    public String[] cardToChoose(Player p){
+        StartingCard tempSC = (StartingCard) drawPlayableFromDeck(currentGame.startingDeck);
         GoalCard[] temp = drawGoalCardsToChoose();
+
+        //passo al giocatore le carte da scegliere
+        p.setCardToChoose(new Object[]{
+                tempSC,
+                temp[0],
+                temp[1]
+        });
+
+        //passo al server l'UUID delle carte da scegliere
         return new String[]{
-                drawPlayableFromDeck(currentGame.startingDeck).getUUID(),
+                tempSC.getUUID(),
                 temp[0].getUUID(),
                 temp[1].getUUID()
         };

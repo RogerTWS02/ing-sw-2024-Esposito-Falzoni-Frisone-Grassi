@@ -32,7 +32,7 @@ public class Draw implements Views {
 
      public Draw() throws IOException, ParseException {
 
-// read the JSON file with the cards
+     // read the JSON file with the cards
           InputStream inputresource = getClass().getResourceAsStream("/" + "resourceDeck.json");
           InputStream inputgold = getClass().getResourceAsStream("/" + "goldenDeck.json");
 

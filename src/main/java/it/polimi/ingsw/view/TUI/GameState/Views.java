@@ -12,15 +12,16 @@ public interface Views {
 
     //converts the resource to a string to print in the TUI
      static String stringToEmoji(String resource){
+        if(resource == null) return "  ";
         return switch (resource){
             case "EMPTY" -> "░░";
             case "WOLF" -> "🐺 ";
             case "MUSHROOM" -> "🍄 ";
             case "LEAF" -> "🍃 ";
             case "BUTTERFLY" -> "🦋 ";
-            case "FEATHER" -> "🪶 ";
+            case "FEATHER" -> "\uD83E\uDEB6 ";
             case "SCROLL" -> "📜 ";
-            case "GLASSVIAL" -> "🫙 ";
+            case "GLASSVIAL" -> "\uD83E\uDED9 ";
             default -> "  ";
         };
 
@@ -30,18 +31,18 @@ public interface Views {
 
     // converts points and rule for the TUI
      static String cardToPoint(String point, String rule){
-            if (point== "0"){return "     ";}
-            else{
-              return point + switch (rule){
-                    case "NONE" -> " p  ";
-                    case "CORNERS" -> " p ◲";
-                    case "SCROLL"  -> " p 📜";
-                    case "FEATHER" -> " p 🪶";
-                    case "GLASSVIAL" -> " p 🫙";
-                    default -> " p  ";
-             };
-            }
+        if (point.equals("0") || rule == null){ return "     ";}
+        else{
+          return point + switch (rule){
+                case "NONE" -> " p  ";
+                case "CORNERS" -> " p ◲";
+                case "SCROLL"  -> " p 📜";
+                case "FEATHER" -> " p 🪶";
+                case "GLASSVIAL" -> " p 🫙";
+                default -> " p  ";
+         };
         }
+     }
 
 
     // clear the screen

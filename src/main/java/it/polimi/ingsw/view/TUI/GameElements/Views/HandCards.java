@@ -1,6 +1,4 @@
 package it.polimi.ingsw.view.TUI.GameElements.Views;
-
-import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.view.TUI.GameState.Views;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -10,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Optional;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
@@ -20,8 +17,8 @@ public class HandCards implements Views {
 
 
 
-    JSONArray resourceJSONArray;
-    JSONArray goldJSONArray;
+    private final JSONArray resourceJSONArray;
+    private final JSONArray goldJSONArray;
 
 
 
@@ -42,21 +39,25 @@ public class HandCards implements Views {
     public HandCards() throws IOException, ParseException {
 
         // read the JSON file with the cards
-        InputStream inputresource = getClass().getResourceAsStream("/" + "resourceDeck.json");
-        InputStream inputgold = getClass().getResourceAsStream("/" + "goldenDeck.json");
+        InputStream inputresource = getClass().getResourceAsStream("/resourceDeck.json");
+        InputStream inputgold = getClass().getResourceAsStream("/goldenDeck.json");
 
         JSONParser parserGold = new JSONParser();
         BufferedReader buffergold = new BufferedReader(new InputStreamReader(inputgold));
-        Object JSONObjectGold = parserGold.parse(buffergold);
-        JSONArray goldJSONArray = (JSONArray) JSONObjectGold;
+        goldJSONArray = (JSONArray) parserGold.parse(buffergold);
         JSONParser parserResource = new JSONParser();
         BufferedReader bufferResource = new BufferedReader(new InputStreamReader(inputresource));
-        Object JSONObjectResource = parserResource.parse(bufferResource);
-        JSONArray resourceJSONArray = (JSONArray) JSONObjectResource;
+
+        resourceJSONArray = (JSONArray) parserResource.parse(bufferResource);
     }
 
     public  ArrayList<String> showHand(String[] uuid) throws IOException, ParseException {
         String[][] stringCard = new String[10][3];
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 3; j++){
+                stringCard[i][j] = " ";
+            }
+        }
 
         // create the cards from the UUID
             /*
@@ -74,35 +75,48 @@ public class HandCards implements Views {
          */
 
         for(int x =0; x< 3; x++){
-            int index = Integer.parseInt(uuid[x].substring(3, uuid[x].length()));
+            int index = Integer.parseInt(uuid[x].replaceAll("[A-Z]+_", ""));
             JSONObject JSONCard;
+
             if(uuid[x].charAt(0)=='R'){
                 // create the resource card and set the color
                 JSONCard = (JSONObject) resourceJSONArray.get(index-1);
                 stringCard[0][x]="Resource Card";
-                stringCard[9][x]=ANSI_WHITE;}
-            else { // create the golden card and set the color
-                    JSONCard = (JSONObject) goldJSONArray.get(index-1);
-                    stringCard[0][x]="Golden Card";
-                    stringCard[9][x]=ANSI_YELLOW;
-            }
-                stringCard[1][x]=(String) JSONCard.get("points");
-                stringCard[2][x]=Views.stringToEmoji((String) JSONCard.get("permRes"));
-                for(int i = 0; i < 4; i++){
-                        stringCard[i+3][x] =Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
-                }
-                stringCard[7][x]= (String) JSONCard.get("rule");
+                stringCard[9][x]=ANSI_WHITE;
+
+            } else {
+                // create the golden card and set the color
+                JSONCard = (JSONObject) goldJSONArray.get(index-1);
+                stringCard[0][x]="Golden Card";
+                stringCard[9][x]=ANSI_YELLOW;
+
                 JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
-                 for(int i = 0; i < JSONRequire.size(); i++){
-                    stringCard[8][x].concat((Views.stringToEmoji((String) JSONRequire.get(i))));
-                    }
-                 stringCard[8][x].concat(" ".repeat(5-JSONRequire.size()));
+
+                for(int i = 0; i < JSONRequire.size(); i++){
+                    stringCard[8][x] = stringCard[8][x].concat((Views.stringToEmoji((String) JSONRequire.get(i)) ));
+                }
+
+                stringCard[8][x] = stringCard[8][x].concat(" ".repeat(5-JSONRequire.size()));
+
+                stringCard[7][x]= (String) JSONCard.get("rule");
+            }
+
+            //((Number) JSONcard.get("points")).intValue();
+            stringCard[1][x]= String.valueOf(((Number) JSONCard.get("points")).intValue());
+            stringCard[2][x]=Views.stringToEmoji(JSONCard.get("permRes").toString());
+
+            for(int i = 0; i < 4; i++){
+                stringCard[i+3][x] =Views.stringToEmoji(
+                        (String)(((JSONArray) JSONCard.get("corners")).get(i))
+                );
+            }
+
             switch (stringCard[2][x]){
 
-                case "WOLF" -> stringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
-                case "LEAF" -> stringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
-                case "MUSHROOM" -> stringCard[9][x].concat(ANSI_RED_BACKGROUND);
-                case "BUTTERFLY" -> stringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
+                case "WOLF" -> stringCard[9][x] = stringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
+                case "LEAF" -> stringCard[9][x] = stringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
+                case "MUSHROOM" -> stringCard[9][x] = stringCard[9][x].concat(ANSI_RED_BACKGROUND);
+                case "BUTTERFLY" -> stringCard[9][x] = stringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
 
             }
 
@@ -116,7 +130,7 @@ public class HandCards implements Views {
         cards.add("        ┌─────────────────────────────────────────────────────────────────────────────────────────┐ ");
         cards.add("        │ Hand cards                                                                              │ ");
         cards.add("        ├─────────────────────────────────────────────────────────────────────────────────────────┤ ");
-         cards.add("        │ "+stringCard[9][0]+"╔═══════════════════════════╗"+stringCard[9][1]+"╔═══════════════════════════╗"+stringCard[9][2]+"╔═══════════════════════════╗"+ANSI_RESET+" │ ");
+        cards.add("        │ "+stringCard[9][0]+"╔═══════════════════════════╗"+stringCard[9][1]+"╔═══════════════════════════╗"+stringCard[9][2]+"╔═══════════════════════════╗"+ANSI_RESET+" │ ");
 
         String t ="        │ "+
                 stringCard[9][0]+"║"+ANSI_RESET+stringCard[3][0]+ "           "+Views.cardToPoint(stringCard[1][0],stringCard[7][0])+"        " + stringCard[4][0]+stringCard[9][0]+"║"+

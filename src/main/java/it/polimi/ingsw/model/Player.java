@@ -11,6 +11,7 @@ public class Player implements Serializable {
     public int clientPort;
     private int score = 0;
     private PlayerBoard playerBoard;
+    private Object[] cardToChoose;
     private GoalCard secretGoalCard;
     private Pawn pawn;
     private int gameID;
@@ -112,10 +113,12 @@ public class Player implements Serializable {
     /**
      * Sets the player's secret goal card.
      *
-     * @param secretGoalCard The player's secret goal card to set.
+     * @param secretUUID The player's secret goal card to set.
      */
-    public void setSecretGoalCard(GoalCard secretGoalCard) {
-        this.secretGoalCard = secretGoalCard;
+    public void setSecretGoalCard(String secretUUID) {
+        this.secretGoalCard = ((GoalCard) cardToChoose[1]).getUUID().equals(secretUUID)?
+                (GoalCard) cardToChoose[1]:
+                (GoalCard) cardToChoose[2];
     }
 
     /**
@@ -152,5 +155,13 @@ public class Player implements Serializable {
      */
     public void setHand(PlayableCard handCard) {
         hand.add(handCard);
+    }
+
+    public Object[] getCardToChoose() {
+        return cardToChoose;
+    }
+
+    public void setCardToChoose(Object[] cardToChoose) {
+        this.cardToChoose = cardToChoose;
     }
 }

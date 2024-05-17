@@ -6,7 +6,7 @@ public class LoginUsername {
 
     public void showLogInUsername() {
         //clear the screen before printing something
-        Views.clearScreen();
+        //Views.clearScreen();
         StringBuilder sb = new StringBuilder();
         sb
                 .append("┌")
@@ -24,6 +24,6 @@ public class LoginUsername {
                 .append("┘")
                 .append("\n");
 
-        System.out.println(sb);
+        System.out.print(sb);
     }
 }

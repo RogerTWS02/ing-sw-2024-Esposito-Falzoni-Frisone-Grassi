@@ -2,10 +2,14 @@ package it.polimi.ingsw.view.TUI;
 
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
+import it.polimi.ingsw.view.TUI.GameElements.Views.BottomRow;
 import it.polimi.ingsw.view.TUI.GameState.InfoCard;
+import it.polimi.ingsw.view.TUI.GameState.LoginUsername;
+import it.polimi.ingsw.view.TUI.GameState.StartGame;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,7 +18,12 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 public class TUI extends Thread{
     public static Client cli;
     private static List<String> cardToChooseUUID;
+    private static List<String> currentHandUUID;
+    private List<String> allGoalsUUID;
     Scanner scanner = new Scanner(System.in);
+    StartGame startGame = new StartGame();
+    LoginUsername loginUsername = new LoginUsername();
+    BottomRow bottomRow = new BottomRow();
     InfoCard infoC = new InfoCard();
 
     public TUI() throws IOException, ParseException {
@@ -42,12 +51,20 @@ public class TUI extends Thread{
             //quando si raggiunge il numero prefissato di persone nella lobby
             case REPLY_BEGIN_GAME:
                 //PER DEBUGGING STAMPO TUTTO
+                /*
                 System.out.println("Player's hand: "+message.getObj()[0].toString());
                 System.out.println("Player's common goals: "+message.getObj()[1].toString());
                 System.out.println("Player's cards to choose: "+message.getObj()[2].toString());
+                */
 
                 //imposto il gameID nel client
                 cli.setGameID(message.getGameID());
+
+                //mano del giocatore
+                currentHandUUID = (List<String>) message.getObj()[0];
+
+                //obbiettivi comuni
+                allGoalsUUID = (List<String>) message.getObj()[1];
 
                 //carte da scegliere
                 cardToChooseUUID = (List<String>) message.getObj()[2];
@@ -94,8 +111,14 @@ public class TUI extends Thread{
         String message;
 
         while(cli.getLobbyName().isEmpty()) {
+
+            //faccio vedere il logo
+            startGame.ShowStartGame();
+
             //inizialmente mando i messaggi per far avviare il gioco
-            System.out.print("Insert a valid Nickname to start a game:");
+            //System.out.print("Insert a valid Nickname to start a game:");
+            loginUsername.showLogInUsername();
+
             //metodo bloccante che aspetta l'ingresso dell'utente
             command = scanner.nextLine().split(" ");
             cli.sendMessage(
@@ -161,6 +184,7 @@ public class TUI extends Thread{
             command = scanner.nextLine().split(" ");
             if(command[0].equals("1") || command[0].equals("2")){
                 selectedUUID = (command[0].equals("1"))? cardToChooseUUID.get(1) : cardToChooseUUID.get(2);
+                allGoalsUUID.add(selectedUUID);
                 System.out.println("\nIl giocatore ha scelto la carta: "+selectedUUID);
 
                 while(true){
@@ -195,6 +219,13 @@ public class TUI extends Thread{
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        //stampo la mano e gli obbiettivi comuni
+        try {
+            bottomRow.showBottomRow(currentHandUUID.toArray(new String[0]), allGoalsUUID.toArray(new String[0]));
+        } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
 

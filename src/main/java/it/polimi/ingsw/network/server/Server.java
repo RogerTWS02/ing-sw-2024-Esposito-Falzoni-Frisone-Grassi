@@ -166,7 +166,24 @@ public class Server extends UnicastRemoteObject {
 
             //in base alle scelte fatte dal giocatore, aggiorno il game
             case NOTIFY_CHOICES_MADE:
-                System.out.println("The player has made some moves (NEEDS WORK!!!)");
+                String startingUUID = (String) message.getObj()[0];
+                String secretUUID = (String) message.getObj()[2];
+                boolean side = (boolean) message.getObj()[1];
+
+                //imposto il lato della carta prima di piazzarla
+                ((StartingCard) idPlayerMap.get(message.getSenderID()).getCardToChoose()[0]).setFlipped(side);
+
+                //imposto la secret goal card per il player
+                idPlayerMap.get(message.getSenderID()).setSecretGoalCard(secretUUID);
+
+                //piazzo la carta iniziale nella playerBoard
+                gameControllerMap.get(message.getGameID()).placeCard(
+                        40,
+                        40,
+                        (StartingCard) idPlayerMap.get(message.getSenderID()).getCardToChoose()[0],
+                        idPlayerMap.get(message.getSenderID())
+                );
+
                 break;
         }
     }
@@ -371,11 +388,11 @@ public class Server extends UnicastRemoteObject {
                                                             .getCurrentGame()
                                                             .getCommonGoalCards())
                                                             .map(GoalCard::getUUID)
-                                                            .toList(),
+                                                            .collect(Collectors.toList()),
 
                                                     //mando a tutti la starting card e le secret goal cards da scegliere
                                                     Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                            .cardToChoose())
+                                                            .cardToChoose(idPlayerMap.get(pID)))
                                                             .toList()
                                                 }
                                         )
