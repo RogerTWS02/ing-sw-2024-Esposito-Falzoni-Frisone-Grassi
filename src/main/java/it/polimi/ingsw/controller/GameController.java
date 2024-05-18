@@ -468,9 +468,13 @@ public class GameController {
         setCommonGoalCards();
 
     }
-   
-    // restituisce le carte per cui il giocatore deve effettuare
-    // una scelta prima di inziare la partita
+
+    /**
+     * Draws the cards for the player to choose before starting the game.
+     *
+     * @param p The player who has to choose the cards.
+     * @return the array of strings representing the UUIDs of the cards to be chosen.
+     */
     public String[] cardToChoose(Player p){
         StartingCard tempSC = (StartingCard) drawPlayableFromDeck(currentGame.startingDeck);
         GoalCard[] temp = drawGoalCardsToChoose();

@@ -170,9 +170,6 @@ public class Game implements Serializable{
      * Sets a random player as the starting player.
      */
     public void setStartingPlayer(){
-       if(players == null || players.isEmpty() || players.contains(null)){
-           throw new RuntimeException("No players in the game / a player can't be null!");
-       }
        Random random = new Random();
        int randomNumber = random.nextInt(players.size());
        this.startingPlayer = players.get(randomNumber);

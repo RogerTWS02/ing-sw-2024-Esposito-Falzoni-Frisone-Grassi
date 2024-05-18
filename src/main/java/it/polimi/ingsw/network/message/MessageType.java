@@ -24,6 +24,7 @@ public enum MessageType {
     REPLY_BEGIN_GAME,
     NOTIFY_CHOICES_MADE,
     REPLY_END_GAME,
+    REPLY_STARTING_PLAYER,
 
     //messaggi per richiedere/ricevere il punteggio dei giocatori
     REQUEST_PLAYERS_POINT,

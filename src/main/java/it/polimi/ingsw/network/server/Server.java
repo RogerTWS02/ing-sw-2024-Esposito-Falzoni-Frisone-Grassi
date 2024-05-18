@@ -364,6 +364,7 @@ public class Server extends UnicastRemoteObject {
 
                         //inizializza le mani di tutti i giocatori e imposta le GoalCards comuni
                         gameControllerMap.get(p.getGameID()).inizializeHandsAndCommons();
+                        gameControllerMap.get(p.getGameID()).getCurrentGame().setStartingPlayer();
 
                         //per ogni giocatore della lobby
                         for (int pID : lobbyPlayerMap.get(l)) {
@@ -399,6 +400,19 @@ public class Server extends UnicastRemoteObject {
                                                 }
                                         )
                                 );
+
+                                idSocketMap.get(pID).sendMessage(
+                                        new Message(
+                                                REPLY_STARTING_PLAYER,
+                                                serverSocket.getLocalPort(),
+                                                lobbyPlayerMap.get(l)[0],
+                                                gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                        .getCurrentGame()
+                                                        .getStartingPlayer()
+                                                        .getNickname()
+                                        )
+                                );
+
                             }else{
                                 return new Message(
                                         REPLY_BEGIN_GAME,

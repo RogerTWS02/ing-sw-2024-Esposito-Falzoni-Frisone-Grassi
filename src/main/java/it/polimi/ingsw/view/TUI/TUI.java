@@ -26,6 +26,7 @@ public class TUI extends Thread{
     LoginUsername loginUsername = new LoginUsername();
     BottomRow bottomRow = new BottomRow();
     InfoCard infoC = new InfoCard();
+    String startingPlayer;
 
     public TUI() throws IOException, ParseException {
     }
@@ -103,6 +104,11 @@ public class TUI extends Thread{
                 cli.setLobbyName(LobbyName);
                 System.out.print((String) message.getObj()[1]);
                 //vado nello stato di richiesta nuova lobby
+                break;
+
+            case REPLY_STARTING_PLAYER:
+                startingPlayer = (String) message.getObj()[0];
+                break;
         }
     }
 
@@ -238,6 +244,8 @@ public class TUI extends Thread{
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
+
+        System.out.println("Starting player is: "+startingPlayer);
 
         //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
 
