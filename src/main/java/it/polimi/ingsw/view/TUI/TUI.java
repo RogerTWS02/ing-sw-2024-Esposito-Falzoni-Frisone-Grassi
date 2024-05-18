@@ -95,7 +95,7 @@ public class TUI extends Thread{
                 String infoUUID = (String) message.getObj()[0];
 
                 //stampo l'info della carta
-                System.out.print(infoC.showInfoCard(infoUUID));
+                infoC.showInfoCard(infoUUID);
 
                 break;
 

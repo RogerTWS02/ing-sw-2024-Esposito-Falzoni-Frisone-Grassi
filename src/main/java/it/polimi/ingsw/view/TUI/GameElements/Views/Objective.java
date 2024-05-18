@@ -18,8 +18,8 @@ import org.json.simple.parser.ParseException;
 
 
 public class Objective implements  Views {
-    private final JSONArray resourceJSONArray;
-    private final JSONArray patternJSONArray;
+    private final JSONArray resourceGoalJSONArray;
+    private final JSONArray patternGoalJSONArray;
 
     // colors used in the TUI
 
@@ -36,18 +36,15 @@ public class Objective implements  Views {
 
 
     public Objective() throws IOException, ParseException {
-
+        JSONParser parser = new JSONParser();
         // read the JSON file with the cards
-        InputStream inputPattern = getClass().getResourceAsStream("/patternGoalDeck.json");
-        InputStream inputResource = getClass().getResourceAsStream("/resourcesGoalDeck.json");
+        InputStream inputPatternGoal = getClass().getResourceAsStream("/patternGoalDeck.json");
+        BufferedReader bufferPatternGoal = new BufferedReader(new InputStreamReader(inputPatternGoal));
+        patternGoalJSONArray = (JSONArray) parser.parse(bufferPatternGoal);
 
-        JSONParser parserResource = new JSONParser();
-        BufferedReader bufferResource = new BufferedReader(new InputStreamReader(inputResource));
-        resourceJSONArray = (JSONArray) parserResource.parse(bufferResource);
-
-        JSONParser parserPattern = new JSONParser();
-        BufferedReader bufferPattern = new BufferedReader(new InputStreamReader(inputPattern));
-        patternJSONArray = (JSONArray) parserPattern.parse(bufferPattern);
+        InputStream inputResourceGoal = getClass().getResourceAsStream("/resourcesGoalDeck.json");
+        BufferedReader bufferResourceGoal = new BufferedReader(new InputStreamReader(inputResourceGoal));
+        resourceGoalJSONArray = (JSONArray) parser.parse(bufferResourceGoal);
 
     }
 
@@ -67,12 +64,12 @@ public class Objective implements  Views {
             
             if (uuid[x].charAt(0) == 'P') {
                 // create the resource card and set the color
-                JSONCard = (JSONObject) patternJSONArray.get(index - 1);
+                JSONCard = (JSONObject) patternGoalJSONArray.get(index - 1);
                 stringObjective[x][0] = "Pattern goal card ";
                 uuidToString(uuid[x], stringObjective[x]);
 
             } else { // create the resource goal card and set the color
-                JSONCard = (JSONObject) resourceJSONArray.get(index - 1);
+                JSONCard = (JSONObject) resourceGoalJSONArray.get(index - 1);
                 String resources = "";
                 for (int i = 0; i < 3; i++) {
                     resources  = resources.concat(" " + Views.stringToEmoji((String) ((JSONArray) JSONCard.get("resources")).get(i)));
@@ -90,18 +87,17 @@ public class Objective implements  Views {
 
             // actively create the3 cards to print with color and attributes
             ArrayList<String> cards = new ArrayList<String>();
-            cards.add("         ┌───────────────────────────────────────────────────────────┬───────────────────────────────┐");
-            cards.add("         │ Common goals                                              │ Private goal                  │");
-            cards.add("         ├───────────────────────────────────────────────────────────┼───────────────────────────────┤");
-            cards.add("         │╔═══════════════════════════╗╔═══════════════════════════╗ │ ╔═══════════════════════════╗ │");
-            String t ="         │║    " + stringObjective[0][0] + "     ║║    " + stringObjective[1][0] + "     ║ │ ║    " + stringObjective[2][0] + "     ║ │";
-            cards.add(t);
-            cards.add("         │║       "+stringObjective[0][2]+"      ║║       "+stringObjective[1][2]+"      ║ │ ║       "+stringObjective[2][2]+"      ║ │");
-            cards.add("         │║       "+stringObjective[0][3]+"      ║║       "+stringObjective[1][3]+"      ║ │ ║       "+stringObjective[2][3]+"      ║ │");
-            cards.add("         │║       "+stringObjective[0][4]+"      ║║       "+stringObjective[1][4]+"      ║ │ ║       "+stringObjective[2][4]+"      ║ │");
-            String b ="         │║          "+stringObjective[0][1]+"         ║║          "+stringObjective[1][1]+"         ║ │ ║          "+stringObjective[1][1]+"         ║ │";
-            cards.add(b);
-            cards.add("         │╚═══════════════════════════╝╚═══════════════════════════╝ │ ╚═══════════════════════════╝ │");
+            cards.add("┌───────────────────────────────────────────────────────────┬───────────────────────────────┐");
+            cards.add("│ Common goals                                              │ Private goal                  │");
+            cards.add("├───────────────────────────────────────────────────────────┼───────────────────────────────┤");
+            cards.add("│╔═══════════════════════════╗╔═══════════════════════════╗ │ ╔═══════════════════════════╗ │");
+            cards.add("│║       "+stringObjective[0][0]+"      ║║       "+stringObjective[1][0]+"      ║ │ ║       "+stringObjective[2][0]+"      ║ │"+ANSI_RESET);
+            cards.add("│║       "+stringObjective[0][2]+"      ║║       "+stringObjective[1][2]+"      ║ │ ║       "+stringObjective[2][2]+"      ║ │"+ANSI_RESET);
+            cards.add("│║       "+stringObjective[0][3]+"      ║║       "+stringObjective[1][3]+"      ║ │ ║       "+stringObjective[2][3]+"      ║ │"+ANSI_RESET);
+            cards.add("│║       "+stringObjective[0][4]+"      ║║       "+stringObjective[1][4]+"      ║ │ ║       "+stringObjective[2][4]+"      ║ │"+ANSI_RESET);
+            cards.add("│║       "+stringObjective[0][1]+"      ║║       "+stringObjective[1][1]+"      ║ │ ║       "+stringObjective[1][1]+"      ║ │"+ANSI_RESET);
+            cards.add("│╚═══════════════════════════╝╚═══════════════════════════╝ │ ╚═══════════════════════════╝ │");
+            cards.add("└───────────────────────────────────────────────────────────┴───────────────────────────────┘");
 
 
 
@@ -116,29 +112,29 @@ public class Objective implements  Views {
     private void uuidToString(String uuid,String[] card) {
         switch (uuid) {
             case "PGC_1" -> {
-                card[2] = "  ░░  ░░ " + ANSI_RED + " ▇▇  ";
+                card[2] = "  ░░  ░░ " + ANSI_RED + " ▇▇  "+ANSI_RESET;
                 card[3] = "  ░░ " + ANSI_RED + " ▇▇ " + ANSI_RESET + " ░░  ";
                 card[4] = ANSI_RED + "▇▇ " + ANSI_RESET + " ░░  ░░  ";
             }
             case "PGC_2" -> {
-                card[4] = "  ░░  ░░ " + ANSI_GREEN + " ▇▇  ";
+                card[4] = "  ░░  ░░ " + ANSI_GREEN + " ▇▇  "+ANSI_RESET;
                 card[3] = "  ░░  " + ANSI_GREEN + "▇▇  " + ANSI_RESET + "░░  ";
                 card[2] = ANSI_GREEN + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
             }
             case "PGC_3" -> {
-                card[2] = "  ░░  ░░ " + ANSI_BLUE + " ▇▇  ";
+                card[2] = "  ░░  ░░ " + ANSI_BLUE + " ▇▇  "+ANSI_RESET;
                 card[3] = "  ░░  " + ANSI_BLUE + "▇▇  " + ANSI_RESET + "░░  ";
                 card[4] = ANSI_BLUE + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
             }
             case "PGC_4" -> {
-                card[4] = "  ░░  ░░ " + ANSI_PURPLE + " ▇▇  ";
+                card[4] = "  ░░  ░░ " + ANSI_PURPLE + " ▇▇  "+ANSI_RESET;
                 card[3] = "  ░░  " + ANSI_PURPLE + "▇▇  " + ANSI_RESET + "░░  ";
                 card[2] = ANSI_PURPLE + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
             }
             case "PGC_5" -> {
                 card[2] = "  ░░  " + ANSI_RED + "▇▇ " + ANSI_RESET + " ░░  ";
                 card[3] = "  ░░  " + ANSI_RED + " ▇▇ " + ANSI_RESET + " ░░  ";
-                card[4] = "  ░░  ░░ " + ANSI_GREEN + " ▇▇  ";
+                card[4] = "  ░░  ░░ " + ANSI_GREEN + " ▇▇  "+ANSI_RESET;
             }
             case "PGC_6" -> {
                 card[2] = "  ░░  " + ANSI_GREEN + "▇▇ " + ANSI_RESET + " ░░  ";
@@ -146,7 +142,7 @@ public class Objective implements  Views {
                 card[4] = ANSI_PURPLE + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
             }
             case "PGC_7" -> {
-                card[2] = "  ░░  ░░ " + ANSI_RED + " ▇▇  ";
+                card[2] = "  ░░  ░░ " + ANSI_RED + " ▇▇  "+ANSI_RESET;
                 card[3] = "  ░░  " + ANSI_BLUE + "▇▇ " + ANSI_RESET + " ░░  ";
                 card[4] = "  ░░  " + ANSI_BLUE + "▇▇ " + ANSI_RESET + " ░░  ";
 

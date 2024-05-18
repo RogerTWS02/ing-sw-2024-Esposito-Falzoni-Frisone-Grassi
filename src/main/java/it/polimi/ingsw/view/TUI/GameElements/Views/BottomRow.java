@@ -22,7 +22,7 @@ public class BottomRow {
         Views.clearScreen();
         // prints hand card + goal card
         for (int i = 0; i < 10; i++) {
-            System.out.println(hand.get(i)+"  "+goal.get(i));
+            System.out.println(hand.get(i)+goal.get(i));
         };
     }
 }

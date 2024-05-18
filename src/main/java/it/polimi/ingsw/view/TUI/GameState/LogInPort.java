@@ -10,23 +10,23 @@ public class LogInPort {
         Views.clearScreen();
         StringBuilder sb = new StringBuilder();
         sb
-                .append("┌")
-                .append("─".repeat(46))
-                .append("┐")
-                .append("\n")
-                .append("│")
-                .append(" ".repeat(15))
-                .append("Insert server IP:")
-                .append(" ".repeat(14))
-                .append("│")
-                .append("\n")
-                .append("└")
-                .append("─".repeat(46))
-                .append("┘")
-                .append("\n");
+                //.append("┌")
+                //.append("─".repeat(46))
+                //.append("┐")
+                //.append("\n")
+                //.append("│")
+                //.append(" ".repeat(15))
+                .append("Insert server IP:");
+                //.append(" ".repeat(14))
+                //.append("│")
+                //.append("\n")
+                //.append("└")
+                //.append("─".repeat(46))
+                //.append("┘")
+                //.append("\n");
 
 
-        System.out.println(sb);
+        System.out.print(sb);
 
     }
 }
