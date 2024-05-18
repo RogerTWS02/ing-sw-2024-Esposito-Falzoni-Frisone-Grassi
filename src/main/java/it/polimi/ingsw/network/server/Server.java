@@ -289,14 +289,16 @@ public class Server extends UnicastRemoteObject {
         String requestNick = (String) message.getObj()[0];
 
         //controllo se il nome è già presente
-        /*
         boolean duplicates = gameControllerMap.values().stream()
-                .flatMap(g -> g.getCurrentGame().getPlayers().stream())
+                .filter(Objects::nonNull)
+                .map(GameController::getCurrentGame)
+                .filter(Objects::nonNull)
+                .flatMap(game -> game.getPlayers().stream())
+                .filter(Objects::nonNull)
                 .map(Player::getNickname)
                 .anyMatch(nick -> Objects.equals(nick, requestNick));
-         */
 
-        boolean duplicates = false;
+
 
         if (duplicates || requestNick.isEmpty() ) {
             //se è presente o nullo gli dico di cambiare nick

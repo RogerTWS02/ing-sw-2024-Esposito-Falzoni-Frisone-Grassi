@@ -11,6 +11,7 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
@@ -177,11 +178,20 @@ public class TUI extends Thread{
 
         String selectedUUID = "";
         boolean side;
+        boolean fistTime = true;
+
 
         while(true){
             //sezione per scegliere la secret goal card
             System.out.print("Select your secret goal card between the two (type 1 or 2 to choose):");
             command = scanner.nextLine().split(" ");
+
+            //In the first player the buffer remains empty, so I have to skip the first time
+            if(Objects.equals(command[0], "") && fistTime){
+                fistTime = false;
+                command = scanner.nextLine().split(" ");
+            }
+
             if(command[0].equals("1") || command[0].equals("2")){
                 selectedUUID = (command[0].equals("1"))? cardToChooseUUID.get(1) : cardToChooseUUID.get(2);
                 allGoalsUUID.add(selectedUUID);

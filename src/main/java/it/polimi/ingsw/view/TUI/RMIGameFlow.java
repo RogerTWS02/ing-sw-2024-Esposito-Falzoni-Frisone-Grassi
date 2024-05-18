@@ -4,9 +4,14 @@ import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.server.RMIServerInterface;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.UUID;
 
 import static it.polimi.ingsw.network.message.MessageType.REQUEST_CARD;
 import static it.polimi.ingsw.network.message.MessageType.REQUEST_PLAYER_MOVE;
@@ -23,14 +28,41 @@ public class RMIGameFlow {
     /**
      * This method is used to start the game flow.
      */
-    public void run() {
+    public void run() throws IOException {
             Scanner scanner = new Scanner(System.in);
             String[] command;
             System.out.println("WELCOME TO CODEX NATURALIS!!\n");
-            System.out.println("To create a new lobby type '/newLobby nickname lobbyname lobbysize'\n" +
-                                "To join an existing lobby type '/joinLobby nickname'\n" );
 
-            while(true){
+            command = scanner.nextLine().split(" ");
+
+                int numPlayers;
+                System.out.println("Please type the number of players you want in the lobby (from 2 up to 4 players): ");
+                while(true){
+                    try {
+                        numPlayers = scanner.nextInt();
+                        if (numPlayers >= 2 && numPlayers <= 4) {
+                            break;
+                        }
+                        System.out.println("Please type a valid number (the size has to be between 2 and 4): ");
+                    }catch (Exception e){
+                        System.out.println("Please type a valid number (the size has to be between 2 and 4): ");
+                    }
+                }
+
+                System.out.println("Please type the nickname you want to use: ");
+                String nickname;
+                while(true){
+                    try{
+                        nickname = scanner.nextLine();
+                        break;
+                    }catch (Exception e){
+                        System.out.println("Please type a valid nickname: ");
+                    }
+                }
+                //stub.newLobbyRequest(nickname, , numPlayers, client.getClientListener(), client.getClientID());
+
+
+        while(true){
                 command = scanner.nextLine().split(" ");
                 try {
                     switch(command[0]){
