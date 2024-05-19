@@ -48,7 +48,7 @@ public class Objective implements  Views {
 
     }
 
-    public ArrayList<String> showObjective(String[] uuid) throws IOException, ParseException {
+    public void showObjective(String[] uuid) throws IOException, ParseException {
         /*
         Goal card structure
         card[0]= type
@@ -61,28 +61,31 @@ public class Objective implements  Views {
         for (int x = 0; x < 3; x++) {
             int index = Integer.parseInt(uuid[x].replaceAll("[A-Z]+_", ""));
             JSONObject JSONCard;
-            
+
             if (uuid[x].charAt(0) == 'P') {
                 // create the resource card and set the color
                 JSONCard = (JSONObject) patternGoalJSONArray.get(index - 1);
                 stringObjective[x][0] = "Pattern goal card ";
                 uuidToString(uuid[x], stringObjective[x]);
 
-            } else { // create the resource goal card and set the color
+            } else {
+                // create the resource goal card and set the color
                 JSONCard = (JSONObject) resourceGoalJSONArray.get(index - 1);
                 String resources = "";
                 for (int i = 0; i < 3; i++) {
                     resources  = resources.concat(" " + Views.stringToEmoji((String) ((JSONArray) JSONCard.get("resources")).get(i)));
                 }
-                if (resources.length() < 6) {
+                if (resources.length() < 3) {
                     resources = resources + " ";
                 }
                 stringObjective[x][0] = "Resource goal card";
                 stringObjective[x][2] = "┌────────────┐";
-                stringObjective[x][3] = "│  " + resources + "   │";
+                stringObjective[x][3] = "│ " + resources + "  │";
                 stringObjective[x][4] = "└────────────┘";
+
+
             }
-            stringObjective [x][1]= String.valueOf(((Number)JSONCard.get("points")).intValue()) + " points";
+            stringObjective[x][1]= "   "+String.valueOf(((Number)JSONCard.get("points")).intValue()) + " points   ";
         }
 
             // actively create the3 cards to print with color and attributes
@@ -91,11 +94,11 @@ public class Objective implements  Views {
             cards.add("│ Common goals                                              │ Private goal                  │");
             cards.add("├───────────────────────────────────────────────────────────┼───────────────────────────────┤");
             cards.add("│╔═══════════════════════════╗╔═══════════════════════════╗ │ ╔═══════════════════════════╗ │");
-            cards.add("│║       "+stringObjective[0][0]+"      ║║       "+stringObjective[1][0]+"      ║ │ ║       "+stringObjective[2][0]+"      ║ │"+ANSI_RESET);
-            cards.add("│║       "+stringObjective[0][2]+"      ║║       "+stringObjective[1][2]+"      ║ │ ║       "+stringObjective[2][2]+"      ║ │"+ANSI_RESET);
-            cards.add("│║       "+stringObjective[0][3]+"      ║║       "+stringObjective[1][3]+"      ║ │ ║       "+stringObjective[2][3]+"      ║ │"+ANSI_RESET);
-            cards.add("│║       "+stringObjective[0][4]+"      ║║       "+stringObjective[1][4]+"      ║ │ ║       "+stringObjective[2][4]+"      ║ │"+ANSI_RESET);
-            cards.add("│║       "+stringObjective[0][1]+"      ║║       "+stringObjective[1][1]+"      ║ │ ║       "+stringObjective[1][1]+"      ║ │"+ANSI_RESET);
+            cards.add("│║      "+stringObjective[0][0]+"   ║║      "+stringObjective[1][0]+"   ║ │ ║      "+stringObjective[2][0]+"   ║ │"+ANSI_RESET);
+            cards.add("│║        "+stringObjective[0][2]+"     ║║        "+stringObjective[1][2]+"     ║ │ ║        "+stringObjective[2][2]+"     ║ │"+ANSI_RESET);
+            cards.add("│║        "+stringObjective[0][3]+"     ║║        "+stringObjective[1][3]+"     ║ │ ║        "+stringObjective[2][3]+"     ║ │"+ANSI_RESET);
+            cards.add("│║        "+stringObjective[0][4]+"     ║║        "+stringObjective[1][4]+"     ║ │ ║        "+stringObjective[2][4]+"     ║ │"+ANSI_RESET);
+            cards.add("│║        "+stringObjective[0][1]+"     ║║        "+stringObjective[1][1]+"     ║ │ ║        "+stringObjective[1][1]+"     ║ │"+ANSI_RESET);
             cards.add("│╚═══════════════════════════╝╚═══════════════════════════╝ │ ╚═══════════════════════════╝ │");
             cards.add("└───────────────────────────────────────────────────────────┴───────────────────────────────┘");
 
@@ -105,7 +108,9 @@ public class Objective implements  Views {
 
 
 
-        return cards;
+        for (int i = 0; i < 11; i++) {
+            System.out.println(cards.get(i));
+        };
     };
 
 
@@ -133,7 +138,7 @@ public class Objective implements  Views {
             }
             case "PGC_5" -> {
                 card[2] = "  ░░  " + ANSI_RED + "▇▇ " + ANSI_RESET + " ░░  ";
-                card[3] = "  ░░  " + ANSI_RED + " ▇▇ " + ANSI_RESET + " ░░  ";
+                card[3] = "  ░░  " + ANSI_RED + "▇▇ " + ANSI_RESET + " ░░  ";
                 card[4] = "  ░░  ░░ " + ANSI_GREEN + " ▇▇  "+ANSI_RESET;
             }
             case "PGC_6" -> {

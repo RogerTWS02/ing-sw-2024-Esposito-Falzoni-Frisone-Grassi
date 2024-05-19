@@ -2,7 +2,8 @@ package it.polimi.ingsw.view.TUI;
 
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
-import it.polimi.ingsw.view.TUI.GameElements.Views.BottomRow;
+import it.polimi.ingsw.view.TUI.GameElements.Views.HandCards;
+import it.polimi.ingsw.view.TUI.GameElements.Views.Objective;
 import it.polimi.ingsw.view.TUI.GameState.InfoCard;
 import it.polimi.ingsw.view.TUI.GameState.LoginUsername;
 import it.polimi.ingsw.view.TUI.GameState.StartGame;
@@ -23,7 +24,8 @@ public class TUI extends Thread{
     Scanner scanner = new Scanner(System.in);
     StartGame startGame = new StartGame();
     LoginUsername loginUsername = new LoginUsername();
-    BottomRow bottomRow = new BottomRow();
+    HandCards handcards = new HandCards();
+    Objective goals = new Objective();
     InfoCard infoC = new InfoCard();
     String startingPlayer;
 
@@ -79,7 +81,9 @@ public class TUI extends Thread{
 
                 //con l'UUID aggiorno lo stato dello schermo della console
                 try {
-                    bottomRow.showBottomRow(currentHandUUID.toArray(new String[0]), allGoalsUUID.toArray(new String[0]));
+                    handcards.showHand(currentHandUUID.toArray(new String[0]));
+                    goals.showObjective(allGoalsUUID.toArray(new String[0]));
+
                 } catch (IOException | ParseException e) {
                     throw new RuntimeException(e);
                 }
@@ -96,7 +100,7 @@ public class TUI extends Thread{
                 String infoUUID = (String) message.getObj()[0];
 
                 //stampo l'info della carta
-                infoC.showInfoCard(infoUUID);
+                infoC.showInfoCard(infoUUID, null);
 
                 break;
 
@@ -190,8 +194,8 @@ public class TUI extends Thread{
 
         while(true){
             //Stampo le due secret goal cards
-            infoC.showInfoCard(cardToChooseUUID.get(1));
-            infoC.showInfoCard(cardToChooseUUID.get(2));
+            infoC.showInfoCard(cardToChooseUUID.get(1),null);
+            infoC.showInfoCard(cardToChooseUUID.get(2),null);
 
             //sezione per scegliere la secret goal card
             System.out.print("Select your secret goal card between the two (type 1 or 2 to choose):");
@@ -211,7 +215,7 @@ public class TUI extends Thread{
 
                 while(true){
                     //Stampo la starting card
-                    infoC.showInfoCard(cardToChooseUUID.get(0));
+                    infoC.showInfoCard(cardToChooseUUID.get(0),null);
 
                     //sezione per scegliere che lato mettere la starting card
                     System.out.print("Select which side to place the starting card (type 1 for frontside or 2 for backside):");
@@ -249,7 +253,9 @@ public class TUI extends Thread{
 
         //stampo la mano e gli obbiettivi comuni
         try {
-            bottomRow.showBottomRow(currentHandUUID.toArray(new String[0]), allGoalsUUID.toArray(new String[0]));
+            handcards.showHand(currentHandUUID.toArray(new String[0]));
+            goals.showObjective(allGoalsUUID.toArray(new String[0]));
+
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }

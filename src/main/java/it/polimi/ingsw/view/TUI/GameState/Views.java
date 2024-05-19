@@ -14,15 +14,15 @@ public interface Views {
     static String stringToEmoji(String resource){
         if(resource == null) return "  ";
         return switch (resource){
-            case "EMPTY" -> "░░";
-            case "WOLF" -> "🐺";
-            case "MUSHROOM" -> "🍄";
-            case "LEAF" -> "🍃";
-            case "BUTTERFLY" -> "🦋";
-            case "FEATHER" -> "🪶";
-            case "SCROLL" -> "📜";
-            case "GLASSVIAL" -> "🫙";
-            default -> "  ";
+            case "EMPTY"         -> "░░";
+            case "WOLF"          -> "🐺";
+            case "MUSHROOM"      -> "🍄";
+            case "LEAF"          -> "🍃";
+            case "BUTTERFLY"     -> "🦋";
+            case "FEATHER"       -> "🪶";
+            case "SCROLL"        -> "📜";
+            case "GLASSVIAL"     -> "🫙";
+            default              -> "  ";
         };
     }
 
@@ -31,14 +31,14 @@ public interface Views {
     // converts points and rule for the TUI
      static String cardToPoint(String point, String rule){
             if (point == null || rule == null){return "     ";}
-            if (point == "0"){return "     ";}
+            if (point.equals("0")){return "     ";}
             else{
               return point + switch (rule){
-                    case "CORNERS" -> " p ◲";
-                    case "SCROLL"  -> " p 📜";
-                    case "FEATHER" -> " p 🪶";
-                    case "GLASSVIAL" -> " p 🫙";
-                    default -> " p  ";
+                    case "CORNERS"   -> " p ◲";
+                    case "SCROLL"    -> " p📜";
+                    case "FEATHER"   -> " p🪶";
+                    case "GLASSVIAL" -> " p🫙";
+                    default          -> " p  ";
              };
             }
         }

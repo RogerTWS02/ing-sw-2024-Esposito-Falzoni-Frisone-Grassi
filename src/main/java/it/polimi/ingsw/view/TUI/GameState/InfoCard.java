@@ -30,6 +30,7 @@ public class InfoCard  implements Views{
     public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
     public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
     public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
+    public static final String ANSI_GRAY_BACKGROUND = "\u001B[100m";
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_YELLOW = "\u001B[33m";
@@ -73,7 +74,22 @@ public class InfoCard  implements Views{
 
     // method to print the card and its info
 
-    public void showInfoCard(String uuid) {
+    public void showInfoCard(String uuid, Boolean side) {
+        String[] sideColors= new String[2];
+        if(side==null){
+            sideColors[0]=ANSI_GRAY_BACKGROUND;
+            sideColors[1]=ANSI_GRAY_BACKGROUND;
+        } else if(side){
+            sideColors[0]="";
+            sideColors[1]=ANSI_RED_BACKGROUND;
+
+        }
+        else{
+            sideColors[0]=ANSI_RED_BACKGROUND;
+            sideColors[1]="";
+        }
+
+
         StringBuilder printedCard = new StringBuilder();
         String[] stringCard = new String[14];
         // create the card from the UUID
@@ -116,7 +132,7 @@ public class InfoCard  implements Views{
                     stringCard[i] = Views.stringToEmoji((String) ((JSONArray) JSONCard.get("backCorners")).get(i - 3));
                 }
 
-                stringCard[8]= " ".repeat(29);
+                stringCard[8]= " ".repeat(28);
                 for (int i = 10; i < 14; i++) {
                     stringCard[i] = Views.stringToEmoji((String) ((JSONArray) JSONCard.get("frontCorners")).get(i - 10));
                 }
@@ -154,8 +170,8 @@ public class InfoCard  implements Views{
                     stringCard[8] = stringCard[8].concat((Views.stringToEmoji((String) o)));
                 }
 
-                int spaces= (29-stringCard[8].length()*2)/2;
-                stringCard[8]= " ".repeat(spaces+1).concat(stringCard[8]).concat(" ".repeat(spaces));
+                int spaces= (29-stringCard[8].length())/2;
+                stringCard[8]= " ".repeat(spaces).concat(stringCard[8]).concat(" ".repeat(spaces));
 
                 switch (stringCard[2]) {
 
@@ -170,8 +186,8 @@ public class InfoCard  implements Views{
 
             }
 
-            int spaces= (34-stringCard[2].length())/2;
-            stringCard[2]= " ".repeat(spaces+1).concat(stringCard[2]).concat(" ".repeat(spaces));
+            int spaces= (33-stringCard[2].length())/2;
+            stringCard[2]= " ".repeat(spaces).concat(stringCard[2]).concat(" ".repeat(spaces+1));
 
             // actively creating the array to print
             printedCard
@@ -179,55 +195,50 @@ public class InfoCard  implements Views{
                 //.append("\n")
                 .append(stringCard[9] + "║ " + ANSI_RESET)
                 .append(stringCard[3])
-                .append(" ".repeat(13))
-                .append(Views.cardToPoint(stringCard[1], stringCard[7]))
                 .append(" ".repeat(12))
+                .append(Views.cardToPoint(stringCard[1], stringCard[7]))
+                .append(" ".repeat(11))
                 .append(stringCard[4])
+                .append(" ")
                 .append(stringCard[9] + "║")
                 .append(stringCard[9] + "║ " + ANSI_RESET)
                 .append(stringCard[10])
-                .append(" ".repeat(29))
+                .append(" ".repeat(28))
                 .append(stringCard[11])
+                .append(" ")
                 .append(stringCard[9] + "║\n")
                 .append(stringCard[9] + "║ " + ANSI_RESET)
-                .append(stringCard[10])
-                .append(" ".repeat(29))
-                .append(stringCard[11])
+                .append(" ".repeat(33))
                 .append(stringCard[9] + "║")
                 .append(stringCard[9] + "║ " + ANSI_RESET)
-                .append(stringCard[10])
-                .append(" ".repeat(29))
-                .append(stringCard[11])
+                .append(" ".repeat(33))
                 .append(stringCard[9] + "║\n")
                 .append(stringCard[9] + "║ " + ANSI_RESET)
-                .append(stringCard[10])
-                .append(" ".repeat(29))
-                .append(stringCard[11])
+                .append(" ".repeat(33))
                 .append(stringCard[9] + "║")
+                .append(stringCard[9] + "║ " + ANSI_RESET)
                 .append(stringCard[2])
                 .append(stringCard[9] + "║\n")
                 .append(stringCard[9] + "║ " + ANSI_RESET)
-                .append(stringCard[10])
-                .append(" ".repeat(29))
-                .append(stringCard[11])
+                .append(" ".repeat(33))
                 .append(stringCard[9] + "║")
                 .append(stringCard[9] + "║ " + ANSI_RESET)
-                .append(stringCard[10])
-                .append(" ".repeat(29))
-                .append(stringCard[11])
+                .append(" ".repeat(33))
                 .append(stringCard[9] + "║\n")
                 .append(stringCard[9] + "║ " + ANSI_RESET)
                 .append(stringCard[5])
                 .append(stringCard[8])
                 .append(stringCard[6])
+                .append(" ")
                 .append(stringCard[9] + "║")
                 .append(stringCard[9] + "║ " + ANSI_RESET)
                 .append(stringCard[12])
-                .append(" ".repeat(29))
+                .append(" ".repeat(28))
                 .append(stringCard[13])
+                .append(" ")
                 .append(stringCard[9] + "║\n")
                 .append(stringCard[9]+"╚══════════════════════════════════╝╚══════════════════════════════════╝\n")
-                .append("               Front                                Back                \n");
+                .append("               "+sideColors[0]+"Front"+ANSI_RESET+"                                "+sideColors[1]+"Back"+ANSI_RESET+"                \n");
 
         } else {
         //crafting goal card
@@ -254,24 +265,28 @@ public class InfoCard  implements Views{
                 for (int i = 0; i < 3; i++) {
                     resources  = resources.concat(" " + Views.stringToEmoji((String) ((JSONArray) JSONCard.get("resources")).get(i)));
                 }
-                if (resources.length() < 6) {
+                if (resources.length() < 3) {
                     resources = resources + " ";
                 }
                 stringObjective[0] = "Resource goal card";
                 stringObjective[2] = "┌────────────┐";
-                stringObjective[3] = "│  " + resources + "   │";
+                stringObjective[3] = "│ " + resources + "  │";
                 stringObjective[4] = "└────────────┘";
+
+
             }
+            stringObjective[1]= "   "+String.valueOf(((Number)JSONCard.get("points")).intValue()) + " points   ";
 
             printedCard
                     .append("╔══════════════════════════════════╗╔══════════════════════════════════╗\n")
-                    .append("║           "+stringObjective[0]+"         ║║"+" ".repeat(34)+"║\n")
+                    .append("║         "+stringObjective[0]+"       ║║"+" ".repeat(34)+"║\n")
                     .append("║           "+stringObjective[2]+"         ║║"+" ".repeat(34)+"║\n")
                     .append("║           "+stringObjective[3]+"         ║║       This card has no back      ║\n")
                     .append("║           "+stringObjective[4]+"         ║║"+" ".repeat(34)+"║\n")
                     .append("║           "+stringObjective[1]+"         ║║"+" ".repeat(34)+"║\n")
                     .append("╚══════════════════════════════════╝╚══════════════════════════════════╝\n")
-                    .append("               Front                                Back                \n");
+
+                    .append("               "+sideColors[0]+"Front"+ANSI_RESET+"                                "+sideColors[1]+"Back"+ANSI_RESET+"                \n");
 
         }
 
@@ -308,7 +323,7 @@ public class InfoCard  implements Views{
             }
             case "PGC_5" -> {
                 card[2] = "  ░░  " + ANSI_RED + "▇▇ " + ANSI_RESET + " ░░  ";
-                card[3] = "  ░░  " + ANSI_RED + " ▇▇ " + ANSI_RESET + " ░░  ";
+                card[3] = "  ░░  " + ANSI_RED + "▇▇ " + ANSI_RESET + " ░░  ";
                 card[4] = "  ░░  ░░ " + ANSI_GREEN + " ▇▇  "+ANSI_RESET;
             }
             case "PGC_6" -> {
