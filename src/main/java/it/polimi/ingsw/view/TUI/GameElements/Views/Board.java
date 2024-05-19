@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.TUI.GameElements.Views;
 
+import it.polimi.ingsw.model.Resource;
 import it.polimi.ingsw.view.TUI.GameState.Views;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,194 +13,218 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class Board {
-    private final String startingCard;
-    private final JSONArray resourceJSONArray;
-    private final JSONArray goldJSONArray;
-    private final JSONArray startingJSONArray;
 
-    private static final String ANSI_RED_BACKGROUND = "\u001B[41m";
-    private static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
-    private static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
-    private static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
+    private static final String mushroomColor = "\u001B[41m";
+    private static final String leafColor = "\u001B[42m";
+    private static final String wolfColor = "\u001B[44m";
+    private static final String butterflyColor = "\u001B[45m";
     private static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_YELLOW = "\u001B[33m";
-    private static final String ANSI_WHITE = "\u001B[37m";
+    private static final String resetColor = "\u001B[0m";
+    private static final String border = "\u001B[37m";
     private static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+    private static final String ANSI_LIGHT_YELLOW= "\u001B[93m";
 
-    public Board(String startingCard) throws IOException, ParseException {
-        //The UUID of the starting card
-        this.startingCard = startingCard;
-
-        InputStream inputresource = getClass().getResourceAsStream("/resourceDeck.json");
-        InputStream inputgold = getClass().getResourceAsStream("/goldenDeck.json");
-        InputStream inputstart = getClass().getResourceAsStream("/startingDeck.json");
-
-        JSONParser parser = new JSONParser();
-
-        BufferedReader bufferGold = new BufferedReader(new InputStreamReader(inputgold));
-        goldJSONArray = (JSONArray) parser.parse(bufferGold);
-        BufferedReader bufferResource = new BufferedReader(new InputStreamReader(inputresource));
-        resourceJSONArray = (JSONArray) parser.parse(bufferResource);
-        BufferedReader bufferStart = new BufferedReader(new InputStreamReader(inputstart));
-        startingJSONArray = (JSONArray) parser.parse(bufferResource);
+    public Board(){
     }
 
     //The isFlipped parameter is used only to determine whether the starting card is flipped or not
-    public void drawBoardCard(String uuid, int positionx, int positiony, boolean isFlipped) {
+    public void drawBoard(Resource[][] boardResources, int[][] availablePositions) {
 
-        int index = Integer.parseInt(uuid.replaceAll("[A-Z]+_", ""));
-        JSONObject JSONCard;
-        String type;
         String background;
-        String border;
-        String resource;
-
-        if(uuid.equals(startingCard)){
-            background = ANSI_WHITE_BACKGROUND;
-            JSONCard = (JSONObject) startingJSONArray.get(index-1);
-            JSONArray JSONresources = (JSONArray) JSONCard.get("permRes");
-
-            String[] permanentResources = new String[JSONresources.size()];
-            for(int i = 0; i < JSONresources.size(); i++){
-                permanentResources[i] = Views.stringToEmoji((String) JSONresources.get(i));
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb
-                    .append("┌")
-                    .append("─".repeat(7))
-                    .append("┐")
-                    .append("\n")
-                    .append("│")
-                    .append(background)
-                    .append(" ");
-
-            for (String permanentResource : permanentResources) {
-                sb.append(permanentResource);
-            }
-            sb
-                    .append(" ")
-                    .append(ANSI_RESET)
-                    .append("│")
-                    .append("\n")
-                    .append("└")
-                    .append("─".repeat(7))
-                    .append("┘")
-                    .append(ANSI_RESET);
-
-            JSONArray JSONcorners = (JSONArray) JSONCard.get("frontCorners");
-            if (isFlipped) {
-                JSONcorners = (JSONArray) JSONCard.get("backCorners");
-            }
-
-            //Here we have to create the cards around this one depending on the corners
-            for (int i = 0; i < 4; i++) {
-                //TODO
-            }
-
-            return;
-        }
-
-        if(uuid.charAt(0)=='R'){
-            // create the resource card
-            JSONCard = (JSONObject) resourceJSONArray.get(index-1);
-            type = "resource";
-
-        } else {
-            // create the golden card
-            JSONCard = (JSONObject) goldJSONArray.get(index - 1);
-            type = "golden";
-        }
-
+        String border = "";
         StringBuilder sb = new StringBuilder();
+        Object[][] mergedBoard = mergeBoards(boardResources, availablePositions);
 
+        for(int i = 0; i < boardResources.length; i++) {
+            boolean nullRow = true;
+            for(int j = 0; j < boardResources.length; j++) {
+                if(mergedBoard[i][j] != null) {
+                    nullRow = false;
+                    break;
+                }
+            }
 
-        border = type.equals("resource") ? ANSI_WHITE : ANSI_YELLOW;
-        resource = switch (JSONCard.get("permRes").toString()) {
-            case "MUSHROOM" -> ANSI_RED_BACKGROUND;
-            case "LEAF" -> ANSI_GREEN_BACKGROUND;
-            case "WOLF" -> ANSI_BLUE_BACKGROUND;
-            case "BUTTERFLY" -> ANSI_PURPLE_BACKGROUND;
-            default -> "";
-        };
+            //Skip the row if it is empty
+            if(nullRow) {
+                continue;
+            }
 
-        if(positionx > 9 && positiony > 9){
-            sb
-                    .append(border)
-                    .append("┌")
-                    .append("─".repeat(7))
-                    .append("┐")
-                    .append("\n")
-                    .append("│")
-                    .append(resource)
-                    .append(" ")
-                    .append(positionx)
-                    .append(" ")
-                    .append(positiony)
-                    .append(" ")
-                    .append(ANSI_RESET)
-                    .append(border)
-                    .append("│")
-                    .append("\n")
-                    .append("└")
-                    .append("─".repeat(7))
-                    .append("┘")
-                    .append(ANSI_RESET);
+            //Print the top border of each card of the row
+            for (int j = 0; j < boardResources.length; j++){
+                if (mergedBoard[i][j] == null) {
+                    sb.append(" ".repeat(10));
+                    continue;
+                }
 
-            System.out.println(sb);
+                if(mergedBoard[i][j] == "available"){
+                    border = ANSI_LIGHT_YELLOW;
+                }else{
+                    border = resetColor;
+                }
+
+                sb.append(border)
+                        .append("┌")
+                        .append("─".repeat(7))
+                        .append("┐")
+                        .append(" ")
+                        .append(resetColor);
+            }
+
+            sb.append("\n");
+
+            for (int j = 0; j < boardResources.length; j++) {
+
+                if (mergedBoard[i][j] == null) {
+                    sb.append(" ".repeat(10));
+                    continue;
+                }
+
+                switch (mergedBoard[i][j].toString()) {
+                    case "MUSHROOM" -> {
+                        background = mushroomColor;
+                        border = resetColor;
+                    }
+                    case "LEAF" -> {
+                        background = leafColor;
+                        border = resetColor;
+                    }
+                    case "WOLF" -> {
+                        background = wolfColor;
+                        border = resetColor;
+                    }
+                    case "BUTTERFLY" -> {
+                        background = butterflyColor;
+                        border = resetColor;
+                    }
+                    case "available" -> {
+                        border = ANSI_LIGHT_YELLOW;
+                        background = "";
+                    }
+                    default -> background = "";
+                }
+
+                if(i == 40 && j == 40){
+                    background = ANSI_WHITE_BACKGROUND;
+                }
+
+                if (i >= 10 && j >= 10) {
+                    sb
+                            .append(border)
+                            .append("│")
+                            .append(background)
+                            .append(" ")
+                            .append(i)
+                            .append(" ")
+                            .append(j)
+                            .append(" ")
+                            .append(resetColor)
+                            .append(border)
+                            .append("│")
+                            .append(" ");
+                }
+                if (i < 10 && j < 10) {
+                    sb
+                            .append(border)
+                            .append("│")
+                            .append(background)
+                            .append(" ")
+                            .append(i)
+                            .append(" ".repeat(3))
+                            .append(j)
+                            .append(" ")
+                            .append(resetColor)
+                            .append(border)
+                            .append("│")
+                            .append(" ");
+
+                }
+                if (i >= 10 && j < 10 || i < 10 && j >= 10) {
+                    sb
+                            .append(border)
+                            .append("│")
+                            .append(background)
+                            .append(" ")
+                            .append(i)
+                            .append("  ")
+                            .append(j)
+                            .append(" ")
+                            .append(resetColor)
+                            .append(border)
+                            .append("│")
+                            .append(" ");
+
+                }
+            }
+
+            sb.append("\n");
+
+            for (int j = 0; j < boardResources.length; j++){
+                if (mergedBoard[i][j] == null) {
+                    sb.append(" ".repeat(10));
+                    continue;
+                }
+
+                if(mergedBoard[i][j] == "available"){
+                    border = ANSI_LIGHT_YELLOW;
+                }else{
+                    border = resetColor;
+                }
+
+                sb.append(border)
+                        .append("└")
+                        .append("─".repeat(7))
+                        .append("┘")
+                        .append(" ")
+                        .append(resetColor);
+            }
+
+            sb.append("\n");
         }
-        if(positionx < 10 && positiony < 10){
-            sb
-                    .append(border)
-                    .append("┌")
-                    .append("─".repeat(7))
-                    .append("┐")
-                    .append("\n")
-                    .append("│")
-                    .append(resource)
-                    .append(" ")
-                    .append(1)
-                    .append(" ".repeat(3))
-                    .append(1)
-                    .append(" ")
-                    .append(ANSI_RESET)
-                    .append(border)
-                    .append("│")
-                    .append("\n")
-                    .append("└")
-                    .append("─".repeat(7))
-                    .append("┘")
-                    .append(ANSI_RESET);
+        System.out.println(sb);
+    }
 
-            System.out.println(sb);
+    public Object[][] mergeBoards(Resource[][] boardResources, int[][] availablePositions) {
+
+        Object[][] mergedBoard = new Object[boardResources.length][boardResources.length];
+
+        for(int i = 0; i < boardResources.length; i++) {
+            for(int j = 0; j < boardResources.length; j++) {
+                if(boardResources[i][j] != null) {
+
+                    mergedBoard[i][j] = boardResources[i][j].toString();
+
+                }else if(availablePositions[i][j] == 1){
+
+                    mergedBoard[i][j] = "available";
+
+                }else{
+                    mergedBoard[i][j] = null;
+                }
+            }
         }
-        if(positionx > 9 && positiony < 10 || positionx < 9 && positiony > 10){
-            sb
-                    .append(border)
-                    .append("┌")
-                    .append("─".repeat(7))
-                    .append("┐")
-                    .append("\n")
-                    .append("│")
-                    .append(resource)
-                    .append(" ")
-                    .append(positionx)
-                    .append("  ")
-                    .append(positiony)
-                    .append(" ")
-                    .append(ANSI_RESET)
-                    .append(border)
-                    .append("│")
-                    .append("\n")
-                    .append("└")
-                    .append("─".repeat(7))
-                    .append("┘")
-                    .append(ANSI_RESET);
+        return mergedBoard;
+    }
 
-            System.out.println(sb);
+    public static void main(String[] args) {
+
+        //Test the drawBoard method
+        Board board = new Board();
+        Resource[][] boardResources = new Resource[20][20];
+        int[][] availablePositions = new int[20][20];
+
+        for(int i = 0; i < 20; i++) {
+            for(int j = 0; j < 20; j++) {
+                if(i == 10 && j%2 == 0){
+                    boardResources[i][j] = Resource.WOLF;
+                }else if (i==10){
+                    boardResources[i][j] = null;
+                }else if ((i == 9 || i == 11) && j%2 != 0){
+                    availablePositions[i][j] = 1;
+                }
+            }
         }
 
+        board.drawBoard(boardResources, availablePositions);
     }
 
 }
