@@ -543,6 +543,21 @@ public class Server extends UnicastRemoteObject {
      */
 
     public Message requestCard(Message message) {
+        //First I need to check if it's actually the turn of the player making the request
+        if(!gameControllerMap.get(message.getGameID()).getCurrentGame().getCurrentPlayer()
+                .equals(idPlayerMap.get(message.getSenderID()))){
+
+            idSocketMap.get(message.getSenderID()).sendMessage(
+                    new Message(
+                            REPLY_BAD_REQUEST,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            "Invalid request, it's not your turn!"
+                    )
+            );
+            return null;
+        }
+
         Object[] params = message.getObj();
         if((Integer) params[1] < 0 || (Integer) params[1] > 2){
             if(hasSocket) {
@@ -596,6 +611,22 @@ public class Server extends UnicastRemoteObject {
      */
 
     public Message playerMove(Message message) throws IOException {
+
+        //First I need to check if it's actually the turn of the player making the request
+        if(!gameControllerMap.get(message.getGameID()).getCurrentGame().getCurrentPlayer()
+            .equals(idPlayerMap.get(message.getSenderID()))){
+
+            idSocketMap.get(message.getSenderID()).sendMessage(
+                    new Message(
+                            REPLY_BAD_REQUEST,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            "Invalid request: it's not your turn!"
+                    )
+            );
+            return null;
+        }
+
         //Where the player wants to place the card
         int positionx = (int) message.getObj()[0];
         int positiony = (int) message.getObj()[1];

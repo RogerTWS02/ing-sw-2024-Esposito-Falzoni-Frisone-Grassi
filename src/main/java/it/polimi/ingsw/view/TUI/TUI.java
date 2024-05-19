@@ -51,12 +51,6 @@ public class TUI extends Thread{
 
             //quando si raggiunge il numero prefissato di persone nella lobby
             case REPLY_BEGIN_GAME:
-                //PER DEBUGGING STAMPO TUTTO
-                /*
-                System.out.println("Player's hand: "+message.getObj()[0].toString());
-                System.out.println("Player's common goals: "+message.getObj()[1].toString());
-                System.out.println("Player's cards to choose: "+message.getObj()[2].toString());
-                */
 
                 //imposto il gameID nel client
                 cli.setGameID(message.getGameID());
@@ -80,7 +74,15 @@ public class TUI extends Thread{
             case REPLY_HAND_UPDATE:
                 String newCardUUID = (String) message.getObj()[0];
 
+                //aggiungo la nuova carta
+                currentHandUUID.add(newCardUUID);
+
                 //con l'UUID aggiorno lo stato dello schermo della console
+                try {
+                    bottomRow.showBottomRow(currentHandUUID.toArray(new String[0]), allGoalsUUID.toArray(new String[0]));
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException(e);
+                }
 
                 break;
 
@@ -258,11 +260,9 @@ public class TUI extends Thread{
 
         //vera fase di gioco
         while(true){
-            //stampo il layout
-            //System.out.println(printTui());
 
             //chiedo all'utente di inserire un comando
-            System.out.print("Type '/help' to view the Commands List):");
+            System.out.print("Type '/help' to view the Commands List:");
 
             //Leggi il messaggio inserito dall'utente
             command = scanner.nextLine().split(" ");
@@ -285,7 +285,10 @@ public class TUI extends Thread{
                 //chiedo l'UUID della carta al server e genero i dati dal JSON
                 // messaggio del tipo: /infoCard posX posY
                 case "/infoCard":
-                    if(command.length < 3) break;
+                    if(command.length < 3) {
+                        System.out.println("Command not valid, try '/help' to view syntax");
+                        break;
+                    }
                     int posX = 0, posY = 0;
                     try {
                         posX = Integer.parseInt(command[1]);
@@ -304,12 +307,20 @@ public class TUI extends Thread{
                                     cli.getGameID(),
                                     new Object[]{posX, posY})
                     );
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
 
                 case "/placeCard":
-                    if(command.length < 3) break;
+                    if(command.length < 3) {
+                        System.out.println("Command not valid, try '/help' to view syntax");
+                        break;
+                    }
 
-                    int positionX= 0, positionY = 0;
+                    int positionX = 0, positionY = 0;
                     try {
                         positionX = Integer.parseInt(command[1]);
                         positionY = Integer.parseInt(command[2]);
@@ -327,15 +338,23 @@ public class TUI extends Thread{
                                     //Manca la carta da piazzare oltre alla posizione dove piazzarla
                                     new Object[]{positionX, positionY})
                     );
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
 
                 case "/drawCardFromViewable":
-                    if(command.length < 2) break;
-                    String type = command[0].toLowerCase();
+                    if(command.length < 3) {
+                        System.out.println("Command not valid, try '/help' to view syntax");
+                        break;
+                    }
+                    String type = command[1].toLowerCase();
                     int pos = 0;
                     try {
-                        pos = Integer.parseInt(command[1]);
-                        if(pos > 2 || pos < 1) break;
+                        pos = Integer.parseInt(command[2]);
+                        if(pos > 2 || pos < 1) continue;
                     }catch(NumberFormatException e){
                         System.out.println(e);
                         break;
@@ -349,7 +368,7 @@ public class TUI extends Thread{
                                         new Object[]{true, pos - 1})
                         );
                     }
-                    if(type.equals("resource")){
+                    else if(type.equals("resource")){
                         cli.sendMessage(
                                 new Message(
                                         REQUEST_CARD,
@@ -357,12 +376,24 @@ public class TUI extends Thread{
                                         cli.getGameID(),
                                         new Object[]{false, pos - 1})
                         );
+                    }else{
+                        System.out.println("Command not valid, try '/help' to view syntax");
+                        break;
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                     break;
 
                 case "/drawCardFromDeck":
-                    String ty = command[0].toLowerCase();
+                    if(command.length < 2) {
+                        System.out.println("Command not valid, try '/help' to view syntax");
+                        break;
+                    }
 
+                    String ty = command[1].toLowerCase();
                     if(ty.equals("golden")){
                         cli.sendMessage(
                                 new Message(
@@ -371,8 +402,7 @@ public class TUI extends Thread{
                                         cli.getGameID(),
                                         new Object[]{true, 2})
                         );
-                    }
-                    if(ty.equals("resource")){
+                    }else if(ty.equals("resource")){
                         cli.sendMessage(
                                 new Message(
                                         REQUEST_CARD,
@@ -380,11 +410,19 @@ public class TUI extends Thread{
                                         cli.getGameID(),
                                         new Object[]{false, 2})
                         );
+                    }else{
+                        System.out.println("Command not valid, try '/help' to view syntax");
+                        break;
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                     break;
 
                 default:
-                    System.out.println("Command not valid, try '/help'");
+                    System.out.println("Command not valid, try '/help' to view syntax");
             }
 
 
