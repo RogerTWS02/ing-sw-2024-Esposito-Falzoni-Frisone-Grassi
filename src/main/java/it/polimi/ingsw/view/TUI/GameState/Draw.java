@@ -54,25 +54,25 @@ public class Draw implements Views {
 
           // create the cards from the UUID
           /*
-        gStringCard[][3 cards in the hand]
-        gStringCard[0][] = Type
-        gStringCard[1][] = Points
-        gStringCard[2][] = Permanent Resource
-        gStringCard[3][] = Corner 0
-        gStringCard[4][] = Corner 1
-        gStringCard[5][] = Corner 2
-        gStringCard[6][] = Corner 3
-        gStringCard[7][] = RULE to obtain the points
-        gStringCard[8][] = Required Resources
-        gStringCard[9][] = Border color + Background color
-           */
+          gStringCard[][3 cards in the hand]
+          gStringCard[0][] = Type
+          gStringCard[1][] = Points
+          gStringCard[2][] = Permanent Resource
+          gStringCard[3][] = Corner 0
+          gStringCard[4][] = Corner 1
+          gStringCard[5][] = Corner 2
+          gStringCard[6][] = Corner 3
+          gStringCard[7][] = RULE to obtain the points
+          gStringCard[8][] = Required Resources
+          gStringCard[9][] = Border color + Background color
+          */
 
 
-// generating golden cards
+          // generating golden cards
           for(int x =0; x< 3; x++){
 
 
-               int index = Integer.parseInt(gUuids[x].substring(3, gUuids[x].length()));
+               int index = Integer.parseInt(gUuids[x].substring(3));
                JSONObject JSONCard;
                //create the golden card and set the color
                JSONCard = (JSONObject) goldJSONArray.get(index-1);
@@ -96,21 +96,20 @@ public class Draw implements Views {
                     case "LEAF" -> gStringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
                     case "MUSHROOM" -> gStringCard[9][x].concat(ANSI_RED_BACKGROUND);
                     case "BUTTERFLY" -> gStringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
-               };
-               };
+               }
+          }
 
-// generating resource cards
+          // generating resource cards
           for(int x =0; x< 3; x++){
 
-
-               int index = Integer.parseInt(rUuids[x].substring(3, rUuids[x].length()));
+               int index = Integer.parseInt(rUuids[x].substring(3));
                JSONObject JSONCard;
                //create the golden card and set the color
                JSONCard = (JSONObject) goldJSONArray.get(index-1);
                rStringCard[0][x]="Resource Card"+ "["+x+"]";
                rStringCard[9][x]=ANSI_WHITE;
 
-               rStringCard[1][x]=(String) JSONCard.get("points");
+               rStringCard[1][x]= (String) JSONCard.get("points");
                rStringCard[2][x]=Views.stringToEmoji((String) JSONCard.get("permRes"));
                for(int i = 0; i < 4; i++){
                     rStringCard[i+3][x] =Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
@@ -130,107 +129,107 @@ public class Draw implements Views {
                };
           };
 
-// print te cards
+          // print the cards
           StringBuilder cards = new StringBuilder();
 
           //adding gold cards
-            cards
-                    .append("┌")
-                    .append("─".repeat(89))
-                    .append("┐")
-                    .append("\n")
-                    .append("│")
-                    .append(" ".repeat(35))
-                    .append("Draw form the table")
-                    .append(" ".repeat(35))
-                    .append("│")
-                    .append("\n")
-                    .append("├")
-                    .append("─".repeat(89))
-                    .append("┤")
-                    .append("\n")
-                    .append("│ ")
-                    .append(gStringCard[9][0]+"╔═══════════════════════════╗")
-                    .append(gStringCard[9][1]+"╔═══════════════════════════╗")
-                    .append(gStringCard[9][0]+"╔═══════════════════════════╗")
-                    .append(ANSI_RESET+" │ ")
-                    .append("\n")
-                    .append("│ ")
-                    .append( gStringCard[9][0]+"║"+ANSI_RESET)
-                    .append(" ".repeat(27))
-                    .append( gStringCard[9][0]+"║"+ANSI_RESET);
-                    
-                    for(int x = 1;x<3; x++){
-                         cards
-                               .append( gStringCard[9][x]+"║"+ANSI_RESET)
-                               .append(gStringCard[3][x])
-                               .append(" ".repeat(9))
-                               .append(Views.cardToPoint(gStringCard[1][x],gStringCard[7][x]))
-                               .append(" ".repeat(9))
-                               .append(gStringCard[4][x])
-                               .append(gStringCard[9][x]+"║");};
-                    cards.append(ANSI_RESET+" │ ")
-                            .append("\n")
-                            .append("│ ");
-                    for(int x =0; x<3; x++){
-                         cards
-                                 .append( gStringCard[9][x]+"║"+ANSI_RESET)
-                                 .append(" ".repeat(27))
-                                 .append( gStringCard[9][x]+"║"+ANSI_RESET);
-                    }
-                    cards.append(ANSI_RESET+" │ ")
-                           .append("\n");
-                    for(int x =0; x<3; x++){
-                         cards
-                                  .append( gStringCard[9][x]+"║"+ANSI_RESET)
-                                  .append(" ".repeat(6))
-                                  .append( gStringCard[0][x])
-                                  .append(" ".repeat(5))
-                                  .append( gStringCard[9][x]+"║"+ANSI_RESET);
-                    }
-                    cards.append(ANSI_RESET+" │ ")
-                           .append("\n")
-                           .append("│ ");
-                    for(int x =0; x<3; x++){
-                        cards
-                                  .append( gStringCard[9][x]+"║"+ANSI_RESET)
-                                  .append(" ".repeat(27))
-                                  .append( gStringCard[9][x]+"║"+ANSI_RESET);
-                    }
-            cards        
-                    .append(ANSI_RESET+" │ ")
-                    .append("\n")
-                    .append("│ ")
-                    .append("│ ")
-                    .append( gStringCard[9][0]+"║"+ANSI_RESET)
-                    .append(" ".repeat(27))
-                    .append( gStringCard[9][0]+"║"+ANSI_RESET)
-                    .append( gStringCard[9][1]+"║"+ANSI_RESET);
-                    for(int x = 1;x<3; x++){
-                         cards
-                               .append( gStringCard[9][1]+"║"+ANSI_RESET)
-                               .append(gStringCard[5][x])
-                               .append(" ".repeat(9))
-                               .append(gStringCard[8][x])
-                               .append(" ".repeat(8))
-                               .append(gStringCard[6][x])
-                               .append(gStringCard[9][x]+"║");
-                    };
-                    
-                    
-            cards
-                    .append(ANSI_RESET+" │ ")
-                    .append("\n")
-                    .append("│ ")
-                    .append(gStringCard[9][0]+"╚═══════════════════════════╝")
-                    .append(gStringCard[9][1]+"╚═══════════════════════════╝")
-                    .append(gStringCard[9][0]+"╚═══════════════════════════╝")
-                    .append(ANSI_RESET+" │ ")
-                    .append("\n");
+          cards
+               .append("┌")
+               .append("─".repeat(89))
+               .append("┐")
+               .append("\n")
+               .append("│")
+               .append(" ".repeat(35))
+               .append("Draw form the table")
+               .append(" ".repeat(35))
+               .append("│")
+               .append("\n")
+               .append("├")
+               .append("─".repeat(89))
+               .append("┤")
+               .append("\n")
+               .append("│ ")
+               .append(gStringCard[9][0]+"╔═══════════════════════════╗")
+               .append(gStringCard[9][1]+"╔═══════════════════════════╗")
+               .append(gStringCard[9][0]+"╔═══════════════════════════╗")
+               .append(ANSI_RESET+" │ ")
+               .append("\n")
+               .append("│ ")
+               .append( gStringCard[9][0]+"║"+ANSI_RESET)
+               .append(" ".repeat(27))
+               .append( gStringCard[9][0]+"║"+ANSI_RESET);
+
+               for(int x = 1;x<3; x++){
+                    cards
+                          .append( gStringCard[9][x]+"║"+ANSI_RESET)
+                          .append(gStringCard[3][x])
+                          .append(" ".repeat(9))
+                          .append(Views.cardToPoint(gStringCard[1][x],gStringCard[7][x]))
+                          .append(" ".repeat(9))
+                          .append(gStringCard[4][x])
+                          .append(gStringCard[9][x]+"║");};
+               cards.append(ANSI_RESET+" │ ")
+                       .append("\n")
+                       .append("│ ");
+               for(int x =0; x<3; x++){
+                    cards
+                            .append( gStringCard[9][x]+"║"+ANSI_RESET)
+                            .append(" ".repeat(27))
+                            .append( gStringCard[9][x]+"║"+ANSI_RESET);
+               }
+               cards.append(ANSI_RESET+" │ ")
+                      .append("\n");
+               for(int x =0; x<3; x++){
+                    cards
+                             .append( gStringCard[9][x]+"║"+ANSI_RESET)
+                             .append(" ".repeat(6))
+                             .append( gStringCard[0][x])
+                             .append(" ".repeat(5))
+                             .append( gStringCard[9][x]+"║"+ANSI_RESET);
+               }
+               cards.append(ANSI_RESET+" │ ")
+                      .append("\n")
+                      .append("│ ");
+               for(int x =0; x<3; x++){
+                   cards
+                        .append( gStringCard[9][x]+"║"+ANSI_RESET)
+                        .append(" ".repeat(27))
+                        .append( gStringCard[9][x]+"║"+ANSI_RESET);
+               }
+
+          cards
+               .append(ANSI_RESET+" │ ")
+               .append("\n")
+               .append("│ ")
+               .append("│ ")
+               .append( gStringCard[9][0]+"║"+ANSI_RESET)
+               .append(" ".repeat(27))
+               .append( gStringCard[9][0]+"║"+ANSI_RESET)
+               .append( gStringCard[9][1]+"║"+ANSI_RESET);
+               for(int x = 1;x<3; x++){
+                    cards
+                          .append( gStringCard[9][1]+"║"+ANSI_RESET)
+                          .append(gStringCard[5][x])
+                          .append(" ".repeat(9))
+                          .append(gStringCard[8][x])
+                          .append(" ".repeat(8))
+                          .append(gStringCard[6][x])
+                          .append(gStringCard[9][x]+"║");
+               };
 
 
-            // adding resource gards
+          cards
+               .append(ANSI_RESET+" │ ")
+               .append("\n")
+               .append("│ ")
+               .append(gStringCard[9][0]+"╚═══════════════════════════╝")
+               .append(gStringCard[9][1]+"╚═══════════════════════════╝")
+               .append(gStringCard[9][0]+"╚═══════════════════════════╝")
+               .append(ANSI_RESET+" │ ")
+               .append("\n");
 
+
+          // adding resource gards
           cards
 
                   .append("├")
@@ -256,7 +255,9 @@ public class Draw implements Views {
                        .append(Views.cardToPoint(    rStringCard[1][x],    rStringCard[7][x]))
                        .append(" ".repeat(9))
                        .append(    rStringCard[4][x])
-                       .append(    rStringCard[9][x]+"║");};
+                       .append(    rStringCard[9][x]+"║");
+          }
+
           cards.append(ANSI_RESET+" │ ")
                   .append("\n")
                   .append("│ ");
@@ -319,9 +320,6 @@ public class Draw implements Views {
                   .append("─".repeat(89))
                   .append("┘")
                   .append("\n");
-
-
-
 
 
           Views.clearScreen();

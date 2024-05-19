@@ -11,7 +11,8 @@ public interface Views {
 
 
     //converts the resource to a string to print in the TUI
-     static String stringToEmoji(String resource){
+    static String stringToEmoji(String resource){
+        if(resource == null) return "  ";
         return switch (resource){
             case "EMPTY" -> "░░";
             case "WOLF" -> "🐺";
@@ -23,7 +24,6 @@ public interface Views {
             case "GLASSVIAL" -> "🫙";
             default -> "  ";
         };
-
     }
 
 

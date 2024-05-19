@@ -9,7 +9,6 @@ import it.polimi.ingsw.view.TUI.GameState.StartGame;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -188,8 +187,13 @@ public class TUI extends Thread{
 
 
         while(true){
+            //Stampo le due secret goal cards
+            infoC.showInfoCard(cardToChooseUUID.get(1));
+            infoC.showInfoCard(cardToChooseUUID.get(2));
+
             //sezione per scegliere la secret goal card
             System.out.print("Select your secret goal card between the two (type 1 or 2 to choose):");
+
             command = scanner.nextLine().split(" ");
 
             //In the first player the buffer remains empty, so I have to skip the first time
@@ -201,9 +205,12 @@ public class TUI extends Thread{
             if(command[0].equals("1") || command[0].equals("2")){
                 selectedUUID = (command[0].equals("1"))? cardToChooseUUID.get(1) : cardToChooseUUID.get(2);
                 allGoalsUUID.add(selectedUUID);
-                System.out.println("\nIl giocatore ha scelto la carta: "+selectedUUID);
+                System.out.println("\nThe player has chosen the card: "+selectedUUID);
 
                 while(true){
+                    //Stampo la starting card
+                    infoC.showInfoCard(cardToChooseUUID.get(0));
+
                     //sezione per scegliere che lato mettere la starting card
                     System.out.print("Select which side to place the starting card (type 1 for frontside or 2 for backside):");
                     command = scanner.nextLine().split(" ");
