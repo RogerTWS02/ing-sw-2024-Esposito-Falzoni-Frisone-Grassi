@@ -68,7 +68,7 @@ public class TUI extends Thread{
 
                 //vado alla scena di gioco impostando i parametri ricevuti
                 //ovvero le carte della mano e le common goal cards
-                System.out.println("Gioco iniziato! Stampo mano, goal comuni e quello privato, mazzi, board e punteggio ecc...");
+                System.out.println("Let's go! The game is starting...");
 
                 break;
 
@@ -152,7 +152,7 @@ public class TUI extends Thread{
         while(cli.getLobbySize() == -1){
             int size = scanner.nextInt();
             if(size < 2 || size > 4){
-                System.out.println("A game needs a number of players between 2 and 4 included!!!");
+                System.out.println("A game needs a number of players between 2 and 4 included!");
                 System.out.print("Insert lobby size (4 players max): ");
                 continue;
             }
@@ -177,7 +177,7 @@ public class TUI extends Thread{
         System.out.println("You just joined the lobby: "+cli.getLobbyName());
 
         //se l'utente manda messaggi in fase di attesa non faccio nulla
-        if(cli.getGameID() == -1) System.out.println("Waiting for other players to start the game...");
+        if(cli.getGameID() == -1) System.out.println("Waiting for other players to join the game...");
         while(cli.getGameID() == -1){
             try {
                 Thread.sleep(1000);
@@ -198,7 +198,7 @@ public class TUI extends Thread{
             infoC.showInfoCard(cardToChooseUUID.get(2),null);
 
             //sezione per scegliere la secret goal card
-            System.out.print("Select your secret goal card between the two (type 1 or 2 to choose):");
+            System.out.print("Select your secret goal card (type 1 or 2 to choose): ");
 
             command = scanner.nextLine().split(" ");
 
@@ -211,25 +211,25 @@ public class TUI extends Thread{
             if(command[0].equals("1") || command[0].equals("2")){
                 selectedUUID = (command[0].equals("1"))? cardToChooseUUID.get(1) : cardToChooseUUID.get(2);
                 allGoalsUUID.add(selectedUUID);
-                System.out.println("\nThe player has chosen the card: "+selectedUUID);
+                System.out.println("\nThe player has chosen the card: " + selectedUUID);
 
                 while(true){
                     //Stampo la starting card
                     infoC.showInfoCard(cardToChooseUUID.get(0),null);
 
                     //sezione per scegliere che lato mettere la starting card
-                    System.out.print("Select which side to place the starting card (type 1 for frontside or 2 for backside):");
+                    System.out.print("Select which side to place the starting card (type 1 for front side or 2 for back side): ");
                     command = scanner.nextLine().split(" ");
                     if(command[0].equals("1") || command[0].equals("2")){
                         side = command[0].equals("2");
                         break;
                     }
-                    System.out.println("\nInput given '"+command[0]+"' is incorrect! Try again.");
+                    System.out.println("\nInput given '" + command[0] + "' is invalid! Try again.");
                 }
 
                 break;
             }
-            System.out.println("\nInput given '"+command[0]+"' is incorrect! Try again.");
+            System.out.println("\nInput given '" + command[0] + "' is invalid! Try again.");
         }
 
         //notifico il server per la scelta fatta
@@ -260,7 +260,7 @@ public class TUI extends Thread{
             throw new RuntimeException(e);
         }
 
-        System.out.println("Starting player is: "+startingPlayer);
+        System.out.println("Starting player is: " + startingPlayer);
 
         //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
 
@@ -268,21 +268,21 @@ public class TUI extends Thread{
         while(true){
 
             //chiedo all'utente di inserire un comando
-            System.out.print("Type '/help' to view the Commands List:");
+            System.out.print("Type '/help' to view the commands list: ");
 
             //Leggi il messaggio inserito dall'utente
             command = scanner.nextLine().split(" ");
             switch(command[0]){
                 case "/help":
                     message = """
-                            Commands List:\s
-                            /infoCard posX posY - return info on a card on the playerBoard
-                            /placeCard posX posY - try to place a card on the playerBoard
-                            /drawCardFromDeck Golden/Resource - draws a card form Deck according to te specified type
-                            /drawCardFromViewable Golden/Resource 1/2 - draws from the viewable cards according to the specified index
-                            /openChat - opens the chat tab where you can type messages to the lobby and watch the messages from others players
-                            /closeChat - closes the chat tab and resume the game interface
-                            /TEMPLATE PARAM_1, PARAM_2
+                            Commands List:              Template: /COMMAND Param1 Param 2\s
+                            
+                            /infoCard posX posY - Returns infos about a card on the player's board
+                            /placeCard posX posY - Tries to place a card on the player's board
+                            /drawCardFromDeck Golden/Resource - Draws a card from the specified type deck
+                            /drawCardFromViewable Golden/Resource 1/2 - Draws a card from the viewable ones according to the specified index
+                            /openChat - Opens the chat tab, where you can read and send messages to other players
+                            /closeChat - Closes the chat tab and returns to the game interface
                             """;
 
                     System.out.println(message);

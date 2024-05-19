@@ -15,7 +15,7 @@ public class LoginUsername {
                 //.append("\n")
                 //.append("│")
                 //.append(" ".repeat(5))
-                .append("Insert Username (max 16 characters):");
+                .append("Insert username (max 16 characters): ");
                 //.append(" ".repeat(5))
                 //.append("│")
                 //.append("\n")

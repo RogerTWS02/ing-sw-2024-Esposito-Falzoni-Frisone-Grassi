@@ -76,8 +76,8 @@ public class Draw implements Views {
                JSONObject JSONCard;
                //create the golden card and set the color
                JSONCard = (JSONObject) goldJSONArray.get(index-1);
-               gStringCard[0][x]="Golden Card"+ "["+x+"]  ";
-               gStringCard[9][x]=ANSI_YELLOW;
+               gStringCard[0][x] = "Golden Card" + "[" + x + "]  ";
+               gStringCard[9][x] = ANSI_YELLOW;
 
                gStringCard[1][x]=(String) JSONCard.get("points");
                gStringCard[2][x]=Views.stringToEmoji((String) JSONCard.get("permRes"));
@@ -105,21 +105,21 @@ public class Draw implements Views {
                int index = Integer.parseInt(rUuids[x].substring(3));
                JSONObject JSONCard;
                //create the golden card and set the color
-               JSONCard = (JSONObject) goldJSONArray.get(index-1);
-               rStringCard[0][x]="Resource Card"+ "["+x+"]";
-               rStringCard[9][x]=ANSI_WHITE;
+               JSONCard = (JSONObject) goldJSONArray.get(index - 1);
+               rStringCard[0][x] = "Resource Card" + "[" + x + "]";
+               rStringCard[9][x] = ANSI_WHITE;
 
-               rStringCard[1][x]= (String) JSONCard.get("points");
-               rStringCard[2][x]=Views.stringToEmoji((String) JSONCard.get("permRes"));
+               rStringCard[1][x] = (String) JSONCard.get("points");
+               rStringCard[2][x] = Views.stringToEmoji((String) JSONCard.get("permRes"));
                for(int i = 0; i < 4; i++){
-                    rStringCard[i+3][x] =Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
+                    rStringCard[i+3][x] = Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
                }
-               rStringCard[7][x]= (String) JSONCard.get("rule");
+               rStringCard[7][x] = (String) JSONCard.get("rule");
                JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
                for(int i = 0; i < JSONRequire.size(); i++){
                     rStringCard[8][x].concat((Views.stringToEmoji((String) JSONRequire.get(i))));
                }
-               rStringCard[8][x].concat(" ".repeat(5-JSONRequire.size()));
+               rStringCard[8][x].concat(" ".repeat(5 - JSONRequire.size()));
                switch (rStringCard[2][x]){
 
                     case "WOLF" -> rStringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
@@ -152,80 +152,80 @@ public class Draw implements Views {
                .append(gStringCard[9][0]+"╔═══════════════════════════╗")
                .append(gStringCard[9][1]+"╔═══════════════════════════╗")
                .append(gStringCard[9][0]+"╔═══════════════════════════╗")
-               .append(ANSI_RESET+" │ ")
+               .append(ANSI_RESET + " │ ")
                .append("\n")
                .append("│ ")
-               .append( gStringCard[9][0]+"║"+ANSI_RESET)
+               .append( gStringCard[9][0] + "║" + ANSI_RESET)
                .append(" ".repeat(27))
-               .append( gStringCard[9][0]+"║"+ANSI_RESET);
+               .append(gStringCard[9][0] + "║" + ANSI_RESET);
 
                for(int x = 1;x<3; x++){
                     cards
-                          .append( gStringCard[9][x]+"║"+ANSI_RESET)
+                          .append( gStringCard[9][x] + "║" + ANSI_RESET)
                           .append(gStringCard[3][x])
                           .append(" ".repeat(9))
                           .append(Views.cardToPoint(gStringCard[1][x],gStringCard[7][x]))
                           .append(" ".repeat(9))
                           .append(gStringCard[4][x])
-                          .append(gStringCard[9][x]+"║");};
-               cards.append(ANSI_RESET+" │ ")
+                          .append(gStringCard[9][x] + "║");}
+               cards.append(ANSI_RESET + " │ ")
                        .append("\n")
                        .append("│ ");
                for(int x =0; x<3; x++){
                     cards
-                            .append( gStringCard[9][x]+"║"+ANSI_RESET)
+                            .append( gStringCard[9][x] + "║" + ANSI_RESET)
                             .append(" ".repeat(27))
-                            .append( gStringCard[9][x]+"║"+ANSI_RESET);
+                            .append( gStringCard[9][x] + "║" + ANSI_RESET);
                }
-               cards.append(ANSI_RESET+" │ ")
+               cards.append(ANSI_RESET + " │ ")
                       .append("\n");
                for(int x =0; x<3; x++){
                     cards
-                             .append( gStringCard[9][x]+"║"+ANSI_RESET)
+                             .append(gStringCard[9][x] + "║" + ANSI_RESET)
                              .append(" ".repeat(6))
-                             .append( gStringCard[0][x])
+                             .append(gStringCard[0][x])
                              .append(" ".repeat(5))
-                             .append( gStringCard[9][x]+"║"+ANSI_RESET);
+                             .append(gStringCard[9][x] + "║" + ANSI_RESET);
                }
-               cards.append(ANSI_RESET+" │ ")
+               cards.append(ANSI_RESET + " │ ")
                       .append("\n")
                       .append("│ ");
                for(int x =0; x<3; x++){
                    cards
-                        .append( gStringCard[9][x]+"║"+ANSI_RESET)
+                        .append(gStringCard[9][x] + "║" + ANSI_RESET)
                         .append(" ".repeat(27))
-                        .append( gStringCard[9][x]+"║"+ANSI_RESET);
+                        .append(gStringCard[9][x] + "║" + ANSI_RESET);
                }
 
           cards
-               .append(ANSI_RESET+" │ ")
+               .append(ANSI_RESET + " │ ")
                .append("\n")
                .append("│ ")
                .append("│ ")
-               .append( gStringCard[9][0]+"║"+ANSI_RESET)
+               .append( gStringCard[9][0] + "║" + ANSI_RESET)
                .append(" ".repeat(27))
-               .append( gStringCard[9][0]+"║"+ANSI_RESET)
-               .append( gStringCard[9][1]+"║"+ANSI_RESET);
-               for(int x = 1;x<3; x++){
+               .append( gStringCard[9][0] + "║" + ANSI_RESET)
+               .append( gStringCard[9][1] + "║" + ANSI_RESET);
+               for(int x = 1; x<3; x++){
                     cards
-                          .append( gStringCard[9][1]+"║"+ANSI_RESET)
+                          .append( gStringCard[9][1] + "║" + ANSI_RESET)
                           .append(gStringCard[5][x])
                           .append(" ".repeat(9))
                           .append(gStringCard[8][x])
                           .append(" ".repeat(8))
                           .append(gStringCard[6][x])
-                          .append(gStringCard[9][x]+"║");
+                          .append(gStringCard[9][x] + "║");
                };
 
 
           cards
-               .append(ANSI_RESET+" │ ")
+               .append(ANSI_RESET + " │ ")
                .append("\n")
                .append("│ ")
                .append(gStringCard[9][0]+"╚═══════════════════════════╝")
                .append(gStringCard[9][1]+"╚═══════════════════════════╝")
                .append(gStringCard[9][0]+"╚═══════════════════════════╝")
-               .append(ANSI_RESET+" │ ")
+               .append(ANSI_RESET + " │ ")
                .append("\n");
 
 
@@ -237,84 +237,84 @@ public class Draw implements Views {
                   .append("┤")
                   .append("\n")
                   .append("│ ")
-                  .append(    rStringCard[9][0]+"╔═══════════════════════════╗")
-                  .append(    rStringCard[9][1]+"╔═══════════════════════════╗")
-                  .append(    rStringCard[9][0]+"╔═══════════════════════════╗")
-                  .append(ANSI_RESET+" │ ")
+                  .append(rStringCard[9][0] + "╔═══════════════════════════╗")
+                  .append(rStringCard[9][1] + "╔═══════════════════════════╗")
+                  .append(rStringCard[9][0] + "╔═══════════════════════════╗")
+                  .append(ANSI_RESET + " │ ")
                   .append("\n")
                   .append("│ ")
-                  .append(     rStringCard[9][0]+"║"+ANSI_RESET)
+                  .append(rStringCard[9][0] + "║" + ANSI_RESET)
                   .append(" ".repeat(27))
-                  .append(     rStringCard[9][0]+"║"+ANSI_RESET);
+                  .append(rStringCard[9][0] + "║" + ANSI_RESET);
 
           for(int x = 1;x<3; x++){
                cards
-                       .append(     rStringCard[9][x]+"║"+ANSI_RESET)
-                       .append(    rStringCard[3][x])
+                       .append(rStringCard[9][x] + "║" + ANSI_RESET)
+                       .append(rStringCard[3][x])
                        .append(" ".repeat(9))
-                       .append(Views.cardToPoint(    rStringCard[1][x],    rStringCard[7][x]))
+                       .append(Views.cardToPoint(rStringCard[1][x],rStringCard[7][x]))
                        .append(" ".repeat(9))
-                       .append(    rStringCard[4][x])
-                       .append(    rStringCard[9][x]+"║");
+                       .append(rStringCard[4][x])
+                       .append(rStringCard[9][x] + "║");
           }
 
-          cards.append(ANSI_RESET+" │ ")
+          cards.append(ANSI_RESET + " │ ")
                   .append("\n")
                   .append("│ ");
           for(int x =0; x<3; x++){
                cards
-                       .append(     rStringCard[9][x]+"║"+ANSI_RESET)
+                       .append(rStringCard[9][x] + "║" + ANSI_RESET)
                        .append(" ".repeat(27))
-                       .append(     rStringCard[9][x]+"║"+ANSI_RESET);
+                       .append(rStringCard[9][x] + "║" + ANSI_RESET);
           }
-          cards.append(ANSI_RESET+" │ ")
+          cards.append(ANSI_RESET + " │ ")
                   .append("\n");
           for(int x =0; x<3; x++){
                cards
-                       .append(     rStringCard[9][x]+"║"+ANSI_RESET)
+                       .append(rStringCard[9][x] + "║" + ANSI_RESET)
                        .append(" ".repeat(6))
-                       .append(     rStringCard[0][x])
+                       .append(rStringCard[0][x])
                        .append(" ".repeat(5))
-                       .append(     rStringCard[9][x]+"║"+ANSI_RESET);
+                       .append(rStringCard[9][x] + "║" + ANSI_RESET);
           }
-          cards.append(ANSI_RESET+" │ ")
+          cards.append(ANSI_RESET + " │ ")
                   .append("\n")
                   .append("│ ");
           for(int x =0; x<3; x++){
                cards
-                       .append(     rStringCard[9][x]+"║"+ANSI_RESET)
+                       .append(rStringCard[9][x] + "║" + ANSI_RESET)
                        .append(" ".repeat(27))
-                       .append(     rStringCard[9][x]+"║"+ANSI_RESET);
+                       .append(rStringCard[9][x] + "║" + ANSI_RESET);
           }
           cards
-                  .append(ANSI_RESET+" │ ")
+                  .append(ANSI_RESET + " │ ")
                   .append("\n")
                   .append("│ ")
                   .append("│ ")
-                  .append(     rStringCard[9][0]+"║"+ANSI_RESET)
+                  .append(rStringCard[9][0] + "║" + ANSI_RESET)
                   .append(" ".repeat(27))
-                  .append(     rStringCard[9][0]+"║"+ANSI_RESET)
-                  .append(     rStringCard[9][1]+"║"+ANSI_RESET);
+                  .append(rStringCard[9][0] + "║" + ANSI_RESET)
+                  .append(rStringCard[9][1] + "║" + ANSI_RESET);
           for(int x = 1;x<3; x++){
                cards
-                       .append(     rStringCard[9][1]+"║"+ANSI_RESET)
-                       .append(    rStringCard[5][x])
+                       .append(rStringCard[9][1] + "║" + ANSI_RESET)
+                       .append(rStringCard[5][x])
                        .append(" ".repeat(9))
-                       .append(    rStringCard[8][x])
+                       .append(rStringCard[8][x])
                        .append(" ".repeat(8))
-                       .append(    rStringCard[6][x])
-                       .append(    rStringCard[9][x]+"║");
-          };
+                       .append(rStringCard[6][x])
+                       .append(rStringCard[9][x] + "║");
+          }
 
 
           cards
-                  .append(ANSI_RESET+" │ ")
+                  .append(ANSI_RESET + " │ ")
                   .append("\n")
                   .append("│ ")
-                  .append(    rStringCard[9][0]+"╚═══════════════════════════╝")
-                  .append(    rStringCard[9][1]+"╚═══════════════════════════╝")
-                  .append(    rStringCard[9][0]+"╚═══════════════════════════╝")
-                  .append(ANSI_RESET+" │ ")
+                  .append(rStringCard[9][0] + "╚═══════════════════════════╝")
+                  .append(rStringCard[9][1] + "╚═══════════════════════════╝")
+                  .append(rStringCard[9][0] + "╚═══════════════════════════╝")
+                  .append(ANSI_RESET + " │ ")
                   .append("\n")
                   .append("└")
                   .append("─".repeat(89))

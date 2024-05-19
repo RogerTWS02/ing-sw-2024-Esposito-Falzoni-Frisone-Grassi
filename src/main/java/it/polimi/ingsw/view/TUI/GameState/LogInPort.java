@@ -16,7 +16,7 @@ public class LogInPort {
                 //.append("\n")
                 //.append("│")
                 //.append(" ".repeat(15))
-                .append("Insert server IP:");
+                .append("Insert server IP: ");
                 //.append(" ".repeat(14))
                 //.append("│")
                 //.append("\n")
