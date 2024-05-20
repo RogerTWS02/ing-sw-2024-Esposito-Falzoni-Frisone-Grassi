@@ -45,7 +45,7 @@ public class Board {
             boolean nullRow = false;
             for (int j = 0; j < boardResources.length; j++) {
                 if (mergedBoard[i][j] != null) {
-                    sCol = i;
+                    sRow = i;
                     nullRow = true;
                     break;
                 }
@@ -62,7 +62,7 @@ public class Board {
             boolean nullRow = false;
             for (int j = 0; j < boardResources.length; j++) {
                 if (mergedBoard[j][i] != null) {
-                    sRow = i;
+                    sCol = i;
                     nullRow = true;
                     break;
                 }
@@ -79,7 +79,7 @@ public class Board {
             boolean nullRow = false;
             for (int j = 0; j < boardResources.length; j++) {
                 if (mergedBoard[i][j] != null) {
-                    eCol = i + 1;
+                    eRow = i + 1;
                     nullRow = true;
                     break;
                 }
@@ -95,7 +95,7 @@ public class Board {
             boolean nullRow = false;
             for (int j = 0; j < boardResources.length; j++) {
                 if (mergedBoard[j][i] != null) {
-                    eRow = i + 1;
+                    eCol = i + 1;
                     nullRow = true;
                     break;
                 }
