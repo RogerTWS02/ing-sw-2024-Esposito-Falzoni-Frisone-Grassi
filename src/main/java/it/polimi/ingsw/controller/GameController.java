@@ -247,18 +247,32 @@ public class GameController {
      * @return the picked PlayableCard object drawn from the viewable cards.
      */
     public PlayableCard drawViewableCard(boolean whichType, int whichCard){
+        //WhichType: true = golden, false = resource
+        //WhichCard: 0 =first visible card, 1 = second visible card, 2 = top of the deck.
         if(whichCard < 0 || whichCard > 2){
             throw new IllegalArgumentException("Invalid card index!");
         }
         PlayableCard card;
         if(whichType){
+            if(whichCard == 2){
                 card = currentGame.getViewableGoldenCards()[whichCard];
                 currentGame.getViewableGoldenCards()[whichCard] = null;
+            }else{
+                card = currentGame.getViewableGoldenCards()[whichCard];
+                currentGame.getViewableGoldenCards()[whichCard] = currentGame.getViewableGoldenCards()[2];
+                currentGame.getViewableGoldenCards()[2] = null;
+            }
         } else {
+            if(whichCard == 2){
                 card = currentGame.getViewableResourceCards()[whichCard];
                 currentGame.getViewableResourceCards()[whichCard] = null;
+            }else{
+                card = currentGame.getViewableResourceCards()[whichCard];
+                currentGame.getViewableResourceCards()[whichCard] = currentGame.getViewableResourceCards()[2];
+                currentGame.getViewableResourceCards()[2] = null;
+            }
         }
-        setNewViewableCard(whichType, whichCard);
+        setNewViewableCard(whichType, 2);
         return card;
     }
 
