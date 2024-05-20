@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.TUI.GameState;
 
 
+import static java.lang.Thread.sleep;
+
 public class StartGame {
 
 
