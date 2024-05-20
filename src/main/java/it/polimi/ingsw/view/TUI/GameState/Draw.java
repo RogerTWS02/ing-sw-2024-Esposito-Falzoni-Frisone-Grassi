@@ -76,7 +76,7 @@ public class Draw implements Views {
                JSONObject JSONCard;
                //create the golden card and set the color
                JSONCard = (JSONObject) goldJSONArray.get(index-1);
-               gStringCard[0][x] = "Golden Card" + "[" + x + "]  ";
+               gStringCard[0][x] = "Golden Card" + "[" + (2-x) + "]";
                gStringCard[9][x] = ANSI_YELLOW;
 
                gStringCard[1][x]=(String) JSONCard.get("points");
@@ -84,18 +84,21 @@ public class Draw implements Views {
                for(int i = 0; i < 4; i++){
                     gStringCard[i+3][x] =Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
                }
-               gStringCard[7][x]= (String) JSONCard.get("rule");
                JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
-               for(int i = 0; i < JSONRequire.size(); i++){
-                    gStringCard[8][x].concat((Views.stringToEmoji((String) JSONRequire.get(i))));
+
+               for (Object o : JSONRequire) {
+
+                    gStringCard[8][x] += (Views.stringToEmoji((String) o));
                }
-               gStringCard[8][x].concat(" ".repeat(5-JSONRequire.size()));
+               int spaces= (21-gStringCard[8][x].length())/2;
+               gStringCard[8][x] = " ".repeat(spaces).concat(gStringCard[8][x]).concat(" ".repeat(spaces));
+               gStringCard[7][x]= (String) JSONCard.get("rule");
                switch (gStringCard[2][x]){
 
-                    case "WOLF" -> gStringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
-                    case "LEAF" -> gStringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
-                    case "MUSHROOM" -> gStringCard[9][x].concat(ANSI_RED_BACKGROUND);
-                    case "BUTTERFLY" -> gStringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
+                    case "WOLF" -> gStringCard[9][x]=gStringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
+                    case "LEAF" -> gStringCard[9][x]=gStringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
+                    case "MUSHROOM" -> gStringCard[9][x]=gStringCard[9][x].concat(ANSI_RED_BACKGROUND);
+                    case "BUTTERFLY" -> gStringCard[9][x]=gStringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
                }
           }
 
@@ -106,7 +109,7 @@ public class Draw implements Views {
                JSONObject JSONCard;
                //create the golden card and set the color
                JSONCard = (JSONObject) goldJSONArray.get(index - 1);
-               rStringCard[0][x] = "Resource Card" + "[" + x + "]";
+               rStringCard[0][x] = "Resource Card" + "[" +(2-x) + "]";
                rStringCard[9][x] = ANSI_WHITE;
 
                rStringCard[1][x] = (String) JSONCard.get("points");
@@ -114,18 +117,21 @@ public class Draw implements Views {
                for(int i = 0; i < 4; i++){
                     rStringCard[i+3][x] = Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
                }
-               rStringCard[7][x] = (String) JSONCard.get("rule");
                JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
-               for(int i = 0; i < JSONRequire.size(); i++){
-                    rStringCard[8][x].concat((Views.stringToEmoji((String) JSONRequire.get(i))));
+
+               for (Object o : JSONRequire) {
+
+                    rStringCard[8][x] += (Views.stringToEmoji((String) o));
                }
-               rStringCard[8][x].concat(" ".repeat(5 - JSONRequire.size()));
+               int spaces= (21-rStringCard[8][x].length())/2;
+               rStringCard[8][x] = " ".repeat(spaces).concat(rStringCard[8][x]).concat(" ".repeat(spaces));
+               rStringCard[7][x]= (String) JSONCard.get("rule");
                switch (rStringCard[2][x]){
 
-                    case "WOLF" -> rStringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
-                    case "LEAF" -> rStringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
-                    case "MUSHROOM" -> rStringCard[9][x].concat(ANSI_RED_BACKGROUND);
-                    case "BUTTERFLY" -> rStringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
+                    case "WOLF" -> rStringCard[9][x]=rStringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
+                    case "LEAF" -> rStringCard[9][x]=rStringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
+                    case "MUSHROOM" -> rStringCard[9][x]=rStringCard[9][x].concat(ANSI_RED_BACKGROUND);
+                    case "BUTTERFLY" -> rStringCard[9][x]=rStringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
                };
           };
 
