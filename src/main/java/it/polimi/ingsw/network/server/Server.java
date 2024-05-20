@@ -184,6 +184,20 @@ public class Server extends UnicastRemoteObject {
                         idPlayerMap.get(message.getSenderID())
                 );
 
+                //notifico tutti i giocatori delle caselle disponibili
+                //mando a tutti gli spazi disponibili per piazzare altre carte
+                idSocketMap.get(message.getSenderID()).sendMessage(
+                        new Message(
+                                REPLY_CHOICES_MADE,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                new Object[]{
+                                        gameControllerMap.get(message.getGameID())
+                                                .showAvailableOnBoard(idPlayerMap.get(message.getSenderID()))
+                                }
+                        )
+                );
+
                 break;
         }
     }
@@ -687,7 +701,7 @@ public class Server extends UnicastRemoteObject {
         int posX = (int) message.getObj()[0];
         int posY = (int) message.getObj()[1];
 
-        String cardID = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posX, posY).getUUID();
+        PlayableCard card = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posX, posY);
 
         if(hasSocket) {
             idSocketMap.get(message.getSenderID()).sendMessage(
@@ -696,7 +710,10 @@ public class Server extends UnicastRemoteObject {
                             REPLY_INFO_CARD,
                             this.serverSocket.getLocalPort(),
                             message.getGameID(),
-                            cardID
+                            new Object[]{
+                                    card.getUUID(),
+                                    card.isFlipped()
+                            }
                     )
             );
         }else{
@@ -704,7 +721,10 @@ public class Server extends UnicastRemoteObject {
                     REPLY_INFO_CARD,
                     message.getSenderID(),
                     message.getGameID(),
-                    cardID
+                    new Object[]{
+                            card.getUUID(),
+                            card.isFlipped()
+                    }
             );
         }
         return null;

@@ -63,19 +63,19 @@ public class PlayerBoard implements Serializable{
         switch (index) {
             case 0:
                 coord[0] = -1;
-                coord[1] = 1;
+                coord[1] = -1;
                 break;
             case 1:
                 coord[0] = 1;
-                coord[1] = 1;
+                coord[1] = -1;
                 break;
             case 2:
                 coord[0] = -1;
-                coord[1] = -1;
+                coord[1] = 1;
                 break;
             case 3:
                 coord[0] = 1;
-                coord[1] = -1;
+                coord[1] = 1;
                 break;
         }
         return coord;
@@ -97,32 +97,35 @@ public class PlayerBoard implements Serializable{
             }
         }
 
-        //If the card isn't a StartingCard, check if the cell is available. If it isn't, make sure it's placed in the center
-        if(!(card instanceof StartingCard)) {
-            if(!grid[x][y].getState().equals(AVAILABLE)) {
-                throw new IllegalArgumentException("Unavailable Position! Try again!\n");
-            }
-        } else {
-            x = 40;
-            y = 40;
-        }
-
         //Place the card
         grid[x][y] = card;
         grid[x][y].setState(State.OCCUPIED);
 
         int coveredCorners = 0;
 
+        //PER DEBUGGING
+        /*
+        if(card instanceof  StartingCard && card.isFlipped()){
+            System.out.println(card.getUUID());
+            for(Corner r: ((StartingCard) card).getBackCardCorners()){
+                System.out.println(r.getCornerResource().isPresent());
+            }
+        }
+        */
+
         //Update the state of the neighbouring cells
         for(int i = 0; i < 4; i++) {
             int[] tempCoord = cornerCoordLookup(i);
             if(grid[x + tempCoord[0]][y + tempCoord[1]] == null) {
                 grid[x + tempCoord[0]][y + tempCoord[1]] = new ResourceCard(new Resource[]{}, new Corner[]{}, 0, null);
+
+                //se l'angolo della carta che sto piazzando non è nullo
                 if(card.getCardCorners()[i] != null) {
                     grid[x + tempCoord[0]][y + tempCoord[1]].setState(AVAILABLE);
                 } else {
                     grid[x + tempCoord[0]][y + tempCoord[1]].setState(UNAVAILABLE);
                 }
+
             } else {
                 grid[x + tempCoord[0]][y + tempCoord[1]].getCardCorners()[Math.abs(i - 3)].setCovered(true);
                 grid[x + tempCoord[0]][y + tempCoord[1]].setState(State.OCCUPIED);

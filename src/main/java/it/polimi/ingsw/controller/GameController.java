@@ -334,38 +334,29 @@ public class GameController {
      * @throws IllegalArgumentException in case the position is invalid.
      */
     public void placeCard(int i, int j, PlayableCard card, Player player) throws SecurityException {
-        try {
-            if (i < 0 || i > 80 || j < 0 || j > 80) {
-                throw new IllegalArgumentException("Invalid position!");
-            }
-            if (card instanceof StartingCard) {
-                player.getPlayerBoard().placeCard(card, 40, 40);
-            } else {
-                if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
-                    switch (card.getRule().toString()) {
-                        case "NONE":
-                            player.getPlayerBoard().placeCard(card, i, j);
-                            player.addScore(card.getPoints());
-                        case "CORNERS":
-                            int covered = player.getPlayerBoard().placeCard(card, i, j);
-                            player.addScore(covered * card.getPoints());
-                        default:
-                            String s = card.getRule().toString();
-                            int occurency = 1;
-                            for (Resource element : player.getPlayerBoard().getResources()) {
-                                if (element == Resource.valueOf(s)) {
-                                    occurency++;
-                                }
+        if (card instanceof StartingCard) {
+            player.getPlayerBoard().placeCard(card, 40, 40);
+        } else if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
+                switch (card.getRule().toString()) {
+                    case "NONE":
+                        player.getPlayerBoard().placeCard(card, i, j);
+                        player.addScore(card.getPoints());
+                    case "CORNERS":
+                        int covered = player.getPlayerBoard().placeCard(card, i, j);
+                        player.addScore(covered * card.getPoints());
+                    default:
+                        String s = card.getRule().toString();
+                        int occurency = 1;
+                        for (Resource element : player.getPlayerBoard().getResources()) {
+                            if (element == Resource.valueOf(s)) {
+                                occurency++;
                             }
-                            player.getPlayerBoard().placeCard(card, i, j);
-                            player.addScore(occurency * card.getPoints());
-                    }
+                        }
+                        player.getPlayerBoard().placeCard(card, i, j);
+                        player.addScore(occurency * card.getPoints());
                 }
-            }
-        }
-        catch (IllegalArgumentException e){
-            System.err.println(e.getMessage());
-            throw new IllegalArgumentException(e.getMessage());
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 
@@ -377,13 +368,10 @@ public class GameController {
      */
     public List<int[]> showAvailableOnBoard(Player player){
         List<int[]> availablePosition = new ArrayList<>();
-        int[] possiblePosition = new int[2];
         for (int i = 0; i <= 80; i++) {
             for (int j = 0; j <= 80; j++) {
                 if (player.getPlayerBoard().getState(i,j) == State.AVAILABLE) {
-                    possiblePosition[0] = i;
-                    possiblePosition[1] = j;
-                    availablePosition.add(possiblePosition);
+                    availablePosition.add(new int[]{i, j});
                 }
             }
         }

@@ -1,7 +1,9 @@
 package it.polimi.ingsw.view.TUI;
 
+import it.polimi.ingsw.model.Resource;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
+import it.polimi.ingsw.view.TUI.GameElements.Views.Board;
 import it.polimi.ingsw.view.TUI.GameElements.Views.HandCards;
 import it.polimi.ingsw.view.TUI.GameElements.Views.Objective;
 import it.polimi.ingsw.view.TUI.GameState.InfoCard;
@@ -27,7 +29,10 @@ public class TUI extends Thread{
     HandCards handcards = new HandCards();
     Objective goals = new Objective();
     InfoCard infoC = new InfoCard();
+    Board board = new Board();
     String startingPlayer;
+    List<int[]> available;
+    Resource[][] onBoard;
 
     public TUI() throws IOException, ParseException {
     }
@@ -79,10 +84,13 @@ public class TUI extends Thread{
                 //aggiungo la nuova carta
                 currentHandUUID.add(newCardUUID);
 
-                //con l'UUID aggiorno lo stato dello schermo della console
                 try {
-                    handcards.showHand(currentHandUUID.toArray(new String[0]));
+                    //con l'UUID aggiorno lo stato dello schermo della console
                     goals.showObjective(allGoalsUUID.toArray(new String[0]));
+                    handcards.showHand(currentHandUUID.toArray(new String[0]));
+
+                    //stampo la playerBoard
+                    //board.drawBoard(onBoard, available);
 
                 } catch (IOException | ParseException e) {
                     throw new RuntimeException(e);
@@ -98,9 +106,10 @@ public class TUI extends Thread{
 
             case REPLY_INFO_CARD:
                 String infoUUID = (String) message.getObj()[0];
+                Boolean isFlipped = (Boolean) message.getObj()[1];
 
                 //stampo l'info della carta
-                infoC.showInfoCard(infoUUID, null);
+                infoC.showInfoCard(infoUUID, isFlipped);
 
                 break;
 
@@ -113,6 +122,22 @@ public class TUI extends Thread{
 
             case REPLY_STARTING_PLAYER:
                 startingPlayer = (String) message.getObj()[0];
+                break;
+
+            case REPLY_CHOICES_MADE:
+
+                //spazi disponibili
+                available = (List<int[]>) message.getObj()[0];
+
+                //PER DEBUGGING
+                //System.out.println("AAAAAA: "+available[41][41]);
+
+                //inizializzo la visualizzazione della board
+                onBoard = new Resource[80][80];
+
+                //TODO: IMPOSTARE LA RISORSA CHE INDICA LA STARTING CARD!!!
+                onBoard[40][40] = Resource.WOLF;
+
                 break;
         }
     }
@@ -251,18 +276,20 @@ public class TUI extends Thread{
             throw new RuntimeException(e);
         }
 
-        //stampo la mano e gli obbiettivi comuni
+        System.out.println("Starting player is: " + startingPlayer);
+
+        //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
         try {
-            handcards.showHand(currentHandUUID.toArray(new String[0]));
+            //stampo la mano e gli obbiettivi comuni
             goals.showObjective(allGoalsUUID.toArray(new String[0]));
+            handcards.showHand(currentHandUUID.toArray(new String[0]));
+
+            //stampo la playerBoard
+            board.drawBoard(onBoard, available);
 
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
-
-        System.out.println("Starting player is: " + startingPlayer);
-
-        //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
 
         //vera fase di gioco
         while(true){
@@ -275,10 +302,10 @@ public class TUI extends Thread{
             switch(command[0]){
                 case "/help":
                     message = """
-                            Commands List:              Template: /COMMAND Param1 Param 2\s
+                            Commands List:              (Template: /COMMAND Param1 Param 2)\s
                             
                             /infoCard posX posY - Returns infos about a card on the player's board
-                            /placeCard posX posY - Tries to place a card on the player's board
+                            /placeCard numHand posX posY - Tries to place a handCard on the player's board
                             /drawCardFromDeck Golden/Resource - Draws a card from the specified type deck
                             /drawCardFromViewable Golden/Resource 1/2 - Draws a card from the viewable ones according to the specified index
                             /openChat - Opens the chat tab, where you can read and send messages to other players
@@ -321,15 +348,16 @@ public class TUI extends Thread{
                     break;
 
                 case "/placeCard":
-                    if(command.length < 3) {
+                    if(command.length < 4) {
                         System.out.println("Command not valid, try '/help' to view syntax");
                         break;
                     }
 
-                    int positionX = 0, positionY = 0;
+                    int numHand = 0, positionX = 0, positionY = 0;
                     try {
-                        positionX = Integer.parseInt(command[1]);
-                        positionY = Integer.parseInt(command[2]);
+                        numHand = Integer.parseInt(command[1]);
+                        positionX = Integer.parseInt(command[2]);
+                        positionY = Integer.parseInt(command[3]);
 
                     }catch(NumberFormatException e){
                         System.out.println(e);
@@ -342,7 +370,11 @@ public class TUI extends Thread{
                                     cli.getSocketPort(),
                                     cli.getGameID(),
                                     //Manca la carta da piazzare oltre alla posizione dove piazzarla
-                                    new Object[]{positionX, positionY})
+                                    new Object[]{
+                                            currentHandUUID.get(numHand),
+                                            positionX,
+                                            positionY
+                                    })
                     );
                     try {
                         Thread.sleep(1000);

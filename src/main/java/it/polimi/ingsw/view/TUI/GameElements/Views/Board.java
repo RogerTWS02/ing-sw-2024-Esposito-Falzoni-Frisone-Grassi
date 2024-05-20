@@ -240,50 +240,52 @@ public class Board {
         }
 
         System.out.println(sb);
-}
+    }
 
-public Object[][] mergeBoards(Resource[][] boardResources, List<int[]> availablePositions) {
+    public Object[][] mergeBoards(Resource[][] boardResources, List<int[]> availablePositions) {
 
-    Object[][] mergedBoard = new Object[boardResources.length][boardResources.length];
+        Object[][] mergedBoard = new Object[boardResources.length][boardResources.length];
 
-    for (int i = 0; i < boardResources.length; i++) {
-        for (int j = 0; j < boardResources.length; j++) {
-            if (boardResources[i][j] != null) {
+        for (int i = 0; i < boardResources.length; i++) {
+            for (int j = 0; j < boardResources.length; j++) {
+                if (boardResources[i][j] != null) {
 
-                mergedBoard[i][j] = boardResources[i][j].toString();
+                    mergedBoard[i][j] = boardResources[i][j].toString();
 
-            } else {
-                mergedBoard[i][j] = null;
+                } else {
+                    mergedBoard[i][j] = null;
+                }
             }
         }
+        for (int[] availablePosition : availablePositions) {
+            mergedBoard[availablePosition[0]][availablePosition[1]] = "available";
+        }
+        return mergedBoard;
     }
-    for (int[] availablePosition : availablePositions) {
-        mergedBoard[availablePosition[0]][availablePosition[1]] = "available";
-    }
-    return mergedBoard;
-}
 
-public static void main(String[] args) {
 
-    //Test the drawBoard method
-    Board board = new Board();
-    Resource[][] boardResources = new Resource[20][20];
-    List<int[]> availablePositions = new ArrayList<>();
+    /*
+    public static void main(String[] args) {
 
-    for (int i = 0; i < 20; i++) {
-        for (int j = 0; j < 20; j++) {
-            if (i == 10 && j % 2 == 0) {
-                boardResources[i][j] = Resource.WOLF;
-            } else if (i == 10) {
-                boardResources[i][j] = null;
-            } else if ((i == 9 || i == 11) && j % 2 != 0) {
-                availablePositions.add(new int[]{i, j});
+        //Test the drawBoard method
+        Board board = new Board();
+        Resource[][] boardResources = new Resource[20][20];
+        List<int[]> availablePositions = new ArrayList<>();
+
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                if (i == 10 && j % 2 == 0) {
+                    boardResources[i][j] = Resource.WOLF;
+                } else if (i == 10) {
+                    boardResources[i][j] = null;
+                } else if ((i == 9 || i == 11) && j % 2 != 0) {
+                    availablePositions.add(new int[]{i, j});
+                }
             }
         }
+        board.drawBoard(boardResources, availablePositions);
     }
+    */
 
-    board.drawBoard(boardResources, availablePositions);
 }
-
-            }
 

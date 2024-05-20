@@ -36,5 +36,5 @@ public enum MessageType {
     REQUEST_PLAYER_MOVE,
     REPLY_UPDATED_SCORE,
 
-    WINNER,
+    WINNER, REPLY_CHOICES_MADE,
 }
