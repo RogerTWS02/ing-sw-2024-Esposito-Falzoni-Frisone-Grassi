@@ -208,7 +208,7 @@ public class Server extends UnicastRemoteObject {
      */
 
     public void sendWinnerMessage(int gameID) throws IOException {
-        Player winner = gameControllerMap.get(gameID).getCurrentGame().getWinner();
+        Player[] winners = gameControllerMap.get(gameID).getCurrentGame().getWinner();
 
         //Send a message to all the players of the same game with the winner
         for(int id: gameControllerMap.get(gameID)
@@ -222,7 +222,13 @@ public class Server extends UnicastRemoteObject {
                             REPLY_END_GAME,
                             this.serverSocket.getLocalPort(),
                             gameID,
-                            winner.getNickname()
+                            //The winners might be multiple because there could be a draw,
+                            //if winners[1] is null it means that there is only one winner
+                            new Object[] {
+                                    Stream.of(winners)
+                                            .map(Player::getNickname)
+                                            .toList()
+                            }
                     )
             );
         }

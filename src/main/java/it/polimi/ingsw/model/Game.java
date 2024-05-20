@@ -1,8 +1,7 @@
 package it.polimi.ingsw.model;
 
 import java.io.*;
-import java.util.Random;
-import java.util.ArrayList;
+import java.util.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -242,14 +241,51 @@ public class Game implements Serializable{
      *
      * @return The player who won the game.
      */
-    public Player getWinner(){
-        Player winner = players.getFirst();
+    public Player[] getWinner(){
+        Player[] winners = new Player[players.size()];
+        winners[0] = players.getFirst();
         for(Player p : players){
-            if(p.getScore() > winner.getScore()){
-                winner = p;
+            if(p.getScore() > winners[0].getScore()){
+                winners[0] = p;
             }
         }
-        return winner;
+        boolean draw = false;
+        Player[] drawPlayers = new Player[players.size()];
+        int i = 1;
+        drawPlayers[0] = winners[0];
+
+        for(Player p : players){
+            if(p.getScore() == winners[0].getScore() && p != winners[0]){
+                drawPlayers[i] = p;
+                i++;
+                draw = true;
+            }
+        }
+
+        Map<Player, Integer> objectivesReached = new HashMap<>();
+        if(draw){
+            for (Player p : drawPlayers){
+                if(p != null){
+                    objectivesReached.put(p, 0);
+                    for (GoalCard gc: getCommonGoalCards()) {
+                        if (gc != null) {
+                            objectivesReached.put(p, objectivesReached.get(p) + gc.checkGoal(p.getPlayerBoard()) / gc.getPoints());
+                        }
+                    }
+                    objectivesReached.put(p, objectivesReached.get(p) + p.getSecretGoalCard().checkGoal(p.getPlayerBoard())/p.getSecretGoalCard().getPoints());
+                }
+            }
+        }
+        int maxObjectives = Collections.max(objectivesReached.values());
+        i = 0;
+        for (Map.Entry<Player, Integer> entry : objectivesReached.entrySet()) {
+            if (entry.getValue() == maxObjectives) {
+                winners[i] = entry.getKey();
+                i++;
+            }
+        }
+
+        return winners;
     }
 
     /**
