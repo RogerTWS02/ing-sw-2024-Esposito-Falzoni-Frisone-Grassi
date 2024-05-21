@@ -32,7 +32,7 @@ public class InfoCard  implements Views{
 
     // colors used in the TUI
     public static final String ANSI_RED_BACKGROUND = "\u001B[48;5;88m";
-    public static final String ANSI_BRIGHT_RED_BACKGROUND = "\u001B[48;5;160m";
+    public static final String ANSI_DARK_YELLOW = "\u001B[38;5;214m";
     public static final String ANSI_GREEN_BACKGROUND = "\u001B[48;5;22m";
     public static final String ANSI_BLUE_BACKGROUND = "\u001B[48;5;26m";
     public static final String ANSI_PURPLE_BACKGROUND = "\u001B[48;5;91m";
@@ -85,11 +85,11 @@ public class InfoCard  implements Views{
             sideColors[1]=ANSI_GRAY_BACKGROUND;
         } else if(side){
             sideColors[0]="";
-            sideColors[1]=ANSI_BRIGHT_RED_BACKGROUND;
+            sideColors[1]=ANSI_DARK_YELLOW;
 
         }
         else{
-            sideColors[0]=ANSI_BRIGHT_RED_BACKGROUND;
+            sideColors[0]=ANSI_DARK_YELLOW;
             sideColors[1]="";
         }
 
@@ -202,7 +202,7 @@ public class InfoCard  implements Views{
             printedCard
                 .append(stringCard[9] + "╔══════════════════════════════════╗╔══════════════════════════════════╗"+ ANSI_RESET+"\n")
                 .append( ANSI_RESET)
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(stringCard[3])
                 .append(" ".repeat(12))
                 .append(Views.cardToPoint(stringCard[1], stringCard[7]))
@@ -210,37 +210,37 @@ public class InfoCard  implements Views{
                 .append(stringCard[4])
                 .append(" ")
                 .append(stringCard[9] + "║"+ ANSI_RESET)
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(stringCard[10])
                 .append(" ".repeat(28))
                 .append(stringCard[11])
                 .append(" ")
                 .append(stringCard[9] + "║"+ ANSI_RESET+"\n")
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(" ".repeat(33))
                 .append(stringCard[9] + "║"+ ANSI_RESET)
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(" ".repeat(33))
                 .append(stringCard[9] + "║"+ ANSI_RESET+"\n")
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(" ".repeat(33))
                 .append(stringCard[9] + "║"+ ANSI_RESET)
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(stringCard[2])
                 .append(stringCard[9] + "║"+ ANSI_RESET+"\n")
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(" ".repeat(33))
                 .append(stringCard[9] + "║"+ ANSI_RESET)
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(" ".repeat(33))
                 .append(stringCard[9] + "║"+ ANSI_RESET+"\n")
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(stringCard[5])
                 .append(stringCard[8])
                 .append(stringCard[6])
                 .append(" ")
                 .append(stringCard[9] + "║"+ ANSI_RESET)
-                .append(stringCard[9] + "║ " + ANSI_RESET)
+                .append(stringCard[9] + "║" + ANSI_RESET+" ")
                 .append(stringCard[12])
                 .append(" ".repeat(28))
                 .append(stringCard[13])
