@@ -80,7 +80,7 @@ public class InfoCard  implements Views{
 
     public void showInfoCard(String uuid, Boolean side) {
         String[] sideColors= new String[2];
-        if(side==null){
+        if(side == null){
             sideColors[0]=ANSI_GRAY_BACKGROUND;
             sideColors[1]=ANSI_GRAY_BACKGROUND;
         } else if(side){

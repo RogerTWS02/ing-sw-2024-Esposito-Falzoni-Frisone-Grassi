@@ -193,6 +193,10 @@ public class Game implements Serializable{
         return currentPlayer;
     }
 
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
     /**
      * Returns the starting player of the game.
      *

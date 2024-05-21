@@ -559,4 +559,19 @@ public class GameController {
             currentGame.gameOver();
             }).start();
     }
+
+    public int advancePlayerTurn(){
+        //prendo l'indice del giocatore corrente
+        int index = currentGame.getPlayers().indexOf(currentGame.getCurrentPlayer());
+
+        //vado al giocatore successivo
+        currentGame.setCurrentPlayer(
+                currentGame.getPlayers().get(
+                //il modulo sul numero di giocatori fa loop back
+                (index + 1) % currentGame.getPlayers().size()
+                )
+        );
+
+        return currentGame.getCurrentPlayer().clientPort;
+    }
 }

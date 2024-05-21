@@ -417,7 +417,11 @@ public class Server extends UnicastRemoteObject {
                                                     //mando a tutti la starting card e le secret goal cards da scegliere
                                                     Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                             .cardToChoose(idPlayerMap.get(pID)))
-                                                            .toList()
+                                                            .toList(),
+
+                                                    //inizializzo per tutti il booleano che gestisce il loro turno
+                                                    gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame()
+                                                            .getCurrentPlayer().clientPort == message.getSenderID()
                                                 }
                                         )
                                 );
@@ -601,12 +605,38 @@ public class Server extends UnicastRemoteObject {
             return null;
         }
 
+        //estraggo una carta
         PlayableCard replyCard = gameControllerMap
                 .get(message.getGameID())
                 .drawViewableCard((Boolean) params[0], (Integer) params[1]);
 
-        if(hasSocket) {
+        //la metto nella mano del giocatore
+        for(int z = 0; z < 3; z++){
+            if(idPlayerMap.get(message.getSenderID()).getHand().get(z) == null){
+                idPlayerMap.get(message.getSenderID()).setHand(replyCard, z);
+                break;
+            }
+        }
 
+        //avanzo il turno al prossimo giocatore
+        int currPID = gameControllerMap
+                .get(message.getGameID()).advancePlayerTurn();
+
+        //lo notifico dicendogli che è il suo turno
+        idSocketMap.get(currPID).sendMessage(
+                new Message(
+                        REPLY_YOUR_TURN,
+                        this.serverSocket.getLocalPort(),
+                        message.getGameID(),
+                        new Object[]{
+                                "Now it's your turn to play!"
+                        }
+                )
+        );
+
+
+        if(hasSocket) {
+            //mando al client la nuova carta pescata
             idSocketMap.get(message.getSenderID()).sendMessage(
                     new Message(
                             REPLY_HAND_UPDATE,
@@ -659,6 +689,10 @@ public class Server extends UnicastRemoteObject {
 
         //TODO: una volta piazzata la tolgo dalla mano(???) oppure sovrascrivo con i comandi del client?
         //TODO: in questo caso sposterei il controllo dell'indice direttamente al client (più facile)
+
+        //una volta piazzata la carta quello spazio rimane vuoto nella mano
+        idPlayerMap.get(message.getSenderID()).setHand(null, index);
+
 
         //imposto il lato corretto
         card.setFlipped((boolean)message.getObj()[1]);
@@ -748,7 +782,8 @@ public class Server extends UnicastRemoteObject {
         int posX = (int) message.getObj()[0];
         int posY = (int) message.getObj()[1];
 
-        PlayableCard card = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posY, posX);
+        PlayableCard card = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posX, posY);
+        System.out.println("INFO ON CARD: "+card.getUUID());
 
         if(hasSocket) {
             idSocketMap.get(message.getSenderID()).sendMessage(

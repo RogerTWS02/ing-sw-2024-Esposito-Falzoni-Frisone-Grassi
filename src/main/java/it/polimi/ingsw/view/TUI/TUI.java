@@ -37,6 +37,7 @@ public class TUI extends Thread{
     String startingPlayer;
     List<int[]> available;
     Resource[][] onBoard;
+    boolean myTurn;
     TopRow topRow = new TopRow();
     List<Integer> scores;
     List<String> nicknames;
@@ -44,12 +45,11 @@ public class TUI extends Thread{
     List<Resource> playerResources;
     int numHand = 0, positionX = 0, positionY = 0;
 
-
     public TUI() throws IOException, ParseException {
     }
 
     //Faccio l'aggiornamento della tui in base ai messaggi ricevuti
-    public void onMessageReceived(Message message) {
+    public void onMessageReceived(Message message) throws IOException, ParseException {
         //System.out.println(message.getMessageType() + " sent by " + message.getSenderID());
         String srvRep;
         switch (message.getMessageType()) {
@@ -61,10 +61,7 @@ public class TUI extends Thread{
             case REPLY_LOBBY_INFO:
                 cli.setLobbyName((String) message.getObj()[0]);
                 cli.setLobbySize((Integer) message.getObj()[1]);
-                /*if(message.getObj().length == 3){
-                    srvRep = (String) message.getObj()[2];
-                    System.out.println(srvRep);
-                }*/
+
                 break;
 
             //quando si raggiunge il numero prefissato di persone nella lobby
@@ -81,6 +78,9 @@ public class TUI extends Thread{
 
                 //carte da scegliere
                 cardToChooseUUID = (List<String>) message.getObj()[2];
+
+                //booleano che controlla il turno
+                myTurn = (boolean) message.getObj()[3];
 
                 //vado alla scena di gioco impostando i parametri ricevuti
                 //ovvero le carte della mano e le common goal cards
@@ -100,17 +100,7 @@ public class TUI extends Thread{
                     }
                 }
 
-                try {
-                    //con l'UUID aggiorno lo stato dello schermo della console
-                    goals.showObjective(allGoalsUUID.toArray(new String[0]));
-                    handcards.showHand(currentHandUUID.toArray(new String[0]));
-
-                    //stampo la playerBoard
-                    board.drawBoard(onBoard, available);
-
-                } catch (IOException | ParseException e) {
-                    throw new RuntimeException(e);
-                }
+                printFullScreen();
 
                 break;
 
@@ -123,13 +113,13 @@ public class TUI extends Thread{
                 //aggiorno la visualizzazione
                 onBoard[positionY][positionX] = (Resource) message.getObj()[1];
 
-                scores = (List<Integer>) message.getObj()[2];
+                //scores = (List<Integer>) message.getObj()[2];
 
-                nicknames = (List<String>) message.getObj()[3];
+                //nicknames = (List<String>) message.getObj()[3];
 
-                currentPlayerNickame = (String) message.getObj()[4];
+                //currentPlayerNickame = (String) message.getObj()[4];
 
-                playerResources = (List<Resource>) message.getObj()[5];
+                //playerResources = (List<Resource>) message.getObj()[5];
 
                 try {
                     //con l'UUID aggiorno lo stato dello schermo della console
@@ -254,7 +244,7 @@ public class TUI extends Thread{
         while(cli.getGameID() == -1){
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -348,7 +338,7 @@ public class TUI extends Thread{
             System.out.println("Waiting for other players to join the game...");
         //Wait for the lobby to be full
         waitForFullLobby();
-        //Choose secret goal card and how to place the starting card
+        //Choose secret goal card and starting card
         preliminaryActions();
         System.out.println("Starting player is: " + startingPlayer);
 
@@ -361,8 +351,10 @@ public class TUI extends Thread{
             throw new RuntimeException(e);
         }
 
-        //vera fase di gioco
+        //VERA FASE DI GIOCO
         while(true){
+
+            //TODO: Usando myTurn gestire il gameFlow del giocatore
 
             //chiedo all'utente di inserire un comando
             System.out.print("Type '/help' to view the commands list: ");
