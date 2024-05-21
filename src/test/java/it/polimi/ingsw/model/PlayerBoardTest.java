@@ -52,6 +52,11 @@ public class PlayerBoardTest {
     }
 
     @Test
+    public void placeCard_test_daje() {
+
+    }
+
+    @Test
     public void placeCard_placein4040_returncorrectcard(){
         board.placeCard(card, 40,40);
 

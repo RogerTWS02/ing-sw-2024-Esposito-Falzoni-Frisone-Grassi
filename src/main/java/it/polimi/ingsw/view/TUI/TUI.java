@@ -178,12 +178,19 @@ public class TUI extends Thread{
             //faccio vedere il logo
             startGame.ShowStartGame();
 
+            do {
+                loginUsername.showLogInUsername();
+                command = scanner.nextLine().split(" ");
+                if(command[0].length() > 16)
+                    System.out.println("The nickname must be less than 16 characters!");
+            } while(command[0].length() > 16);
+
             //inizialmente mando i messaggi per far avviare il gioco
             //System.out.print("Insert a valid Nickname to start a game:");
-            loginUsername.showLogInUsername();
+            //loginUsername.showLogInUsername();
 
             //metodo bloccante che aspetta l'ingresso dell'utente
-            command = scanner.nextLine().split(" ");
+            //command = scanner.nextLine().split(" ");
             cli.sendMessage(
                     new Message(
                             REQUEST_LOGIN,
@@ -473,7 +480,7 @@ public class TUI extends Thread{
 
                 case "/drawCardFromDeck":
                     if(checkFull()) {
-                        System.out.println("Command not valid, first you need to place a card");
+                        System.out.println("Command not valid, you need to place a card first");
                         break;
                     }
                     if(command.length < 2) {
