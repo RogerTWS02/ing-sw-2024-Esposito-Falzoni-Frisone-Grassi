@@ -89,6 +89,17 @@ public class GameControllerTest {
         //TODO: check if we are checking angles before placing the card
     }
 
+    @Test
+    public void placeCard_test_5() {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
+        PlayableCard card;
+        gameController.placeCard(40, 40, startingCard, game.getPlayers().get(0));
+        card = gameController.drawPlayableFromDeck(game.resourceDeck);
+        gameController.placeCard(39, 41, card, game.getPlayers().get(0));
+    }
+
 
     @Test
     public void showAvailableOnBoard_test() {
