@@ -648,10 +648,20 @@ public class Server extends UnicastRemoteObject {
         }
 
         //Where the player wants to place the card
-        int positionx = (int) message.getObj()[0];
-        int positiony = (int) message.getObj()[1];
+        int positionx = (int) message.getObj()[2];
+        int positiony = (int) message.getObj()[3];
+
         //Card to place
-        PlayableCard card = (PlayableCard) message.getObj()[2];
+        int index = (int) message.getObj()[0];
+        PlayableCard card = idPlayerMap.get(message.getSenderID())
+                .getHand().get(index);
+
+        //TODO: una volta piazzata la tolgo dalla mano(???) oppure sovrascrivo con i comandi del client?
+        //TODO: in questo caso sposterei il controllo dell'indice direttamente al client (più facile)
+
+        //imposto il lato corretto
+        card.setFlipped((boolean)message.getObj()[1]);
+
 
         try {
             gameControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
@@ -685,7 +695,15 @@ public class Server extends UnicastRemoteObject {
                             REPLY_UPDATED_SCORE,
                             this.serverSocket.getLocalPort(),
                             message.getGameID(),
-                            idPlayerMap.get(message.getSenderID()).getScore()
+                            new Object[]{
+                                    //restituisco i nuovi posti disponibili
+                                    gameControllerMap.get(message.getGameID())
+                                            .showAvailableOnBoard(idPlayerMap.get(message.getSenderID())),
+                                    //restituisco la risorsa permanente della carta
+                                    card.getPermResource()[0],
+                                    //restituisco il punteggio
+                                    idPlayerMap.get(message.getSenderID()).getScore()
+                            }
                     )
             );
         }

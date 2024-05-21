@@ -12,6 +12,7 @@ import it.polimi.ingsw.view.TUI.GameState.StartGame;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -21,7 +22,7 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 public class TUI extends Thread{
     public static Client cli;
     private static List<String> cardToChooseUUID;
-    private List<String> currentHandUUID;
+    private ArrayList<String> currentHandUUID;
     private List<String> allGoalsUUID;
     Scanner scanner = new Scanner(System.in);
     StartGame startGame = new StartGame();
@@ -33,6 +34,7 @@ public class TUI extends Thread{
     String startingPlayer;
     List<int[]> available;
     Resource[][] onBoard;
+    int numHand = 0, positionX = 0, positionY = 0;
 
     public TUI() throws IOException, ParseException {
     }
@@ -63,7 +65,7 @@ public class TUI extends Thread{
                 cli.setGameID(message.getGameID());
 
                 //mano del giocatore
-                currentHandUUID = (List<String>) message.getObj()[0];
+                currentHandUUID = new ArrayList<>((List<String>) message.getObj()[0]);
 
                 //obbiettivi comuni
                 allGoalsUUID = (List<String>) message.getObj()[1];
@@ -82,7 +84,12 @@ public class TUI extends Thread{
                 String newCardUUID = (String) message.getObj()[0];
 
                 //aggiungo la nuova carta
-                currentHandUUID.add(newCardUUID);
+                for(int i = 0; i < 3; i++){
+                    if(currentHandUUID.get(i).isEmpty()){
+                        currentHandUUID.add(i, newCardUUID);
+                        break;
+                    }
+                }
 
                 try {
                     //con l'UUID aggiorno lo stato dello schermo della console
@@ -90,7 +97,7 @@ public class TUI extends Thread{
                     handcards.showHand(currentHandUUID.toArray(new String[0]));
 
                     //stampo la playerBoard
-                    //board.drawBoard(onBoard, available);
+                    board.drawBoard(onBoard, available);
 
                 } catch (IOException | ParseException e) {
                     throw new RuntimeException(e);
@@ -98,10 +105,29 @@ public class TUI extends Thread{
 
                 break;
 
+            //viene chiamato dopo che un giocatore piazza una carta
             case REPLY_UPDATED_SCORE:
-                int newScore = (Integer) message.getObj()[0];
+
+                //spazi disponibili
+                available = (List<int[]>) message.getObj()[0];
+
+                //aggiorno la visualizzazione
+                onBoard[positionY][positionX] = (Resource) message.getObj()[1];
+
+                try {
+                    //con l'UUID aggiorno lo stato dello schermo della console
+                    goals.showObjective(allGoalsUUID.toArray(new String[0]));
+                    handcards.showHand(currentHandUUID.toArray(new String[0]));
+
+                    //stampo la playerBoard
+                    board.drawBoard(onBoard, available);
+
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException(e);
+                }
 
                 //aggiorno l'interfaccia tui che gestisce il punteggio
+                int addScore = (Integer) message.getObj()[2];
                 break;
 
             case REPLY_INFO_CARD:
@@ -305,7 +331,7 @@ public class TUI extends Thread{
                             Commands List:              (Template: /COMMAND Param1 Param 2)\s
                             
                             /infoCard posX posY - Returns infos about a card on the player's board
-                            /placeCard numHand posX posY - Tries to place a handCard on the player's board
+                            /placeCard numHand front/back posX posY - Tries to place a handCard on the player's board
                             /drawCardFromDeck Golden/Resource - Draws a card from the specified type deck
                             /drawCardFromViewable Golden/Resource 1/2 - Draws a card from the viewable ones according to the specified index
                             /openChat - Opens the chat tab, where you can read and send messages to other players
@@ -348,16 +374,15 @@ public class TUI extends Thread{
                     break;
 
                 case "/placeCard":
-                    if(command.length < 4) {
+                    if(command.length < 5) {
                         System.out.println("Command not valid, try '/help' to view syntax");
                         break;
                     }
 
-                    int numHand = 0, positionX = 0, positionY = 0;
                     try {
                         numHand = Integer.parseInt(command[1]);
-                        positionX = Integer.parseInt(command[2]);
-                        positionY = Integer.parseInt(command[3]);
+                        positionX = Integer.parseInt(command[3]);
+                        positionY = Integer.parseInt(command[4]);
 
                     }catch(NumberFormatException e){
                         System.out.println(e);
@@ -366,6 +391,12 @@ public class TUI extends Thread{
 
                     if(numHand < 1 || numHand > 3){
                         System.out.println("IndexOutOfBound: the hand is numbered from 1 to 3");
+                        break;
+                    }
+
+                    String sidE = command[2].toLowerCase();
+                    if(!sidE.equals("back") && !sidE.equals("front")){
+                        System.out.println("Command not valid, try '/help' to view syntax");
                         break;
                     }
 
@@ -379,7 +410,8 @@ public class TUI extends Thread{
                                     cli.getGameID(),
                                     //Manca la carta da piazzare oltre alla posizione dove piazzarla
                                     new Object[]{
-                                            currentHandUUID.get(numHand),
+                                            numHand,
+                                            sidE.equals("back"),
                                             positionX,
                                             positionY
                                     })

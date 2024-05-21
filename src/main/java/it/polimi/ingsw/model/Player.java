@@ -153,9 +153,9 @@ public class Player implements Serializable {
      *
      * @param handCard The player's card to add to the player's hand.
      */
-    public void setHand(PlayableCard handCard) {
-        hand.add(handCard);
-    }
+    public void setHand(PlayableCard handCard) { hand.add(handCard);}
+
+    public void setHand(PlayableCard handCard, int i) { hand.add(i, handCard);}
 
     public Object[] getCardToChoose() {
         return cardToChoose;

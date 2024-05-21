@@ -98,27 +98,27 @@ public class PlayerBoard implements Serializable{
             }
         }
 
+        //NOTA BENE: LA PRIMA SONO LE Y, LA SECONDA SONO LE X
+        //MA LA NOTAZIONE SEGUENTE E' INVERSA!!!!
+        int temp = x;
+        x = y;
+        y = temp;
+
         //Place the card
         grid[x][y] = card;
         grid[x][y].setState(State.OCCUPIED);
 
         int coveredCorners = 0;
 
-        //PER DEBUGGING
-        /*
-        if(card instanceof  StartingCard && card.isFlipped()){
-            System.out.println(card.getUUID());
-            for(Corner r: ((StartingCard) card).getBackCardCorners()){
-                System.out.println(r.getCornerResource().isPresent());
-            }
-        }
-        */
-
         //Update the state of the neighbouring cells
         for(int i = 0; i < 4; i++) {
             int[] tempCoord = cornerCoordLookup(i);
             if(grid[x + tempCoord[0]][y + tempCoord[1]] == null) {
-                grid[x + tempCoord[0]][y + tempCoord[1]] = new ResourceCard(new Resource[]{}, new Corner[]{}, 0, null);
+                //PER DEBUGGING
+                System.out.println("CREO NUOVO: "+(y + tempCoord[1]+" "+(x + tempCoord[0])+" at index: "+i));
+
+                grid[x + tempCoord[0]][y + tempCoord[1]] =
+                        new ResourceCard(new Resource[]{}, new Corner[4], 0, "PLACEHOLDER");
 
                 //se l'angolo della carta che sto piazzando non è nullo
                 if(card.getCardCorners()[i] != null) {
@@ -128,6 +128,9 @@ public class PlayerBoard implements Serializable{
                 }
 
             } else {
+                //PER DEBUGGING
+                System.out.println(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID()+": "+(y + tempCoord[1])+" "+(x + tempCoord[0])+" at index: "+i);
+
                 grid[x + tempCoord[0]][y + tempCoord[1]].getCardCorners()[Math.abs(i - 3)].setCovered(true);
                 grid[x + tempCoord[0]][y + tempCoord[1]].setState(State.OCCUPIED);
                 coveredCorners++;
@@ -145,7 +148,7 @@ public class PlayerBoard implements Serializable{
      * @return The card in the given position.
      */
     public PlayableCard getCard(int x, int y){
-        return grid[x][y];
+        return grid[y][x];
     }
 
     /**
