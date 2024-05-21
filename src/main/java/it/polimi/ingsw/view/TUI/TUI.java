@@ -21,7 +21,7 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 public class TUI extends Thread{
     public static Client cli;
     private static List<String> cardToChooseUUID;
-    private static List<String> currentHandUUID;
+    private List<String> currentHandUUID;
     private List<String> allGoalsUUID;
     Scanner scanner = new Scanner(System.in);
     StartGame startGame = new StartGame();
@@ -364,6 +364,14 @@ public class TUI extends Thread{
                         break;
                     }
 
+                    if(numHand < 1 || numHand > 3){
+                        System.out.println("IndexOutOfBound: the hand is numbered from 1 to 3");
+                        break;
+                    }
+
+                    //riporto all'indice dell'array
+                    numHand--;
+
                     cli.sendMessage(
                             new Message(
                                     REQUEST_PLAYER_MOVE,
@@ -376,6 +384,8 @@ public class TUI extends Thread{
                                             positionY
                                     })
                     );
+                    //rimuovo l'elemento dalla mano
+                    currentHandUUID.set(numHand, "");
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -384,6 +394,10 @@ public class TUI extends Thread{
                     break;
 
                 case "/drawCardFromViewable":
+                    if(checkFull()) {
+                        System.out.println("Command not valid, first you need to place a card");
+                        break;
+                    }
                     if(command.length < 3) {
                         System.out.println("Command not valid, try '/help' to view syntax");
                         break;
@@ -426,6 +440,10 @@ public class TUI extends Thread{
                     break;
 
                 case "/drawCardFromDeck":
+                    if(checkFull()) {
+                        System.out.println("Command not valid, first you need to place a card");
+                        break;
+                    }
                     if(command.length < 2) {
                         System.out.println("Command not valid, try '/help' to view syntax");
                         break;
@@ -470,5 +488,13 @@ public class TUI extends Thread{
                 break;
             }
         }
+    }
+
+    public synchronized boolean checkFull(){
+        int num = 0;
+        for(String s: currentHandUUID){
+            if(!s.isEmpty()) num++;
+        }
+        return num == 3;
     }
 }

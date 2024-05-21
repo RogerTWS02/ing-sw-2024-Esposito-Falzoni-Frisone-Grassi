@@ -61,17 +61,18 @@ public class PlayerBoard implements Serializable{
     public int[] cornerCoordLookup(int index) {
         int coord[] = new int[2];
         switch (index) {
+            //NOTA BENE: LA PRIMA SONO LE Y, LA SECONDA SONO LE X
             case 0:
                 coord[0] = -1;
                 coord[1] = -1;
                 break;
             case 1:
-                coord[0] = 1;
-                coord[1] = -1;
-                break;
-            case 2:
                 coord[0] = -1;
                 coord[1] = 1;
+                break;
+            case 2:
+                coord[0] = 1;
+                coord[1] = -1;
                 break;
             case 3:
                 coord[0] = 1;
