@@ -150,7 +150,7 @@ public class HandCards implements Views {
 
 
 
-        //Views.clearScreen();
+        Views.clearScreen();
         for (int i = 0; i < 11; i++) {
             System.out.println(cards.get(i));
         };

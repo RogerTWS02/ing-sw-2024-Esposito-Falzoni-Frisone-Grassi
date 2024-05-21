@@ -43,7 +43,7 @@ public interface Views {
         {
             //System.out.print("\033[H\033[2J");
             //System.out.flush();
-            System.out.print("\n".repeat(50));
+            System.out.print("\n".repeat(60));
         }
     }
 

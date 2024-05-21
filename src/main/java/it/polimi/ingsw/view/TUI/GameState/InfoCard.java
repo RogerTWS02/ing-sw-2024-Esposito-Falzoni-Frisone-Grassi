@@ -143,11 +143,21 @@ public class InfoCard  implements Views{
                     JSONCard = (JSONObject) resourceJSONArray.get(index - 1);
                     stringCard[0] = "Resource Card";
                     stringCard[9] = ANSI_WHITE;
+                    stringCard[8]= " ".repeat(28);
+                    stringCard[7]= "NONE";
                 } else {
                     // create the golden card and set the color
                     JSONCard = (JSONObject) goldJSONArray.get(index - 1);
                     stringCard[0] = "Golden Card";
                     stringCard[9] = ANSI_YELLOW;
+                    JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
+                    for (Object o : JSONRequire) {
+                        stringCard[8] = stringCard[8].concat((Views.stringToEmoji((String) o)));
+                    }
+
+                    int spaces= (29-stringCard[8].length())/2;
+                    stringCard[8]= " ".repeat(spaces).concat(stringCard[8]).concat(" ".repeat(spaces));
+                    stringCard[7] = (String) JSONCard.get("rule");
                 }
 
 
@@ -162,15 +172,10 @@ public class InfoCard  implements Views{
                     stringCard[i] = "░░";
                 }
 
-                stringCard[7] = (String) JSONCard.get("rule");
-                JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
 
-                for (Object o : JSONRequire) {
-                    stringCard[8] = stringCard[8].concat((Views.stringToEmoji((String) o)));
-                }
 
-                int spaces= (29-stringCard[8].length())/2;
-                stringCard[8]= " ".repeat(spaces).concat(stringCard[8]).concat(" ".repeat(spaces));
+
+
 
                 switch (stringCard[2]) {
 

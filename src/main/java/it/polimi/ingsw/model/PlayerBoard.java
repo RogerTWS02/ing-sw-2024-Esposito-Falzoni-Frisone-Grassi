@@ -130,9 +130,13 @@ public class PlayerBoard implements Serializable{
             } else {
                 //PER DEBUGGING
                 //System.out.println(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID()+": "+(y + tempCoord[1])+" "+(x + tempCoord[0])+" at index: "+i);
-
+                if(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID().equals("PLACEHOLDER")){
+                    if(card.getCardCorners()[i] == null) {
+                        grid[x + tempCoord[0]][y + tempCoord[1]].setState(UNAVAILABLE);
+                    }
+                }
+                else {
                 grid[x + tempCoord[0]][y + tempCoord[1]].getCardCorners()[Math.abs(i - 3)].setCovered(true);
-                if(!grid[x + tempCoord[0]][y + tempCoord[1]].getUUID().equals("PLACEHOLDER")){
                     coveredCorners++;
                 }
             }
