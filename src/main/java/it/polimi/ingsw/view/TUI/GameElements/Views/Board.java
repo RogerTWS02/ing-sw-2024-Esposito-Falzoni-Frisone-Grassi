@@ -16,13 +16,11 @@ import java.util.List;
 
 public class Board {
 
-    private static final String mushroomColor = "\u001B[41m";
-    private static final String leafColor = "\u001B[42m";
-    private static final String wolfColor = "\u001B[44m";
-    private static final String butterflyColor = "\u001B[45m";
-    private static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
+    private static final String mushroomColor = "\u001B[48;5;88m";
+    private static final String leafColor = "\u001B[48;5;22m";
+    private static final String wolfColor = "\u001B[48;5;26m";
+    private static final String butterflyColor = "\u001B[48;5;91m";
     private static final String resetColor = "\u001B[0m";
-    private static final String border = "\u001B[37m";
     private static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
     private static final String ANSI_LIGHT_YELLOW = "\u001B[93m";
 
@@ -171,9 +169,9 @@ public class Board {
                             .append("│")
                             .append(background)
                             .append(" ")
-                            .append(i)
-                            .append(" ")
                             .append(j)
+                            .append("-")
+                            .append(i)
                             .append(" ")
                             .append(resetColor)
                             .append(border)

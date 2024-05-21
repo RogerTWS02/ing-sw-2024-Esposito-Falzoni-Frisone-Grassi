@@ -1,11 +1,5 @@
 package it.polimi.ingsw.view.TUI.GameState;
 
-import it.polimi.ingsw.model.*;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Optional;
 
 public interface Views {
 
@@ -47,8 +41,9 @@ public interface Views {
     // clear the screen
         static void clearScreen()
         {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            //System.out.print("\033[H\033[2J");
+            //System.out.flush();
+            System.out.print("\n".repeat(50));
         }
     }
 

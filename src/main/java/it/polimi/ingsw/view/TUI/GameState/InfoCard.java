@@ -25,21 +25,20 @@ public class InfoCard  implements Views{
 
 
 
-    // colors used in the cards
-    public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
-    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
-    public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
-    public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
-    public static final String ANSI_GRAY_BACKGROUND = "\u001B[100m";
 
+    // colors used in the TUI
+    public static final String ANSI_RED_BACKGROUND = "\u001B[48;5;88m";
+    public static final String ANSI_GREEN_BACKGROUND = "\u001B[48;5;22m";
+    public static final String ANSI_BLUE_BACKGROUND = "\u001B[48;5;26m";
+    public static final String ANSI_PURPLE_BACKGROUND = "\u001B[48;5;91m";
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_WHITE = "\u001B[37m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-
+    public static final String ANSI_WHITE = "\u001B[38;5;231m";
+    public static final String ANSI_GRAY_BACKGROUND = "\u001B[100m";
+    public static final String ANSI_RED = "\u001B[38;5;88m";
+    public static final String ANSI_GREEN = "\u001B[38;5;22m";
+    public static final String ANSI_BLUE = "\u001B[38;5;26m";
+    public static final String ANSI_PURPLE = "\u001B[38;5;91m";
 
 
 
@@ -119,7 +118,7 @@ public class InfoCard  implements Views{
             if (uuid.charAt(0)=='S'){
                 JSONCard = (JSONObject) startingJSONArray.get(index - 1);
                 stringCard[0] = "Starting Card";
-                stringCard[9] = ANSI_WHITE;
+                stringCard[9] = ANSI_RESET;
                 stringCard[1] = (String) JSONCard.get("points");
 
                 JSONArray JSONResource = (JSONArray) JSONCard.get("permRes");
@@ -291,7 +290,7 @@ public class InfoCard  implements Views{
         }
 
         //clear the screen before printing something
-        Views.clearScreen();
+        //Views.clearScreen();
         //print the array
         System.out.println(printedCard);
     }

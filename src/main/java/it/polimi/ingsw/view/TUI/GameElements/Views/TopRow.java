@@ -45,7 +45,6 @@ public class TopRow implements Views {
 
     public static final String ANSI_BLUE = "\u001B[34m";
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GRAY_BACKGROUND = "\u001B[32m";
     public void showTopRow(String currentPlayer, ArrayList<String> Players,ArrayList<Integer> scores, ArrayList<Resource> playerResources) {
 

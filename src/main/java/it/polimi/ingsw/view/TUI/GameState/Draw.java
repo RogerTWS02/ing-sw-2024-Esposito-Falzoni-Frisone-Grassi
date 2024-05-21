@@ -18,16 +18,13 @@ public class Draw implements Views {
      JSONArray resourceJSONArray;
      JSONArray goldJSONArray;
      // colors used in the TUI
-     public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
-     public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
-     public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
-     public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
-     public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
+     public static final String ANSI_RED_BACKGROUND = "\u001B[48;5;88m";
+     public static final String ANSI_GREEN_BACKGROUND = "\u001B[48;5;22m";
+     public static final String ANSI_BLUE_BACKGROUND = "\u001B[48;5;26m";
+     public static final String ANSI_PURPLE_BACKGROUND = "\u001B[48;5;91m";
      public static final String ANSI_RESET = "\u001B[0m";
      public static final String ANSI_YELLOW = "\u001B[33m";
-     public static final String ANSI_WHITE = "\u001B[37m";
-
-
+     public static final String ANSI_WHITE = "\u001B[38;5;231m";
 
 
      public Draw() throws IOException, ParseException {
