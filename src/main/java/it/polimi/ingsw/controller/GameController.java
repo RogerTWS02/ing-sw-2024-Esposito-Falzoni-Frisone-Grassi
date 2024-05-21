@@ -351,7 +351,10 @@ public class GameController {
         if (card instanceof StartingCard) {
             player.getPlayerBoard().placeCard(card, 40, 40);
         } else if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
+                if(card instanceof GoldenCard){
+
                 switch (card.getRule().toString()) {
+
                     case "NONE":
                         player.getPlayerBoard().placeCard(card, i, j);
                         player.addScore(card.getPoints());
@@ -369,6 +372,11 @@ public class GameController {
                         player.getPlayerBoard().placeCard(card, i, j);
                         player.addScore(occurency * card.getPoints());
                 }
+                }
+                else{
+                    player.getPlayerBoard().placeCard(card, i, j);
+                    player.addScore(card.getPoints());
+                    }
         } else {
             throw new IllegalArgumentException();
         }

@@ -132,8 +132,9 @@ public class PlayerBoard implements Serializable{
                 System.out.println(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID()+": "+(y + tempCoord[1])+" "+(x + tempCoord[0])+" at index: "+i);
 
                 grid[x + tempCoord[0]][y + tempCoord[1]].getCardCorners()[Math.abs(i - 3)].setCovered(true);
-                grid[x + tempCoord[0]][y + tempCoord[1]].setState(State.OCCUPIED);
-                coveredCorners++;
+                if(!grid[x + tempCoord[0]][y + tempCoord[1]].getUUID().equals("PLACEHOLDER")){
+                    coveredCorners++;
+                }
             }
         }
 
