@@ -117,7 +117,7 @@ public class TUI extends Thread{
                 try {
                     //con l'UUID aggiorno lo stato dello schermo della console
                     goals.showObjective(allGoalsUUID.toArray(new String[0]));
-                    handcards.showHand(currentHandUUID.toArray(new String[0]));
+                    //handcards.showHand(currentHandUUID.toArray(new String[0]));
 
                     //stampo la playerBoard
                     board.drawBoard(onBoard, available);

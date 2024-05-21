@@ -115,7 +115,7 @@ public class PlayerBoard implements Serializable{
             int[] tempCoord = cornerCoordLookup(i);
             if(grid[x + tempCoord[0]][y + tempCoord[1]] == null) {
                 //PER DEBUGGING
-                System.out.println("CREO NUOVO: "+(y + tempCoord[1]+" "+(x + tempCoord[0])+" at index: "+i));
+                //System.out.println("CREO NUOVO: "+(y + tempCoord[1]+" "+(x + tempCoord[0])+" at index: "+i));
 
                 grid[x + tempCoord[0]][y + tempCoord[1]] =
                         new ResourceCard(new Resource[]{}, new Corner[4], 0, "PLACEHOLDER");
@@ -129,7 +129,7 @@ public class PlayerBoard implements Serializable{
 
             } else {
                 //PER DEBUGGING
-                System.out.println(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID()+": "+(y + tempCoord[1])+" "+(x + tempCoord[0])+" at index: "+i);
+                //System.out.println(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID()+": "+(y + tempCoord[1])+" "+(x + tempCoord[0])+" at index: "+i);
 
                 grid[x + tempCoord[0]][y + tempCoord[1]].getCardCorners()[Math.abs(i - 3)].setCovered(true);
                 if(!grid[x + tempCoord[0]][y + tempCoord[1]].getUUID().equals("PLACEHOLDER")){

@@ -725,7 +725,7 @@ public class Server extends UnicastRemoteObject {
         int posX = (int) message.getObj()[0];
         int posY = (int) message.getObj()[1];
 
-        PlayableCard card = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posX, posY);
+        PlayableCard card = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posY, posX);
 
         if(hasSocket) {
             idSocketMap.get(message.getSenderID()).sendMessage(
