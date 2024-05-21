@@ -168,29 +168,20 @@ public class TUI extends Thread{
         }
     }
 
-    public synchronized void run(){
-        // Inizializza lo scanner per leggere da console
+    /**
+     * Makes the player choose a nickname and sets it.
+     *
+     * @return The nickname chosen by the player.
+     */
+    public String insertNickname() {
         String[] command = null;
-        String message;
-
         while(cli.getLobbyName().isEmpty()) {
-
-            //faccio vedere il logo
-            startGame.ShowStartGame();
-
             do {
                 loginUsername.showLogInUsername();
                 command = scanner.nextLine().split(" ");
                 if(command[0].length() > 16)
                     System.out.println("The nickname must be less than 16 characters!");
             } while(command[0].length() > 16);
-
-            //inizialmente mando i messaggi per far avviare il gioco
-            //System.out.print("Insert a valid Nickname to start a game:");
-            //loginUsername.showLogInUsername();
-
-            //metodo bloccante che aspetta l'ingresso dell'utente
-            //command = scanner.nextLine().split(" ");
             cli.sendMessage(
                     new Message(
                             REQUEST_LOGIN,
@@ -204,9 +195,15 @@ public class TUI extends Thread{
                 throw new RuntimeException(e);
             }
         }
+        return command[0];
+    }
 
-        String nameP = command[0];
-        //nel caso di una lobby nuova devo inserire il numero di giocatori
+    /**
+     * Makes the player choosing the lobby size and creates it.
+     *
+     * @param nameP The nickname of the player who creates the lobby.
+     */
+    public void createNewLobby(String nameP) {
         while(cli.getLobbySize() == -1){
             int size = scanner.nextInt();
             if(size < 2 || size > 4){
@@ -231,11 +228,12 @@ public class TUI extends Thread{
                 throw new RuntimeException(e);
             }
         }
+    }
 
-        System.out.println("You just joined the lobby: "+cli.getLobbyName());
-
-        //se l'utente manda messaggi in fase di attesa non faccio nulla
-        if(cli.getGameID() == -1) System.out.println("Waiting for other players to join the game...");
+    /**
+     * Waits for the lobby to be full.
+     */
+    public void waitForFullLobby() {
         while(cli.getGameID() == -1){
             try {
                 Thread.sleep(1000);
@@ -243,54 +241,61 @@ public class TUI extends Thread{
                 throw new RuntimeException(e);
             }
         }
+    }
 
-
-        String selectedUUID = "";
+    /**
+     * Makes the player choosing how to place the starting card and places it.
+     *
+     * @return The side chosen by the player to place the starting card.
+     */
+    public boolean placeStartingCard() {
+        String[] command;
         boolean side;
-        boolean fistTime = true;
-
-
         while(true){
-            //Stampo le due secret goal cards
-            infoC.showInfoCard(cardToChooseUUID.get(1),null);
-            infoC.showInfoCard(cardToChooseUUID.get(2),null);
-
-            //sezione per scegliere la secret goal card
-            System.out.print("Select your secret goal card (type 1 or 2 to choose): ");
-
+            //Print the starting card
+            infoC.showInfoCard(cardToChooseUUID.get(0),null);
+            //Choose the side to place the starting card
+            System.out.print("Select which side to place the starting card (type 1 for front side or 2 for back side): ");
             command = scanner.nextLine().split(" ");
-
-            //In the first player the buffer remains empty, so I have to skip the first time
-            if(Objects.equals(command[0], "") && fistTime){
-                fistTime = false;
-                command = scanner.nextLine().split(" ");
-            }
-
             if(command[0].equals("1") || command[0].equals("2")){
-                selectedUUID = (command[0].equals("1"))? cardToChooseUUID.get(1) : cardToChooseUUID.get(2);
-                allGoalsUUID.add(selectedUUID);
-                System.out.println("\nThe player has chosen the card: " + selectedUUID);
-
-                while(true){
-                    //Stampo la starting card
-                    infoC.showInfoCard(cardToChooseUUID.get(0),null);
-
-                    //sezione per scegliere che lato mettere la starting card
-                    System.out.print("Select which side to place the starting card (type 1 for front side or 2 for back side): ");
-                    command = scanner.nextLine().split(" ");
-                    if(command[0].equals("1") || command[0].equals("2")){
-                        side = command[0].equals("2");
-                        break;
-                    }
-                    System.out.println("\nInput given '" + command[0] + "' is invalid! Try again.");
-                }
-
+                side = command[0].equals("2");
                 break;
             }
             System.out.println("\nInput given '" + command[0] + "' is invalid! Try again.");
         }
+        return side;
+    }
 
-        //notifico il server per la scelta fatta
+    /**
+     * Makes the player choose the secret goal card and the starting card.
+     */
+    public void preliminaryActions() {
+        String[] command;
+        String selectedUUID;
+        boolean side;
+        boolean firstTime = true;
+        while(true){
+            //Print the two secret goal cards for choosing one of them
+            infoC.showInfoCard(cardToChooseUUID.get(1),null);
+            infoC.showInfoCard(cardToChooseUUID.get(2),null);
+            //Choose the secret goal card
+            System.out.print("Select your secret goal card (type 1 or 2 to choose): ");
+            command = scanner.nextLine().split(" ");
+            //In the first player the buffer remains empty, so I have to skip the first time
+            if(Objects.equals(command[0], "") && firstTime){
+                firstTime = false;
+                command = scanner.nextLine().split(" ");
+            }
+            if(command[0].equals("1") || command[0].equals("2")){
+                selectedUUID = (command[0].equals("1"))? cardToChooseUUID.get(1) : cardToChooseUUID.get(2);
+                allGoalsUUID.add(selectedUUID);
+                System.out.println("\nThe player has chosen the card: " + selectedUUID);
+                side = placeStartingCard();
+                break;
+            }
+            System.out.println("\nInput given '" + command[0] + "' is invalid! Try again.");
+        }
+        //Message to server
         cli.sendMessage(
                 new Message(
                         NOTIFY_CHOICES_MADE,
@@ -308,9 +313,29 @@ public class TUI extends Thread{
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public synchronized void run(){
+        //Initialize scanner in order to read user input
+        String[] command;
+        String message;
+        //Show game logo
+        startGame.ShowStartGame();
+        //Insert nickname
+        String nameP = insertNickname();
+        //Choose lobby size and create it
+        createNewLobby(nameP);
+        System.out.println("You just joined the lobby " + cli.getLobbyName());
+        //If user is the first to join the lobby, he will be the one to start the game
+        if(cli.getGameID() == -1)
+            System.out.println("Waiting for other players to join the game...");
+        //Wait for the lobby to be full
+        waitForFullLobby();
+        //Choose secret goal card and starting card
+        preliminaryActions();
         System.out.println("Starting player is: " + startingPlayer);
 
+        //REFACTOR DONE FINO A QUI
         //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
         try {
             //stampo la mano e gli obbiettivi comuni
