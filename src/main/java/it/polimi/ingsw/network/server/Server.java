@@ -386,6 +386,7 @@ public class Server extends UnicastRemoteObject {
                         gameControllerMap.get(p.getGameID()).inizializeHandsAndCommons();
                         gameControllerMap.get(p.getGameID()).getCurrentGame().setStartingPlayer();
 
+
                         //per ogni giocatore della lobby
                         for (int pID : lobbyPlayerMap.get(l)) {
                             //mando un messaggio per aggiornare l'interfaccia
@@ -687,6 +688,16 @@ public class Server extends UnicastRemoteObject {
             return null;
         }
 
+        idPlayerMap.get(message.getSenderID()).getHand().remove(index);
+        List<Integer> scores = gameControllerMap.get(message.getGameID())
+                .getCurrentGame()
+                .getPlayers()
+                .stream()
+                .map(Player::getScore)
+                .toList();
+
+
+
         if(hasSocket) {
 
             idSocketMap.get(message.getSenderID()).sendMessage(
@@ -701,8 +712,20 @@ public class Server extends UnicastRemoteObject {
                                             .showAvailableOnBoard(idPlayerMap.get(message.getSenderID())),
                                     //restituisco la risorsa permanente della carta
                                     card.getPermResource()[0],
-                                    //restituisco il punteggio
-                                    idPlayerMap.get(message.getSenderID()).getScore()
+                                    //return the new scores of every player
+                                    scores,
+
+                                    //return the current player
+                                    gameControllerMap.get(message.getGameID())
+                                            .getCurrentGame()
+                                            .getCurrentPlayer()
+                                            .getNickname(),
+                                    //return the resources of the player
+                                    gameControllerMap.get(message.getGameID())
+                                            .getCurrentGame()
+                                            .getCurrentPlayer()
+                                            .getPlayerBoard()
+                                            .getResources()
                             }
                     )
             );

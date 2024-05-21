@@ -6,11 +6,14 @@ import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.view.TUI.GameElements.Views.Board;
 import it.polimi.ingsw.view.TUI.GameElements.Views.HandCards;
 import it.polimi.ingsw.view.TUI.GameElements.Views.Objective;
+import it.polimi.ingsw.view.TUI.GameElements.Views.TopRow;
 import it.polimi.ingsw.view.TUI.GameState.InfoCard;
 import it.polimi.ingsw.view.TUI.GameState.LoginUsername;
 import it.polimi.ingsw.view.TUI.GameState.StartGame;
+import it.polimi.ingsw.view.TUI.GameState.Views;
 import org.json.simple.parser.ParseException;
 
+import javax.swing.text.View;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +37,13 @@ public class TUI extends Thread{
     String startingPlayer;
     List<int[]> available;
     Resource[][] onBoard;
+    TopRow topRow = new TopRow();
+    List<Integer> scores;
+    List<String> nicknames;
+    String currentPlayerNickame;
+    List<Resource> playerResources;
     int numHand = 0, positionX = 0, positionY = 0;
+
 
     public TUI() throws IOException, ParseException {
     }
@@ -113,6 +122,14 @@ public class TUI extends Thread{
 
                 //aggiorno la visualizzazione
                 onBoard[positionY][positionX] = (Resource) message.getObj()[1];
+
+                scores = (List<Integer>) message.getObj()[2];
+
+                nicknames = (List<String>) message.getObj()[3];
+
+                currentPlayerNickame = (String) message.getObj()[4];
+
+                playerResources = (List<Resource>) message.getObj()[5];
 
                 try {
                     //con l'UUID aggiorno lo stato dello schermo della console
@@ -237,7 +254,7 @@ public class TUI extends Thread{
         while(cli.getGameID() == -1){
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException e){
                 throw new RuntimeException(e);
             }
         }
@@ -331,20 +348,15 @@ public class TUI extends Thread{
             System.out.println("Waiting for other players to join the game...");
         //Wait for the lobby to be full
         waitForFullLobby();
-        //Choose secret goal card and starting card
+        //Choose secret goal card and how to place the starting card
         preliminaryActions();
         System.out.println("Starting player is: " + startingPlayer);
 
         //REFACTOR DONE FINO A QUI
         //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
         try {
-            //stampo la mano e gli obbiettivi comuni
-            goals.showObjective(allGoalsUUID.toArray(new String[0]));
-            handcards.showHand(currentHandUUID.toArray(new String[0]));
-
-            //stampo la playerBoard
-            board.drawBoard(onBoard, available);
-
+            //print the full screen
+            printFullScreen();
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
@@ -560,5 +572,17 @@ public class TUI extends Thread{
             if(!s.isEmpty()) num++;
         }
         return num == 3;
+    }
+
+    public void printFullScreen() throws IOException, ParseException {
+        Views.clearScreen();
+
+        //Still can't be used since nicknames is still unknown
+        //topRow.showTopRow(currentPlayerNickame, (ArrayList<String>) nicknames, (ArrayList<Integer>) scores, (ArrayList<Resource>) playerResources);
+
+        //stampo la playerBoard
+        board.drawBoard(onBoard, available);
+        goals.showObjective(allGoalsUUID.toArray(new String[0]));
+        handcards.showHand(currentHandUUID.toArray(new String[0]));
     }
 }

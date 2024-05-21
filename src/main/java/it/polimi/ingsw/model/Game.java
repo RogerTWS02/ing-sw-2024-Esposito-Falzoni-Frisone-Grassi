@@ -237,7 +237,7 @@ public class Game implements Serializable{
     }
 
     /**
-     * Returns the player who won the game.
+     * Returns the player (or the players) who won the game.
      *
      * @return The player who won the game.
      */
