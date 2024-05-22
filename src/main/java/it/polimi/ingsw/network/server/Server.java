@@ -383,7 +383,7 @@ public class Server extends UnicastRemoteObject {
                         l.setGameStarted(true);
 
                         //inizializza le mani di tutti i giocatori e imposta le GoalCards comuni
-                        gameControllerMap.get(p.getGameID()).inizializeHandsAndCommons();
+                        gameControllerMap.get(p.getGameID()).initializeGame();
                         gameControllerMap.get(p.getGameID()).getCurrentGame().setStartingPlayer();
 
 
@@ -402,8 +402,8 @@ public class Server extends UnicastRemoteObject {
                                                 new Object[]{
 
                                                     //mando a tutti l'UUID delle carte delle loro mani
-                                                    gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                            .returnHand(idPlayerMap.get(pID)).stream()
+                                                    Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                            .returnHand(idPlayerMap.get(pID)))
                                                             .map(PlayableCard::getUUID)
                                                             .toList(),
 
@@ -610,9 +610,14 @@ public class Server extends UnicastRemoteObject {
                 .get(message.getGameID())
                 .drawViewableCard((Boolean) params[0], (Integer) params[1]);
 
-        //la metto nella mano del giocatore
+        //PER DEBUGGING
+        System.out.println("HO PESCATO: "+replyCard.getUUID());
+
+        //la metto nella mano del giocatore dove adesso ho un vuoto
         for(int z = 0; z < 3; z++){
-            if(idPlayerMap.get(message.getSenderID()).getHand().get(z) == null){
+            if(idPlayerMap.get(message.getSenderID()).getHand()[z] == null){
+                //PER DEBUGGING
+                System.out.println("HO REFILLATO LA MANOOOOOOO");
                 idPlayerMap.get(message.getSenderID()).setHand(replyCard, z);
                 break;
             }
@@ -621,6 +626,11 @@ public class Server extends UnicastRemoteObject {
         //avanzo il turno al prossimo giocatore
         int currPID = gameControllerMap
                 .get(message.getGameID()).advancePlayerTurn();
+
+
+        //TODO: DA CAMBIARE!!!!
+        //TODO: E SICCOME è FINITO IL TURNO DI QUESTO GIOCATORE MANDO A TUTTI IL SUO PUNTEGGIO AGGIORNATO
+        //TODO: POI MANDO A TUTTI I GIOCATORI IL NOME DEL NUOVO GIOCATORE
 
         //lo notifico dicendogli che è il suo turno
         idSocketMap.get(currPID).sendMessage(
@@ -653,6 +663,8 @@ public class Server extends UnicastRemoteObject {
                     replyCard.getUUID()
             );
         }
+
+        System.out.println("almeno qui arrivo");
         return null;
     }
 
@@ -685,18 +697,18 @@ public class Server extends UnicastRemoteObject {
         //Card to place
         int index = (int) message.getObj()[0];
         PlayableCard card = idPlayerMap.get(message.getSenderID())
-                .getHand().get(index);
-
-        //TODO: una volta piazzata la tolgo dalla mano(???) oppure sovrascrivo con i comandi del client?
-        //TODO: in questo caso sposterei il controllo dell'indice direttamente al client (più facile)
+                .getHand()[index];
 
         //una volta piazzata la carta quello spazio rimane vuoto nella mano
         idPlayerMap.get(message.getSenderID()).setHand(null, index);
 
+        //PER DEBUGGING
+        System.out.println("HO IMPOSTATO LA POSIZIONE A: "+
+                idPlayerMap.get(message.getSenderID()).getHand()[index]);
+
 
         //imposto il lato corretto
         card.setFlipped((boolean)message.getObj()[1]);
-
 
         try {
             gameControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
@@ -722,7 +734,8 @@ public class Server extends UnicastRemoteObject {
             return null;
         }
 
-        idPlayerMap.get(message.getSenderID()).getHand().remove(index);
+        idPlayerMap.get(message.getSenderID()).getHand()[index] = null;
+
         List<Integer> scores = gameControllerMap.get(message.getGameID())
                 .getCurrentGame()
                 .getPlayers()
@@ -744,8 +757,10 @@ public class Server extends UnicastRemoteObject {
                                     //restituisco i nuovi posti disponibili
                                     gameControllerMap.get(message.getGameID())
                                             .showAvailableOnBoard(idPlayerMap.get(message.getSenderID())),
+
                                     //restituisco la risorsa permanente della carta
                                     card.getPermResource()[0],
+
                                     //return the new scores of every player
                                     scores,
 
@@ -754,6 +769,7 @@ public class Server extends UnicastRemoteObject {
                                             .getCurrentGame()
                                             .getCurrentPlayer()
                                             .getNickname(),
+
                                     //return the resources of the player
                                     gameControllerMap.get(message.getGameID())
                                             .getCurrentGame()

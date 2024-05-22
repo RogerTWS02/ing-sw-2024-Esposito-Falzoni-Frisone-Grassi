@@ -13,8 +13,6 @@ public class PlayerBoard implements Serializable{
     protected PlayableCard[][] grid = new PlayableCard[81][81];
     public Pawn pawn;
 
-    private boolean firstcard = true;
-
     /**
      * The constructor creates a player board, given the panw of the player.
      *

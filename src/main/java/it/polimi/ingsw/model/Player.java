@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Player implements Serializable {
     private String nickname;
-    private ArrayList<PlayableCard> hand = new ArrayList<>();
+    private PlayableCard[] hand = new PlayableCard[3];
     public int clientPort;
     private int score = 0;
     private PlayerBoard playerBoard;
@@ -90,7 +90,7 @@ public class Player implements Serializable {
      *
      * @return The player's hand.
      */
-    public ArrayList<PlayableCard> getHand() {
+    public PlayableCard[] getHand() {
         return hand;
     }
 
@@ -153,9 +153,9 @@ public class Player implements Serializable {
      *
      * @param handCard The player's card to add to the player's hand.
      */
-    public void setHand(PlayableCard handCard) { hand.add(handCard);}
-
-    public void setHand(PlayableCard handCard, int i) { hand.add(i, handCard);}
+    public void setHand(PlayableCard handCard, int i) {
+        hand[i] = handCard;
+    }
 
     public Object[] getCardToChoose() {
         return cardToChoose;

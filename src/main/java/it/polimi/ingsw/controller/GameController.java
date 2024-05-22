@@ -4,10 +4,7 @@ import it.polimi.ingsw.model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 
 
@@ -249,30 +246,19 @@ public class GameController {
     public PlayableCard drawViewableCard(boolean whichType, int whichCard){
         //WhichType: true = golden, false = resource
         //WhichCard: 0 =first visible card, 1 = second visible card, 2 = top of the deck.
-        if(whichCard < 0 || whichCard > 2){
-            throw new IllegalArgumentException("Invalid card index!");
-        }
         PlayableCard card;
+
+        //golden card
         if(whichType){
-            if(whichCard == 2){
-                card = currentGame.getViewableGoldenCards()[whichCard];
-                currentGame.getViewableGoldenCards()[whichCard] = null;
-            }else{
-                card = currentGame.getViewableGoldenCards()[whichCard];
-                currentGame.getViewableGoldenCards()[whichCard] = currentGame.getViewableGoldenCards()[2];
-                currentGame.getViewableGoldenCards()[2] = null;
-            }
-        } else {
-            if(whichCard == 2){
-                card = currentGame.getViewableResourceCards()[whichCard];
-                currentGame.getViewableResourceCards()[whichCard] = null;
-            }else{
-                card = currentGame.getViewableResourceCards()[whichCard];
-                currentGame.getViewableResourceCards()[whichCard] = currentGame.getViewableResourceCards()[2];
-                currentGame.getViewableResourceCards()[2] = null;
-            }
+            card = currentGame.getViewableGoldenCards()[whichCard];
         }
-        setNewViewableCard(whichType, 2);
+        //resource card
+        else {
+            card = currentGame.getViewableResourceCards()[whichCard];
+        }
+
+        //sostituisco la carta che ho appena pescato dopo aver restituito la carta
+        setNewViewableCard(whichType, whichCard);
         return card;
     }
 
@@ -330,7 +316,7 @@ public class GameController {
      * @return the PlayableCard array representing the player's hand.
      * @throws IllegalArgumentException in case the player is null or not in the game.
      */
-    public ArrayList<PlayableCard> returnHand(Player player){
+    public PlayableCard[] returnHand(Player player){
         if(player == null || !currentGame.getPlayers().contains(player)) {
             throw new IllegalArgumentException("Illegal player parameter!");
         }
@@ -352,31 +338,29 @@ public class GameController {
             player.getPlayerBoard().placeCard(card, 40, 40);
         } else if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
                 if(card instanceof GoldenCard){
-
-                switch (card.getRule().toString()) {
-
-                    case "NONE":
-                        player.getPlayerBoard().placeCard(card, i, j);
-                        player.addScore(card.getPoints());
-                    case "CORNERS":
-                        int covered = player.getPlayerBoard().placeCard(card, i, j);
-                        player.addScore(covered * card.getPoints());
-                    default:
-                        String s = card.getRule().toString();
-                        int occurency = 1;
-                        for (Resource element : player.getPlayerBoard().getResources()) {
-                            if (element == Resource.valueOf(s)) {
-                                occurency++;
+                    switch (card.getRule().toString()) {
+                        case "NONE":
+                            player.getPlayerBoard().placeCard(card, i, j);
+                            player.addScore(card.getPoints());
+                        case "CORNERS":
+                            int covered = player.getPlayerBoard().placeCard(card, i, j);
+                            player.addScore(covered * card.getPoints());
+                        default:
+                            String s = card.getRule().toString();
+                            int occurency = 1;
+                            for (Resource element : player.getPlayerBoard().getResources()) {
+                                if (element == Resource.valueOf(s)) {
+                                    occurency++;
+                                }
                             }
-                        }
-                        player.getPlayerBoard().placeCard(card, i, j);
-                        player.addScore(occurency * card.getPoints());
-                }
+                            player.getPlayerBoard().placeCard(card, i, j);
+                            player.addScore(occurency * card.getPoints());
+                    }
                 }
                 else{
                     player.getPlayerBoard().placeCard(card, i, j);
                     player.addScore(card.getPoints());
-                    }
+                }
         } else {
             throw new IllegalArgumentException();
         }
@@ -461,16 +445,22 @@ public class GameController {
     /**
      * Performs a series of useful actions to begin the game.
      */
-    public void inizializeHandsAndCommons() {
+    public void initializeGame() {
+        //inizializzo viewableCards e cima dei mazzi
+        for(int i = 0; i < 3; i++){
+            setNewViewableCard(false, i);
+            setNewViewableCard(true, i);
+        }
+
         //per ogni player
         for(Player p: currentGame.getPlayers()){
             //imposto la mano iniziale
 
             //una GoldenCard
-            p.setHand(drawPlayableFromDeck(currentGame.goldenDeck));
+            p.setHand(drawPlayableFromDeck(currentGame.goldenDeck), 0);
             //due ResourceCard
-            p.setHand(drawPlayableFromDeck(currentGame.resourceDeck));
-            p.setHand(drawPlayableFromDeck(currentGame.resourceDeck));
+            p.setHand(drawPlayableFromDeck(currentGame.resourceDeck), 1);
+            p.setHand(drawPlayableFromDeck(currentGame.resourceDeck), 2);
 
         }
 

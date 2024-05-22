@@ -92,6 +92,9 @@ public class TUI extends Thread{
             case REPLY_HAND_UPDATE:
                 String newCardUUID = (String) message.getObj()[0];
 
+                //DOPO AVER PESCATO NON È PIU' IL TUO TURNO
+                myTurn = false;
+
                 //aggiungo la nuova carta
                 for(int i = 0; i < 3; i++){
                     if(currentHandUUID.get(i).isEmpty()){
@@ -110,7 +113,7 @@ public class TUI extends Thread{
                 //spazi disponibili
                 available = (List<int[]>) message.getObj()[0];
 
-                //aggiorno la visualizzazione
+                //aggiorno la visualizzazione con la risorsa permanente
                 onBoard[positionY][positionX] = (Resource) message.getObj()[1];
 
                 //scores = (List<Integer>) message.getObj()[2];
@@ -132,9 +135,6 @@ public class TUI extends Thread{
                 } catch (IOException | ParseException e) {
                     throw new RuntimeException(e);
                 }
-
-                //aggiorno l'interfaccia tui che gestisce il punteggio
-                int addScore = (Integer) message.getObj()[2];
                 break;
 
             case REPLY_INFO_CARD:
@@ -161,9 +161,6 @@ public class TUI extends Thread{
 
                 //spazi disponibili
                 available = (List<int[]>) message.getObj()[0];
-
-                //PER DEBUGGING
-                //System.out.println("AAAAAA: "+available[41][41]);
 
                 //inizializzo la visualizzazione della board
                 onBoard = new Resource[80][80];
@@ -326,23 +323,31 @@ public class TUI extends Thread{
         //Initialize scanner in order to read user input
         String[] command;
         String message;
+
         //Show game logo
         startGame.ShowStartGame();
+
         //Insert nickname
         String nameP = insertNickname();
+
         //Choose lobby size and create it
         createNewLobby(nameP);
+
         System.out.println("You just joined the lobby " + cli.getLobbyName());
+
         //If user is the first to join the lobby, he will be the one to start the game
         if(cli.getGameID() == -1)
             System.out.println("Waiting for other players to join the game...");
+
         //Wait for the lobby to be full
         waitForFullLobby();
+
         //Choose secret goal card and starting card
         preliminaryActions();
         System.out.println("Starting player is: " + startingPlayer);
 
         //REFACTOR DONE FINO A QUI
+
         //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
         try {
             //print the full screen
@@ -567,7 +572,7 @@ public class TUI extends Thread{
     }
 
     public void printFullScreen() throws IOException, ParseException {
-        Views.clearScreen();
+        //Views.clearScreen();
 
         //Still can't be used since nicknames is still unknown
         //topRow.showTopRow(currentPlayerNickame, (ArrayList<String>) nicknames, (ArrayList<Integer>) scores, (ArrayList<Resource>) playerResources);

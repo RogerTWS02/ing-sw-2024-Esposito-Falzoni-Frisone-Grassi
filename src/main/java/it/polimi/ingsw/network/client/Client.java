@@ -5,6 +5,7 @@ import it.polimi.ingsw.network.server.RMIServerInterface;
 import it.polimi.ingsw.network.server.Server;
 import it.polimi.ingsw.view.TUI.RMIGameFlow;
 import it.polimi.ingsw.view.TUI.TUI;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -70,6 +71,8 @@ public class Client  {
                         //per debugging
                         //System.out.println(recievedMessage.getObj().toString());
                     }catch (IOException | ClassNotFoundException e) {
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }finally {
