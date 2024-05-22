@@ -82,6 +82,8 @@ public class TUI extends Thread{
                 //booleano che controlla il turno
                 myTurn = (boolean) message.getObj()[3];
 
+                System.out.println("VALORE DEL TURNO: "+myTurn);
+
                 //vado alla scena di gioco impostando i parametri ricevuti
                 //ovvero le carte della mano e le common goal cards
                 System.out.println("Let's go! The game is starting...");
@@ -168,6 +170,11 @@ public class TUI extends Thread{
                 //TODO: IMPOSTARE LA RISORSA CHE INDICA LA STARTING CARD!!!
                 onBoard[40][40] = Resource.WOLF;
 
+                break;
+
+            case REPLY_YOUR_TURN:
+                myTurn = true;
+                System.out.println((String) message.getObj()[0]);
                 break;
         }
     }
@@ -319,6 +326,56 @@ public class TUI extends Thread{
         }
     }
 
+    /**
+     * This method simulates the player's turn (places a card and then draws a new one).
+     */
+
+    public void playerTurn(){
+        //To be finished
+        int cardIndex;
+        try{
+            cardIndex = scanner.nextInt();
+            if(cardIndex < 1 || cardIndex > 3){
+                System.out.println("Invalid input, please insert a number between 1 and 3");
+                return;
+            }
+        }catch (Exception e) {
+            System.out.println("Invalid input, please insert a number between 1 and 3");
+            return;
+        }
+
+        //Ask for the side the player wants to play the card on
+        String cardSide = scanner.nextLine();
+        while(!cardSide.equals("front") && !cardSide.equals("back")) {
+            System.out.println("Choose the side you want to play the card on (front or back): ");
+            cardSide = scanner.nextLine();
+        }
+
+        //Ask for the position where the player wants to place the card
+        String[] position = scanner.nextLine().split(" ");
+        while(!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
+            System.out.println("Now choose the position where you want to place the card (ex. 39 39): ");
+            position = scanner.nextLine().split(" ");
+        }
+
+        //Here I send the request to the server to place the card
+        commonCommands(new String[]{
+                "/placeCard",
+                String.valueOf(cardIndex),
+                cardSide,
+                position[0],
+                position[1]
+        });
+
+        //Now it's time to draw a new card
+        while(true){
+            System.out.println("Now draw a new card");
+            String deck;
+
+            System.out.println("Choose the deck you want to draw from (Golden or Resource): ");
+        }
+    }
+
     public synchronized void run(){
         //Initialize scanner in order to read user input
         String[] command;
@@ -361,205 +418,42 @@ public class TUI extends Thread{
 
             //TODO: Usando myTurn gestire il gameFlow del giocatore
 
-            //chiedo all'utente di inserire un comando
-            System.out.print("Type '/help' to view the commands list: ");
 
-            //Leggi il messaggio inserito dall'utente
-            command = scanner.nextLine().split(" ");
-            switch(command[0]){
-                case "/help":
-                    message = """
-                            Commands List:              (Template: /COMMAND Param1 Param 2)\s
-                            
-                            /infoCard posX posY - Returns infos about a card on the player's board
-                            /placeCard numHand front/back posX posY - Tries to place a handCard on the player's board
-                            /drawCardFromDeck Golden/Resource - Draws a card from the specified type deck
-                            /drawCardFromViewable Golden/Resource 1/2 - Draws a card from the viewable ones according to the specified index
-                            /openChat - Opens the chat tab, where you can read and send messages to other players
-                            /closeChat - Closes the chat tab and returns to the game interface
-                            """;
+            if(myTurn){
 
-                    System.out.println(message);
-                    break;
+                String standardMessage;
+                standardMessage = """
+                       Choose the card you want to play(1, 2 or 3) \s
+                       or write a different command (type /help to view the list of commands): """;
 
-                //chiedo l'UUID della carta al server e genero i dati dal JSON
-                // messaggio del tipo: /infoCard posX posY
-                case "/infoCard":
-                    if(command.length < 3) {
-                        System.out.println("Command not valid, try '/help' to view syntax");
-                        break;
-                    }
-                    int posX = 0, posY = 0;
-                    try {
-                        posX = Integer.parseInt(command[1]);
-                        posY = Integer.parseInt(command[2]);
+                //Ask for the card the player wants to play
+                System.out.print(standardMessage);
+                command = scanner.nextLine().split(" ");
 
-                    }catch(NumberFormatException e){
-                        System.out.println(e);
-                        break;
-                    }
+                if(!command[0].matches("[0-9]+")){
+                    commonCommands(command);
+                    continue;
+                }
 
-                    //mando la richiesta di info
-                    cli.sendMessage(
-                            new Message(
-                                    REQUEST_INFO_CARD,
-                                    cli.getSocketPort(),
-                                    cli.getGameID(),
-                                    new Object[]{posX, posY})
-                    );
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
+                playerTurn();
 
-                case "/placeCard":
-                    if(command.length < 5) {
-                        System.out.println("Command not valid, try '/help' to view syntax");
-                        break;
-                    }
+            }else{
+                //chiedo all'utente di inserire un comando
+                System.out.print("Type '/help' to view the commands list: ");
 
-                    try {
-                        numHand = Integer.parseInt(command[1]);
-                        positionX = Integer.parseInt(command[3]);
-                        positionY = Integer.parseInt(command[4]);
+                //Leggi il messaggio inserito dall'utente
+                command = scanner.nextLine().split(" ");
 
-                    }catch(NumberFormatException e){
-                        System.out.println(e);
-                        break;
-                    }
+                commonCommands(command);
 
-                    if(numHand < 1 || numHand > 3){
-                        System.out.println("IndexOutOfBound: the hand is numbered from 1 to 3");
-                        break;
-                    }
-
-                    String sidE = command[2].toLowerCase();
-                    if(!sidE.equals("back") && !sidE.equals("front")){
-                        System.out.println("Command not valid, try '/help' to view syntax");
-                        break;
-                    }
-
-                    //riporto all'indice dell'array
-                    numHand--;
-
-                    cli.sendMessage(
-                            new Message(
-                                    REQUEST_PLAYER_MOVE,
-                                    cli.getSocketPort(),
-                                    cli.getGameID(),
-                                    //Manca la carta da piazzare oltre alla posizione dove piazzarla
-                                    new Object[]{
-                                            numHand,
-                                            sidE.equals("back"),
-                                            positionX,
-                                            positionY
-                                    })
-                    );
-                    //rimuovo l'elemento dalla mano
-                    currentHandUUID.set(numHand, "");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-
-                case "/drawCardFromViewable":
-                    if(checkFull()) {
-                        System.out.println("Command not valid, first you need to place a card");
-                        break;
-                    }
-                    if(command.length < 3) {
-                        System.out.println("Command not valid, try '/help' to view syntax");
-                        break;
-                    }
-                    String type = command[1].toLowerCase();
-                    int pos = 0;
-                    try {
-                        pos = Integer.parseInt(command[2]);
-                        if(pos > 2 || pos < 1) continue;
-                    }catch(NumberFormatException e){
-                        System.out.println(e);
-                        break;
-                    }
-                    if(type.equals("golden")){
-                        cli.sendMessage(
-                                new Message(
-                                        REQUEST_CARD,
-                                        cli.getSocketPort(),
-                                        cli.getGameID(),
-                                        new Object[]{true, pos - 1})
-                        );
-                    }
-                    else if(type.equals("resource")){
-                        cli.sendMessage(
-                                new Message(
-                                        REQUEST_CARD,
-                                        cli.getSocketPort(),
-                                        cli.getGameID(),
-                                        new Object[]{false, pos - 1})
-                        );
-                    }else{
-                        System.out.println("Command not valid, try '/help' to view syntax");
-                        break;
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-
-                case "/drawCardFromDeck":
-                    if(checkFull()) {
-                        System.out.println("Command not valid, you need to place a card first");
-                        break;
-                    }
-                    if(command.length < 2) {
-                        System.out.println("Command not valid, try '/help' to view syntax");
-                        break;
-                    }
-
-                    String ty = command[1].toLowerCase();
-                    if(ty.equals("golden")){
-                        cli.sendMessage(
-                                new Message(
-                                        REQUEST_CARD,
-                                        cli.getSocketPort(),
-                                        cli.getGameID(),
-                                        new Object[]{true, 2})
-                        );
-                    }else if(ty.equals("resource")){
-                        cli.sendMessage(
-                                new Message(
-                                        REQUEST_CARD,
-                                        cli.getSocketPort(),
-                                        cli.getGameID(),
-                                        new Object[]{false, 2})
-                        );
-                    }else{
-                        System.out.println("Command not valid, try '/help' to view syntax");
-                        break;
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-
-                default:
-                    System.out.println("Command not valid, try '/help' to view syntax");
             }
 
 
-            if(command[0].equals("exit")){
+            /*if(command[0].equals("exit")){
                 // Chiudo lo scanner
                 scanner.close();
                 break;
-            }
+            }*/
         }
     }
 
@@ -581,5 +475,191 @@ public class TUI extends Thread{
         board.drawBoard(onBoard, available);
         goals.showObjective(allGoalsUUID.toArray(new String[0]));
         handcards.showHand(currentHandUUID.toArray(new String[0]));
+    }
+
+    /**
+     * Handles common commands
+     * @param command the command to be executed
+     */
+    public void commonCommands(String[] command){
+
+        String message;
+
+        switch(command[0]){
+            case "/help":
+                message = """
+                            Commands List:              (Template: /COMMAND Param1 Param 2)\s
+                            
+                            /infoCard posX posY - Returns infos about a card on the player's board
+                            /drawCardFromDeck Golden/Resource - Draws a card from the specified type deck
+                            /drawCardFromViewable Golden/Resource 1/2 - Draws a card from the viewable ones according to the specified index
+                            /openChat - Opens the chat tab, where you can read and send messages to other players
+                            /closeChat - Closes the chat tab and returns to the game interface
+                            """;
+
+                System.out.println(message);
+                break;
+
+            //chiedo l'UUID della carta al server e genero i dati dal JSON
+            // messaggio del tipo: /infoCard posX posY
+            case "/infoCard":
+                if(command.length < 3) {
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+                int posX, posY;
+                try {
+                    posX = Integer.parseInt(command[1]);
+                    posY = Integer.parseInt(command[2]);
+
+                }catch(NumberFormatException e){
+                    System.out.println(e);
+                    break;
+                }
+
+                //mando la richiesta di info
+                cli.sendMessage(
+                        new Message(
+                                REQUEST_INFO_CARD,
+                                cli.getSocketPort(),
+                                cli.getGameID(),
+                                new Object[]{posX, posY})
+                );
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+
+            case "/placeCard":
+
+                try {
+                    numHand = Integer.parseInt(command[1]);
+                    positionX = Integer.parseInt(command[3]);
+                    positionY = Integer.parseInt(command[4]);
+
+                }catch(NumberFormatException e){
+                    System.out.println(e);
+                    break;
+                }
+
+
+                String sidE = command[2].toLowerCase();
+
+                //riporto all'indice dell'array
+                numHand--;
+
+                cli.sendMessage(
+                        new Message(
+                                REQUEST_PLAYER_MOVE,
+                                cli.getSocketPort(),
+                                cli.getGameID(),
+                                //Manca la carta da piazzare oltre alla posizione dove piazzarla
+                                new Object[]{
+                                        numHand,
+                                        sidE.equals("back"),
+                                        positionX,
+                                        positionY
+                                })
+                );
+                //rimuovo l'elemento dalla mano
+                currentHandUUID.set(numHand, "");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+
+            /*case "/drawCardFromViewable":
+                if(checkFull()) {
+                    System.out.println("Command not valid, first you need to place a card");
+                    break;
+                }
+                if(command.length < 3) {
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+                String type = command[1].toLowerCase();
+                int pos = 0;
+                try {
+                    pos = Integer.parseInt(command[2]);
+                    if(pos > 2 || pos < 1) continue;
+                }catch(NumberFormatException e){
+                    System.out.println(e);
+                    break;
+                }
+                if(type.equals("golden")){
+                    cli.sendMessage(
+                            new Message(
+                                    REQUEST_CARD,
+                                    cli.getSocketPort(),
+                                    cli.getGameID(),
+                                    new Object[]{true, pos - 1})
+                    );
+                }
+                else if(type.equals("resource")){
+                    cli.sendMessage(
+                            new Message(
+                                    REQUEST_CARD,
+                                    cli.getSocketPort(),
+                                    cli.getGameID(),
+                                    new Object[]{false, pos - 1})
+                    );
+                }else{
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+
+             */
+
+            case "/drawCardFromDeck":
+                if(checkFull()) {
+                    System.out.println("Command not valid, you need to place a card first");
+                    break;
+                }
+                if(command.length < 2) {
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+
+                String ty = command[1].toLowerCase();
+                if(ty.equals("golden")){
+                    cli.sendMessage(
+                            new Message(
+                                    REQUEST_CARD,
+                                    cli.getSocketPort(),
+                                    cli.getGameID(),
+                                    new Object[]{true, 2})
+                    );
+                }else if(ty.equals("resource")){
+                    cli.sendMessage(
+                            new Message(
+                                    REQUEST_CARD,
+                                    cli.getSocketPort(),
+                                    cli.getGameID(),
+                                    new Object[]{false, 2})
+                    );
+                }else{
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+
+            default:
+                System.out.println("Command not valid, try '/help' to view syntax");
+        }
     }
 }

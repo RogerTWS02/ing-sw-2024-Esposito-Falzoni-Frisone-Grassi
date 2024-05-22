@@ -421,7 +421,7 @@ public class Server extends UnicastRemoteObject {
 
                                                     //inizializzo per tutti il booleano che gestisce il loro turno
                                                     gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame()
-                                                            .getCurrentPlayer().clientPort == message.getSenderID()
+                                                            .getStartingPlayer().getNickname().equals(idPlayerMap.get(pID).getNickname())
                                                 }
                                         )
                                 );
