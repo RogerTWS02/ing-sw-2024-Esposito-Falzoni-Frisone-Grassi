@@ -400,6 +400,8 @@ public class TUI extends Thread{
                                 deck,
                                 choose
                         });
+
+                    break;
                 }
         }
 
