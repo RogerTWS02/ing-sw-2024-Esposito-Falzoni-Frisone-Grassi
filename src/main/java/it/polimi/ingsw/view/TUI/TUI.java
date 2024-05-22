@@ -330,50 +330,79 @@ public class TUI extends Thread{
      * This method simulates the player's turn (places a card and then draws a new one).
      */
 
-    public void playerTurn(){
-        //To be finished
-        int cardIndex;
-        try{
-            cardIndex = scanner.nextInt();
-            if(cardIndex < 1 || cardIndex > 3){
-                System.out.println("Invalid input, please insert a number between 1 and 3");
-                return;
+    public void playerTurn(String index){
+
+        while (true) {
+
+            int cardIndex = Integer.parseInt(index);
+            if (cardIndex < 1 || cardIndex > 3) {
+                System.out.print("Invalid input, please insert a number between 1 and 3 :");
+                try {
+                    cardIndex = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.out.print("Invalid input, please insert a number between 1 and 3 :");
+                    continue;
+                }
             }
-        }catch (Exception e) {
-            System.out.println("Invalid input, please insert a number between 1 and 3");
-            return;
+
+                //Ask for the side the player wants to play the card on
+                System.out.print("Choose the side you want to play the card on (front or back): ");
+                String cardSide = scanner.nextLine();
+                while (!cardSide.equals("front") && !cardSide.equals("back")) {
+                    System.out.print("Invalid input, please insert 'front' or 'back': ");
+                    cardSide = scanner.nextLine();
+                }
+
+                //Ask for the position where the player wants to place the card
+                System.out.print("Now choose the position where you want to place the card (ex. 39 39): ");
+                String[] position = scanner.nextLine().split(" ");
+                while (!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
+                    System.out.print("Invalid input, please insert a position (two numbers separated by a space): ");
+                    position = scanner.nextLine().split(" ");
+                }
+
+                //Here I send the request to the server to place the card
+                commonCommands(new String[]{
+                        "/placeCard",
+                        String.valueOf(cardIndex),
+                        cardSide,
+                        position[0],
+                        position[1]
+                });
+
+                //Now it's time to draw a new card
+                while (true) {
+                    System.out.println("Now draw a new card");
+                    System.out.print("Choose the type of the card you want to draw (gold or resource): ");
+                    String deck = scanner.nextLine();
+
+                    while (!deck.equals("gold") && !deck.equals("resource")) {
+                        System.out.print("Invalid input, please insert 'gold' or 'resource': ");
+                        deck = scanner.nextLine();
+                    }
+
+                    System.out.print("If you want to draw from the deck type 'deck', else type the card number (1 or 2): ");
+                    String choose = scanner.nextLine();
+
+                    while (!choose.equals("deck") && !choose.equals("1") && !choose.equals("2")) {
+                        System.out.print("Invalid input, please type one of the following: 'deck' / '1' / '2'");
+                        choose = scanner.nextLine();
+                    }
+
+                    if (choose.equals("deck"))
+                        commonCommands(new String[]{
+                                "/drawCardFromDeck",
+                                deck
+                        });
+                    else
+                        commonCommands(new String[]{
+                                "/drawCardFromViewable",
+                                deck,
+                                choose
+                        });
+                }
         }
 
-        //Ask for the side the player wants to play the card on
-        String cardSide = scanner.nextLine();
-        while(!cardSide.equals("front") && !cardSide.equals("back")) {
-            System.out.println("Choose the side you want to play the card on (front or back): ");
-            cardSide = scanner.nextLine();
-        }
-
-        //Ask for the position where the player wants to place the card
-        String[] position = scanner.nextLine().split(" ");
-        while(!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
-            System.out.println("Now choose the position where you want to place the card (ex. 39 39): ");
-            position = scanner.nextLine().split(" ");
-        }
-
-        //Here I send the request to the server to place the card
-        commonCommands(new String[]{
-                "/placeCard",
-                String.valueOf(cardIndex),
-                cardSide,
-                position[0],
-                position[1]
-        });
-
-        //Now it's time to draw a new card
-        while(true){
-            System.out.println("Now draw a new card");
-            String deck;
-
-            System.out.println("Choose the deck you want to draw from (Golden or Resource): ");
-        }
     }
 
     public synchronized void run(){
@@ -418,7 +447,6 @@ public class TUI extends Thread{
 
             //TODO: Usando myTurn gestire il gameFlow del giocatore
 
-
             if(myTurn){
 
                 String standardMessage;
@@ -430,12 +458,19 @@ public class TUI extends Thread{
                 System.out.print(standardMessage);
                 command = scanner.nextLine().split(" ");
 
+                //Case in which the player wants to exit the game
+                if(command[0].equals("exit")){
+                    // Chiudo lo scanner
+                    scanner.close();
+                    break;
+                }
+                //This if decides if the player wants to play a card or use a simple command
                 if(!command[0].matches("[0-9]+")){
                     commonCommands(command);
                     continue;
                 }
 
-                playerTurn();
+                playerTurn(command[0]);
 
             }else{
                 //chiedo all'utente di inserire un comando
@@ -444,16 +479,14 @@ public class TUI extends Thread{
                 //Leggi il messaggio inserito dall'utente
                 command = scanner.nextLine().split(" ");
 
+                if(command[0].equals("exit")){
+                    // Chiudo lo scanner
+                    scanner.close();
+                    break;
+                }
+
                 commonCommands(command);
-
             }
-
-
-            /*if(command[0].equals("exit")){
-                // Chiudo lo scanner
-                scanner.close();
-                break;
-            }*/
         }
     }
 
@@ -491,8 +524,6 @@ public class TUI extends Thread{
                             Commands List:              (Template: /COMMAND Param1 Param 2)\s
                             
                             /infoCard posX posY - Returns infos about a card on the player's board
-                            /drawCardFromDeck Golden/Resource - Draws a card from the specified type deck
-                            /drawCardFromViewable Golden/Resource 1/2 - Draws a card from the viewable ones according to the specified index
                             /openChat - Opens the chat tab, where you can read and send messages to other players
                             /closeChat - Closes the chat tab and returns to the game interface
                             """;
@@ -572,7 +603,7 @@ public class TUI extends Thread{
                 }
                 break;
 
-            /*case "/drawCardFromViewable":
+            case "/drawCardFromViewable":
                 if(checkFull()) {
                     System.out.println("Command not valid, first you need to place a card");
                     break;
@@ -582,10 +613,9 @@ public class TUI extends Thread{
                     break;
                 }
                 String type = command[1].toLowerCase();
-                int pos = 0;
+                int pos;
                 try {
                     pos = Integer.parseInt(command[2]);
-                    if(pos > 2 || pos < 1) continue;
                 }catch(NumberFormatException e){
                     System.out.println(e);
                     break;
@@ -618,7 +648,6 @@ public class TUI extends Thread{
                 }
                 break;
 
-             */
 
             case "/drawCardFromDeck":
                 if(checkFull()) {
