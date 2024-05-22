@@ -343,7 +343,7 @@ public class GameController {
      * @throws SecurityException in case the position is invalid or the card cannot be placed.
      * @throws IllegalArgumentException in case the position is invalid.
      */
-    public void placeCard(int i, int j, PlayableCard card, Player player) throws SecurityException {
+    public void placeCard(int i, int j, PlayableCard card, Player player) throws IllegalArgumentException {
         if (card instanceof StartingCard) {
             player.getPlayerBoard().placeCard(card, 40, 40);
         } else if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
