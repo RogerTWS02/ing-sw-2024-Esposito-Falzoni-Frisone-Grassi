@@ -173,8 +173,8 @@ public class TUI extends Thread{
                 break;
 
             case REPLY_YOUR_TURN:
+                //System.out.println((String) message.getObj()[0]);
                 myTurn = true;
-                System.out.println((String) message.getObj()[0]);
                 break;
         }
     }
@@ -261,20 +261,17 @@ public class TUI extends Thread{
      */
     public boolean placeStartingCard() {
         String[] command;
-        boolean side;
         while(true){
             //Print the starting card
             infoC.showInfoCard(cardToChooseUUID.get(0),null);
             //Choose the side to place the starting card
-            System.out.print("Select which side to place the starting card (type 1 for front side or 2 for back side): ");
+            System.out.print("Select which side to place the starting card (type front or back to choose): ");
             command = scanner.nextLine().split(" ");
-            if(command[0].equals("1") || command[0].equals("2")){
-                side = command[0].equals("2");
-                break;
+            if(command[0].equals("front") || command[0].equals("back")){
+                return command[0].equals("back");
             }
             System.out.println("\nInput given '" + command[0] + "' is invalid! Try again.");
         }
-        return side;
     }
 
     /**
@@ -284,7 +281,6 @@ public class TUI extends Thread{
         String[] command;
         String selectedUUID;
         boolean side;
-        boolean firstTime = true;
         while(true){
             //Print the two secret goal cards for choosing one of them
             infoC.showInfoCard(cardToChooseUUID.get(1),null);
@@ -292,15 +288,13 @@ public class TUI extends Thread{
             //Choose the secret goal card
             System.out.print("Select your secret goal card (type 1 or 2 to choose): ");
             command = scanner.nextLine().split(" ");
-            //In the first player the buffer remains empty, so I have to skip the first time
-            if(Objects.equals(command[0], "") && firstTime){
-                firstTime = false;
-                command = scanner.nextLine().split(" ");
-            }
+
             if(command[0].equals("1") || command[0].equals("2")){
                 selectedUUID = (command[0].equals("1"))? cardToChooseUUID.get(1) : cardToChooseUUID.get(2);
                 allGoalsUUID.add(selectedUUID);
                 System.out.println("\nThe player has chosen the card: " + selectedUUID);
+                //after choosing the secret goal card, the player chooses
+                //the side to place the starting card on the board
                 side = placeStartingCard();
                 break;
             }
@@ -330,79 +324,97 @@ public class TUI extends Thread{
      * This method simulates the player's turn (places a card and then draws a new one).
      */
 
-    public void playerTurn(String index){
+    public void playerTurn(){
+        String[] command;
+        //Ask for the card the player wants to play
+        System.out.print("""
+                       Choose the card you want to play(1, 2 or 3) \s
+                       or write a different command (type /help to view the list of commands): """);
+        command = scanner.nextLine().split(" ");
 
+        //Case in which the player wants to exit the game
+        if(command[0].equals("exit")){
+            // Chiudo lo scanner
+            scanner.close();
+            return;
+        }
+
+        //decides if the player wants to play a card or use a simple command
+        if(!command[0].matches("[0-9]+")){
+            commonCommands(command);
+            return;
+        }
+
+        int cardIndex = Integer.parseInt(command[0]);
+        if (cardIndex < 1 || cardIndex > 3) {
+            System.out.print("Invalid input, please insert a number between 1 and 3 :");
+            return;
+        }
+
+        //Ask for the side the player wants to play the card on
+        System.out.print("Choose the side you want to play the card on (front or back): ");
+        String cardSide = scanner.nextLine();
+        while (!cardSide.equals("front") && !cardSide.equals("back")) {
+            System.out.print("Invalid input, please insert 'front' or 'back': ");
+            cardSide = scanner.nextLine();
+        }
+
+        //Ask for the position where the player wants to place the card
+        System.out.print("Now choose the position where you want to place the card (ex. 39 39): ");
+        String[] position = scanner.nextLine().split(" ");
+        while (!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
+            System.out.print("Invalid input, please insert a position (two numbers separated by a space): ");
+            position = scanner.nextLine().split(" ");
+        }
+
+        //Here I send the request to the server to place the card
+        commonCommands(new String[]{
+                "/placeCard",
+                String.valueOf(cardIndex),
+                cardSide,
+                position[0],
+                position[1]
+        });
+
+        //Now it's time to draw a new card
         while (true) {
 
-            int cardIndex = Integer.parseInt(index);
-            if (cardIndex < 1 || cardIndex > 3) {
-                System.out.print("Invalid input, please insert a number between 1 and 3 :");
-                try {
-                    cardIndex = Integer.parseInt(scanner.nextLine());
-                } catch (NumberFormatException e) {
-                    System.out.print("Invalid input, please insert a number between 1 and 3 :");
-                    continue;
-                }
+            System.out.print("""
+                    Choose the type of the card you want to draw (gold or resource) \s
+                    or write a different command (type /help to view the list of commands): """);
+            command = scanner.nextLine().split(" ");
+            String deck = command[0];
+
+            //decides if the player wants to play a card or use a simple command
+            if(!deck.equals("gold") && !deck.equals("resource")){
+                commonCommands(command);
+                continue;
             }
 
-                //Ask for the side the player wants to play the card on
-                System.out.print("Choose the side you want to play the card on (front or back): ");
-                String cardSide = scanner.nextLine();
-                while (!cardSide.equals("front") && !cardSide.equals("back")) {
-                    System.out.print("Invalid input, please insert 'front' or 'back': ");
-                    cardSide = scanner.nextLine();
-                }
+            System.out.print("If you want to draw from the deck type 'deck', else type the card number (1 or 2): ");
+            String choose = scanner.nextLine();
 
-                //Ask for the position where the player wants to place the card
-                System.out.print("Now choose the position where you want to place the card (ex. 39 39): ");
-                String[] position = scanner.nextLine().split(" ");
-                while (!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
-                    System.out.print("Invalid input, please insert a position (two numbers separated by a space): ");
-                    position = scanner.nextLine().split(" ");
-                }
+            System.out.println("CHE CAZZO E' USCITO:"+choose);
 
-                //Here I send the request to the server to place the card
+            while (!choose.equals("deck") && !choose.equals("1") && !choose.equals("2")) {
+                System.out.print("Invalid input, please type one of the following 'deck' / '1' / '2': ");
+                choose = scanner.nextLine();
+            }
+
+            System.out.println("QUI ARRIVO ALLORA DOPOTUTTO");
+
+            if (choose.equals("deck"))
                 commonCommands(new String[]{
-                        "/placeCard",
-                        String.valueOf(cardIndex),
-                        cardSide,
-                        position[0],
-                        position[1]
+                        "/drawCardFromDeck",
+                        deck
                 });
-
-                //Now it's time to draw a new card
-                while (true) {
-                    System.out.println("Now draw a new card");
-                    System.out.print("Choose the type of the card you want to draw (gold or resource): ");
-                    String deck = scanner.nextLine();
-
-                    while (!deck.equals("gold") && !deck.equals("resource")) {
-                        System.out.print("Invalid input, please insert 'gold' or 'resource': ");
-                        deck = scanner.nextLine();
-                    }
-
-                    System.out.print("If you want to draw from the deck type 'deck', else type the card number (1 or 2): ");
-                    String choose = scanner.nextLine();
-
-                    while (!choose.equals("deck") && !choose.equals("1") && !choose.equals("2")) {
-                        System.out.print("Invalid input, please type one of the following: 'deck' / '1' / '2'");
-                        choose = scanner.nextLine();
-                    }
-
-                    if (choose.equals("deck"))
-                        commonCommands(new String[]{
-                                "/drawCardFromDeck",
-                                deck
-                        });
-                    else
-                        commonCommands(new String[]{
-                                "/drawCardFromViewable",
-                                deck,
-                                choose
-                        });
-
-                    break;
-                }
+            else
+                commonCommands(new String[]{
+                        "/drawCardFromViewable",
+                        deck,
+                        choose
+                });
+            return;
         }
 
     }
@@ -434,7 +446,7 @@ public class TUI extends Thread{
         preliminaryActions();
         System.out.println("Starting player is: " + startingPlayer);
 
-        //REFACTOR DONE FINO A QUI
+        //REFACTOR DONE FINO A QUI     
 
         //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
         try {
@@ -450,32 +462,9 @@ public class TUI extends Thread{
             //TODO: Usando myTurn gestire il gameFlow del giocatore
 
             if(myTurn){
-
-                String standardMessage;
-                standardMessage = """
-                       Choose the card you want to play(1, 2 or 3) \s
-                       or write a different command (type /help to view the list of commands): """;
-
-                //Ask for the card the player wants to play
-                System.out.print(standardMessage);
-                command = scanner.nextLine().split(" ");
-
-                //Case in which the player wants to exit the game
-                if(command[0].equals("exit")){
-                    // Chiudo lo scanner
-                    scanner.close();
-                    break;
-                }
-                //This if decides if the player wants to play a card or use a simple command
-                if(!command[0].matches("[0-9]+")){
-                    commonCommands(command);
-                    continue;
-                }
-
-                playerTurn(command[0]);
-
+                playerTurn();
             }else{
-                //chiedo all'utente di inserire un comando
+                //chiedo all'utente di inserire un comando comune
                 System.out.print("Type '/help' to view the commands list: ");
 
                 //Leggi il messaggio inserito dall'utente
