@@ -382,6 +382,8 @@ public class TUI extends Thread{
         //If the card has not been placed
         if(!cardPlaced) return;
 
+        cardPlaced = false; // set it back to false for next time
+
         //Now it's time to draw a new card
         while (true) {
 
