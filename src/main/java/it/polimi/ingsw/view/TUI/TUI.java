@@ -43,6 +43,7 @@ public class TUI extends Thread{
     List<String> nicknames;
     String currentPlayerNickame;
     List<Resource> playerResources;
+    boolean cardPlaced = false;
     int numHand = 0, positionX = 0, positionY = 0;
 
     public TUI() throws IOException, ParseException {
@@ -117,6 +118,7 @@ public class TUI extends Thread{
 
                 //aggiorno la visualizzazione con la risorsa permanente
                 onBoard[positionY][positionX] = (Resource) message.getObj()[1];
+                cardPlaced = true;
 
                 //scores = (List<Integer>) message.getObj()[2];
 
@@ -176,6 +178,7 @@ public class TUI extends Thread{
                 //System.out.println((String) message.getObj()[0]);
                 myTurn = true;
                 break;
+
         }
     }
 
@@ -376,6 +379,9 @@ public class TUI extends Thread{
                 position[1]
         });
 
+        //If the card has not been placed
+        if(!cardPlaced) return;
+
         //Now it's time to draw a new card
         while (true) {
 
@@ -394,7 +400,6 @@ public class TUI extends Thread{
             System.out.print("If you want to draw from the deck type 'deck', else type the card number (1 or 2): ");
             String choose = scanner.nextLine();
 
-            System.out.println("CHE CAZZO E' USCITO:"+choose);
 
             while (!choose.equals("deck") && !choose.equals("1") && !choose.equals("2")) {
                 System.out.print("Invalid input, please type one of the following 'deck' / '1' / '2': ");
@@ -593,14 +598,7 @@ public class TUI extends Thread{
                 break;
 
             case "/drawCardFromViewable":
-                if(checkFull()) {
-                    System.out.println("Command not valid, first you need to place a card");
-                    break;
-                }
-                if(command.length < 3) {
-                    System.out.println("Command not valid, try '/help' to view syntax");
-                    break;
-                }
+
                 String type = command[1].toLowerCase();
                 int pos;
                 try {
@@ -626,9 +624,6 @@ public class TUI extends Thread{
                                     cli.getGameID(),
                                     new Object[]{false, pos - 1})
                     );
-                }else{
-                    System.out.println("Command not valid, try '/help' to view syntax");
-                    break;
                 }
                 try {
                     Thread.sleep(1000);

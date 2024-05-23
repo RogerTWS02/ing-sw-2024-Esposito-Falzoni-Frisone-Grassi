@@ -675,6 +675,7 @@ public class Server extends UnicastRemoteObject {
 
     public Message playerMove(Message message) throws IOException {
 
+
         //First I need to check if it's actually the turn of the player making the request
         if(!gameControllerMap.get(message.getGameID()).getCurrentGame().getCurrentPlayer()
             .equals(idPlayerMap.get(message.getSenderID()))){
@@ -685,6 +686,8 @@ public class Server extends UnicastRemoteObject {
                             this.serverSocket.getLocalPort(),
                             message.getGameID(),
                             "Invalid request: it's not your turn!"
+
+
                     )
             );
             return null;

@@ -345,7 +345,7 @@ public class GameController {
     public void placeCard(int i, int j, PlayableCard card, Player player) throws IllegalArgumentException {
         if (card instanceof StartingCard) {
             player.getPlayerBoard().placeCard(card, 40, 40);
-        } else if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
+        } else if (player.getPlayerBoard().getCard(i, j) != null && player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
                 //if the card is flipped I just place it on the board
                 if(card.isFlipped()){
                     player.getPlayerBoard().placeCard(card, i, j);
@@ -353,16 +353,9 @@ public class GameController {
                 //if it's a golden card not flipped I need to check its rules
                 else if(card instanceof GoldenCard){
 
-                    //PER DEBUGGING
-                    System.out.println("Sono entrato nel place card della board");
-
                     if(!player.getPlayerBoard().checkGoldenCardRequirements((GoldenCard) card)) {
-                        System.out.println("Sono entrato nell'exception");
                         throw new IllegalArgumentException("You don't have the required resources to place this card!");
                     }
-
-                    //PER DEBUGGING
-                    System.out.println("BBBBBBBBBBBB: "+card.getRule().toString());
 
                     switch (card.getRule().toString()) {
                         case "NONE":
@@ -389,7 +382,7 @@ public class GameController {
                     player.addScore(card.getPoints());
                 }
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("You can't place a card here!");
         }
     }
 
