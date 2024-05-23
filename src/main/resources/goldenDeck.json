@@ -53,7 +53,7 @@
         "points": 3,
         "require": ["MUSHROOM", "MUSHROOM", "MUSHROOM"],
         "corners": ["EMPTY", null, "GLASSVIAL", null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_8",
@@ -61,7 +61,7 @@
         "points": 3,
         "require": ["MUSHROOM", "MUSHROOM", "MUSHROOM"],
         "corners": ["FEATHER", "EMPTY", null, null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_9",
@@ -69,7 +69,7 @@
         "points": 3,
         "require": ["MUSHROOM", "MUSHROOM", "MUSHROOM"],
         "corners": [null, "SCROLL", null, "EMPTY"],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_10",
@@ -77,7 +77,7 @@
         "points": 5,
         "require": ["MUSHROOM", "MUSHROOM", "MUSHROOM", "MUSHROOM", "MUSHROOM"],
         "corners": ["EMPTY", null, "EMPTY", null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_11",
@@ -133,7 +133,7 @@
         "points": 3,
         "require": ["LEAF", "LEAF", "LEAF"],
         "corners": ["EMPTY", null, "FEATHER", null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_18",
@@ -141,7 +141,7 @@
         "points": 3,
         "require": ["LEAF", "LEAF", "LEAF"],
         "corners": ["SCROLL", "EMPTY", null, null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_19",
@@ -149,7 +149,7 @@
         "points": 3,
         "require": ["LEAF", "LEAF", "LEAF"],
         "corners": [null, "GLASSVIAL", null, "EMPTY"],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_20",
@@ -157,7 +157,7 @@
         "points": 5,
         "require": ["LEAF", "LEAF", "LEAF", "LEAF", "LEAF"],
         "corners": ["EMPTY", "EMPTY", null, null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_21",
@@ -213,7 +213,7 @@
         "points": 3,
         "require": ["WOLF", "WOLF", "WOLF"],
         "corners": ["EMPTY", null, "SCROLL", null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_28",
@@ -221,7 +221,7 @@
         "points": 3,
         "require": ["WOLF", "WOLF", "WOLF"],
         "corners": ["EMPTY", "GLASSVIAL", null, null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_29",
@@ -229,7 +229,7 @@
         "points": 3,
         "require": ["WOLF", "WOLF", "WOLF"],
         "corners": [null, "EMPTY", null, "FEATHER"],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_30",
@@ -237,7 +237,7 @@
         "points": 5,
         "require": ["WOLF", "WOLF", "WOLF", "WOLF", "WOLF"],
         "corners": [null, "EMPTY", null, "EMPTY"],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_31",
@@ -293,7 +293,7 @@
         "points": 3,
         "require": ["BUTTERFLY", "BUTTERFLY", "BUTTERFLY"],
         "corners": ["GLASSVIAL", null, "EMPTY", null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_38",
@@ -301,7 +301,7 @@
         "points": 3,
         "require": ["BUTTERFLY", "BUTTERFLY", "BUTTERFLY"],
         "corners": ["EMPTY", "SCROLL", null, null],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_39",
@@ -309,7 +309,7 @@
         "points": 3,
         "require": ["BUTTERFLY", "BUTTERFLY", "BUTTERFLY"],
         "corners": [null, null, "FEATHER", "EMPTY"],
-        "rule": null
+        "rule": "NONE"
     },
     {
         "UUID": "GC_40",
@@ -317,6 +317,6 @@
         "points": 5,
         "require": ["BUTTERFLY", "BUTTERFLY", "BUTTERFLY", "BUTTERFLY", "BUTTERFLY"],
         "corners": ["EMPTY", "EMPTY", null, null],
-        "rule": null
+        "rule": "NONE"
     }
 ]

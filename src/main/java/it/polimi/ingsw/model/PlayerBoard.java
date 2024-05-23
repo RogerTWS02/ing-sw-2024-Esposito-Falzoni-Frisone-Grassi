@@ -89,12 +89,6 @@ public class PlayerBoard implements Serializable{
      * @return The number of corners that get covered by the card.
      */
     public int placeCard(PlayableCard card, int x, int y) {
-        //If the card is a GoldenCard, check if the player has the required resources
-        if(card instanceof GoldenCard){
-            if(!checkGoldenCardRequirements((GoldenCard) card)){
-                throw new IllegalArgumentException("You don't have the required resources to place this card!");
-            }
-        }
 
         //NOTA BENE: LA PRIMA SONO LE Y, LA SECONDA SONO LE X
         //MA LA NOTAZIONE SEGUENTE E' INVERSA!!!!

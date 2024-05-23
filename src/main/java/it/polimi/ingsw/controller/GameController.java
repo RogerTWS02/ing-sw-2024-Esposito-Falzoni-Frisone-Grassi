@@ -158,8 +158,8 @@ public class GameController {
         Resource permRes = stringToResource((String) JSONcard.get("permRes"));
         JSONArray JSONCorners = (JSONArray) JSONcard.get("corners");
         String temp = (String) JSONcard.get("rule");
-        if(temp != null && temp.equals("CORNERS")){
-            rule = "CORNERS";
+        if(temp.equals("CORNERS") || temp.equals("NONE")){
+            rule = temp;
         } else {
             rule = stringToResource((String) JSONcard.get("rule"));
         }
@@ -340,14 +340,30 @@ public class GameController {
      * @param j The Y coordinate of the position where the card is to be placed.
      * @param card The card to be placed on the board.
      * @param player The player who is placing the card.
-     * @throws SecurityException in case the position is invalid or the card cannot be placed.
      * @throws IllegalArgumentException in case the position is invalid.
      */
     public void placeCard(int i, int j, PlayableCard card, Player player) throws IllegalArgumentException {
         if (card instanceof StartingCard) {
             player.getPlayerBoard().placeCard(card, 40, 40);
         } else if (player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
-                if(card instanceof GoldenCard){
+                //if the card is flipped I just place it on the board
+                if(card.isFlipped()){
+                    player.getPlayerBoard().placeCard(card, i, j);
+                }
+                //if it's a golden card not flipped I need to check its rules
+                else if(card instanceof GoldenCard){
+
+                    //PER DEBUGGING
+                    System.out.println("Sono entrato nel place card della board");
+
+                    if(!player.getPlayerBoard().checkGoldenCardRequirements((GoldenCard) card)) {
+                        System.out.println("Sono entrato nell'exception");
+                        throw new IllegalArgumentException("You don't have the required resources to place this card!");
+                    }
+
+                    //PER DEBUGGING
+                    System.out.println("BBBBBBBBBBBB: "+card.getRule().toString());
+
                     switch (card.getRule().toString()) {
                         case "NONE":
                             player.getPlayerBoard().placeCard(card, i, j);
@@ -367,6 +383,7 @@ public class GameController {
                             player.addScore(occurency * card.getPoints());
                     }
                 }
+                //If it's a resource card not flipped I just place it and update the score
                 else{
                     player.getPlayerBoard().placeCard(card, i, j);
                     player.addScore(card.getPoints());

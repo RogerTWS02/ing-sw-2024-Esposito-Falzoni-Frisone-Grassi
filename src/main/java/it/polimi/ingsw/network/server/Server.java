@@ -712,7 +712,7 @@ public class Server extends UnicastRemoteObject {
 
         try {
             gameControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
-        }catch(SecurityException e){
+        }catch(IllegalArgumentException e){
             //se ho fatto una mossa non valida mando un messaggio di bad request
             if(hasSocket) {
                 idSocketMap.get(message.getSenderID()).sendMessage(
@@ -720,7 +720,7 @@ public class Server extends UnicastRemoteObject {
                                 REPLY_BAD_REQUEST,
                                 this.serverSocket.getLocalPort(),
                                 message.getGameID(),
-                                new Object[]{e}
+                                new Object[]{e.getMessage()}
                         )
                 );
             }else{
@@ -728,7 +728,7 @@ public class Server extends UnicastRemoteObject {
                         REPLY_BAD_REQUEST,
                         message.getSenderID(),
                         message.getGameID(),
-                        new Object[]{e}
+                        new Object[]{e.getMessage()}
                 );
             }
             return null;

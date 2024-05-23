@@ -380,13 +380,13 @@ public class TUI extends Thread{
         while (true) {
 
             System.out.print("""
-                    Choose the type of the card you want to draw (gold or resource) \s
+                    Choose the type of the card you want to draw (golden or resource) \s
                     or write a different command (type /help to view the list of commands): """);
             command = scanner.nextLine().split(" ");
             String deck = command[0];
 
             //decides if the player wants to play a card or use a simple command
-            if(!deck.equals("gold") && !deck.equals("resource")){
+            if(!deck.equals("golden") && !deck.equals("resource")){
                 commonCommands(command);
                 continue;
             }
@@ -400,8 +400,6 @@ public class TUI extends Thread{
                 System.out.print("Invalid input, please type one of the following 'deck' / '1' / '2': ");
                 choose = scanner.nextLine();
             }
-
-            System.out.println("QUI ARRIVO ALLORA DOPOTUTTO");
 
             if (choose.equals("deck"))
                 commonCommands(new String[]{
