@@ -113,9 +113,9 @@ public class PlayerBoard implements Serializable{
                         new ResourceCard(new Resource[]{}, new Corner[4], 0, "PLACEHOLDER");
 
                 //se l'angolo della carta che sto piazzando non è nullo
-                if(card.getCardCorners()[i] != null) {
+                if(card.getCardCorners()[i] != null || (card.isFlipped() && !(card instanceof StartingCard))) {
                     grid[x + tempCoord[0]][y + tempCoord[1]].setState(AVAILABLE);
-                } else {
+                } else{
                     grid[x + tempCoord[0]][y + tempCoord[1]].setState(UNAVAILABLE);
                 }
 
@@ -123,7 +123,7 @@ public class PlayerBoard implements Serializable{
                 //PER DEBUGGING
                 //System.out.println(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID()+": "+(y + tempCoord[1])+" "+(x + tempCoord[0])+" at index: "+i);
                 if(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID().equals("PLACEHOLDER")){
-                    if(card.getCardCorners()[i] == null) {
+                    if(card.getCardCorners()[i] == null && !card.isFlipped()){
                         grid[x + tempCoord[0]][y + tempCoord[1]].setState(UNAVAILABLE);
                     }
                 }

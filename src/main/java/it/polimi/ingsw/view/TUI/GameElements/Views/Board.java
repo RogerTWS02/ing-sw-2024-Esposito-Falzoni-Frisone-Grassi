@@ -28,7 +28,7 @@ public class Board {
     }
 
     //The isFlipped parameter is used only to determine whether the starting card is flipped or not
-    public void drawBoard(Resource[][] boardResources, List<int[]> availablePositions) {
+    public int drawBoard(Resource[][] boardResources, List<int[]> availablePositions) {
 
         String background;
         String border = "";
@@ -238,6 +238,7 @@ public class Board {
         }
 
         System.out.println(sb);
+        return (eRow-sRow)*3;
     }
 
     public Object[][] mergeBoards(Resource[][] boardResources, List<int[]> availablePositions) {

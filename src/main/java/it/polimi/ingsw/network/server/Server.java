@@ -419,9 +419,21 @@ public class Server extends UnicastRemoteObject {
                                                             .cardToChoose(idPlayerMap.get(pID)))
                                                             .toList(),
 
+
                                                     //inizializzo per tutti il booleano che gestisce il loro turno
                                                     gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame()
-                                                            .getStartingPlayer().getNickname().equals(idPlayerMap.get(pID).getNickname())
+                                                            .getStartingPlayer().getNickname().equals(idPlayerMap.get(pID).getNickname()),
+
+
+
+                                                    //send all the nicknames
+                                                    //gameControllerMap.get(lobbyPlayerMap.get(1)[0])
+                                                    //        .getCurrentGame()
+                                                    //        .getPlayers()
+                                                    //        .stream()
+                                                    //        .map(Player::getNickname)
+                                                    //        .collect(Collectors.toList())
+
                                                 }
                                         )
                                 );
@@ -765,7 +777,21 @@ public class Server extends UnicastRemoteObject {
                                     card.getPermResource()[0],
 
                                     //return the new scores of every player
-                                    scores,
+                                    gameControllerMap.get(message.getGameID())
+                                            .getCurrentGame()
+                                            .getPlayers()
+                                            .stream()
+                                            .map(Player::getScore)
+                                            .collect(Collectors.toList()),
+
+
+                                    //return all the nicknames
+                                    gameControllerMap.get(message.getGameID())
+                                            .getCurrentGame()
+                                            .getPlayers()
+                                            .stream()
+                                            .map(Player::getNickname)
+                                            .collect(Collectors.toList()),
 
                                     //return the current player
                                     gameControllerMap.get(message.getGameID())
