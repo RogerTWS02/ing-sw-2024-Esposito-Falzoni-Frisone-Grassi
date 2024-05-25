@@ -427,12 +427,22 @@ public class Server extends UnicastRemoteObject {
 
 
                                                     //send all the nicknames
-                                                    //gameControllerMap.get(lobbyPlayerMap.get(1)[0])
-                                                    //        .getCurrentGame()
-                                                    //        .getPlayers()
-                                                    //        .stream()
-                                                    //        .map(Player::getNickname)
-                                                    //        .collect(Collectors.toList())
+                                                    gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                            .getCurrentGame()
+                                                            .getPlayers()
+                                                            .stream()
+                                                            .map(Player::getNickname)
+                                                            .collect(Collectors.toList()),
+
+
+
+
+                                                    //return the current player
+                                                    gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                           .getCurrentGame()
+                                                           .getCurrentPlayer()
+                                                           .getNickname(),
+
 
                                                 }
                                         )
@@ -443,10 +453,23 @@ public class Server extends UnicastRemoteObject {
                                                 REPLY_STARTING_PLAYER,
                                                 serverSocket.getLocalPort(),
                                                 lobbyPlayerMap.get(l)[0],
+                                                new Object[]{
                                                 gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                         .getCurrentGame()
                                                         .getStartingPlayer()
-                                                        .getNickname()
+                                                        .getNickname(),
+
+/*                                                Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                        .getCurrentGame()
+                                                        .getViewableResourceCards())
+                                                        .map(PlayableCard::getUUID)
+                                                        .collect(Collectors.toList()),
+                                                Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                        .getCurrentGame()
+                                                        .getViewableGoldenCards())
+                                                        .map(PlayableCard::getUUID)
+                                                        .collect(Collectors.toList()),*/
+                                                }
                                         )
                                 );
 

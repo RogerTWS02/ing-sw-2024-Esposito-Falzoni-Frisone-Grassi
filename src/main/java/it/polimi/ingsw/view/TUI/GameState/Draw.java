@@ -44,8 +44,8 @@ public class Draw implements Views {
 
 
      }
-     // uuid gold card, uuid resource card, firstly the covered one
-     public void showDrawable (String[] gUuids, String[] rUuids, String[] resources)throws IOException, ParseException {
+     // uuid gold card, uuid resource card, last one: the covered one
+     public void showDrawable (String[] gUuids, String[] rUuids){
           String[][] gStringCard = new String[10][3];
           String[][] rStringCard = new String[10][3];
 
@@ -66,7 +66,7 @@ public class Draw implements Views {
 
 
           // generating golden cards
-          for(int x =0; x< 3; x++){
+          for(int x =2; x>=0; x--){
 
 
                int index = Integer.parseInt(gUuids[x].substring(3));
@@ -100,7 +100,7 @@ public class Draw implements Views {
           }
 
           // generating resource cards
-          for(int x =0; x< 3; x++){
+          for(int x =2; x>=0; x--){
 
                int index = Integer.parseInt(rUuids[x].substring(3));
                JSONObject JSONCard;

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.TUI;
 
+import it.polimi.ingsw.model.PlayableCard;
 import it.polimi.ingsw.model.Resource;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
@@ -7,10 +8,7 @@ import it.polimi.ingsw.view.TUI.GameElements.Views.Board;
 import it.polimi.ingsw.view.TUI.GameElements.Views.HandCards;
 import it.polimi.ingsw.view.TUI.GameElements.Views.Objective;
 import it.polimi.ingsw.view.TUI.GameElements.Views.TopRow;
-import it.polimi.ingsw.view.TUI.GameState.InfoCard;
-import it.polimi.ingsw.view.TUI.GameState.LoginUsername;
-import it.polimi.ingsw.view.TUI.GameState.StartGame;
-import it.polimi.ingsw.view.TUI.GameState.Views;
+import it.polimi.ingsw.view.TUI.GameState.*;
 import org.json.simple.parser.ParseException;
 
 import javax.swing.text.View;
@@ -36,6 +34,9 @@ public class TUI extends Thread{
     Objective goals = new Objective();
     InfoCard infoC = new InfoCard();
     Board board = new Board();
+    Draw draw = new Draw();
+    String[] resourceCardViawable = new String[3];
+    String [] goldenCardViawable = new String[3];
     String startingPlayer;
     List<int[]> available;
     Resource[][] onBoard;
@@ -44,7 +45,7 @@ public class TUI extends Thread{
     List<Integer> scores;
     List<String> nicknames;
     String currentPlayerNickame;
-    List<Resource> playerResources;
+    List<Resource> playerResources= null;
     boolean cardPlaced = false;
     private static BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     int numHand = 0, positionX = 0, positionY = 0;
@@ -85,6 +86,14 @@ public class TUI extends Thread{
 
                 //booleano che controlla il turno
                 myTurn = (boolean) message.getObj()[3];
+
+                // update list of players
+                nicknames = (List<String>) message.getObj()[4];
+
+                // update current player
+                currentPlayerNickame = (String) message.getObj()[5];
+
+
 
                 System.out.println("VALORE DEL TURNO: "+myTurn);
 
@@ -161,6 +170,8 @@ public class TUI extends Thread{
 
             case REPLY_STARTING_PLAYER:
                 startingPlayer = (String) message.getObj()[0];
+               // resourceCardViawable = (String[]) message.getObj()[1];
+               // goldenCardViawable = (String[]) message.getObj()[2];
                 break;
 
             case REPLY_CHOICES_MADE:
@@ -171,7 +182,6 @@ public class TUI extends Thread{
                 //inizializzo la visualizzazione della board
                 onBoard = new Resource[80][80];
 
-                //TODO: IMPOSTARE LA RISORSA CHE INDICA LA STARTING CARD!!!
                 onBoard[40][40] = Resource.WOLF;
 
                 break;
@@ -330,6 +340,14 @@ public class TUI extends Thread{
      */
 
     public void playerTurn(){
+
+        try {
+            printFullScreen();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         String[] command;
         //Ask for the card the player wants to play
         System.out.println("\nChoose the card you want to play(1, 2 or 3)");
@@ -388,6 +406,7 @@ public class TUI extends Thread{
         //Now it's time to draw a new card
         while (true) {
 
+            //draw.showDrawable(goldenCardViawable, resourceCardViawable);
             System.out.println("\nChoose the type of the card you want to draw (golden or resource)");
             System.out.print("or write a different command (type /help to view the list of commands): ");
 
@@ -454,13 +473,7 @@ public class TUI extends Thread{
 
         //REFACTOR DONE FINO A QUI     
 
-        //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
-        try {
-            //print the full screen
-            printFullScreen();
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException(e);
-        }
+
 
         /*
         This thread reads the input from the user and puts it in the inputQueue, so that the main process doesn't have to wait for the input
@@ -492,7 +505,13 @@ public class TUI extends Thread{
             if(myTurn){
                 playerTurn();
             }else{
-
+                //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
+                try {
+                    //print the full screen
+                    printFullScreen();
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException(e);
+                }
                 /*
                 Here we read the message from the player, but it doesn't block the main thread
                 because we use a storing queue to store the input
@@ -543,10 +562,10 @@ public class TUI extends Thread{
         //Views.clearScreen();
 
         //Still can't be used since nicknames is still unknown
-        //topRow.showTopRow(currentPlayerNickame, (ArrayList<String>) nicknames, (ArrayList<Integer>) scores, (ArrayList<Resource>) playerResources);
-
+        topRow.showTopRow(currentPlayerNickame, (ArrayList<String>) nicknames, scores == null? new ArrayList<>(nicknames.size()): (ArrayList<Integer>) scores, (ArrayList<Resource>) playerResources);
         //stampo la playerBoard
-        board.drawBoard(onBoard, available);
+        int lines=board.drawBoard(onBoard, available)*3;
+        if(lines<20){System.out.println("\n".repeat(20-lines));}
         goals.showObjective(allGoalsUUID.toArray(new String[0]));
         handcards.showHand(currentHandUUID.toArray(new String[0]));
     }
