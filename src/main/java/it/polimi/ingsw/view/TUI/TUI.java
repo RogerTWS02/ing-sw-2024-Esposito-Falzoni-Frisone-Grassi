@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import static it.polimi.ingsw.network.message.MessageType.*;
 
 public class TUI extends Thread{
@@ -44,6 +46,7 @@ public class TUI extends Thread{
     String currentPlayerNickame;
     List<Resource> playerResources;
     boolean cardPlaced = false;
+    private static BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     int numHand = 0, positionX = 0, positionY = 0;
 
     public TUI() throws IOException, ParseException {
@@ -105,7 +108,6 @@ public class TUI extends Thread{
                         break;
                     }
                 }
-
                 printFullScreen();
 
                 break;
@@ -330,10 +332,9 @@ public class TUI extends Thread{
     public void playerTurn(){
         String[] command;
         //Ask for the card the player wants to play
-        System.out.print("""
-                       Choose the card you want to play(1, 2 or 3) \s
-                       or write a different command (type /help to view the list of commands): """);
-        command = scanner.nextLine().split(" ");
+        System.out.println("\nChoose the card you want to play(1, 2 or 3)");
+        System.out.print("or write a different command (type /help to view the list of commands): ");
+        command = getCommandFromQueue();
 
         //Case in which the player wants to exit the game
         if(command[0].equals("exit")){
@@ -350,24 +351,24 @@ public class TUI extends Thread{
 
         int cardIndex = Integer.parseInt(command[0]);
         if (cardIndex < 1 || cardIndex > 3) {
-            System.out.print("Invalid input, please insert a number between 1 and 3 :");
+            System.out.print("Invalid input, please insert a number between 1 and 3: ");
             return;
         }
 
         //Ask for the side the player wants to play the card on
         System.out.print("Choose the side you want to play the card on (front or back): ");
-        String cardSide = scanner.nextLine();
+        String cardSide = getCommandFromQueue()[0];
         while (!cardSide.equals("front") && !cardSide.equals("back")) {
             System.out.print("Invalid input, please insert 'front' or 'back': ");
-            cardSide = scanner.nextLine();
+            cardSide = getCommandFromQueue()[0];
         }
 
         //Ask for the position where the player wants to place the card
         System.out.print("Now choose the position where you want to place the card (ex. 39 39): ");
-        String[] position = scanner.nextLine().split(" ");
+        String[] position = getCommandFromQueue();
         while (!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
             System.out.print("Invalid input, please insert a position (two numbers separated by a space): ");
-            position = scanner.nextLine().split(" ");
+            position = getCommandFromQueue();
         }
 
         //Here I send the request to the server to place the card
@@ -387,10 +388,10 @@ public class TUI extends Thread{
         //Now it's time to draw a new card
         while (true) {
 
-            System.out.print("""
-                    Choose the type of the card you want to draw (golden or resource) \s
-                    or write a different command (type /help to view the list of commands): """);
-            command = scanner.nextLine().split(" ");
+            System.out.println("\nChoose the type of the card you want to draw (golden or resource)");
+            System.out.print("or write a different command (type /help to view the list of commands): ");
+
+            command = getCommandFromQueue();
             String deck = command[0];
 
             //decides if the player wants to play a card or use a simple command
@@ -400,12 +401,12 @@ public class TUI extends Thread{
             }
 
             System.out.print("If you want to draw from the deck type 'deck', else type the card number (1 or 2): ");
-            String choose = scanner.nextLine();
+            String choose = getCommandFromQueue()[0];
 
 
             while (!choose.equals("deck") && !choose.equals("1") && !choose.equals("2")) {
                 System.out.print("Invalid input, please type one of the following 'deck' / '1' / '2': ");
-                choose = scanner.nextLine();
+                choose = getCommandFromQueue()[0];
             }
 
             if (choose.equals("deck"))
@@ -426,7 +427,7 @@ public class TUI extends Thread{
 
     public synchronized void run(){
         //Initialize scanner in order to read user input
-        String[] command;
+        String[] command = null;
         String message;
 
         //Show game logo
@@ -461,6 +462,28 @@ public class TUI extends Thread{
             throw new RuntimeException(e);
         }
 
+        /*
+        This thread reads the input from the user and puts it in the inputQueue, so that the main process doesn't have to wait for the input
+         */
+        Thread inputThread = new Thread(() -> {
+            while (true) {
+                try{
+                    if(scanner.hasNextLine()){
+                        String input = scanner.nextLine();
+                        inputQueue.put(input);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error in reading input: " + e);
+                }
+            }
+        });
+
+        inputThread.setDaemon(true);
+        inputThread.start();
+
+        //chiedo all'utente di inserire un comando comune
+        System.out.print("Type '/help' to view the commands list: ");
+
         //VERA FASE DI GIOCO
         while(true){
 
@@ -469,22 +492,40 @@ public class TUI extends Thread{
             if(myTurn){
                 playerTurn();
             }else{
-                //chiedo all'utente di inserire un comando comune
-                System.out.print("Type '/help' to view the commands list: ");
 
-                //Leggi il messaggio inserito dall'utente
-                command = scanner.nextLine().split(" ");
+                /*
+                Here we read the message from the player, but it doesn't block the main thread
+                because we use a storing queue to store the input
+                 */
+                if (!inputQueue.isEmpty()) {
 
-                if(command[0].equals("exit")){
-                    // Chiudo lo scanner
-                    scanner.close();
-                    break;
+                    command = getCommandFromQueue();
+
+                    if (command.length > 0 && command[0].equals("exit")) {
+                        // I close the scanner
+                        scanner.close();
+                        break;
+                    }else{
+                        commonCommands(command);
+                        System.out.print("Type '/help' to view the commands list: ");
+                    }
+
                 }
 
-                commonCommands(command);
+                try {
+                    Thread.sleep(100); // Pausa breve per evitare il busy-waiting
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
             }
         }
     }
+
+    /**
+     * Checks if the hand is full
+     * @return true if the hand is full, false otherwise
+     */
 
     public synchronized boolean checkFull(){
         int num = 0;
@@ -493,6 +534,10 @@ public class TUI extends Thread{
         }
         return num == 3;
     }
+
+    /**
+     * Prints the full screen of the game
+     */
 
     public void printFullScreen() throws IOException, ParseException {
         //Views.clearScreen();
@@ -676,5 +721,19 @@ public class TUI extends Thread{
             default:
                 System.out.println("Command not valid, try '/help' to view syntax");
         }
+    }
+    /**
+     * Gets the command from the queue, if the queue is empty it waits for a new command
+     * @return the command
+     */
+
+    private static String[] getCommandFromQueue() {
+        String command = null;
+        try {
+            command = inputQueue.take();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return command.split(" ");
     }
 }
