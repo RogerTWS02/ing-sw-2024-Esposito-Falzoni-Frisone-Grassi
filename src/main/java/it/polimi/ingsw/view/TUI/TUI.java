@@ -116,6 +116,13 @@ public class TUI extends Thread{
                     }
                 }
 
+                //mostro l'update fatto
+                try {
+                    printFullScreen();
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException(e);
+                }
+
                 break;
 
             //viene chiamato dopo che un giocatore piazza una carta
