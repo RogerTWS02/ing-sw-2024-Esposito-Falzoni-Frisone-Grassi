@@ -64,7 +64,7 @@ public class GameControllerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void placeCard_test_2() {
+    public void placeCard_test_2() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
         game.getPlayers().get(0).setPawn(Pawn.BLUE);
         PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
