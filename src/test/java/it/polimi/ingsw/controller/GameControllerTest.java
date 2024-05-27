@@ -33,7 +33,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void placeCard_test_1() {
+    public void placeCard_test_1() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
         game.getPlayers().get(0).setPawn(Pawn.BLUE);
         PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
@@ -72,7 +72,7 @@ public class GameControllerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void placeCard_test_3() {
+    public void placeCard_test_3() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
         game.getPlayers().get(0).setPawn(Pawn.BLUE);
         PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
@@ -80,7 +80,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void placeCard_test_4() {
+    public void placeCard_test_4() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
         game.getPlayers().get(0).setPawn(Pawn.BLUE);
         PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
@@ -90,7 +90,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void placeCard_test_5() {
+    public void placeCard_test_5() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
         game.getPlayers().get(0).setPawn(Pawn.BLUE);
         PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
@@ -102,7 +102,7 @@ public class GameControllerTest {
 
 
     @Test
-    public void showAvailableOnBoard_test() {
+    public void showAvailableOnBoard_test() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
         game.getPlayers().get(0).setPawn(Pawn.BLUE);
         PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);

@@ -177,12 +177,14 @@ public class Server extends UnicastRemoteObject {
                 idPlayerMap.get(message.getSenderID()).setSecretGoalCard(secretUUID);
 
                 //piazzo la carta iniziale nella playerBoard
-                gameControllerMap.get(message.getGameID()).placeCard(
-                        40,
-                        40,
-                        (StartingCard) idPlayerMap.get(message.getSenderID()).getCardToChoose()[0],
-                        idPlayerMap.get(message.getSenderID())
-                );
+                try {
+                    gameControllerMap.get(message.getGameID()).placeCard(
+                            40,
+                            40,
+                            (StartingCard) idPlayerMap.get(message.getSenderID()).getCardToChoose()[0],
+                            idPlayerMap.get(message.getSenderID())
+                    );
+                }catch (IllegalAccessException ignored){};
 
                 //notifico tutti i giocatori delle caselle disponibili
                 //mando a tutti gli spazi disponibili per piazzare altre carte
@@ -405,7 +407,7 @@ public class Server extends UnicastRemoteObject {
                                                     Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                             .returnHand(idPlayerMap.get(pID)))
                                                             .map(PlayableCard::getUUID)
-                                                            .toList(),
+                                                            .collect(Collectors.toList()),
 
                                                     //mando a tutti l'UUID delle common goal cards
                                                     Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
@@ -667,7 +669,7 @@ public class Server extends UnicastRemoteObject {
         //TODO: E SICCOME è FINITO IL TURNO DI QUESTO GIOCATORE MANDO A TUTTI IL SUO PUNTEGGIO AGGIORNATO
         //TODO: POI MANDO A TUTTI I GIOCATORI IL NOME DEL NUOVO GIOCATORE
 
-        //lo notifico dicendogli che è il suo turno
+        //Notifico il prossimo giocatore dicendogli che è il suo turno
         idSocketMap.get(currPID).sendMessage(
                 new Message(
                         REPLY_YOUR_TURN,
@@ -737,20 +739,12 @@ public class Server extends UnicastRemoteObject {
         PlayableCard card = idPlayerMap.get(message.getSenderID())
                 .getHand()[index];
 
-        //una volta piazzata la carta quello spazio rimane vuoto nella mano
-        idPlayerMap.get(message.getSenderID()).setHand(null, index);
-
-        //PER DEBUGGING
-        System.out.println("HO IMPOSTATO LA POSIZIONE A: "+
-                idPlayerMap.get(message.getSenderID()).getHand()[index]);
-
-
         //imposto il lato corretto
         card.setFlipped((boolean)message.getObj()[1]);
 
         try {
             gameControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
-        }catch(IllegalArgumentException e){
+        }catch(IllegalArgumentException | IllegalAccessException e){
             //se ho fatto una mossa non valida mando un messaggio di bad request
             if(hasSocket) {
                 idSocketMap.get(message.getSenderID()).sendMessage(
@@ -772,7 +766,8 @@ public class Server extends UnicastRemoteObject {
             return null;
         }
 
-        idPlayerMap.get(message.getSenderID()).getHand()[index] = null;
+        //una volta piazzata la carta quello spazio rimane vuoto nella mano
+        idPlayerMap.get(message.getSenderID()).setHand(null, index);
 
         List<Integer> scores = gameControllerMap.get(message.getGameID())
                 .getCurrentGame()

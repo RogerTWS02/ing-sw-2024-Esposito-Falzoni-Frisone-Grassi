@@ -342,7 +342,7 @@ public class GameController {
      * @param player The player who is placing the card.
      * @throws IllegalArgumentException in case the position is invalid.
      */
-    public void placeCard(int i, int j, PlayableCard card, Player player) throws IllegalArgumentException {
+    public void placeCard(int i, int j, PlayableCard card, Player player) throws IllegalArgumentException, IllegalAccessException {
         if (card instanceof StartingCard) {
             player.getPlayerBoard().placeCard(card, 40, 40);
         } else if (player.getPlayerBoard().getCard(i, j) != null && player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
@@ -437,7 +437,7 @@ public class GameController {
      * @param number The number of players to be set.
      * @throws IllegalArgumentException in case the number of players is invalid.
      */
-    public void setNumberOfPlayers(int number) throws IllegalArgumentException{
+    public void setNumberOfPlayers(int number) throws IllegalArgumentException {
         if(number < 5 && number > 1) {
             ArrayList<Player> list = new ArrayList<>(); //(number);
             for(int i = 0; i< number; i++){
@@ -446,7 +446,7 @@ public class GameController {
             currentGame.setPlayers(list);
         }else{
             System.err.println("Set a valid number of players!");
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Position not valid, check the board for valid positions!");
         }
     }
 

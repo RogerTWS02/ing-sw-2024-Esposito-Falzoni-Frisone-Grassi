@@ -13,10 +13,7 @@ import org.json.simple.parser.ParseException;
 
 import javax.swing.text.View;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -113,16 +110,22 @@ public class TUI extends Thread{
                 //aggiungo la nuova carta
                 for(int i = 0; i < 3; i++){
                     if(currentHandUUID.get(i).isEmpty()){
-                        currentHandUUID.add(i, newCardUUID);
+                        System.out.println("FINISCI QUI? "+newCardUUID);
+                        currentHandUUID.set(i, newCardUUID);
                         break;
                     }
                 }
-                printFullScreen();
 
                 break;
 
             //viene chiamato dopo che un giocatore piazza una carta
             case REPLY_UPDATED_SCORE:
+
+                //RIMUOVO L'ELEMENTO DALLA MANO SOLO QUANDO SONO
+                //SICURO CHE LA MOSSA SIA ANDATA A BUON FINE!!!
+                currentHandUUID.set(numHand, "");
+
+                System.out.println("MANTIENE ANCORA?? "+numHand);
 
                 //spazi disponibili
                 available = (List<int[]>) message.getObj()[0];
@@ -182,6 +185,7 @@ public class TUI extends Thread{
                 //inizializzo la visualizzazione della board
                 onBoard = new Resource[80][80];
 
+                //TODO: IMPOSTARE LA RISORSA CHE INDICA LA STARTING CARD!!!
                 onBoard[40][40] = Resource.WOLF;
 
                 break;
@@ -190,7 +194,6 @@ public class TUI extends Thread{
                 //System.out.println((String) message.getObj()[0]);
                 myTurn = true;
                 break;
-
         }
     }
 
@@ -275,12 +278,14 @@ public class TUI extends Thread{
      * @return The side chosen by the player to place the starting card.
      */
     public boolean placeStartingCard() {
-        String[] command;
+        String[] command = null;
         while(true){
             //Print the starting card
             infoC.showInfoCard(cardToChooseUUID.get(0),null);
             //Choose the side to place the starting card
             System.out.print("Select which side to place the starting card (type front or back to choose): ");
+            //This nextLine is needed to flush out the previous "\n" (IT'S A JAVA PROBLEM)
+            scanner.nextLine();
             command = scanner.nextLine().split(" ");
             if(command[0].equals("front") || command[0].equals("back")){
                 return command[0].equals("back");
@@ -293,7 +298,7 @@ public class TUI extends Thread{
      * Makes the player choose the secret goal card and the starting card.
      */
     public void preliminaryActions() {
-        String[] command;
+        int num;
         String selectedUUID;
         boolean side;
         while(true){
@@ -302,10 +307,15 @@ public class TUI extends Thread{
             infoC.showInfoCard(cardToChooseUUID.get(2),null);
             //Choose the secret goal card
             System.out.print("Select your secret goal card (type 1 or 2 to choose): ");
-            command = scanner.nextLine().split(" ");
+            try{
+                num = scanner.nextInt();
+            }catch (InputMismatchException e){
+                System.out.println("\nInput given is invalid! Try again.");
+                continue;
+            }
 
-            if(command[0].equals("1") || command[0].equals("2")){
-                selectedUUID = (command[0].equals("1"))? cardToChooseUUID.get(1) : cardToChooseUUID.get(2);
+            if(num == 1 || num == 2){
+                selectedUUID = cardToChooseUUID.get(num);
                 allGoalsUUID.add(selectedUUID);
                 System.out.println("\nThe player has chosen the card: " + selectedUUID);
                 //after choosing the secret goal card, the player chooses
@@ -313,7 +323,7 @@ public class TUI extends Thread{
                 side = placeStartingCard();
                 break;
             }
-            System.out.println("\nInput given '" + command[0] + "' is invalid! Try again.");
+            System.out.println("\nInput given '" + num +"' is invalid! Try again.");
         }
         //Message to server
         cli.sendMessage(
@@ -340,14 +350,12 @@ public class TUI extends Thread{
      */
 
     public void playerTurn(){
-
         try {
             printFullScreen();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
         }
+
         String[] command;
         //Ask for the card the player wants to play
         System.out.println("\nChoose the card you want to play(1, 2 or 3)");
@@ -406,10 +414,9 @@ public class TUI extends Thread{
         //Now it's time to draw a new card
         while (true) {
 
-            //draw.showDrawable(goldenCardViawable, resourceCardViawable);
-            System.out.println("\nChoose the type of the card you want to draw (golden or resource)");
-            System.out.print("or write a different command (type /help to view the list of commands): ");
-
+            System.out.print("""
+                    Choose the type of the card you want to draw (golden or resource) \s
+                    or write a different command (type /help to view the list of commands): """);
             command = getCommandFromQueue();
             String deck = command[0];
 
@@ -659,8 +666,7 @@ public class TUI extends Thread{
                                         positionY
                                 })
                 );
-                //rimuovo l'elemento dalla mano
-                currentHandUUID.set(numHand, "");
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
