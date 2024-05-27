@@ -17,7 +17,9 @@ import java.util.ArrayList;
 public class InfoCard  implements Views{
     public static void main(String[] args) throws IOException, ParseException {
         InfoCard infocard= new InfoCard();
-        infocard.showInfoCard("RC_1",Boolean.TRUE);
+        infocard.showInfoCard("GC_1",Boolean.TRUE);
+        infocard.showInfoCard("SC_1",Boolean.FALSE);
+        infocard.showInfoCard("RC_1",null);
 
     }
 
@@ -155,6 +157,7 @@ public class InfoCard  implements Views{
                     JSONCard = (JSONObject) goldJSONArray.get(index - 1);
                     stringCard[0] = "Golden Card";
                     stringCard[9] = ANSI_YELLOW;
+                    stringCard[8] ="";
                     JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
                     for (Object o : JSONRequire) {
                         stringCard[8] = stringCard[8].concat((Views.stringToEmoji((String) o)));
