@@ -494,9 +494,7 @@ public class TUI extends Thread{
         inputThread.setDaemon(true);
         inputThread.start();
 
-        //chiedo all'utente di inserire un comando comune
-        System.out.print("Type '/help' to view the commands list: ");
-
+        Boolean first = true;
         //VERA FASE DI GIOCO
         while(true){
 
@@ -506,12 +504,19 @@ public class TUI extends Thread{
                 playerTurn();
             }else{
                 //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
-                try {
-                    //print the full screen
-                    printFullScreen();
-                } catch (IOException | ParseException e) {
-                    throw new RuntimeException(e);
+                if(first) {
+                    first = false;
+                    try {
+                        //print the full screen
+                        printFullScreen();
+                        //chiedo all'utente di inserire un comando comune
+                        System.out.print("Type '/help' to view the commands list: ");
+                    } catch (IOException | ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
+
+
                 /*
                 Here we read the message from the player, but it doesn't block the main thread
                 because we use a storing queue to store the input
