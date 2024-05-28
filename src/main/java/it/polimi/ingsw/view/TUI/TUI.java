@@ -119,6 +119,7 @@ public class TUI extends Thread{
                 //mostro l'update fatto
                 try {
                     printFullScreen();
+                    System.out.print("Type '/help' to view the commands list: ");
                 } catch (IOException | ParseException e) {
                     throw new RuntimeException(e);
                 }
@@ -285,14 +286,13 @@ public class TUI extends Thread{
      * @return The side chosen by the player to place the starting card.
      */
     public boolean placeStartingCard() {
-        String[] command = null;
+        String[] command;
         while(true){
             //Print the starting card
             infoC.showInfoCard(cardToChooseUUID.get(0),null);
             //Choose the side to place the starting card
             System.out.print("Select which side to place the starting card (type front or back to choose): ");
             //This nextLine is needed to flush out the previous "\n" (IT'S A JAVA PROBLEM)
-            scanner.nextLine();
             command = scanner.nextLine().split(" ");
             if(command[0].equals("front") || command[0].equals("back")){
                 return command[0].equals("back");
@@ -315,8 +315,8 @@ public class TUI extends Thread{
             //Choose the secret goal card
             System.out.print("Select your secret goal card (type 1 or 2 to choose): ");
             try{
-                num = scanner.nextInt();
-            }catch (InputMismatchException e){
+                num = Integer.parseInt(scanner.nextLine());
+            }catch (NumberFormatException e){
                 System.out.println("\nInput given is invalid! Try again.");
                 continue;
             }
@@ -508,7 +508,7 @@ public class TUI extends Thread{
         inputThread.setDaemon(true);
         inputThread.start();
 
-        Boolean first = true;
+        boolean first = true;
         //VERA FASE DI GIOCO
         while(true){
 
@@ -578,7 +578,7 @@ public class TUI extends Thread{
      */
 
     public void printFullScreen() throws IOException, ParseException {
-        //Views.clearScreen();
+        Views.clearScreen();
 
         //Still can't be used since nicknames is still unknown
         topRow.showTopRow(currentPlayerNickame, (ArrayList<String>) nicknames, scores == null? new ArrayList<>(nicknames.size()): (ArrayList<Integer>) scores, (ArrayList<Resource>) playerResources);

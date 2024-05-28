@@ -4,7 +4,12 @@ package it.polimi.ingsw.view.TUI.GameState;
 public interface Views {
 
 
-    //converts the resource to a string to print in the TUI
+    /**
+     * Converts the resource to an emoji.
+     *
+     * @param resource The resource to be converted.
+     * @return The emoji representing the resource.
+     */
     static String stringToEmoji(String resource){
         if(resource == null) return "  ";
         return switch (resource){
@@ -18,11 +23,15 @@ public interface Views {
             case "GLASSVIAL"     -> "🫙";
             default              -> "  ";
         };
-    }  
+    }
 
 
-
-    // converts points and rule for the TUI
+    /**
+     * Converts the card to a string.
+     * @param point The points the card gives everytime the rule is matched.
+     * @param rule The rule to get the points.
+     * @return The string representing the points and the rule of the card.
+     */
      static String cardToPoint(String point, String rule){
             if (point == null || rule == null){return "     ";}
             if (point.equals("0")){return "     ";}
@@ -38,12 +47,21 @@ public interface Views {
         }
 
 
-    // clear the screen
-        static void clearScreen()
-        {
-            //System.out.print("\033[H\033[2J");
-            //System.out.flush();
-            System.out.print("\n".repeat(60));
+        /**
+        * Clears the screen of the terminal.
+        */
+        static void clearScreen() {
+            try{
+                final String os = System.getProperty("os.name");
+                if (os.contains("Windows")) {
+                    new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+                } else {
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                }
+            }catch (final Exception e){
+                System.out.println("Error in clearing the screen");
+            }
         }
     }
 
