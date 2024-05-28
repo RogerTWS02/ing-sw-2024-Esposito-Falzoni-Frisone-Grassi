@@ -802,7 +802,14 @@ public class Server extends UnicastRemoteObject {
                                             .map(Player::getScore)
                                             .collect(Collectors.toList()),
 
+                                    //return the resources of the player
+                                    gameControllerMap.get(message.getGameID())
+                                            .getCurrentGame()
+                                            .getCurrentPlayer()
+                                            .getPlayerBoard()
+                                            .getResources()
 
+                                    /*
                                     //return all the nicknames
                                     gameControllerMap.get(message.getGameID())
                                             .getCurrentGame()
@@ -816,13 +823,7 @@ public class Server extends UnicastRemoteObject {
                                             .getCurrentGame()
                                             .getCurrentPlayer()
                                             .getNickname(),
-
-                                    //return the resources of the player
-                                    gameControllerMap.get(message.getGameID())
-                                            .getCurrentGame()
-                                            .getCurrentPlayer()
-                                            .getPlayerBoard()
-                                            .getResources()
+                                    */
                             }
                     )
             );
@@ -846,6 +847,20 @@ public class Server extends UnicastRemoteObject {
         int posY = (int) message.getObj()[1];
 
         PlayableCard card = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posX, posY);
+        if(card == null || card.getUUID().equals("PLACEHOLDER")){
+            idSocketMap.get(message.getSenderID()).sendMessage(
+                    //TODO: A message with the new score should be sent to the player
+                    new Message(
+                            REPLY_BAD_REQUEST,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            new Object[]{
+                                    "there is no card on the board at the given coordinates!"
+                            }
+                    )
+            );
+            return null;
+        }
         System.out.println("INFO ON CARD: "+card.getUUID());
 
         if(hasSocket) {

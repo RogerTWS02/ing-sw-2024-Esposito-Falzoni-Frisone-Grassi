@@ -155,18 +155,7 @@ public class HandCards implements Views {
             System.out.println(cards.get(i));
         };
     }
-
-
-
-
-
-
-
-
-
-
-
-    }
+}
 
 
 

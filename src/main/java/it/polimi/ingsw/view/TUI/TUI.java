@@ -117,11 +117,14 @@ public class TUI extends Thread{
                 }
 
                 //mostro l'update fatto
+                /*
                 try {
                     printFullScreen();
+                    System.out.print("Type '/help' to view the commands list: ");
                 } catch (IOException | ParseException e) {
                     throw new RuntimeException(e);
                 }
+                */
 
                 break;
 
@@ -132,8 +135,6 @@ public class TUI extends Thread{
                 //SICURO CHE LA MOSSA SIA ANDATA A BUON FINE!!!
                 currentHandUUID.set(numHand, "");
 
-                System.out.println("MANTIENE ANCORA?? "+numHand);
-
                 //spazi disponibili
                 available = (List<int[]>) message.getObj()[0];
 
@@ -141,13 +142,13 @@ public class TUI extends Thread{
                 onBoard[positionY][positionX] = (Resource) message.getObj()[1];
                 cardPlaced = true;
 
-                //scores = (List<Integer>) message.getObj()[2];
+                scores = (List<Integer>) message.getObj()[2];
+
+                playerResources = (List<Resource>) message.getObj()[3];
 
                 //nicknames = (List<String>) message.getObj()[3];
 
                 //currentPlayerNickame = (String) message.getObj()[4];
-
-                //playerResources = (List<Resource>) message.getObj()[5];
 
                 try {
                     //con l'UUID aggiorno lo stato dello schermo della console
@@ -160,6 +161,7 @@ public class TUI extends Thread{
                 } catch (IOException | ParseException e) {
                     throw new RuntimeException(e);
                 }
+
                 break;
 
             case REPLY_INFO_CARD:
@@ -292,7 +294,6 @@ public class TUI extends Thread{
             //Choose the side to place the starting card
             System.out.print("Select which side to place the starting card (type front or back to choose): ");
             //This nextLine is needed to flush out the previous "\n" (IT'S A JAVA PROBLEM)
-            scanner.nextLine();
             command = scanner.nextLine().split(" ");
             if(command[0].equals("front") || command[0].equals("back")){
                 return command[0].equals("back");
@@ -362,98 +363,101 @@ public class TUI extends Thread{
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-
-        String[] command;
-        //Ask for the card the player wants to play
-        System.out.println("\nChoose the card you want to play(1, 2 or 3)");
-        System.out.print("or write a different command (type /help to view the list of commands): ");
-        command = getCommandFromQueue();
-
-        //Case in which the player wants to exit the game
-        if(command[0].equals("exit")){
-            // Chiudo lo scanner
-            scanner.close();
-            return;
-        }
-
-        //decides if the player wants to play a card or use a simple command
-        if(!command[0].matches("[0-9]+")){
-            commonCommands(command);
-            return;
-        }
-
-        int cardIndex = Integer.parseInt(command[0]);
-        if (cardIndex < 1 || cardIndex > 3) {
-            System.out.print("Invalid input, please insert a number between 1 and 3: ");
-            return;
-        }
-
-        //Ask for the side the player wants to play the card on
-        System.out.print("Choose the side you want to play the card on (front or back): ");
-        String cardSide = getCommandFromQueue()[0];
-        while (!cardSide.equals("front") && !cardSide.equals("back")) {
-            System.out.print("Invalid input, please insert 'front' or 'back': ");
-            cardSide = getCommandFromQueue()[0];
-        }
-
-        //Ask for the position where the player wants to place the card
-        System.out.print("Now choose the position where you want to place the card (ex. 39 39): ");
-        String[] position = getCommandFromQueue();
-        while (!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
-            System.out.print("Invalid input, please insert a position (two numbers separated by a space): ");
-            position = getCommandFromQueue();
-        }
-
-        //Here I send the request to the server to place the card
-        commonCommands(new String[]{
-                "/placeCard",
-                String.valueOf(cardIndex),
-                cardSide,
-                position[0],
-                position[1]
-        });
-
-        //If the card has not been placed
-        if(!cardPlaced) return;
-
-        cardPlaced = false; // set it back to false for next time
-
-        //Now it's time to draw a new card
-        while (true) {
-
-            System.out.print("""
-                    Choose the type of the card you want to draw (golden or resource) \s
-                    or write a different command (type /help to view the list of commands): """);
+        while(true) {
+            String[] command;
+            //Ask for the card the player wants to play
+            System.out.println("\nChoose the card you want to play(1, 2 or 3)");
+            System.out.print("or write a different command (type /help to view the list of commands): ");
             command = getCommandFromQueue();
-            String deck = command[0];
+
+            //Case in which the player wants to exit the game
+            if (command[0].equals("exit")) {
+                // Chiudo lo scanner
+                scanner.close();
+                return;
+            }
 
             //decides if the player wants to play a card or use a simple command
-            if(!deck.equals("golden") && !deck.equals("resource")){
+            if (!command[0].matches("[0-9]+")) {
                 commonCommands(command);
                 continue;
             }
 
-            System.out.print("If you want to draw from the deck type 'deck', else type the card number (1 or 2): ");
-            String choose = getCommandFromQueue()[0];
-
-            while (!choose.equals("deck") && !choose.equals("1") && !choose.equals("2")) {
-                System.out.print("Invalid input, please type one of the following 'deck' / '1' / '2': ");
-                choose = getCommandFromQueue()[0];
+            int cardIndex = Integer.parseInt(command[0]);
+            if (cardIndex < 1 || cardIndex > 3) {
+                System.out.print("Invalid input, please insert a number between 1 and 3: ");
+                continue;
             }
 
-            if (choose.equals("deck"))
-                commonCommands(new String[]{
-                        "/drawCardFromDeck",
-                        deck
-                });
-            else
-                commonCommands(new String[]{
-                        "/drawCardFromViewable",
-                        deck,
-                        choose
-                });
-            return;
+            //Ask for the side the player wants to play the card on
+            System.out.print("Choose the side you want to play the card on (front or back): ");
+            String cardSide = getCommandFromQueue()[0];
+            while (!cardSide.equals("front") && !cardSide.equals("back")) {
+                System.out.print("Invalid input, please insert 'front' or 'back': ");
+                cardSide = getCommandFromQueue()[0];
+            }
+
+            //Ask for the position where the player wants to place the card
+            System.out.print("Now choose the position where you want to place the card (ex. 39 39): ");
+            String[] position = getCommandFromQueue();
+            while (!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
+                System.out.print("Invalid input, please insert a position (two numbers separated by a space): ");
+                position = getCommandFromQueue();
+            }
+
+            //Here I send the request to the server to place the card
+            commonCommands(new String[]{
+                    "/placeCard",
+                    String.valueOf(cardIndex),
+                    cardSide,
+                    position[0],
+                    position[1]
+            });
+
+            //If the card has not been placed
+            if (!cardPlaced) continue;
+
+            cardPlaced = false; // set it back to false for next time
+
+            //Now it's time to draw a new card
+            while (true) {
+
+                System.out.print("""
+                        Choose the type of the card you want to draw (golden or resource) \s
+                        or write a different command (type /help to view the list of commands): """);
+                command = getCommandFromQueue();
+                String deck = command[0];
+
+                //decides if the player wants to play a card or use a simple command
+                if (!deck.equals("golden") && !deck.equals("resource")) {
+                    commonCommands(command);
+                    continue;
+                }
+
+                System.out.print("If you want to draw from the deck type 'deck', else type the card number (1 or 2): ");
+                String choose = getCommandFromQueue()[0];
+
+
+                while (!choose.equals("deck") && !choose.equals("1") && !choose.equals("2")) {
+                    System.out.print("Invalid input, please type one of the following 'deck' / '1' / '2': ");
+                    choose = getCommandFromQueue()[0];
+                }
+
+                if (choose.equals("deck"))
+                    commonCommands(new String[]{
+                            "/drawCardFromDeck",
+                            deck
+                    });
+                else
+                    commonCommands(new String[]{
+                            "/drawCardFromViewable",
+                            deck,
+                            choose
+                    });
+                return;
+            }
         }
+
     }
 
     public synchronized void run(){
@@ -461,16 +465,22 @@ public class TUI extends Thread{
         String[] command;
         //Show game logo
         startGame.ShowStartGame();
+
         //Insert nickname
         String nameP = insertNickname();
+
         //Choose lobby size and create it
         createNewLobby(nameP);
+
         System.out.println("You just joined the lobby " + cli.getLobbyName());
+
         //If user is the first to join the lobby, he will be the one to start the game
         if(cli.getGameID() == -1)
             System.out.println("Waiting for other players to join the game...");
+
         //Wait for the lobby to be full
         waitForFullLobby();
+
         //Choose secret goal card and starting card
         preliminaryActions();
         System.out.println("Starting player is: " + startingPlayer);
@@ -492,8 +502,10 @@ public class TUI extends Thread{
                 }
             }
         });
+
         inputThread.setDaemon(true);
         inputThread.start();
+
         boolean first = true;
         //Game flow implementation
         while(true){
@@ -509,31 +521,37 @@ public class TUI extends Thread{
                     try {
                         //print the full screen
                         printFullScreen();
-                        //Ask the player to type a command
-                        System.out.print("Type '/help' to view the commands list: ");
                     } catch (IOException | ParseException e) {
                         throw new RuntimeException(e);
                     }
                 }
+
+                //chiedo all'utente di inserire un comando comune
+                System.out.print("Type '/help' to view the commands list: ");
+                while(inputQueue.isEmpty() && !myTurn){
+                    Thread.onSpinWait();
+                }
+
                 /*
                 Here we read the message from the player, but it doesn't block the main thread
                 because we use a storing queue to store the input
                  */
-                if (!inputQueue.isEmpty()) {
-                    command = getCommandFromQueue();
-                    if (command.length > 0 && command[0].equals("exit")) {
-                        scanner.close();
-                        break;
-                    }else{
-                        commonCommands(command);
-                        System.out.print("Type '/help' to view the commands list: ");
-                    }
+                command = getCommandFromQueue();
+
+                if (command.length > 0 && command[0].equals("exit")) {
+                    // I close the scanner
+                    scanner.close();
+                    break;
+                }else{
+                    commonCommands(command);
                 }
+
                 try {
                     Thread.sleep(100); // Pausa breve per evitare il busy-waiting
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+
             }
         }
     }
@@ -543,6 +561,7 @@ public class TUI extends Thread{
      *
      * @return true if the hand is full, false otherwise.
      */
+
     public synchronized boolean checkFull(){
         int num = 0;
         for(String s: currentHandUUID){
@@ -554,8 +573,10 @@ public class TUI extends Thread{
     /**
      * Prints the full screen of the game.
      */
+
     public void printFullScreen() throws IOException, ParseException {
-        //Views.clearScreen();
+        Views.clearScreen();
+
         //Still can't be used since nicknames is still unknown
         topRow.showTopRow(currentPlayerNickame, (ArrayList<String>) nicknames, scores == null? new ArrayList<>(nicknames.size()): (ArrayList<Integer>) scores, (ArrayList<Resource>) playerResources);
         //Print player's board
@@ -568,8 +589,13 @@ public class TUI extends Thread{
     /**
      * Handles the /help command.
      */
-    public void helpCommandHandler() {
-        String message = """
+    public void commonCommands(String[] command){
+
+        String message;
+
+        switch(command[0]){
+            case "/help":
+                message = """
                             Commands List:              (Template: /COMMAND Param1 Param 2)\s
                             
                             /infoCard posX posY - Returns infos about a card on the player's board
@@ -577,191 +603,163 @@ public class TUI extends Thread{
                             /closeChat - Closes the chat tab and returns to the game interface
                             """;
 
-        System.out.println(message);
-    }
-
-    /**
-     * Handles the /infoCard command.
-     *
-     * @param command The command to be executed.
-     */
-    public void infoCardCommandHandler(String[] command) {
-        if(command.length < 3) {
-            System.out.println("Command not valid, try '/help' to view syntax");
-            return;
-        }
-        int posX, posY;
-        try {
-            posX = Integer.parseInt(command[1]);
-            posY = Integer.parseInt(command[2]);
-        }catch(NumberFormatException e){
-            System.out.println(e);
-            return;
-        }
-        //Send infos request
-        cli.sendMessage(
-                new Message(
-                        REQUEST_INFO_CARD,
-                        cli.getSocketPort(),
-                        cli.getGameID(),
-                        posX, posY)
-        );
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Handles the /placeCard command.
-     *
-     * @param command The command to be executed.
-     */
-    public void placeCardCommandHandler(String[] command) {
-        try {
-            numHand = Integer.parseInt(command[1]);
-            positionX = Integer.parseInt(command[3]);
-            positionY = Integer.parseInt(command[4]);
-
-        }catch(NumberFormatException e){
-            System.out.println(e);
-            return;
-        }
-        String sidE = command[2].toLowerCase();
-        //Array index correction
-        numHand--;
-        cli.sendMessage(
-                new Message(
-                        REQUEST_PLAYER_MOVE,
-                        cli.getSocketPort(),
-                        cli.getGameID(),
-                        //Card to place and its position
-                        numHand,
-                        sidE.equals("back"),
-                        positionX,
-                        positionY)
-        );
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Handles the /drawCardFromDeck command.
-     *
-     * @param command The command to be executed.
-     */
-    public void drawCardFromViewableCommandHandler(String[] command) {
-        String type = command[1].toLowerCase();
-        int pos;
-        try {
-            pos = Integer.parseInt(command[2]);
-        }catch(NumberFormatException e){
-            System.out.println(e);
-            return;
-        }
-        if(type.equals("golden")){
-            cli.sendMessage(
-                    new Message(
-                            REQUEST_CARD,
-                            cli.getSocketPort(),
-                            cli.getGameID(),
-                            true, pos - 1)
-            );
-        }
-        else if(type.equals("resource")){
-            cli.sendMessage(
-                    new Message(
-                            REQUEST_CARD,
-                            cli.getSocketPort(),
-                            cli.getGameID(),
-                            false, pos - 1)
-            );
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Handles the /drawCardFromDeck command.
-     *
-     * @param command The command to be executed.
-     */
-    public void drawCardFromDeckCommandHandler(String[] command) {
-        if(checkFull()) {
-            System.out.println("Command not valid, you need to place a card first");
-            return;
-        }
-        if(command.length < 2) {
-            System.out.println("Command not valid, try '/help' to view syntax");
-            return;
-        }
-        String ty = command[1].toLowerCase();
-        if(ty.equals("golden")){
-            cli.sendMessage(
-                    new Message(
-                            REQUEST_CARD,
-                            cli.getSocketPort(),
-                            cli.getGameID(),
-                            true, 2)
-            );
-        }else if(ty.equals("resource")){
-            cli.sendMessage(
-                    new Message(
-                            REQUEST_CARD,
-                            cli.getSocketPort(),
-                            cli.getGameID(),
-                            false, 2)
-            );
-        }else{
-            System.out.println("Command not valid, try '/help' to view syntax");
-            return;
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Handles common commands
-     * @param command the command to be executed
-     */
-    public void commonCommands(String[] command){
-        command[0] = command[0].toLowerCase();
-
-        switch(command[0]){
-            case "/help":
-                helpCommandHandler();
+                System.out.println(message);
                 break;
-            case "/infocard":
-                infoCardCommandHandler(command);
+
+            //chiedo l'UUID della carta al server e genero i dati dal JSON
+            // messaggio del tipo: /infoCard posX posY
+            case "/infoCard":
+                if(command.length < 3) {
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+                int posX, posY;
+                try {
+                    posX = Integer.parseInt(command[1]);
+                    posY = Integer.parseInt(command[2]);
+
+                }catch(NumberFormatException e){
+                    System.out.println(e);
+                    break;
+                }
+
+                //mando la richiesta di info
+                cli.sendMessage(
+                        new Message(
+                                REQUEST_INFO_CARD,
+                                cli.getSocketPort(),
+                                cli.getGameID(),
+                                new Object[]{posX, posY})
+                );
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
-            case "/placecard":
-                placeCardCommandHandler(command);
+
+            case "/placeCard":
+
+                try {
+                    numHand = Integer.parseInt(command[1]);
+                    positionX = Integer.parseInt(command[3]);
+                    positionY = Integer.parseInt(command[4]);
+
+                }catch(NumberFormatException e){
+                    System.out.println(e);
+                    break;
+                }
+
+
+                String sidE = command[2].toLowerCase();
+
+                //riporto all'indice dell'array
+                numHand--;
+
+                cli.sendMessage(
+                        new Message(
+                                REQUEST_PLAYER_MOVE,
+                                cli.getSocketPort(),
+                                cli.getGameID(),
+                                //Manca la carta da piazzare oltre alla posizione dove piazzarla
+                                new Object[]{
+                                        numHand,
+                                        sidE.equals("back"),
+                                        positionX,
+                                        positionY
+                                })
+                );
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
-            case "/drawcardfromviewable":
-                drawCardFromViewableCommandHandler(command);
+
+            case "/drawCardFromViewable":
+
+                String type = command[1].toLowerCase();
+                int pos;
+                try {
+                    pos = Integer.parseInt(command[2]);
+                }catch(NumberFormatException e){
+                    System.out.println(e);
+                    break;
+                }
+                if(type.equals("golden")){
+                    cli.sendMessage(
+                            new Message(
+                                    REQUEST_CARD,
+                                    cli.getSocketPort(),
+                                    cli.getGameID(),
+                                    new Object[]{true, pos - 1})
+                    );
+                }
+                else if(type.equals("resource")){
+                    cli.sendMessage(
+                            new Message(
+                                    REQUEST_CARD,
+                                    cli.getSocketPort(),
+                                    cli.getGameID(),
+                                    new Object[]{false, pos - 1})
+                    );
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
-            case "/drawcardfromdeck":
-                drawCardFromDeckCommandHandler(command);
+
+
+            case "/drawCardFromDeck":
+                if(checkFull()) {
+                    System.out.println("Command not valid, you need to place a card first");
+                    break;
+                }
+                if(command.length < 2) {
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+
+                String ty = command[1].toLowerCase();
+                if(ty.equals("golden")){
+                    cli.sendMessage(
+                            new Message(
+                                    REQUEST_CARD,
+                                    cli.getSocketPort(),
+                                    cli.getGameID(),
+                                    new Object[]{true, 2})
+                    );
+                }else if(ty.equals("resource")){
+                    cli.sendMessage(
+                            new Message(
+                                    REQUEST_CARD,
+                                    cli.getSocketPort(),
+                                    cli.getGameID(),
+                                    new Object[]{false, 2})
+                    );
+                }else{
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
+
             default:
                 System.out.println("Command not valid, try '/help' to view syntax");
         }
     }
-
     /**
      * Gets the command from the queue, if the queue is empty it waits for a new command
      * @return the command
      */
+
     private static String[] getCommandFromQueue() {
         String command = null;
         try {

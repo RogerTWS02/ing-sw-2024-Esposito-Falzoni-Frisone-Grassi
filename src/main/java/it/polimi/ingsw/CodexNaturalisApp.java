@@ -11,6 +11,7 @@ import java.net.InetAddress;
 public class CodexNaturalisApp {
 
     public static void main(String[] args) throws IOException, ParseException {
+
         //parametri iniziali: <gui/tui/server> <socket/rmi>
         String param = args.length > 0 ? args[0].toLowerCase() : "cli";
         String network = args.length > 1 ? args[1].toLowerCase() : "socket";
