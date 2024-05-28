@@ -38,7 +38,7 @@ public class CodexNaturalisApp {
     /**
      * Initializes and launches the Codex Naturalis client app.
      *
-     * @param hasGUI Boolean value to determine if the client has a GUI.
+     * @param hasGUI Boolean value to determine if the client must be launched with a GUI.
      */
     private static void launchClient(boolean hasGUI, boolean hasSocket) throws IOException, ParseException {
         if (hasGUI) {
@@ -57,7 +57,7 @@ public class CodexNaturalisApp {
     }
 
     /**
-     * Initializes and launches the Codex Naturalis server app
+     * Initializes and launches the Codex Naturalis server app.
      */
     private static void launchServer(Boolean hasSocket) {
         Server server;
