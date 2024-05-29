@@ -316,8 +316,8 @@ public class TUI extends Thread{
             //Choose the secret goal card
             System.out.print("Select your secret goal card (type 1 or 2 to choose): ");
             try{
-                num = scanner.nextInt();
-            }catch (InputMismatchException e){
+                num = Integer.parseInt(scanner.nextLine());
+            }catch (NumberFormatException e){
                 System.out.println("\nInput given is invalid! Try again.");
                 continue;
             }
