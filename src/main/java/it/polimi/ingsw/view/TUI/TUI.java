@@ -37,7 +37,7 @@ public class TUI extends Thread{
     String startingPlayer;
     List<int[]> available;
     Resource[][] onBoard;
-    boolean myTurn;
+    volatile boolean myTurn;
     TopRow topRow = new TopRow();
     List<Integer> scores;
     List<String> nicknames;
@@ -287,7 +287,7 @@ public class TUI extends Thread{
      * @return The side chosen by the player to place the starting card.
      */
     public boolean placeStartingCard() {
-        String[] command = null;
+        String[] command;
         while(true){
             //Print the starting card
             infoC.showInfoCard(cardToChooseUUID.get(0),null);
@@ -460,7 +460,7 @@ public class TUI extends Thread{
 
     }
 
-    public synchronized void run(){
+    public void run(){
         //Initialize scanner in order to read user input
         String[] command;
         //Show game logo
@@ -532,11 +532,16 @@ public class TUI extends Thread{
                     Thread.onSpinWait();
                 }
 
+                if(myTurn){
+                    continue;
+                }
+
+                command = getCommandFromQueue();
+
                 /*
                 Here we read the message from the player, but it doesn't block the main thread
                 because we use a storing queue to store the input
                  */
-                command = getCommandFromQueue();
 
                 if (command.length > 0 && command[0].equals("exit")) {
                     // I close the scanner
