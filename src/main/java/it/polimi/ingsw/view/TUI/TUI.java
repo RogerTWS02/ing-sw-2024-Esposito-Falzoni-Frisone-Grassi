@@ -350,6 +350,22 @@ public class TUI extends Thread{
     }
 
     /**
+     * This method checks if the player input position is correct or no.
+     */
+    private static boolean isValidPosition(String[] position) {
+
+        if (position.length < 2) {
+            return false;
+        }
+
+        if (!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * This method simulates the player's turn (places a card and then draws a new one).
      */
 
@@ -396,7 +412,7 @@ public class TUI extends Thread{
             //Ask for the position where the player wants to place the card
             System.out.print("Now choose the position where you want to place the card (ex. 39 39): ");
             String[] position = getCommandFromQueue();
-            while (!position[0].matches("[0-9]+") || !position[1].matches("[0-9]+")) {
+            while (!isValidPosition(position)){
                 System.out.print("Invalid input, please insert a position (two numbers separated by a space): ");
                 position = getCommandFromQueue();
             }
