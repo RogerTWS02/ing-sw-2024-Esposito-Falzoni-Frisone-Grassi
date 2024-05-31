@@ -388,6 +388,12 @@ public class Server extends UnicastRemoteObject {
                         gameControllerMap.get(p.getGameID()).initializeGame();
                         gameControllerMap.get(p.getGameID()).getCurrentGame().setStartingPlayer();
 
+                        Map<String, Integer> playersScores = new HashMap<>();
+
+                        for(int pId : lobbyPlayerMap.get(l)){
+                            playersScores.put(idPlayerMap.get(pId).getNickname(), idPlayerMap.get(pId).getScore());
+                        }
+
 
                         //per ogni giocatore della lobby
                         for (int pID : lobbyPlayerMap.get(l)) {
@@ -429,12 +435,7 @@ public class Server extends UnicastRemoteObject {
 
 
                                                     //send all the nicknames
-                                                    gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                            .getCurrentGame()
-                                                            .getPlayers()
-                                                            .stream()
-                                                            .map(Player::getNickname)
-                                                            .collect(Collectors.toList()),
+                                                    playersScores,
 
 
 
@@ -461,7 +462,7 @@ public class Server extends UnicastRemoteObject {
                                                         .getStartingPlayer()
                                                         .getNickname(),
 
-/*                                                Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+/*                                              Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                         .getCurrentGame()
                                                         .getViewableResourceCards())
                                                         .map(PlayableCard::getUUID)
@@ -653,8 +654,6 @@ public class Server extends UnicastRemoteObject {
         //la metto nella mano del giocatore dove adesso ho un vuoto
         for(int z = 0; z < 3; z++){
             if(idPlayerMap.get(message.getSenderID()).getHand()[z] == null){
-                //PER DEBUGGING
-                System.out.println("HO REFILLATO LA MANOOOOOOO");
                 idPlayerMap.get(message.getSenderID()).setHand(replyCard, z);
                 break;
             }
@@ -676,7 +675,10 @@ public class Server extends UnicastRemoteObject {
                         this.serverSocket.getLocalPort(),
                         message.getGameID(),
                         new Object[]{
-                                "Now it's your turn to play!"
+                                gameControllerMap.get(message.getGameID())
+                                        .getCurrentGame()
+                                        .getCurrentPlayer()
+                                        .getNickname(),
                         }
                 )
         );
@@ -701,7 +703,6 @@ public class Server extends UnicastRemoteObject {
             );
         }
 
-        System.out.println("almeno qui arrivo");
         return null;
     }
 
@@ -794,13 +795,10 @@ public class Server extends UnicastRemoteObject {
                                     //restituisco la risorsa permanente della carta
                                     card.getPermResource()[0],
 
-                                    //return the new scores of every player
-                                    gameControllerMap.get(message.getGameID())
-                                            .getCurrentGame()
-                                            .getPlayers()
-                                            .stream()
-                                            .map(Player::getScore)
-                                            .collect(Collectors.toList()),
+                                    //return the new score of the player
+                                    idPlayerMap.get(message.getSenderID()).getNickname(),
+
+                                    idPlayerMap.get(message.getSenderID()).getScore(),
 
                                     //return the resources of the player
                                     gameControllerMap.get(message.getGameID())
@@ -808,22 +806,6 @@ public class Server extends UnicastRemoteObject {
                                             .getCurrentPlayer()
                                             .getPlayerBoard()
                                             .getResources()
-
-                                    /*
-                                    //return all the nicknames
-                                    gameControllerMap.get(message.getGameID())
-                                            .getCurrentGame()
-                                            .getPlayers()
-                                            .stream()
-                                            .map(Player::getNickname)
-                                            .collect(Collectors.toList()),
-
-                                    //return the current player
-                                    gameControllerMap.get(message.getGameID())
-                                            .getCurrentGame()
-                                            .getCurrentPlayer()
-                                            .getNickname(),
-                                    */
                             }
                     )
             );

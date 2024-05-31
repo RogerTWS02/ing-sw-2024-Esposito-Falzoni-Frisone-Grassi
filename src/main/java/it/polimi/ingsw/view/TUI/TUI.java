@@ -31,20 +31,16 @@ public class TUI extends Thread{
     Objective goals = new Objective();
     InfoCard infoC = new InfoCard();
     Board board = new Board();
-    Draw draw = new Draw();
-    String[] resourceCardViawable = new String[3];
-    String [] goldenCardViawable = new String[3];
     String startingPlayer;
     List<int[]> available;
     Resource[][] onBoard;
     volatile boolean myTurn;
     TopRow topRow = new TopRow();
-    List<Integer> scores;
-    List<String> nicknames;
-    String currentPlayerNickame;
-    List<Resource> playerResources= null;
+    private static Map<String, Integer> nicknames;
+    private static String currentPlayerNickame;
+    private List<Resource> playerResources= null;
     boolean cardPlaced = false;
-    private static BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     int numHand = 0, positionX = 0, positionY = 0;
 
     public TUI() throws IOException, ParseException {
@@ -85,7 +81,7 @@ public class TUI extends Thread{
                 myTurn = (boolean) message.getObj()[3];
 
                 // update list of players
-                nicknames = (List<String>) message.getObj()[4];
+                nicknames = (Map<String, Integer>) message.getObj()[4];
 
                 // update current player
                 currentPlayerNickame = (String) message.getObj()[5];
@@ -142,13 +138,13 @@ public class TUI extends Thread{
                 onBoard[positionY][positionX] = (Resource) message.getObj()[1];
                 cardPlaced = true;
 
-                scores = (List<Integer>) message.getObj()[2];
+                String nick = (String) message.getObj()[2];
+                int score = (int) message.getObj()[3];
 
-                playerResources = (List<Resource>) message.getObj()[3];
+                nicknames.put(nick, score);
 
-                //nicknames = (List<String>) message.getObj()[3];
+                playerResources = (List<Resource>) message.getObj()[4];
 
-                //currentPlayerNickame = (String) message.getObj()[4];
 
                 try {
                     //con l'UUID aggiorno lo stato dello schermo della console
@@ -200,8 +196,8 @@ public class TUI extends Thread{
                 break;
 
             case REPLY_YOUR_TURN:
-                //System.out.println((String) message.getObj()[0]);
                 myTurn = true;
+                currentPlayerNickame = (String) message.getObj()[0];
                 break;
         }
     }
@@ -454,6 +450,12 @@ public class TUI extends Thread{
                             deck,
                             choose
                     });
+
+                try {
+                    printFullScreen();
+                } catch (IOException | ParseException e) {
+                    e.printStackTrace();
+                }
                 return;
             }
         }
@@ -583,7 +585,7 @@ public class TUI extends Thread{
         Views.clearScreen();
 
         //Still can't be used since nicknames is still unknown
-        topRow.showTopRow(currentPlayerNickame, (ArrayList<String>) nicknames, scores == null? new ArrayList<>(nicknames.size()): (ArrayList<Integer>) scores, (ArrayList<Resource>) playerResources);
+        topRow.showTopRow(currentPlayerNickame, nicknames, (ArrayList<Resource>) playerResources);
         //Print player's board
         int lines=board.drawBoard(onBoard, available)*3;
         if(lines<20){System.out.println("\n".repeat(20-lines));}
