@@ -105,7 +105,7 @@ public class Draw implements Views {
                int index = Integer.parseInt(rUuids[x].substring(3));
                JSONObject JSONCard;
                //create the golden card and set the color
-               JSONCard = (JSONObject) goldJSONArray.get(index - 1);
+               JSONCard = (JSONObject) resourceJSONArray.get(index - 1);
                rStringCard[0][x] = "Resource Card" + "[" +(2-x) + "]";
                rStringCard[9][x] = ANSI_WHITE;
 
@@ -114,14 +114,8 @@ public class Draw implements Views {
                for(int i = 0; i < 4; i++){
                     rStringCard[i+3][x] = Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
                }
-               JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
 
-               for (Object o : JSONRequire) {
-
-                    rStringCard[8][x] += (Views.stringToEmoji((String) o));
-               }
-               int spaces= (21-rStringCard[8][x].length())/2;
-               rStringCard[8][x] = " ".repeat(spaces).concat(rStringCard[8][x]).concat(" ".repeat(spaces));
+               rStringCard[8][x] = " ".repeat(20);
                rStringCard[7][x]= (String) JSONCard.get("rule");
                switch (rStringCard[2][x]){
 
