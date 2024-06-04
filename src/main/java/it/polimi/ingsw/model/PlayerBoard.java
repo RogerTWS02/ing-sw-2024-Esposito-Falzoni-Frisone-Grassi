@@ -31,9 +31,9 @@ public class PlayerBoard implements Serializable{
      */
     public State getState(int x, int y){
         /* If the cell is empty then the player hasn't placed a card there yet */
-        if(grid[x][y] == null) return UNPLAYED;
+        if(grid[y][x] == null) return UNPLAYED;
 
-        return grid[x][y].getState();
+        return grid[y][x].getState();
     }
 
     /**

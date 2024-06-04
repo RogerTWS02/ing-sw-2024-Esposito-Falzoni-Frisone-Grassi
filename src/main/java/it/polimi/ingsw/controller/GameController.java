@@ -246,6 +246,9 @@ public class GameController {
     public PlayableCard drawViewableCard(boolean whichType, int whichCard){
         //WhichType: true = golden, false = resource
         //WhichCard: 0 =first visible card, 1 = second visible card, 2 = top of the deck.
+        if(whichCard < 0 || whichCard > 2){
+            throw new IllegalArgumentException("Invalid card index!");
+        }
         PlayableCard card;
 
         //golden card
@@ -282,7 +285,6 @@ public class GameController {
     public void setCommonGoalCards(){
         currentGame.commonGoalCards[0] = drawGoalFromDeck();
         currentGame.commonGoalCards[1] = drawGoalFromDeck();
-
     }
 
     /**
@@ -326,19 +328,19 @@ public class GameController {
     /**
      * Places a card on the player's board, at the position passed by parameter.
      *
-     * @param i The X coordinate of the position where the card is to be placed.
-     * @param j The Y coordinate of the position where the card is to be placed.
+     * @param x The X coordinate of the position where the card is to be placed.
+     * @param y The Y coordinate of the position where the card is to be placed.
      * @param card The card to be placed on the board.
      * @param player The player who is placing the card.
      * @throws IllegalArgumentException in case the position is invalid.
      */
-    public void placeCard(int i, int j, PlayableCard card, Player player) throws IllegalArgumentException, IllegalAccessException {
+    public void placeCard(int x, int y, PlayableCard card, Player player) throws IllegalArgumentException, IllegalAccessException {
         if (card instanceof StartingCard) {
             player.getPlayerBoard().placeCard(card, 40, 40);
-        } else if (player.getPlayerBoard().getCard(i, j) != null && player.getPlayerBoard().getCard(i, j).getState() == State.AVAILABLE) {
+        } else if (player.getPlayerBoard().getCard(x, y) != null && player.getPlayerBoard().getCard(x, y).getState() == State.AVAILABLE) {
                 //if the card is flipped I just place it on the board
                 if(card.isFlipped()){
-                    player.getPlayerBoard().placeCard(card, i, j);
+                    player.getPlayerBoard().placeCard(card, x, y);
                 }
                 //if it's a golden card not flipped I need to check its rules
                 else if(card instanceof GoldenCard){
@@ -349,10 +351,10 @@ public class GameController {
 
                     switch (card.getRule().toString()) {
                         case "NONE":
-                            player.getPlayerBoard().placeCard(card, i, j);
+                            player.getPlayerBoard().placeCard(card, x, y);
                             player.addScore(card.getPoints());
                         case "CORNERS":
-                            int covered = player.getPlayerBoard().placeCard(card, i, j);
+                            int covered = player.getPlayerBoard().placeCard(card, x, y);
                             player.addScore(covered * card.getPoints());
                         default:
                             String s = card.getRule().toString();
@@ -362,13 +364,13 @@ public class GameController {
                                     occurency++;
                                 }
                             }
-                            player.getPlayerBoard().placeCard(card, i, j);
+                            player.getPlayerBoard().placeCard(card, x, y);
                             player.addScore(occurency * card.getPoints());
                     }
                 }
                 //If it's a resource card not flipped I just place it and update the score
                 else{
-                    player.getPlayerBoard().placeCard(card, i, j);
+                    player.getPlayerBoard().placeCard(card, x, y);
                     player.addScore(card.getPoints());
                 }
         } else {
@@ -417,7 +419,7 @@ public class GameController {
      * @param p The player whose PlayerBoard is to be returned.
      * @return the PlayerBoard object representing the player's board.
      */
-    public PlayerBoard viewPlayerBoard(Player p){
+    public PlayerBoard getPlayerBoard(Player p){
         return p.getPlayerBoard();
     }
 
@@ -503,8 +505,6 @@ public class GameController {
                 temp[1].getUUID()
         };
     }
-    
-    
 
     /**
      * Returns the current game.
@@ -521,11 +521,7 @@ public class GameController {
      * @return true if the end game phase has to be begun, false otherwise.
      */
     public boolean checkEndGamePhase(){
-        if((currentGame.viewableResourceCards[2] == null && currentGame.viewableGoldenCards[2] == null) || checkPlayersScore()){
-            endGamePhase();
-            return true;
-        }
-        return false;
+        return (currentGame.viewableResourceCards[2] == null && currentGame.viewableGoldenCards[2] == null) || checkPlayersScore();
     }
 
     /**
@@ -535,35 +531,15 @@ public class GameController {
      */
     public boolean checkPlayersScore(){
         for(int i = 0; i < currentGame.getPlayers().size(); i++){
-            if(currentGame.getPlayers().get(i).getScore() >= 20){
+            if(currentGame.getPlayers().get(i).getScore() >= 20)
                 return true;
-            }
         }
         return false;
-    }
-
-    /**
-     * Performs the end game phase flow.
-     */
-    public void endGamePhase(){
-        //TODO: Implement end game phase flow
-        currentGame.setLastPhase();
-        new Thread(() -> {
-            //We have to wait until the turn of the last player ends
-            while(currentGame.getCurrentPlayer() != currentGame.getStartingPlayer()){
-                    Thread.onSpinWait();
-            }
-            for(Player p : currentGame.getPlayers()) {
-                getPointsFromGoalCards(p);
-            }
-            currentGame.gameOver();
-            }).start();
     }
 
     public int advancePlayerTurn(){
         //prendo l'indice del giocatore corrente
         int index = currentGame.getPlayers().indexOf(currentGame.getCurrentPlayer());
-
         //vado al giocatore successivo
         currentGame.setCurrentPlayer(
                 currentGame.getPlayers().get(
@@ -571,7 +547,6 @@ public class GameController {
                 (index + 1) % currentGame.getPlayers().size()
                 )
         );
-
         return currentGame.getCurrentPlayer().clientPort;
     }
 }

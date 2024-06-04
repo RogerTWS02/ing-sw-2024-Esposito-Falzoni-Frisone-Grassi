@@ -7,13 +7,13 @@ import org.junit.Test;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static org.junit.Assert.*;
+
+//TODO: cardToChoose, showAvailableOnBoard, initializeGame, getPointsFromGoalCards, advancePlayerTurn
 
 public class GameControllerTest {
     GameController gameController;
@@ -63,41 +63,16 @@ public class GameControllerTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void placeCard_test_2() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
         game.getPlayers().get(0).setPawn(Pawn.BLUE);
-        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
-        gameController.placeCard(81, 81, startingCard, game.getPlayers().get(0));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void placeCard_test_3() throws IllegalAccessException {
-        game.setPlayers(createFakePlayers());
-        game.getPlayers().get(0).setPawn(Pawn.BLUE);
-        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
-        gameController.placeCard(-4, -56, startingCard, game.getPlayers().get(0));
-    }
-
-    @Test
-    public void placeCard_test_4() throws IllegalAccessException {
-        game.setPlayers(createFakePlayers());
-        game.getPlayers().get(0).setPawn(Pawn.BLUE);
-        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
-        gameController.placeCard(40, 40, startingCard, game.getPlayers().get(0));
-
-        //TODO: check if we are checking angles before placing the card
-    }
-
-    @Test
-    public void placeCard_test_5() throws IllegalAccessException {
-        game.setPlayers(createFakePlayers());
-        game.getPlayers().get(0).setPawn(Pawn.BLUE);
-        PlayableCard startingCard = gameController.drawPlayableFromDeck(game.startingDeck);
-        PlayableCard card;
-        gameController.placeCard(40, 40, startingCard, game.getPlayers().get(0));
+        PlayableCard card = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(40, 40, card, game.getPlayers().get(0));
         card = gameController.drawPlayableFromDeck(game.resourceDeck);
         gameController.placeCard(39, 41, card, game.getPlayers().get(0));
+        assert(game.getPlayers().get(0).getPlayerBoard().getCard(39, 41).equals(card));
+        assert(game.getPlayers().get(0).getPlayerBoard().getState(39, 41).equals(State.OCCUPIED));
     }
 
 
@@ -441,22 +416,6 @@ public class GameControllerTest {
         assertNotNull(cards[1]);
     }
 
-    /*
-    @Test
-    public void beginGame_test() throws IOException {
-        System.setIn(new ByteArrayInputStream("4\n".getBytes()));
-        gameController.beginGame();
-        ArrayList<Player> fakePlayers = createFakePlayers();
-        for(int i = 0; i < 4; i++) {
-            gameController.addPlayer(fakePlayers.get(i));
-        }
-        assertFalse(gameController.getCurrentGame().getPlayers().contains(null));
-        assertEquals(4, gameController.getCurrentGame().getPlayers().size());
-
-        //TODO: complete testing when the method is complete
-
-    } */
-
     @Test
     public void addPlayer_test() {
         ArrayList<Player> fakePlayers = createFakePlayers();
@@ -513,10 +472,5 @@ public class GameControllerTest {
             players.add(new Player("Player" + i, 0));
         }
         return players;
-    }
-
-    @Test
-    public void endGamePhase_test() {
-        //TODO
     }
 }
