@@ -173,6 +173,9 @@ public class Game implements Serializable{
        int randomNumber = random.nextInt(players.size());
        this.startingPlayer = players.get(randomNumber);
        currentPlayer = this.startingPlayer;
+
+       //After choosing at random a starting player it's placed at the beginning of the list
+       Collections.swap(players, 0, randomNumber);
    }
 
     /**

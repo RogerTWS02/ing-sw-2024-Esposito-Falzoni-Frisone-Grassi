@@ -811,9 +811,32 @@ public class Server extends UnicastRemoteObject {
             );
         }
 
-        if(idPlayerMap.get(message.getSenderID()).getScore() > 20 && !gameControllerMap.get(message.getGameID()).getCurrentGame().isInLastPhase()){
-            gameControllerMap.get(message.getGameID()).checkEndGamePhase();
+        //Avvio la fase finale del gioco
+        if(gameControllerMap.get(message.getGameID()).checkEndGamePhase() && !gameControllerMap.get(message.getGameID()).getCurrentGame().isInLastPhase()){
             gameControllerMap.get(message.getGameID()).getCurrentGame().setLastPhase();
+
+            //dobbiamo finire il giro e poi fare un ultimo giro
+            //Send a message to all the players of the same game with the winner
+
+            ArrayList<Player> localPlayers = gameControllerMap.get(message.getGameID())
+                                                              .getCurrentGame()
+                                                              .getPlayers();
+
+            int currIndex = localPlayers.indexOf(idPlayerMap.get(message.getSenderID()));
+
+
+            for(int id: localPlayers.stream().map(Player::getClientPort).toArray(Integer[]::new)){
+                idSocketMap.get(id).sendMessage(
+                        new Message(
+                                NOTIFY_END_GAME,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                new Object[] {
+                                        (localPlayers.indexOf(idPlayerMap.get(id)) > currIndex)? 2 : 1
+                                }
+                        )
+                );
+            }
         }
 
         if(gameControllerMap.get(message.getGameID()).getCurrentGame().isGameOver()){

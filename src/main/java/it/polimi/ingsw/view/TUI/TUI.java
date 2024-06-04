@@ -42,6 +42,7 @@ public class TUI extends Thread{
     boolean cardPlaced = false;
     private static final BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     int numHand = 0, positionX = 0, positionY = 0;
+    int turnLeft = 3;
 
     public TUI() throws IOException, ParseException {
     }
@@ -198,6 +199,13 @@ public class TUI extends Thread{
             case REPLY_YOUR_TURN:
                 myTurn = true;
                 currentPlayerNickame = (String) message.getObj()[0];
+                break;
+
+            case NOTIFY_END_GAME:
+                System.out.println("Turns left: "+message.getObj()[0]);
+
+                //update number of remaining turns
+                turnLeft = (Integer) message.getObj()[0];
                 break;
         }
     }
@@ -428,7 +436,6 @@ public class TUI extends Thread{
 
             //If the card has not been placed
             if (!cardPlaced) continue;
-
             cardPlaced = false; // set it back to false for next time
 
             //Now it's time to draw a new card
@@ -503,7 +510,7 @@ public class TUI extends Thread{
         preliminaryActions();
         System.out.println("Starting player is: " + startingPlayer);
 
-        ///TODO: code refactoring
+        //TODO: code refactoring
 
         /*
         This thread reads the input from the user and puts it in the inputQueue, so that the main process doesn't have to wait for the input
@@ -526,11 +533,11 @@ public class TUI extends Thread{
 
         boolean first = true;
         //Game flow implementation
-        while(true){
+        while(turnLeft > 0){
 
             //TODO: Usando myTurn gestire il gameFlow del giocatore
-
             if(myTurn){
+                if(turnLeft != 3) turnLeft--;
                 playerTurn();
             }else{
                 //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
@@ -546,7 +553,7 @@ public class TUI extends Thread{
 
                 //chiedo all'utente di inserire un comando comune
                 System.out.print("Type '/help' to view the commands list: ");
-                while(inputQueue.isEmpty() && !myTurn){
+                while(!myTurn && inputQueue.isEmpty()){
                     Thread.onSpinWait();
                 }
 
@@ -560,13 +567,14 @@ public class TUI extends Thread{
                 Here we read the message from the player, but it doesn't block the main thread
                 because we use a storing queue to store the input
                  */
-
-                if (command.length > 0 && command[0].equals("exit")) {
+                commonCommands(command);
+                if(command.length > 0 && command[0].equals("/quitGame")){
                     // I close the scanner
-                    scanner.close();
-                    break;
-                }else{
-                    commonCommands(command);
+                    System.out.println("Game exited successfully, the match is ending...");
+
+                    //TODO: DA SISTEMARE L'USCITA DAL GIOCO DEL CLIENT
+                    //scanner.close();
+                    return;
                 }
 
                 try {
@@ -577,6 +585,12 @@ public class TUI extends Thread{
 
             }
         }
+
+        //facciamo vedere la schermata di fine gioco
+
+        //TODO: SCHERMATA DI FINE GIOCO CON NOME GIOCATORE VINCENTE E PUNTEGGIO DI TUTTI
+        //TIPO CLASSIFICA IN ORDINE DECRESCENTE
+        System.out.println("IL GIOCO E' FINITO");
     }
 
     /**
@@ -624,9 +638,21 @@ public class TUI extends Thread{
                             /infoCard posX posY - Returns infos about a card on the player's board
                             /openChat - Opens the chat tab, where you can read and send messages to other players
                             /closeChat - Closes the chat tab and returns to the game interface
+                            /quitGame - Quits the current session and ends the game for all the other players
                             """;
 
                 System.out.println(message);
+                break;
+
+            case "/quitGame":
+                cli.sendMessage(
+                        new Message(
+                                REQUEST_INTERRUPT_GAME,
+                                cli.getSocketPort(),
+                                cli.getGameID()
+                        )
+                );
+
                 break;
 
             //chiedo l'UUID della carta al server e genero i dati dal JSON
