@@ -53,9 +53,6 @@ public class CodexNaturalisApp {
                 tui.start();
             }catch(Exception e){
                 System.out.println("c'è un problema col client: "+e);
-            }finally {
-                System.out.println("Sessione terminata");
-                tui.cli.closeSocket();
             }
         }
     }

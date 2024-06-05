@@ -199,8 +199,45 @@ public class Server extends UnicastRemoteObject {
                                 }
                         )
                 );
-
                 break;
+
+            case REQUEST_INTERRUPT_GAME:
+
+                //TODO: trovo la lobby in cui i giocatori sono in attesa, li notifico e chiudo i loro sockets
+                for(int[] v: lobbyPlayerMap.values()){
+                    for(int socket: v){
+                        //ho trovato la lobby del player che ha mandato la request
+                        if(socket == message.getSenderID()){
+                            for(int id: v){
+                                idSocketMap.get(id).sendMessage(
+                                        new Message(
+                                                REPLY_INTERRUPT_GAME,
+                                                this.serverSocket.getLocalPort(),
+                                                message.getGameID(),
+                                                //The winners might be multiple because there could be a draw,
+                                                //if winners[1] is null it means that there is only one winner
+                                                new Object[] {
+                                                        "\nA player disconnected! The game is ending..."
+                                                }
+                                        )
+                                );
+
+                                //disconnetto l'handler e lo rimuovo dal server una volta notificato della fine della partita
+                                idSocketMap.get(id).disconnect();
+                                idSocketMap.remove(id);
+                                //rimuovo anche il player associato
+                                idPlayerMap.remove(id);
+                            }
+
+                            //rimuovo il game controller con il game
+                            gameControllerMap.remove(message.getGameID());
+
+                            //TODO: RIMUOVO LA LOBBY
+                            return;
+                        }
+                    }
+
+                }
         }
     }
 
@@ -460,9 +497,10 @@ public class Server extends UnicastRemoteObject {
                                                 gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                         .getCurrentGame()
                                                         .getStartingPlayer()
-                                                        .getNickname(),
+                                                        .getNickname()//,
 
-/*                                              Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
+                                                /*
+                                                Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                         .getCurrentGame()
                                                         .getViewableResourceCards())
                                                         .map(PlayableCard::getUUID)
@@ -471,7 +509,8 @@ public class Server extends UnicastRemoteObject {
                                                         .getCurrentGame()
                                                         .getViewableGoldenCards())
                                                         .map(PlayableCard::getUUID)
-                                                        .collect(Collectors.toList()),*/
+                                                        .collect(Collectors.toList()),
+                                                */
                                                 }
                                         )
                                 );

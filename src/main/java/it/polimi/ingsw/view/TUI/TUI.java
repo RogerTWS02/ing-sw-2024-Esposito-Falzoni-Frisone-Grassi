@@ -207,6 +207,11 @@ public class TUI extends Thread{
                 //update number of remaining turns
                 turnLeft = (Integer) message.getObj()[0];
                 break;
+
+            case REPLY_INTERRUPT_GAME:
+                System.out.println((String) message.getObj()[0]);
+                cli.closeSocket();
+                break;
         }
     }
 
@@ -275,13 +280,19 @@ public class TUI extends Thread{
     /**
      * Waits for the lobby to be full.
      */
-    public void waitForFullLobby() {
+    public synchronized void waitForFullLobby(){
+        String[] command;
         while(cli.getGameID() == -1){
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
             }
+
+            if(cli.getGameID() != -1) continue;
+
+            command = getCommandFromQueue();
+            if(command[0].equals("/quitGame")) commonCommands(command);
         }
     }
 
@@ -298,7 +309,7 @@ public class TUI extends Thread{
             //Choose the side to place the starting card
             System.out.print("Select which side to place the starting card (type front or back to choose): ");
             //This nextLine is needed to flush out the previous "\n" (IT'S A JAVA PROBLEM)
-            command = scanner.nextLine().split(" ");
+            command = getCommandFromQueue();
             if(command[0].equals("front") || command[0].equals("back")){
                 return command[0].equals("back");
             }
@@ -320,7 +331,7 @@ public class TUI extends Thread{
             //Choose the secret goal card
             System.out.print("Select your secret goal card (type 1 or 2 to choose): ");
             try{
-                num = Integer.parseInt(scanner.nextLine());
+                num = Integer.parseInt(getCommandFromQueue()[0]);
             }catch (NumberFormatException e){
                 System.out.println("\nInput given is invalid! Try again.");
                 continue;
@@ -499,19 +510,6 @@ public class TUI extends Thread{
 
         System.out.println("You just joined the lobby " + cli.getLobbyName());
 
-        //If user is the first to join the lobby, he will be the one to start the game
-        if(cli.getGameID() == -1)
-            System.out.println("Waiting for other players to join the game...");
-
-        //Wait for the lobby to be full
-        waitForFullLobby();
-
-        //Choose secret goal card and starting card
-        preliminaryActions();
-        System.out.println("Starting player is: " + startingPlayer);
-
-        //TODO: code refactoring
-
         /*
         This thread reads the input from the user and puts it in the inputQueue, so that the main process doesn't have to wait for the input
          */
@@ -530,6 +528,21 @@ public class TUI extends Thread{
 
         inputThread.setDaemon(true);
         inputThread.start();
+
+        //If user is the first to join the lobby, he will be the one to start the game
+        if(cli.getGameID() == -1) {
+            System.out.println("Waiting for other players to join the game...");
+            System.out.print("If you want to leave the lobby type '/quitGame': ");
+        }
+
+        //Wait for the lobby to be full
+        waitForFullLobby();
+
+        //Choose secret goal card and starting card
+        preliminaryActions();
+        System.out.println("Starting player is: " + startingPlayer);
+
+        //TODO: code refactoring
 
         boolean first = true;
         //Game flow implementation
@@ -561,21 +574,12 @@ public class TUI extends Thread{
                     continue;
                 }
 
-                command = getCommandFromQueue();
-
                 /*
                 Here we read the message from the player, but it doesn't block the main thread
                 because we use a storing queue to store the input
                  */
+                command = getCommandFromQueue();
                 commonCommands(command);
-                if(command.length > 0 && command[0].equals("/quitGame")){
-                    // I close the scanner
-                    System.out.println("Game exited successfully, the match is ending...");
-
-                    //TODO: DA SISTEMARE L'USCITA DAL GIOCO DEL CLIENT
-                    //scanner.close();
-                    return;
-                }
 
                 try {
                     Thread.sleep(100); // Pausa breve per evitare il busy-waiting
@@ -652,8 +656,7 @@ public class TUI extends Thread{
                                 cli.getGameID()
                         )
                 );
-
-                break;
+                return;
 
             //chiedo l'UUID della carta al server e genero i dati dal JSON
             // messaggio del tipo: /infoCard posX posY
