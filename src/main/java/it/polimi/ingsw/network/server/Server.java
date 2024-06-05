@@ -142,6 +142,9 @@ public class Server extends UnicastRemoteObject {
                 serverLogin(message);
                 break;
 
+            case REQUEST_VIEWABLE_CARDS:
+                requestViewableCards(message);
+                break;
 
             //Client requires to make a new lobby with nickname, lobbyName and lobbySize and to join it
             //N.B. questo tipo di request viene generato sempre dopo un REQUEST_LOGIN => REPLY_NEW_LOBBY
@@ -242,6 +245,27 @@ public class Server extends UnicastRemoteObject {
     }
 
     /**
+     * Handles the message which requests the viewable cards, sending the required information to the client.
+     *
+     * @param message the message received.
+     */
+    private void requestViewableCards(Message message) {
+        String[] toSend = new String[4];
+        for(int i = 0; i < 2; i++)
+            toSend[i] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableResourceCards[i].getUUID();
+        for(int i = 0; i < 2; i++)
+            toSend[i + 2] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableGoldenCards[i].getUUID();
+        idSocketMap.get(message.getSenderID()).sendMessage(
+                new Message(
+                        REPLY_VIEWABLE_CARDS,
+                        this.serverSocket.getLocalPort(),
+                        message.getGameID(),
+                        new Object[]{toSend}
+                )
+        );
+    }
+
+    /**
      * Method to send a message to all the players of the same game with the winner
      * @param gameID the id of the game
      */
@@ -279,7 +303,6 @@ public class Server extends UnicastRemoteObject {
      * @param ip the ip address of the server
      * @param port the port of the server
      */
-
     public void startSocket(InetAddress ip, int port){
 
         try{
@@ -640,8 +663,8 @@ public class Server extends UnicastRemoteObject {
     }
 
     /**
-     * Method to handle the request of a card
-     * @param message the message received
+     * Method to handle the request of a card.
+     * @param message the message received.
      */
 
     public Message requestCard(Message message) {

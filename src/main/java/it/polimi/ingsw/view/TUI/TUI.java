@@ -60,7 +60,17 @@ public class TUI extends Thread{
             case REPLY_LOBBY_INFO:
                 cli.setLobbyName((String) message.getObj()[0]);
                 cli.setLobbySize((Integer) message.getObj()[1]);
+                break;
 
+            case REPLY_VIEWABLE_CARDS:
+                String[] UUIDs = (String[]) message.getObj()[0];
+                System.out.println("\nCOMMON RESOURCE CARDS:\n");
+                for(int i = 0; i < 2; i++)
+                    infoC.showInfoCard(UUIDs[i], null);
+                System.out.println("\nCOMMON GOLDEN CARDS:\n");
+                for(int i = 2; i < 4; i++)
+                    infoC.showInfoCard(UUIDs[i], null);
+                System.out.print("\n");
                 break;
 
             //quando si raggiunge il numero prefissato di persone nella lobby
@@ -640,6 +650,7 @@ public class TUI extends Thread{
                             Commands List:              (Template: /COMMAND Param1 Param 2)\s
                             
                             /infoCard posX posY - Returns infos about a card on the player's board
+                            /showCommonCards - Shows the common resource and golden cards
                             /openChat - Opens the chat tab, where you can read and send messages to other players
                             /closeChat - Closes the chat tab and returns to the game interface
                             /quitGame - Quits the current session and ends the game for all the other players
@@ -682,6 +693,20 @@ public class TUI extends Thread{
                                 cli.getSocketPort(),
                                 cli.getGameID(),
                                 new Object[]{posX, posY})
+                );
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+
+            case "/showCommonCards":
+                cli.sendMessage(
+                        new Message(
+                                REQUEST_VIEWABLE_CARDS,
+                                cli.getSocketPort(),
+                                cli.getGameID())
                 );
                 try {
                     Thread.sleep(1000);
