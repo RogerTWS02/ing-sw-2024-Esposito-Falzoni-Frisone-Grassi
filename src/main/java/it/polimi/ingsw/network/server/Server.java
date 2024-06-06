@@ -250,17 +250,22 @@ public class Server extends UnicastRemoteObject {
      * @param message the message received.
      */
     private void requestViewableCards(Message message) {
-        String[] toSend = new String[4];
-        for(int i = 0; i < 2; i++)
-            toSend[i] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableResourceCards[i].getUUID();
-        for(int i = 0; i < 2; i++)
-            toSend[i + 2] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableGoldenCards[i].getUUID();
+        String[] rUUID = new String[3];
+        String[] gUUID = new String[3];
+        for(int i = 0; i < 3; i++)
+            rUUID[i] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableResourceCards[i].getUUID();
+        for(int i = 0; i < 3; i++)
+            gUUID[i] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableGoldenCards[i].getUUID();
+
         idSocketMap.get(message.getSenderID()).sendMessage(
                 new Message(
                         REPLY_VIEWABLE_CARDS,
                         this.serverSocket.getLocalPort(),
                         message.getGameID(),
-                        new Object[]{toSend}
+                        new Object[]{
+                                rUUID,
+                                gUUID
+                        }
                 )
         );
     }

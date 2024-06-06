@@ -31,6 +31,9 @@ public class TUI extends Thread{
     Objective goals = new Objective();
     InfoCard infoC = new InfoCard();
     Board board = new Board();
+    Draw draw = new Draw();
+    String[] gUUID = new String[3];
+    String[] rUUID = new String[3];
     String startingPlayer;
     List<int[]> available;
     Resource[][] onBoard;
@@ -63,13 +66,9 @@ public class TUI extends Thread{
                 break;
 
             case REPLY_VIEWABLE_CARDS:
-                String[] UUIDs = (String[]) message.getObj()[0];
-                System.out.println("\nCOMMON RESOURCE CARDS:\n");
-                for(int i = 0; i < 2; i++)
-                    infoC.showInfoCard(UUIDs[i], null);
-                System.out.println("\nCOMMON GOLDEN CARDS:\n");
-                for(int i = 2; i < 4; i++)
-                    infoC.showInfoCard(UUIDs[i], null);
+                gUUID = (String[]) message.getObj()[0];
+                rUUID = (String[]) message.getObj()[1];
+                draw.showDrawable(gUUID, rUUID);
                 System.out.print("\n");
                 break;
 
