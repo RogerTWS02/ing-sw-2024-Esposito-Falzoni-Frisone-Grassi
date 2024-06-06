@@ -1,6 +1,5 @@
 package it.polimi.ingsw.view.TUI;
 
-import it.polimi.ingsw.model.PlayableCard;
 import it.polimi.ingsw.model.Resource;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
@@ -11,7 +10,6 @@ import it.polimi.ingsw.view.TUI.GameElements.Views.TopRow;
 import it.polimi.ingsw.view.TUI.GameState.*;
 import org.json.simple.parser.ParseException;
 
-import javax.swing.text.View;
 import java.io.IOException;
 import java.util.*;
 
@@ -96,11 +94,11 @@ public class TUI extends Thread{
 
 
 
-                System.out.println("VALORE DEL TURNO: "+myTurn);
+                //System.out.println("VALORE DEL TURNO: "+myTurn);
 
                 //vado alla scena di gioco impostando i parametri ricevuti
                 //ovvero le carte della mano e le common goal cards
-                System.out.println("Let's go! The game is starting...");
+                System.out.println("\nLet's go! The game is starting...");
 
                 break;
 
@@ -114,7 +112,7 @@ public class TUI extends Thread{
                 //aggiungo la nuova carta
                 for(int i = 0; i < 3; i++){
                     if(currentHandUUID.get(i).isEmpty()){
-                        System.out.println("FINISCI QUI? "+newCardUUID);
+                        //System.out.println("FINISCI QUI? "+newCardUUID);
                         currentHandUUID.set(i, newCardUUID);
                         break;
                     }
@@ -235,7 +233,9 @@ public class TUI extends Thread{
                 command = scanner.nextLine().split(" ");
                 if(command[0].length() > 16)
                     System.out.println("The nickname must be less than 16 characters!");
-            } while(command[0].length() > 16);
+                if(command.length > 1)
+                    System.out.println("The nickname must be a single word!");
+            } while(command[0].length() > 16 || command.length != 1);
             cli.sendMessage(
                     new Message(
                             REQUEST_LOGIN,
@@ -524,7 +524,7 @@ public class TUI extends Thread{
         //Choose lobby size and create it
         createNewLobby(nameP);
 
-        System.out.println("You just joined the lobby " + cli.getLobbyName());
+        System.out.println("You just joined the lobby " + cli.getLobbyName() + "\n");
 
         /*
         This thread reads the input from the user and puts it in the inputQueue, so that the main process doesn't have to wait for the input
@@ -548,11 +548,17 @@ public class TUI extends Thread{
         //If user is the first to join the lobby, he will be the one to start the game
         if(cli.getGameID() == -1) {
             System.out.println("Waiting for other players to join the game...");
-            System.out.print("If you want to leave the lobby type '/quitGame': ");
+            System.out.println("If you want to leave the lobby type '/quitGame': ");
         }
 
         //Wait for the lobby to be full
         waitForFullLobby();
+
+        try {
+            goals.showObjective(allGoalsUUID.toArray(new String[0]));
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
 
         //Choose secret goal card and starting card
         preliminaryActions();
@@ -630,7 +636,6 @@ public class TUI extends Thread{
     /**
      * Prints the full screen of the game.
      */
-
     public void printFullScreen() throws IOException, ParseException {
         Views.clearScreen();
 
@@ -644,13 +649,14 @@ public class TUI extends Thread{
     }
 
     /**
-     * Handles the /help command.
+     * Handles the commands received.
+     *
+     * @param command The command received.
      */
     public void commonCommands(String[] command){
-
+        command[0] = command[0].toLowerCase();
         String message;
-
-        switch(command[0].toLowerCase()){
+        switch(command[0]){
             case "/help":
                 message = """
                             Commands List:              (Template: /COMMAND Param1 Param 2)\s
@@ -841,6 +847,7 @@ public class TUI extends Thread{
                 System.out.println("Command not valid, try '/help' to view syntax");
         }
     }
+
     /**
      * Gets the command from the queue, if the queue is empty it waits for a new command
      * @return the command

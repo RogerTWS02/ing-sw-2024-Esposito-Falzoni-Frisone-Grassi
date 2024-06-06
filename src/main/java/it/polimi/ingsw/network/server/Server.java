@@ -271,8 +271,8 @@ public class Server extends UnicastRemoteObject {
     }
 
     /**
-     * Method to send a message to all the players of the same game with the winner
-     * @param gameID the id of the game
+     * Method to send a message to all the players of the same notifying with the winner.
+     * @param gameID The ID of the game.
      */
 
     public void sendWinnerMessage(int gameID) throws IOException {
@@ -304,9 +304,9 @@ public class Server extends UnicastRemoteObject {
     }
 
     /**
-     * Method to start the socket
-     * @param ip the ip address of the server
-     * @param port the port of the server
+     * Method to start the socket.
+     * @param ip The IP address of the server.
+     * @param port The port of the server.
      */
     public void startSocket(InetAddress ip, int port){
 

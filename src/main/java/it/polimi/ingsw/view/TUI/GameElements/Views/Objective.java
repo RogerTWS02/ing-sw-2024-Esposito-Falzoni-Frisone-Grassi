@@ -1,7 +1,6 @@
 package it.polimi.ingsw.view.TUI.GameElements.Views;
 
 
-import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.view.TUI.GameState.Views;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Optional;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
@@ -54,7 +52,7 @@ public class Objective implements  Views {
         card[4]=pattern/decorator
          */
         String[][] stringObjective = new String[3][5];
-        for (int x = 0; x < 3; x++) {
+        for (int x = 0; x < uuid.length; x++) {
             int index = Integer.parseInt(uuid[x].replaceAll("[A-Z]+_", ""));
             JSONObject JSONCard;
 
@@ -63,7 +61,6 @@ public class Objective implements  Views {
                 JSONCard = (JSONObject) patternGoalJSONArray.get(index - 1);
                 stringObjective[x][0] = "Pattern goal card ";
                 uuidToString(uuid[x], stringObjective[x]);
-
             } else {
                 // create the resource goal card and set the color
                 JSONCard = (JSONObject) resourceGoalJSONArray.get(index - 1);
@@ -78,16 +75,15 @@ public class Objective implements  Views {
                 stringObjective[x][2] = "┌────────────┐";
                 stringObjective[x][3] = "│ " + resources + "  │";
                 stringObjective[x][4] = "└────────────┘";
-
-
             }
             stringObjective[x][1]= "   "+String.valueOf(((Number)JSONCard.get("points")).intValue()) + " points   ";
         }
 
-            // actively create the3 cards to print with color and attributes
-            ArrayList<String> cards = new ArrayList<String>();
+        if(uuid.length == 3){
+            // actively create the cards to print with color and attributes
+            ArrayList<String> cards = new ArrayList<>();
             cards.add("┌───────────────────────────────────────────────────────────┬───────────────────────────────┐");
-            cards.add("│ Common goals                                              │ Private goal                  │");
+            cards.add("│ Common goals                                              │ Secret goal                   │");
             cards.add("├───────────────────────────────────────────────────────────┼───────────────────────────────┤");
             cards.add("│╔═══════════════════════════╗╔═══════════════════════════╗ │ ╔═══════════════════════════╗ │");
             cards.add("│║      "+stringObjective[0][0]+"   ║║      "+stringObjective[1][0]+"   ║ │ ║      "+stringObjective[2][0]+"   ║ │"+ANSI_RESET);
@@ -98,17 +94,31 @@ public class Objective implements  Views {
             cards.add("│╚═══════════════════════════╝╚═══════════════════════════╝ │ ╚═══════════════════════════╝ │");
             cards.add("└───────────────────────────────────────────────────────────┴───────────────────────────────┘");
 
+            //Views.clearScreen();
+            for (int i = 0; i < 11; i++) {
+                System.out.println(cards.get(i));
+            }
+        } else {
+            // actively create the cards to print with color and attributes
+            ArrayList<String> cards = new ArrayList<>();
+            cards.add("┌───────────────────────────────────────────────────────────┬");
+            cards.add("│ Common goals                                              │");
+            cards.add("├───────────────────────────────────────────────────────────┼");
+            cards.add("│╔═══════════════════════════╗╔═══════════════════════════╗ │");
+            cards.add("│║      "+stringObjective[0][0]+"   ║║      "+stringObjective[1][0]+"   ║ │"+ANSI_RESET);
+            cards.add("│║        "+stringObjective[0][2]+"     ║║        "+stringObjective[1][2]+"     ║ │"+ANSI_RESET);
+            cards.add("│║        "+stringObjective[0][3]+"     ║║        "+stringObjective[1][3]+"     ║ │"+ANSI_RESET);
+            cards.add("│║        "+stringObjective[0][4]+"     ║║        "+stringObjective[1][4]+"     ║ │"+ANSI_RESET);
+            cards.add("│║        "+stringObjective[0][1]+"     ║║        "+stringObjective[1][1]+"     ║ │"+ANSI_RESET);
+            cards.add("│╚═══════════════════════════╝╚═══════════════════════════╝ │");
+            cards.add("└───────────────────────────────────────────────────────────┴");
 
-
-
-
-
-        //Views.clearScreen();
-        for (int i = 0; i < 11; i++) {
-            System.out.println(cards.get(i));
-        };
-    };
-
+            //Views.clearScreen();
+            for (int i = 0; i < 11; i++) {
+                System.out.println(cards.get(i));
+            }
+        }
+    }
 
     private void uuidToString(String uuid,String[] card) {
         switch (uuid) {
@@ -146,21 +156,12 @@ public class Objective implements  Views {
                 card[2] = "  ░░  ░░ " + ANSI_RED + " ▇▇  "+ANSI_RESET;
                 card[3] = "  ░░  " + ANSI_BLUE + "▇▇ " + ANSI_RESET + " ░░  ";
                 card[4] = "  ░░  " + ANSI_BLUE + "▇▇ " + ANSI_RESET + " ░░  ";
-
             }
             case "PGC_8" -> {
                 card[3] = ANSI_BLUE + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
                 card[4] = "  ░░  " + ANSI_PURPLE + "▇▇ " + ANSI_RESET + " ░░  ";
                 card[5] = "  ░░  " + ANSI_PURPLE + "▇▇ " + ANSI_RESET + " ░░  ";
             }
-
-
         }
-
-
     }
-
-
-
-
-    }
+}
