@@ -39,7 +39,7 @@
         "UUID": "RC_7",
         "permRes": "MUSHROOM",
         "points": 0,
-        "corners": ["MUSHROOM", "BUTTERFLY", "SCROLL", "EMPTY"]
+        "corners": ["MUSHROOM", "BUTTERFLY", "SCROLL", null]
     },
     {
         "UUID": "RC_8",
