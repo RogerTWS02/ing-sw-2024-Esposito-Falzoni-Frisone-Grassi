@@ -12,8 +12,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+
+
+
 public class Draw implements Views {
 
+     public static void main(String[] args) {
+            try {
+                 Draw draw = new Draw();
+                 String[] gUuids = {"GC_1", "GC_4", "GC_3"};
+                 String[] rUuids = {"RC_1", "RC_2", "RC_3"};
+                 draw.showDrawable(gUuids, rUuids);
+            } catch (IOException | ParseException e) {
+                 e.printStackTrace();
+            }
+     }
 
      JSONArray resourceJSONArray;
      JSONArray goldJSONArray;
@@ -29,18 +42,16 @@ public class Draw implements Views {
 
      public Draw() throws IOException, ParseException {
 
-     // read the JSON file with the cards
-          InputStream inputresource = getClass().getResourceAsStream("/" + "resourceDeck.json");
-          InputStream inputgold = getClass().getResourceAsStream("/" + "goldenDeck.json");
+          JSONParser parser = new JSONParser();
+          // read the JSON file with the cards
+          InputStream inputGold = getClass().getResourceAsStream("/goldenDeck.json");
+          BufferedReader bufferGold = new BufferedReader(new InputStreamReader(inputGold));
+          goldJSONArray = (JSONArray) parser.parse(bufferGold);
 
-          JSONParser parserGold = new JSONParser();
-          BufferedReader buffergold = new BufferedReader(new InputStreamReader(inputgold));
-          Object JSONObjectGold = parserGold.parse(buffergold);
-          JSONArray goldJSONArray = (JSONArray) JSONObjectGold;
-          JSONParser parserResource = new JSONParser();
-          BufferedReader bufferResource = new BufferedReader(new InputStreamReader(inputresource));
-          Object JSONObjectResource = parserResource.parse(bufferResource);
-          JSONArray resourceJSONArray = (JSONArray) JSONObjectResource;
+          InputStream inputResource = getClass().getResourceAsStream("/resourceDeck.json");
+          BufferedReader bufferResource = new BufferedReader(new InputStreamReader(inputResource));
+          resourceJSONArray = (JSONArray) parser.parse(bufferResource);
+
 
 
      }
@@ -66,7 +77,7 @@ public class Draw implements Views {
 
 
           // generating golden cards
-          for(int x =2; x>=0; x--){
+          for(int x =0; x<3; x++){
 
 
                int index = Integer.parseInt(gUuids[x].replaceAll("[A-Z]+_", ""));
@@ -76,19 +87,19 @@ public class Draw implements Views {
                gStringCard[0][x] = "Golden Card" + "[" + (x) + "]";
                gStringCard[9][x] = ANSI_YELLOW;
 
-               gStringCard[1][x]=(String) JSONCard.get("points");
+               gStringCard[1][x]=String.valueOf(((Number) JSONCard.get("points")).intValue());
                gStringCard[2][x]=Views.stringToEmoji((String) JSONCard.get("permRes"));
                for(int i = 0; i < 4; i++){
                     gStringCard[i+3][x] =Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
                }
                JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
-
+               gStringCard[8][x]="";
                for (Object o : JSONRequire) {
 
-                    gStringCard[8][x] += (Views.stringToEmoji((String) o));
+                    gStringCard[8][x]= gStringCard[8][x].concat(Views.stringToEmoji((String) o));
                }
-               int spaces= (21-gStringCard[8][x].length())/2;
-               gStringCard[8][x] = " ".repeat(spaces).concat(gStringCard[8][x]).concat(" ".repeat(spaces));
+               int spaces= (23-gStringCard[8][x].length())/2;
+               gStringCard[8][x] = " ".repeat(spaces).concat(gStringCard[8][x]).concat(" ".repeat(spaces+1));
                gStringCard[7][x]= (String) JSONCard.get("rule");
                switch (gStringCard[2][x]){
 
@@ -100,7 +111,7 @@ public class Draw implements Views {
           }
 
           // generating resource cards
-          for(int x =2; x>=0; x--){
+          for(int x =0; x<3; x++){
 
                int index = Integer.parseInt(rUuids[x].replaceAll("[A-Z]+_", ""));
                JSONObject JSONCard;
@@ -109,7 +120,7 @@ public class Draw implements Views {
                rStringCard[0][x] = "Resource Card" + "[" +(x) + "]";
                rStringCard[9][x] = ANSI_WHITE;
 
-               rStringCard[1][x] = (String) JSONCard.get("points");
+               rStringCard[1][x] = String.valueOf(((Number) JSONCard.get("points")).intValue());
                rStringCard[2][x] = Views.stringToEmoji((String) JSONCard.get("permRes"));
                for(int i = 0; i < 4; i++){
                     rStringCard[i+3][x] = Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
@@ -176,12 +187,13 @@ public class Draw implements Views {
                }
                cards.append(ANSI_RESET + " │ ")
                       .append("\n");
+          cards.append(ANSI_RESET + "│ ");
                for(int x =0; x<3; x++){
                     cards
                              .append(gStringCard[9][x] + "║" + ANSI_RESET)
-                             .append(" ".repeat(6))
+                             .append(" ".repeat(7))
                              .append(gStringCard[0][x])
-                             .append(" ".repeat(5))
+                             .append(" ".repeat(6))
                              .append(gStringCard[9][x] + "║" + ANSI_RESET);
                }
                cards.append(ANSI_RESET + " │ ")
@@ -198,18 +210,14 @@ public class Draw implements Views {
                .append(ANSI_RESET + " │ ")
                .append("\n")
                .append("│ ")
-               .append("│ ")
                .append( gStringCard[9][0] + "║" + ANSI_RESET)
                .append(" ".repeat(27))
-               .append( gStringCard[9][0] + "║" + ANSI_RESET)
-               .append( gStringCard[9][1] + "║" + ANSI_RESET);
+               .append( gStringCard[9][0] + "║" + ANSI_RESET);
                for(int x = 1; x<3; x++){
                     cards
                           .append( gStringCard[9][1] + "║" + ANSI_RESET)
                           .append(gStringCard[5][x])
-                          .append(" ".repeat(9))
                           .append(gStringCard[8][x])
-                          .append(" ".repeat(8))
                           .append(gStringCard[6][x])
                           .append(gStringCard[9][x] + "║");
                };
@@ -269,9 +277,9 @@ public class Draw implements Views {
           for(int x =0; x<3; x++){
                cards
                        .append(rStringCard[9][x] + "║" + ANSI_RESET)
-                       .append(" ".repeat(6))
+                       .append(" ".repeat(7))
                        .append(rStringCard[0][x])
-                       .append(" ".repeat(5))
+                       .append(" ".repeat(8))
                        .append(rStringCard[9][x] + "║" + ANSI_RESET);
           }
           cards.append(ANSI_RESET + " │ ")
