@@ -68,8 +68,6 @@ public class TUI extends Thread{
             case REPLY_VIEWABLE_CARDS:
                 gUUID = (String[]) message.getObj()[0];
                 rUUID = (String[]) message.getObj()[1];
-                draw.showDrawable(gUUID, rUUID);
-                System.out.print("\n");
                 break;
 
             //quando si raggiunge il numero prefissato di persone nella lobby
@@ -400,6 +398,15 @@ public class TUI extends Thread{
     public void playerTurn(){
         try {
             printFullScreen();
+
+            //update the current viewable cards
+            cli.sendMessage(
+                    new Message(
+                            REQUEST_VIEWABLE_CARDS,
+                            cli.getSocketPort(),
+                            cli.getGameID())
+            );
+
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
@@ -460,7 +467,7 @@ public class TUI extends Thread{
 
             //Now it's time to draw a new card
             while (true) {
-
+                draw.showDrawable(gUUID, rUUID);
                 System.out.print("""
                         Choose the type of the card you want to draw (golden or resource) \s
                         or write a different command (type /help to view the list of commands): """);
@@ -643,7 +650,7 @@ public class TUI extends Thread{
 
         String message;
 
-        switch(command[0]){
+        switch(command[0].toLowerCase()){
             case "/help":
                 message = """
                             Commands List:              (Template: /COMMAND Param1 Param 2)\s
@@ -653,12 +660,14 @@ public class TUI extends Thread{
                             /openChat - Opens the chat tab, where you can read and send messages to other players
                             /closeChat - Closes the chat tab and returns to the game interface
                             /quitGame - Quits the current session and ends the game for all the other players
+                            
+                            Those commands are not case-sensitive
                             """;
 
                 System.out.println(message);
                 break;
 
-            case "/quitGame":
+            case "/quitgame":
                 cli.sendMessage(
                         new Message(
                                 REQUEST_INTERRUPT_GAME,
@@ -670,7 +679,7 @@ public class TUI extends Thread{
 
             //chiedo l'UUID della carta al server e genero i dati dal JSON
             // messaggio del tipo: /infoCard posX posY
-            case "/infoCard":
+            case "/infocard":
                 if(command.length < 3) {
                     System.out.println("Command not valid, try '/help' to view syntax");
                     break;
@@ -700,7 +709,7 @@ public class TUI extends Thread{
                 }
                 break;
 
-            case "/showCommonCards":
+            case "/showcommoncards":
                 cli.sendMessage(
                         new Message(
                                 REQUEST_VIEWABLE_CARDS,
@@ -712,9 +721,10 @@ public class TUI extends Thread{
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+                draw.showDrawable(gUUID, rUUID);
                 break;
 
-            case "/placeCard":
+            case "/placecard":
 
                 try {
                     numHand = Integer.parseInt(command[1]);
@@ -753,7 +763,7 @@ public class TUI extends Thread{
                 }
                 break;
 
-            case "/drawCardFromViewable":
+            case "/drawcardcromviewable":
 
                 String type = command[1].toLowerCase();
                 int pos;
@@ -789,7 +799,7 @@ public class TUI extends Thread{
                 break;
 
 
-            case "/drawCardFromDeck":
+            case "/drawcardfromdeck":
                 if(checkFull()) {
                     System.out.println("Command not valid, you need to place a card first");
                     break;
