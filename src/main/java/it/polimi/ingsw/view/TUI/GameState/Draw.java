@@ -18,6 +18,9 @@ import java.util.ArrayList;
 public class Draw implements Views {
 
 
+
+
+
      JSONArray resourceJSONArray;
      JSONArray goldJSONArray;
      // colors used in the TUI
@@ -68,6 +71,15 @@ public class Draw implements Views {
 
           // generating golden cards
           for(int x =0; x<3; x++){
+               if(gUuids[x]==null){
+                    gStringCard[0][x]= " No card here ";
+                    gStringCard[1][x]="0";
+                    gStringCard[2][x]="  ";
+                    for(int i =3; i<9; i++) gStringCard[i][x]="  ";
+                    gStringCard[8][x]=" ".repeat(21);
+                    gStringCard[9][x]="";
+                    continue;
+               }
 
 
                int index = Integer.parseInt(gUuids[x].replaceAll("[A-Z]+_", ""));
@@ -106,6 +118,15 @@ public class Draw implements Views {
 
           // generating resource cards
           for(int x =0; x<3; x++){
+               if(rUuids[x]==null){
+                    rStringCard[0][x]= "  No card here  ";
+                    rStringCard[1][x]="0";
+                    rStringCard[2][x]="  ";
+                    for(int i =3; i<9; i++) rStringCard[i][x]="  ";
+                    rStringCard[8][x]=" ".repeat(21);
+                    rStringCard[9][x]="";
+                    continue;
+               }
 
                int index = Integer.parseInt(rUuids[x].replaceAll("[A-Z]+_", ""));
                JSONObject JSONCard;
@@ -189,7 +210,7 @@ public class Draw implements Views {
                     cards
                              .append(gStringCard[9][x] + "║" + ANSI_RESET)
                              .append(" ".repeat(7))
-                             .append(gStringCard[0][x])
+                             .append(gStringCard[9][x]+gStringCard[0][x]+ANSI_RESET)
                              .append(" ".repeat(6))
                              .append(gStringCard[9][x] + "║" + ANSI_RESET);
                }
@@ -276,7 +297,7 @@ public class Draw implements Views {
                cards
                        .append(rStringCard[9][x] + "║" + ANSI_RESET)
                        .append(" ".repeat(6))
-                       .append(rStringCard[0][x])
+                       .append(rStringCard[9][x]+rStringCard[0][x]+ANSI_RESET)
                        .append(" ".repeat(5))
                        .append(rStringCard[9][x] + "║" + ANSI_RESET);
           }
