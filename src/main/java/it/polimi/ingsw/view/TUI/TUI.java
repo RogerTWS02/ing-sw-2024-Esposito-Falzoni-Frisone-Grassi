@@ -548,7 +548,7 @@ public class TUI extends Thread{
         //If user is the first to join the lobby, he will be the one to start the game
         if(cli.getGameID() == -1) {
             System.out.println("Waiting for other players to join the game...");
-            System.out.println("If you want to leave the lobby type '/quitGame': ");
+            System.out.print("If you want to leave the lobby type '/quitGame': ");
         }
 
         //Wait for the lobby to be full

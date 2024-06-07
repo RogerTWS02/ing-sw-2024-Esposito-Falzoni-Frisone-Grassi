@@ -44,7 +44,7 @@ public class ClientHandler extends Thread {
     /**
      * Runs the client handler process.
      */
-    public void run() {
+    public void run(){
         try {
             handleClient();
         } catch (IOException e) {
@@ -112,6 +112,9 @@ public class ClientHandler extends Thread {
             }
             isConnected = false;
             Thread.currentThread().interrupt();
+
+            //NOTIFICO IL SERVER DELLA DISCONNESSIONE
+            server.notifyDisconnection(clientSocket.getPort());
         }
     }
 }

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Server extends UnicastRemoteObject {
+public class Server extends UnicastRemoteObject{
     private static final int default_port = 1234;
     public static final String NAME = "Codex_server";
     private final InetAddress ip;
@@ -205,42 +205,55 @@ public class Server extends UnicastRemoteObject {
                 break;
 
             case REQUEST_INTERRUPT_GAME:
+                notifyDisconnection(message.getSenderID());
+                break;
+        }
+    }
 
-                //TODO: trovo la lobby in cui i giocatori sono in attesa, li notifico e chiudo i loro sockets
-                for(int[] v: lobbyPlayerMap.values()){
-                    for(int socket: v){
-                        //ho trovato la lobby del player che ha mandato la request
-                        if(socket == message.getSenderID()){
-                            for(int id: v){
-                                idSocketMap.get(id).sendMessage(
-                                        new Message(
-                                                REPLY_INTERRUPT_GAME,
-                                                this.serverSocket.getLocalPort(),
-                                                message.getGameID(),
-                                                //The winners might be multiple because there could be a draw,
-                                                //if winners[1] is null it means that there is only one winner
-                                                new Object[] {
-                                                        "\nA player disconnected! The game is ending..."
-                                                }
-                                        )
-                                );
+    //notify all the player in the same lobby that a client disconnected
+    //and terminates the match for all of them
+    void notifyDisconnection(int clientPort){
+        System.out.println("Client on port " + clientPort + " disconnected");
+        int gameID = -1;
+        //TODO: trovo la lobby in cui i giocatori sono in attesa, li notifico e chiudo i loro sockets
+        for(Lobby l: lobbyPlayerMap.keySet()){
+            for(int socket: lobbyPlayerMap.get(l)){
+                //ho trovato la lobby del player che ha mandato la request
+                if(socket == clientPort){
+                    //imposto il gameID (porta del primo giocatore che è entrato nella lobby)
+                    gameID = lobbyPlayerMap.get(l)[0];
+                    for(int id: lobbyPlayerMap.get(l)){
+                        //questo if serve per evitare di iterare su socket per
+                        //giocatori che ancora non sono entrati nella lobby
+                        if(idSocketMap.get(id) == null) continue;
+                        idSocketMap.get(id).sendMessage(
+                                new Message(
+                                        REPLY_INTERRUPT_GAME,
+                                        this.serverSocket.getLocalPort(),
+                                        gameID,
+                                        new Object[] {
+                                                "\nA player disconnected! The game is ending..."
+                                        }
+                                )
+                        );
 
-                                //disconnetto l'handler e lo rimuovo dal server una volta notificato della fine della partita
-                                idSocketMap.get(id).disconnect();
-                                idSocketMap.remove(id);
-                                //rimuovo anche il player associato
-                                idPlayerMap.remove(id);
-                            }
-
-                            //rimuovo il game controller con il game
-                            gameControllerMap.remove(message.getGameID());
-
-                            //TODO: RIMUOVO LA LOBBY
-                            return;
-                        }
+                        //disconnetto l'handler e lo rimuovo dal server una volta notificato della fine della partita
+                        idSocketMap.get(id).disconnect();
+                        idSocketMap.remove(id);
+                        //rimuovo anche il player associato
+                        idPlayerMap.remove(id);
                     }
 
+                    //TODO: non funziona con la rimozione del nome, da controllare
+                    //rimuovo il game controller con il game
+                    gameControllerMap.remove(gameID);
+
+                    //rimuovo la lobby
+                    lobbyPlayerMap.remove(l);
+                    return;
                 }
+            }
+
         }
     }
 
@@ -309,11 +322,8 @@ public class Server extends UnicastRemoteObject {
      * @param port The port of the server.
      */
     public void startSocket(InetAddress ip, int port){
-
         try{
-
             this.serverSocket = new ServerSocket(port, 66, ip);
-
         }catch (IOException e){
             logger.log(Level.SEVERE, "Exception while creating server socket");
         }
