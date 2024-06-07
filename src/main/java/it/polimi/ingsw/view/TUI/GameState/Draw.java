@@ -70,7 +70,7 @@ public class Draw implements Views {
 
           // generating golden cards
           for(int x =0; x<3; x++){
-               if(Objects.equals(gUuids[x], "")){
+               if(Objects.equals(gUuids[2-x], "")){
                     gStringCard[0][x]= " No card here ";
                     gStringCard[1][x]="0";
                     gStringCard[2][x]="  ";
@@ -81,7 +81,7 @@ public class Draw implements Views {
                }
 
 
-               int index = Integer.parseInt(gUuids[x].replaceAll("[A-Z]+_", ""));
+               int index = Integer.parseInt(gUuids[2-x].replaceAll("[A-Z]+_", ""));
                JSONObject JSONCard;
                //create the golden card and set the color
                JSONCard = (JSONObject) goldJSONArray.get(index-1);
@@ -117,7 +117,7 @@ public class Draw implements Views {
 
           // generating resource cards
           for(int x =0; x<3; x++){
-               if(Objects.equals(gUuids[x], "")){
+               if(Objects.equals(gUuids[2-x], "")){
                     rStringCard[0][x]= "  No card here  ";
                     rStringCard[1][x]="0";
                     rStringCard[2][x]="  ";
@@ -127,7 +127,7 @@ public class Draw implements Views {
                     continue;
                }
 
-               int index = Integer.parseInt(rUuids[x].replaceAll("[A-Z]+_", ""));
+               int index = Integer.parseInt(rUuids[2-x].replaceAll("[A-Z]+_", ""));
                JSONObject JSONCard;
                //create the golden card and set the color
                JSONCard = (JSONObject) resourceJSONArray.get(index - 1);

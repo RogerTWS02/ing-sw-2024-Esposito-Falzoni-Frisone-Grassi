@@ -64,8 +64,8 @@ public class TUI extends Thread{
                 break;
 
             case REPLY_VIEWABLE_CARDS:
-                gUUID = (String[]) message.getObj()[0];
-                rUUID = (String[]) message.getObj()[1];
+                rUUID = (String[]) message.getObj()[0];
+                gUUID = (String[]) message.getObj()[1];
                 break;
 
             //quando si raggiunge il numero prefissato di persone nella lobby
@@ -503,7 +503,7 @@ public class TUI extends Thread{
                     commonCommands(new String[]{
                             "/drawCardFromViewable",
                             deck,
-                            choose
+                            String.valueOf(3-Integer.parseInt(choose))
                     });
 
                 try {
