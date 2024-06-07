@@ -1045,7 +1045,7 @@ public class Server extends UnicastRemoteObject{
 
             //PlayerId is the clientPort of the player
             if(visible){
-                Message result = server.requestCard(new Message(null, clientID, server.getGameControllerMap()
+                Message result = server.requestCard(new Message(null, clientID, getGameControllerMap()
                         .get(clientID)
                         .getCurrentGame().getGameID(), new Object[]{1,index}));
                 switch (result.getMessageType()){
@@ -1058,7 +1058,7 @@ public class Server extends UnicastRemoteObject{
                         break;
                 }
             }else{
-                Message result = server.requestCard(new Message(null, clientID, server.getGameControllerMap()
+                Message result = server.requestCard(new Message(null, clientID, getGameControllerMap()
                         .get(clientID)
                         .getCurrentGame().getGameID(), new Object[]{0,index}));
                 switch (result.getMessageType()){

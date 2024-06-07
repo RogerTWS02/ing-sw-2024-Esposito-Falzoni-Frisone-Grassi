@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
-
+import java.util.Objects;
 
 
 public class Draw implements Views {
@@ -71,13 +70,13 @@ public class Draw implements Views {
 
           // generating golden cards
           for(int x =0; x<3; x++){
-               if(gUuids[x]==null){
+               if(Objects.equals(gUuids[x], "")){
                     gStringCard[0][x]= " No card here ";
                     gStringCard[1][x]="0";
                     gStringCard[2][x]="  ";
                     for(int i =3; i<9; i++) gStringCard[i][x]="  ";
                     gStringCard[8][x]=" ".repeat(21);
-                    gStringCard[9][x]="";
+                    gStringCard[9][x]=ANSI_RESET;
                     continue;
                }
 
@@ -118,13 +117,13 @@ public class Draw implements Views {
 
           // generating resource cards
           for(int x =0; x<3; x++){
-               if(rUuids[x]==null){
+               if(Objects.equals(gUuids[x], "")){
                     rStringCard[0][x]= "  No card here  ";
                     rStringCard[1][x]="0";
                     rStringCard[2][x]="  ";
                     for(int i =3; i<9; i++) rStringCard[i][x]="  ";
                     rStringCard[8][x]=" ".repeat(21);
-                    rStringCard[9][x]="";
+                    rStringCard[9][x]=ANSI_RESET;
                     continue;
                }
 

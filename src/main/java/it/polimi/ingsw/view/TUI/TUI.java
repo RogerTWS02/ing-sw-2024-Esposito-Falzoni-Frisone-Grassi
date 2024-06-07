@@ -112,7 +112,6 @@ public class TUI extends Thread{
                 //aggiungo la nuova carta
                 for(int i = 0; i < 3; i++){
                     if(currentHandUUID.get(i).isEmpty()){
-                        //System.out.println("FINISCI QUI? "+newCardUUID);
                         currentHandUUID.set(i, newCardUUID);
                         break;
                     }
@@ -476,7 +475,7 @@ public class TUI extends Thread{
                 draw.showDrawable(gUUID, rUUID);
                 System.out.print("""
                         Choose the type of the card you want to draw (golden or resource) \s
-                        or write a different command (type /help to view the list of commands): """);
+                        or write a different command (type /help to view the list of commands):""" + " ");
                 command = getCommandFromQueue();
                 String deck = command[0];
 
@@ -777,7 +776,7 @@ public class TUI extends Thread{
                 }
                 break;
 
-            case "/drawcardcromviewable":
+            case "/drawcardfromviewable":
 
                 String type = command[1].toLowerCase();
                 int pos;
@@ -814,15 +813,6 @@ public class TUI extends Thread{
 
 
             case "/drawcardfromdeck":
-                if(checkFull()) {
-                    System.out.println("Command not valid, you need to place a card first");
-                    break;
-                }
-                if(command.length < 2) {
-                    System.out.println("Command not valid, try '/help' to view syntax");
-                    break;
-                }
-
                 String ty = command[1].toLowerCase();
                 if(ty.equals("golden")){
                     cli.sendMessage(

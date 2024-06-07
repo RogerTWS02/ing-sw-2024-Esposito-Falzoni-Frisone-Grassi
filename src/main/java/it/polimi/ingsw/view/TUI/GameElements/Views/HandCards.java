@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
@@ -70,13 +71,13 @@ public class HandCards implements Views {
          */
 
         for(int x =0; x< 3; x++){
-            if(uuid[x]==null){
+            if(Objects.equals(uuid[x], "")){
                 stringCard[0][x]= "";
                 stringCard[1][x]="0";
                 stringCard[2][x]="  ";
                 for(int i =3; i<9; i++) stringCard[i][x]="  ";
                 stringCard[8][x]=" ".repeat(21);
-                stringCard[9][x]="";
+                stringCard[9][x]=ANSI_RESET;
                 continue;
             }
             int index = Integer.parseInt(uuid[x].replaceAll("[A-Z]+_", ""));
