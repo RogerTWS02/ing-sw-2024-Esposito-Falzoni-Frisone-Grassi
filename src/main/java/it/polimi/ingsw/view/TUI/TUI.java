@@ -230,7 +230,7 @@ public class TUI extends Thread{
         while(cli.getLobbyName().isEmpty()) {
             do {
                 loginUsername.showLogInUsername();
-                command = scanner.nextLine().split(" ");
+                command = getCommandFromQueue();
                 if(command[0].length() > 16)
                     System.out.println("The nickname must be less than 16 characters!");
                 if(command.length > 1)
@@ -259,7 +259,7 @@ public class TUI extends Thread{
      */
     public void createNewLobby(String nameP) {
         while(cli.getLobbySize() == -1){
-            int size = scanner.nextInt();
+            int size = Integer.parseInt(getCommandFromQueue()[0]);
             if(size < 2 || size > 4){
                 System.out.println("A game needs a number of players between 2 and 4 included!");
                 System.out.print("Insert lobby size (4 players max): ");
@@ -291,15 +291,21 @@ public class TUI extends Thread{
         String[] command;
         while(cli.getGameID() == -1){
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
 
             if(cli.getGameID() != -1) continue;
 
-            command = getCommandFromQueue();
-            if(command[0].equals("/quitGame")) commonCommands(command);
+            if(!inputQueue.isEmpty()){
+                command = getCommandFromQueue();
+                if(command[0].equals("/quitGame")) {
+                    commonCommands(command);
+                }else{
+                    System.out.print("Wait for the lobby fill or type '/quitGame' to leave the lobby: ");
+                }
+            }
         }
     }
 
@@ -515,16 +521,6 @@ public class TUI extends Thread{
     public void run(){
         //Initialize scanner in order to read user input
         String[] command;
-        //Show game logo
-        startGame.ShowStartGame();
-
-        //Insert nickname
-        String nameP = insertNickname();
-
-        //Choose lobby size and create it
-        createNewLobby(nameP);
-
-        System.out.println("You just joined the lobby " + cli.getLobbyName() + "\n");
 
         /*
         This thread reads the input from the user and puts it in the inputQueue, so that the main process doesn't have to wait for the input
@@ -544,6 +540,18 @@ public class TUI extends Thread{
 
         inputThread.setDaemon(true);
         inputThread.start();
+
+        //Show game logo
+        startGame.ShowStartGame();
+
+        //Insert nickname
+        String nameP = insertNickname();
+
+        //Choose lobby size and create it
+        createNewLobby(nameP);
+
+        System.out.println("You just joined the lobby " + cli.getLobbyName() + "\n");
+
 
         //If user is the first to join the lobby, he will be the one to start the game
         if(cli.getGameID() == -1) {
