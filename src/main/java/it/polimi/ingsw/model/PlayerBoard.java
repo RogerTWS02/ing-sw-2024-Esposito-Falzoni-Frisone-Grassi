@@ -129,7 +129,7 @@ public class PlayerBoard implements Serializable{
                     }
                 }
                 else {
-                    if(grid[x + tempCoord[0]][y + tempCoord[1]].getCardCorners()!=null){
+                    if(grid[x + tempCoord[0]][y + tempCoord[1]].getCardCorners()[Math.abs(i - 3)]!=null){
                          grid[x + tempCoord[0]][y + tempCoord[1]].getCardCorners()[Math.abs(i - 3)].setCovered(true);}
                     coveredCorners++;
                 }
