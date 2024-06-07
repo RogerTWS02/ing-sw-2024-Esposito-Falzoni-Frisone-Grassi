@@ -287,7 +287,7 @@ public class TUI extends Thread{
     /**
      * Waits for the lobby to be full.
      */
-    public synchronized void waitForFullLobby(){
+    public void waitForFullLobby(){
         String[] command;
         while(cli.getGameID() == -1){
             try {
