@@ -353,9 +353,11 @@ public class GameController {
                         case "NONE":
                             player.getPlayerBoard().placeCard(card, x, y);
                             player.addScore(card.getPoints());
+                            break;
                         case "CORNERS":
                             int covered = player.getPlayerBoard().placeCard(card, x, y);
                             player.addScore(covered * card.getPoints());
+                            break;
                         default:
                             String s = card.getRule().toString();
                             int occurency = 1;
@@ -366,6 +368,7 @@ public class GameController {
                             }
                             player.getPlayerBoard().placeCard(card, x, y);
                             player.addScore(occurency * card.getPoints());
+                            break;
                     }
                 }
                 //If it's a resource card not flipped I just place it and update the score

@@ -861,13 +861,6 @@ public class Server extends UnicastRemoteObject{
         //una volta piazzata la carta quello spazio rimane vuoto nella mano
         idPlayerMap.get(message.getSenderID()).setHand(null, index);
 
-        List<Integer> scores = gameControllerMap.get(message.getGameID())
-                .getCurrentGame()
-                .getPlayers()
-                .stream()
-                .map(Player::getScore)
-                .toList();
-
 
 
         if(hasSocket) {
