@@ -42,7 +42,7 @@ public class Objective implements  Views {
 
     }
 
-    public void showObjective(String[] uuid) throws IOException, ParseException {
+    public ArrayList<String> showObjective(String[] uuid) throws IOException, ParseException {
         /*
         Goal card structure
         card[0]= type
@@ -95,15 +95,13 @@ public class Objective implements  Views {
             cards.add("└───────────────────────────────────────────────────────────┴───────────────────────────────┘");
 
             //Views.clearScreen();
-            for (int i = 0; i < 11; i++) {
-                System.out.println(cards.get(i));
-            }
+            return cards;
         } else {
             // actively create the cards to print with color and attributes
             ArrayList<String> cards = new ArrayList<>();
-            cards.add("┌───────────────────────────────────────────────────────────┬");
+            cards.add("┌───────────────────────────────────────────────────────────┐");
             cards.add("│ Common goals                                              │");
-            cards.add("├───────────────────────────────────────────────────────────┼");
+            cards.add("├───────────────────────────────────────────────────────────┤");
             cards.add("│╔═══════════════════════════╗╔═══════════════════════════╗ │");
             cards.add("│║      "+stringObjective[0][0]+"   ║║      "+stringObjective[1][0]+"   ║ │"+ANSI_RESET);
             cards.add("│║        "+stringObjective[0][2]+"     ║║        "+stringObjective[1][2]+"     ║ │"+ANSI_RESET);
@@ -111,13 +109,15 @@ public class Objective implements  Views {
             cards.add("│║        "+stringObjective[0][4]+"     ║║        "+stringObjective[1][4]+"     ║ │"+ANSI_RESET);
             cards.add("│║        "+stringObjective[0][1]+"     ║║        "+stringObjective[1][1]+"     ║ │"+ANSI_RESET);
             cards.add("│╚═══════════════════════════╝╚═══════════════════════════╝ │");
-            cards.add("└───────────────────────────────────────────────────────────┴");
+            cards.add("└───────────────────────────────────────────────────────────┘");
 
             //Views.clearScreen();
             for (int i = 0; i < 11; i++) {
                 System.out.println(cards.get(i));
             }
+            return null;
         }
+
     }
 
     private void uuidToString(String uuid,String[] card) {

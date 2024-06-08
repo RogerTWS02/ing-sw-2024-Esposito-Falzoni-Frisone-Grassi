@@ -341,7 +341,7 @@ public class Draw implements Views {
                   .append("\n");
 
 
-          Views.clearScreen();
+          //Views.clearScreen();
           System.out.println(cards);
 
      }

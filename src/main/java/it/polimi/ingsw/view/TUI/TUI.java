@@ -106,9 +106,6 @@ public class TUI extends Thread{
             case REPLY_HAND_UPDATE:
                 String newCardUUID = (String) message.getObj()[0];
 
-                //DOPO AVER PESCATO NON È PIU' IL TUO TURNO
-                myTurn = false;
-
                 //aggiungo la nuova carta
                 for(int i = 0; i < 3; i++){
                     if(currentHandUUID.get(i).isEmpty()){
@@ -152,6 +149,8 @@ public class TUI extends Thread{
 
 
                 try {
+
+                    topRow.showTopRow(currentPlayerNickame, nicknames, (ArrayList<Resource>) playerResources);
                     //con l'UUID aggiorno lo stato dello schermo della console
                     goals.showObjective(allGoalsUUID.toArray(new String[0]));
                     //handcards.showHand(currentHandUUID.toArray(new String[0]));
@@ -201,8 +200,10 @@ public class TUI extends Thread{
                 break;
 
             case REPLY_YOUR_TURN:
-                myTurn = true;
                 currentPlayerNickame = (String) message.getObj()[0];
+                printFullScreen();
+                myTurn = (boolean) message.getObj()[1]; //Update turn
+
                 break;
 
             case NOTIFY_END_GAME:
@@ -216,6 +217,14 @@ public class TUI extends Thread{
                 System.out.println((String) message.getObj()[0]);
                 cli.closeSocket();
                 break;
+
+            case REPLY_POINTS_UPDATE:
+                String name = (String) message.getObj()[0];
+                int points = (int) message.getObj()[1];
+                nicknames.put(name, points);
+                break;
+
+
         }
     }
 
@@ -401,33 +410,28 @@ public class TUI extends Thread{
      */
 
     public void playerTurn(){
-        try {
-            printFullScreen();
 
-            //update the current viewable cards
-            cli.sendMessage(
-                    new Message(
-                            REQUEST_VIEWABLE_CARDS,
-                            cli.getSocketPort(),
-                            cli.getGameID())
-            );
+        //update the current viewable cards
+        cli.sendMessage(
+                new Message(
+                        REQUEST_VIEWABLE_CARDS,
+                        cli.getSocketPort(),
+                        cli.getGameID())
+        );
 
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
         while(true) {
             String[] command;
+
+            /*try{
+                Thread.sleep(100);
+            }catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+             */
             //Ask for the card the player wants to play
             System.out.println("\nChoose the card you want to play(1, 2 or 3)");
             System.out.print("or write a different command (type /help to view the list of commands): ");
             command = getCommandFromQueue();
-
-            //Case in which the player wants to exit the game
-            if (command[0].equals("exit")) {
-                // Chiudo lo scanner
-                scanner.close();
-                return;
-            }
 
             //decides if the player wants to play a card or use a simple command
             if (!command[0].matches("[0-9]+")) {
@@ -437,7 +441,7 @@ public class TUI extends Thread{
 
             int cardIndex = Integer.parseInt(command[0]);
             if (cardIndex < 1 || cardIndex > 3) {
-                System.out.print("Invalid input, please insert a number between 1 and 3: ");
+                System.out.println("Invalid input, please insert a number between 1 and 3");
                 continue;
             }
 
@@ -480,7 +484,7 @@ public class TUI extends Thread{
                 String deck = command[0];
 
                 //decides if the player wants to play a card or use a simple command
-                if (!deck.equals("golden") && !deck.equals("resource")) {
+                if ((!deck.equals("golden") && !deck.equals("resource")) || command.length > 1) {
                     commonCommands(command);
                     continue;
                 }
@@ -505,12 +509,6 @@ public class TUI extends Thread{
                             deck,
                             String.valueOf(3-Integer.parseInt(choose))
                     });
-
-                try {
-                    printFullScreen();
-                } catch (IOException | ParseException e) {
-                    e.printStackTrace();
-                }
                 return;
             }
         }
@@ -579,6 +577,14 @@ public class TUI extends Thread{
 
             //TODO: Usando myTurn gestire il gameFlow del giocatore
             if(myTurn){
+                if(first) {
+                    try {
+                        printFullScreen();
+                    } catch (IOException | ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    first = false;
+                }
                 if(turnLeft != 3) turnLeft--;
                 playerTurn();
             }else{
@@ -646,13 +652,17 @@ public class TUI extends Thread{
     public void printFullScreen() throws IOException, ParseException {
         Views.clearScreen();
 
-        //Still can't be used since nicknames is still unknown
         topRow.showTopRow(currentPlayerNickame, nicknames, (ArrayList<Resource>) playerResources);
         //Print player's board
         int lines=board.drawBoard(onBoard, available)*3;
         if(lines<20){System.out.println("\n".repeat(20-lines));}
-        goals.showObjective(allGoalsUUID.toArray(new String[0]));
-        handcards.showHand(currentHandUUID.toArray(new String[0]));
+
+        ArrayList<String> printGoals = goals.showObjective(allGoalsUUID.toArray(new String[0]));
+        ArrayList<String> printHand = handcards.showHand(currentHandUUID.toArray(new String[0]));
+
+        for (int i = 0; i < 11; i++) {
+            System.out.println(printHand.get(i) + printGoals.get(i));
+        }
     }
 
     /**

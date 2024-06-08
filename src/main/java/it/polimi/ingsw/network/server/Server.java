@@ -745,21 +745,6 @@ public class Server extends UnicastRemoteObject{
         //TODO: E SICCOME è FINITO IL TURNO DI QUESTO GIOCATORE MANDO A TUTTI IL SUO PUNTEGGIO AGGIORNATO
         //TODO: POI MANDO A TUTTI I GIOCATORI IL NOME DEL NUOVO GIOCATORE
 
-        //Notifico il prossimo giocatore dicendogli che è il suo turno
-        idSocketMap.get(currPID).sendMessage(
-                new Message(
-                        REPLY_YOUR_TURN,
-                        this.serverSocket.getLocalPort(),
-                        message.getGameID(),
-                        new Object[]{
-                                gameControllerMap.get(message.getGameID())
-                                        .getCurrentGame()
-                                        .getCurrentPlayer()
-                                        .getNickname(),
-                        }
-                )
-        );
-
 
         if(hasSocket) {
             //mando al client la nuova carta pescata
@@ -771,6 +756,35 @@ public class Server extends UnicastRemoteObject{
                             replyCard.getUUID()
                     )
             );
+
+            for(int id: gameControllerMap.get(message.getGameID())
+                    .getCurrentGame()
+                    .getPlayers()
+                    .stream()
+                    .map(Player::getClientPort)
+                    .toArray(Integer[]::new)){
+
+                boolean myTurn = gameControllerMap.get(message.getGameID())
+                        .getCurrentGame()
+                        .getCurrentPlayer()
+                        .equals(idPlayerMap.get(id));
+
+                idSocketMap.get(id).sendMessage(
+                        new Message(
+                                REPLY_YOUR_TURN,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                new Object[]{
+                                        gameControllerMap.get(message.getGameID())
+                                                .getCurrentGame()
+                                                .getCurrentPlayer()
+                                                .getNickname(),
+                                        myTurn
+                                }
+                        )
+                );
+
+            }
         }else{
             return new Message(
                     REPLY_HAND_UPDATE,
@@ -886,6 +900,28 @@ public class Server extends UnicastRemoteObject{
                             }
                     )
             );
+
+            for(int id: gameControllerMap.get(message.getGameID())
+                    .getCurrentGame()
+                    .getPlayers()
+                    .stream()
+                    .map(Player::getClientPort)
+                    .toArray(Integer[]::new)){
+                if(id == message.getSenderID()) continue;
+                idSocketMap.get(id).sendMessage(
+                        new Message(
+                                REPLY_POINTS_UPDATE,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                new Object[]{
+                                        //Player name
+                                        idPlayerMap.get(message.getSenderID()).getNickname(),
+                                        //Player score
+                                        idPlayerMap.get(message.getSenderID()).getScore(),
+                                }
+                        )
+                );
+            }
         }
 
         //Avvio la fase finale del gioco

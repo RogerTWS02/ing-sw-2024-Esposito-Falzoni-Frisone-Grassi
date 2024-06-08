@@ -45,7 +45,7 @@ public class HandCards implements Views {
         resourceJSONArray = (JSONArray) parser.parse(bufferResource);
     }
 
-    public  void showHand(String[] uuid) throws IOException, ParseException {
+    public ArrayList<String> showHand(String[] uuid) throws IOException, ParseException {
         String[][] stringCard = new String[10][3];
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 3; j++){
@@ -160,9 +160,10 @@ public class HandCards implements Views {
 
 
         //Views.clearScreen();
-        for (int i = 0; i < 11; i++) {
-            System.out.println(cards.get(i));
-        };
+        //for (int i = 0; i < 11; i++) {
+        //    System.out.println(cards.get(i));
+        //}
+        return cards;
     }
 }
 
