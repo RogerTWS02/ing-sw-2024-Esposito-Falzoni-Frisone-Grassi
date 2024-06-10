@@ -135,6 +135,24 @@ public class Server extends UnicastRemoteObject{
                         )
                 );
                 break;
+
+            case NEW_CHAT_MESSAGE:
+                for(int id: gameControllerMap.get(message.getGameID())
+                        .getCurrentGame()
+                        .getPlayers()
+                        .stream()
+                        .map(Player::getClientPort)
+                        .toArray(Integer[]::new)){
+                    idSocketMap.get(id).sendMessage(
+                            new Message(
+                                    REPLY_CHAT_MESSAGE,
+                                    this.serverSocket.getLocalPort(),
+                                    message.getGameID(),
+                                    message.getObj()
+                            )
+                    );
+                }
+                break;
             
             //Client requires to log-in (al momento non tengo conto della persistenza)
             //Puts the client in an available lobby if the nickname is valid
@@ -215,7 +233,7 @@ public class Server extends UnicastRemoteObject{
     void notifyDisconnection(int clientPort){
         System.out.println("Client on port " + clientPort + " disconnected");
         int gameID = -1;
-        //TODO: trovo la lobby in cui i giocatori sono in attesa, li notifico e chiudo i loro sockets
+
         for(Lobby l: lobbyPlayerMap.keySet()){
             for(int socket: lobbyPlayerMap.get(l)){
                 //ho trovato la lobby del player che ha mandato la request
@@ -244,7 +262,6 @@ public class Server extends UnicastRemoteObject{
                         idPlayerMap.remove(id);
                     }
 
-                    //TODO: non funziona con la rimozione del nome, da controllare
                     //rimuovo il game controller con il game
                     gameControllerMap.remove(gameID);
 

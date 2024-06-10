@@ -19,6 +19,8 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 
 public class TUI extends Thread{
     public static Client cli;
+
+    private String nameP;
     private static List<String> cardToChooseUUID;
     private ArrayList<String> currentHandUUID;
     private List<String> allGoalsUUID;
@@ -40,10 +42,11 @@ public class TUI extends Thread{
     private static Map<String, Integer> nicknames;
     private static String currentPlayerNickame;
     private List<Resource> playerResources= null;
-    boolean cardPlaced = false;
+    boolean cardPlaced = false, updateChat = false;
     private static final BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     int numHand = 0, positionX = 0, positionY = 0;
     int turnLeft = 3;
+    private Queue<String> chatMessages = new LinkedList<>();;
 
     public TUI() throws IOException, ParseException {
     }
@@ -53,6 +56,16 @@ public class TUI extends Thread{
         //System.out.println(message.getMessageType() + " sent by " + message.getSenderID());
         String srvRep;
         switch (message.getMessageType()) {
+            case REPLY_CHAT_MESSAGE:
+                chatMessages.add((String) message.getObj()[0]);
+
+                if(chatMessages.size() > 10){
+                    chatMessages.poll();
+                }
+
+                updateChat = true;
+                break;
+
             case REPLY_BAD_REQUEST:
                 srvRep = (String) message.getObj()[0];
                 System.out.println("Bad request: " + srvRep);
@@ -361,7 +374,7 @@ public class TUI extends Thread{
             if(num == 1 || num == 2){
                 selectedUUID = cardToChooseUUID.get(num);
                 allGoalsUUID.add(selectedUUID);
-                System.out.println("\nThe player has chosen the card: " + selectedUUID);
+                //System.out.println("\nThe player has chosen the card: " + selectedUUID);
                 //after choosing the secret goal card, the player chooses
                 //the side to place the starting card on the board
                 side = placeStartingCard();
@@ -520,8 +533,9 @@ public class TUI extends Thread{
         String[] command;
 
         /*
-        This thread reads the input from the user and puts it in the inputQueue, so that the main process doesn't have to wait for the input
-         */
+        This thread reads the input from the user and puts it in the inputQueue,
+        so that the main process doesn't have to wait for the input
+        */
         Thread inputThread = new Thread(() -> {
             while (true) {
                 try{
@@ -542,7 +556,7 @@ public class TUI extends Thread{
         startGame.ShowStartGame();
 
         //Insert nickname
-        String nameP = insertNickname();
+        nameP = insertNickname();
 
         //Choose lobby size and create it
         createNewLobby(nameP);
@@ -570,8 +584,8 @@ public class TUI extends Thread{
         System.out.println("Starting player is: " + startingPlayer);
 
         //TODO: code refactoring
-
         boolean first = true;
+
         //Game flow implementation
         while(turnLeft > 0){
 
@@ -588,6 +602,7 @@ public class TUI extends Thread{
                 if(turnLeft != 3) turnLeft--;
                 playerTurn();
             }else{
+
                 //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
                 if(first) {
                     first = false;
@@ -672,22 +687,23 @@ public class TUI extends Thread{
      */
     public void commonCommands(String[] command){
         command[0] = command[0].toLowerCase();
-        String message;
-        switch(command[0]){
-            case "/help":
-                message = """
+        String message = """
                             Commands List:              (Template: /COMMAND Param1 Param 2)\s
                             
                             /infoCard posX posY - Returns infos about a card on the player's board
                             /showCommonCards - Shows the common resource and golden cards
                             /openChat - Opens the chat tab, where you can read and send messages to other players
-                            /closeChat - Closes the chat tab and returns to the game interface
                             /quitGame - Quits the current session and ends the game for all the other players
                             
                             Those commands are not case-sensitive
                             """;
-
+        switch(command[0]){
+            case "/help":
                 System.out.println(message);
+                break;
+
+            case "/openchat":
+                chat();
                 break;
 
             case "/quitgame":
@@ -856,11 +872,70 @@ public class TUI extends Thread{
         }
     }
 
+    void chat(){
+        String [] command;
+        for(int i = 0; i < 100; i++){
+            System.out.println();
+        }
+        while(true){
+            if(updateChat){
+                //TODO: INTERFACCIA PER MOSTRARE I MESSAGGIO DELLA CHAT
+                for(int i = 0; i < 100; i++){
+                    System.out.println();
+                }
+                System.out.println("""
+                    +--------------------------------+
+                    |           Chat Room            |
+                    +--------------------------------+
+                    """);
+                chatMessages.forEach(System.out::println);
+                System.out.println("+--------------------------------+");
+                updateChat = false;
+            }else {
+
+                System.out.println("Type something to send a message to the lobby or /exit to return to the game:");
+                while(!updateChat && inputQueue.isEmpty()){
+                    Thread.onSpinWait();
+                }
+
+                if (updateChat) continue;
+
+                command = getCommandFromQueue();
+
+                if(command[0].equals("/exit")){
+                    System.out.println("Exiting the chat room...");
+                    try {
+                        printFullScreen();
+                    } catch (IOException | ParseException e) {
+                    }
+                    return;
+                }else{
+                    //ricompatto il messaggio
+                    String msg = String.join(" ", command);
+                    if (msg.isEmpty()) continue;
+                    else {
+                        cli.sendMessage(
+                                new Message(
+                                        NEW_CHAT_MESSAGE,
+                                        cli.getSocketPort(),
+                                        cli.getGameID(),
+                                        new Object[]{"\033[38;5;208m" + nameP + ":\033[0m " + msg})
+                        );
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Gets the command from the queue, if the queue is empty it waits for a new command
      * @return the command
      */
-
     private static String[] getCommandFromQueue() {
         String command = null;
         try {
