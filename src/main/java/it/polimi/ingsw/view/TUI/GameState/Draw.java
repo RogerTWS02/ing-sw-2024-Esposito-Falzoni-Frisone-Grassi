@@ -269,12 +269,20 @@ public class Draw implements Views {
                   .append(" ".repeat(27))
                   .append(rStringCard[9][0] + "║" + ANSI_RESET);
 
+          String temp;
+
           for(int x = 1;x<3; x++){
+               if(Integer.parseInt(rStringCard[1][x]) == 0) {
+                    temp = "     ";
+               } else {
+                    temp = rStringCard[1][x] + " p  ";
+               }
+
                cards
                        .append(rStringCard[9][x] + "║" + ANSI_RESET)
                        .append(rStringCard[3][x])
                        .append(" ".repeat(9))
-                       .append(Views.cardToPoint(rStringCard[1][x],rStringCard[7][x]))
+                       .append(temp)
                        .append(" ".repeat(9))
                        .append(rStringCard[4][x])
                        .append(rStringCard[9][x] + "║");
