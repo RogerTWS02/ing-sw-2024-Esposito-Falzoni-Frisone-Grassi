@@ -46,7 +46,8 @@ public class TUI extends Thread{
     private static final BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     int numHand = 0, positionX = 0, positionY = 0;
     int turnLeft = 3;
-    private Queue<String> chatMessages = new LinkedList<>();;
+    private Queue<String> chatMessages = new LinkedList<>();
+    private static boolean gameover = false;
 
     public TUI() throws IOException, ParseException {
     }
@@ -104,6 +105,10 @@ public class TUI extends Thread{
 
                 // update current player
                 currentPlayerNickame = (String) message.getObj()[5];
+                startingPlayer = (String) message.getObj()[5];
+
+                // update player resources
+                playerResources = (List<Resource>) message.getObj()[6];
 
 
 
@@ -193,12 +198,6 @@ public class TUI extends Thread{
                 //vado nello stato di richiesta nuova lobby
                 break;
 
-            case REPLY_STARTING_PLAYER:
-                startingPlayer = (String) message.getObj()[0];
-               // resourceCardViawable = (String[]) message.getObj()[1];
-               // goldenCardViawable = (String[]) message.getObj()[2];
-                break;
-
             case REPLY_CHOICES_MADE:
 
                 //spazi disponibili
@@ -235,6 +234,10 @@ public class TUI extends Thread{
                 String name = (String) message.getObj()[0];
                 int points = (int) message.getObj()[1];
                 nicknames.put(name, points);
+                break;
+
+            case REPLY_LAST_TURN:
+                gameover = true;
                 break;
 
 
@@ -342,7 +345,6 @@ public class TUI extends Thread{
             infoC.showInfoCard(cardToChooseUUID.get(0),null);
             //Choose the side to place the starting card
             System.out.print("Select which side to place the starting card (type front or back to choose): ");
-            //This nextLine is needed to flush out the previous "\n" (IT'S A JAVA PROBLEM)
             command = getCommandFromQueue();
             if(command[0].equals("front") || command[0].equals("back")){
                 return command[0].equals("back");
@@ -435,12 +437,6 @@ public class TUI extends Thread{
         while(true) {
             String[] command;
 
-            /*try{
-                Thread.sleep(100);
-            }catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-             */
             //Ask for the card the player wants to play
             System.out.println("\nChoose the card you want to play(1, 2 or 3)");
             System.out.print("or write a different command (type /help to view the list of commands): ");
@@ -487,42 +483,54 @@ public class TUI extends Thread{
             if (!cardPlaced) continue;
             cardPlaced = false; // set it back to false for next time
 
-            //Now it's time to draw a new card
-            while (true) {
-                draw.showDrawable(gUUID, rUUID);
-                System.out.print("""
-                        Choose the type of the card you want to draw (golden or resource) \s
-                        or write a different command (type /help to view the list of commands):""" + " ");
-                command = getCommandFromQueue();
-                String deck = command[0];
+            if(turnLeft != 0) { //If it is the last turn, the player doesn't draw a new card
+                //Now it's time to draw a new card
+                while (true) {
+                    draw.showDrawable(gUUID, rUUID);
+                    System.out.print("""
+                            Choose the type of the card you want to draw (golden or resource) \s
+                            or write a different command (type /help to view the list of commands):""" + " ");
+                    command = getCommandFromQueue();
+                    String deck = command[0];
 
-                //decides if the player wants to play a card or use a simple command
-                if ((!deck.equals("golden") && !deck.equals("resource")) || command.length > 1) {
-                    commonCommands(command);
-                    continue;
+                    //decides if the player wants to play a card or use a simple command
+                    if ((!deck.equals("golden") && !deck.equals("resource")) || command.length > 1) {
+                        commonCommands(command);
+                        continue;
+                    }
+
+                    System.out.print("If you want to draw from the deck type 'deck', else type the card number (1 or 2): ");
+                    String choose = getCommandFromQueue()[0];
+
+
+                    while (!choose.equals("deck") && !choose.equals("1") && !choose.equals("2")) {
+                        System.out.print("Invalid input, please type one of the following 'deck' / '1' / '2': ");
+                        choose = getCommandFromQueue()[0];
+                    }
+
+                    if (choose.equals("deck"))
+                        commonCommands(new String[]{
+                                "/drawCardFromDeck",
+                                deck
+                        });
+                    else
+                        commonCommands(new String[]{
+                                "/drawCardFromViewable",
+                                deck,
+                                String.valueOf(3 - Integer.parseInt(choose))
+                        });
+                    return;
                 }
-
-                System.out.print("If you want to draw from the deck type 'deck', else type the card number (1 or 2): ");
-                String choose = getCommandFromQueue()[0];
-
-
-                while (!choose.equals("deck") && !choose.equals("1") && !choose.equals("2")) {
-                    System.out.print("Invalid input, please type one of the following 'deck' / '1' / '2': ");
-                    choose = getCommandFromQueue()[0];
-                }
-
-                if (choose.equals("deck"))
-                    commonCommands(new String[]{
-                            "/drawCardFromDeck",
-                            deck
-                    });
-                else
-                    commonCommands(new String[]{
-                            "/drawCardFromViewable",
-                            deck,
-                            String.valueOf(3-Integer.parseInt(choose))
-                    });
-                return;
+            }else{
+                //if it is the last turn, the player doesn't draw a new card but we have to notify the server
+                cli.sendMessage(
+                        new Message(
+                                NOTIFY_LAST_TURN,
+                                cli.getSocketPort(),
+                                cli.getGameID(),
+                                new Object[]{turnLeft}
+                        )
+                );
             }
         }
 
@@ -640,25 +648,23 @@ public class TUI extends Thread{
             }
         }
 
+
+        while (!gameover){
+            System.out.print("Your game is over! Wait for the other players or type '/quitGame' to leave the game: ");
+            if(!inputQueue.isEmpty() && !gameover){
+                Thread.onSpinWait();
+            }
+
+            if(gameover) continue;
+            command = getCommandFromQueue();
+            commonCommands(command);
+        }
+
         //facciamo vedere la schermata di fine gioco
 
         //TODO: SCHERMATA DI FINE GIOCO CON NOME GIOCATORE VINCENTE E PUNTEGGIO DI TUTTI
         //TIPO CLASSIFICA IN ORDINE DECRESCENTE
         System.out.println("IL GIOCO E' FINITO");
-    }
-
-    /**
-     * Checks if the player's hand is full.
-     *
-     * @return true if the hand is full, false otherwise.
-     */
-
-    public synchronized boolean checkFull(){
-        int num = 0;
-        for(String s: currentHandUUID){
-            if(!s.isEmpty()) num++;
-        }
-        return num == 3;
     }
 
     /**

@@ -540,6 +540,10 @@ public class GameController {
         return false;
     }
 
+    /**
+     * This method advances the player turn to the next player.
+     * @return the clientPort of the player whose turn is next.
+     */
     public int advancePlayerTurn(){
         //prendo l'indice del giocatore corrente
         int index = currentGame.getPlayers().indexOf(currentGame.getCurrentPlayer());

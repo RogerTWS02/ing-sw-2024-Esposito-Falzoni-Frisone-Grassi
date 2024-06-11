@@ -225,6 +225,11 @@ public class Server extends UnicastRemoteObject{
             case REQUEST_INTERRUPT_GAME:
                 notifyDisconnection(message.getSenderID());
                 break;
+
+            case NOTIFY_LAST_TURN:
+                notifyTurnPass(message);
+                break;
+
         }
     }
 
@@ -538,34 +543,12 @@ public class Server extends UnicastRemoteObject{
                                                            .getCurrentPlayer()
                                                            .getNickname(),
 
+                                                    //return the resources of the player
+                                                    idPlayerMap.get(pID)
+                                                            .getPlayerBoard()
+                                                            .getResources()
 
-                                                }
-                                        )
-                                );
 
-                                idSocketMap.get(pID).sendMessage(
-                                        new Message(
-                                                REPLY_STARTING_PLAYER,
-                                                serverSocket.getLocalPort(),
-                                                lobbyPlayerMap.get(l)[0],
-                                                new Object[]{
-                                                gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                        .getCurrentGame()
-                                                        .getStartingPlayer()
-                                                        .getNickname()//,
-
-                                                /*
-                                                Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                        .getCurrentGame()
-                                                        .getViewableResourceCards())
-                                                        .map(PlayableCard::getUUID)
-                                                        .collect(Collectors.toList()),
-                                                Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                        .getCurrentGame()
-                                                        .getViewableGoldenCards())
-                                                        .map(PlayableCard::getUUID)
-                                                        .collect(Collectors.toList()),
-                                                */
                                                 }
                                         )
                                 );
@@ -1016,6 +999,68 @@ public class Server extends UnicastRemoteObject{
             );
         }
         return null;
+    }
+
+    /**
+     * This method is used when a player is on his last turn and has only to update the turn of the players,
+     * if the next player is the starting player, the game is over.
+     * @param message the message received by the client
+     */
+    public void notifyTurnPass(Message message){
+
+        int playerNumber = gameControllerMap.get(message.getGameID()).advancePlayerTurn(); //advance the player turn
+        if(playerNumber == gameControllerMap.get(message.getGameID()).getCurrentGame().getStartingPlayerId()){
+            //if the next player is the starting player the game has to end
+
+            for(int id: gameControllerMap.get(message.getGameID())
+                    .getCurrentGame()
+                    .getPlayers()
+                    .stream()
+                    .map(Player::getClientPort)
+                    .toArray(Integer[]::new)) {
+
+                idSocketMap.get(id).sendMessage(
+                        new Message(
+                                REPLY_LAST_TURN,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                true
+                        )
+                );
+            }
+
+        }else{
+            //if the next player is not the starting player, the game continues for the remaining turns
+
+            for(int id: gameControllerMap.get(message.getGameID())
+                    .getCurrentGame()
+                    .getPlayers()
+                    .stream()
+                    .map(Player::getClientPort)
+                    .toArray(Integer[]::new)) {
+
+                boolean myTurn = gameControllerMap.get(message.getGameID())
+                        .getCurrentGame()
+                        .getCurrentPlayer()
+                        .equals(idPlayerMap.get(id));
+
+                idSocketMap.get(id).sendMessage(
+                        new Message(
+                                REPLY_YOUR_TURN,
+                                this.serverSocket.getLocalPort(),
+                                message.getGameID(),
+                                new Object[]{
+                                        gameControllerMap.get(message.getGameID())
+                                                .getCurrentGame()
+                                                .getCurrentPlayer()
+                                                .getNickname(),
+                                        myTurn
+                                }
+                        )
+                );
+            }
+        }
+
     }
 
 

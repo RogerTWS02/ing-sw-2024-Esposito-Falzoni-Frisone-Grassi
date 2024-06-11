@@ -39,7 +39,7 @@ public interface Views {
               return point + switch (rule){
                     case "CORNERS"   -> " p ◲";
                     case "SCROLL"    -> " p📜";
-                    case "FEATHER"   -> " p🖋";
+                    case "FEATHER"   -> " p🪶";
                     case "GLASSVIAL" -> " p🫙";
                     default          -> " p  ";
              };

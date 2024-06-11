@@ -335,4 +335,8 @@ public class Game implements Serializable{
     public int getGameID(){
         return gameID;
     }
+
+    public int getStartingPlayerId(){
+        return startingPlayer.getClientPort();
+    }
 }
