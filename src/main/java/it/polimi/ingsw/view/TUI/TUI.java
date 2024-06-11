@@ -528,9 +528,10 @@ public class TUI extends Thread{
                                 NOTIFY_LAST_TURN,
                                 cli.getSocketPort(),
                                 cli.getGameID(),
-                                new Object[]{turnLeft}
+                                new Object[]{}
                         )
                 );
+                return;
             }
         }
 
