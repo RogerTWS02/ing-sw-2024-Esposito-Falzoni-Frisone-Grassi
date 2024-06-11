@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static it.polimi.ingsw.model.State.*;
 
@@ -89,6 +90,15 @@ public class PlayerBoard implements Serializable{
      * @return The number of corners that get covered by the card.
      */
     public int placeCard(PlayableCard card, int x, int y) {
+
+        if(!(card instanceof StartingCard)) {
+            if(card.isFlipped()){
+                Corner[] newCorners = new Corner[4];
+                for(int i = 0; i < 4; i++)
+                    newCorners[i] = new Corner(i, card, Optional.empty());
+                card.setCorners(newCorners);
+            }
+        }
 
         //NOTA BENE: LA PRIMA SONO LE Y, LA SECONDA SONO LE X
         //MA LA NOTAZIONE SEGUENTE E' INVERSA!!!!

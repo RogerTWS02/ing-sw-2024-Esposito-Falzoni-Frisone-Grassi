@@ -27,9 +27,9 @@ public class StartingCard extends PlayableCard{
      * @return The visible corners of the card.
      */
     public Corner[] getCardCorners() {
-        if (!isFlipped()) {
+        if (!isFlipped())
             return BackCardCorners;
-        } else return FrontCardCorners;
+        return FrontCardCorners;
     }
 
     /**

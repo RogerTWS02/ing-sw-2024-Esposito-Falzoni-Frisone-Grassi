@@ -677,7 +677,7 @@ public class Server extends UnicastRemoteObject{
 
     /**
      * Method to handle the request of a card.
-     * @param message the message received.
+     * @param message The message received.
      */
 
     public Message requestCard(Message message) {
@@ -810,12 +810,12 @@ public class Server extends UnicastRemoteObject{
     }
 
     /**
-     * Method to handle the player move
-     * @param message the message received
+     * Method to handle the player move.
+     *
+     * @param message The message received.
      */
 
     public Message playerMove(Message message) throws IOException {
-
 
         //First I need to check if it's actually the turn of the player making the request
         if(!gameControllerMap.get(message.getGameID()).getCurrentGame().getCurrentPlayer()
@@ -827,8 +827,6 @@ public class Server extends UnicastRemoteObject{
                             this.serverSocket.getLocalPort(),
                             message.getGameID(),
                             "Invalid request: it's not your turn!"
-
-
                     )
             );
             return null;
@@ -987,12 +985,12 @@ public class Server extends UnicastRemoteObject{
         System.out.println("INFO ON CARD: "+card.getUUID());
 
         Boolean[] coveredCorners = new Boolean[4];
-
-        for(int i= 0; i < 4; i++){
-            if(card.getCardCorners()[i].isCovered()){
+        for(int i = 0; i < 4; i++){
+            if(card.getCardCorners()[i] != null && card.getCardCorners()[i].isCovered()) {
                 coveredCorners[i] = true;
+            } else {
+                coveredCorners[i] = false;
             }
-            coveredCorners[i] = false;
         }
 
         if(hasSocket) {

@@ -300,20 +300,56 @@ public class InfoCard  implements Views{
         //print the array
         System.out.println(printedCard);
 
-        //TODO: print the covered corners
-        if(corners != null){
-            System.out.print("Covered corners: ");
-            for (int i = 0; i < 4; i++) {
-               if(corners[i]){
-                   int j = i+1;
-                   System.out.print(j + " ");
-               }
-            }
-            System.out.println();
-        }
+        if(corners != null)
+            printCoveredCorners(corners);
     }
 
+    /**
+     * Prints the corners that are covered.
+     *
+     * @param corners Represents the "covered" status of the corners.
+     */
+    public void printCoveredCorners(Boolean[] corners) {
+        System.out.print("\nCovered corners: ");
+        int j = 0;
+        for(int i = 0; i < 4; i++) {
+            if(corners[i])
+                j++;
+        }
+        if(j == 0) {
+            System.out.print("none!\n\n");
+            return;
+        } else if(j == 4) {
+            System.out.print("all!\n\n");
+            return;
+        }
 
+        for(int i = 0; i < 4; i++) {
+            if(corners[i])
+                cornerToString(i, corners);
+        }
+        System.out.println("\n");
+    }
+
+    /**
+     * Converts the corner id to a string, the position of the corner.
+     *
+     * @param id The id of the corner.
+     * @param corners Represents the "covered" status of the corners.
+     */
+    public void cornerToString(int id, Boolean[] corners) {
+        switch (id) {
+            case 0 -> System.out.print("top left");
+            case 1 -> System.out.print("top right");
+            case 2 -> System.out.print("bottom left");
+            case 3 -> System.out.print("bottom right");
+        }
+
+        for(int i = id + 1; i < 4; i++) {
+            if(corners[i])
+                System.out.print(", ");
+        }
+    }
 
 
     private void uuidToString(String uuid,String[] card) {
