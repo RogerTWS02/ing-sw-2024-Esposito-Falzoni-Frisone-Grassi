@@ -13,6 +13,7 @@ public enum MessageType {
     REPLY_INFO_CARD,
     REQUEST_CARD, //richiedo una carta tra quelle visibili o dai mazzi
     REPLY_HAND_UPDATE, //ottengo la carta richiesta
+    REPLY_EMPTY_DECK,
 
     //messaggi per entrare in lobby/creare una nuova lobby
     REQUEST_LOGIN,

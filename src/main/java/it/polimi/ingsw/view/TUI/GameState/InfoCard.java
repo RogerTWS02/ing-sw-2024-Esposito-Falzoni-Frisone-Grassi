@@ -15,13 +15,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class InfoCard  implements Views{
-    public static void main(String[] args) throws IOException, ParseException {
-        InfoCard infocard= new InfoCard();
-        infocard.showInfoCard("GC_1",Boolean.TRUE);
-        infocard.showInfoCard("SC_1",Boolean.FALSE);
-        infocard.showInfoCard("RC_1",null);
-
-    }
 
     private final JSONArray resourceJSONArray;
     private final JSONArray goldJSONArray;
@@ -80,7 +73,7 @@ public class InfoCard  implements Views{
 
     // method to print the card and its info
 
-    public void showInfoCard(String uuid, Boolean side) {
+    public void showInfoCard(String uuid, Boolean side, Boolean[] corners) {
         String[] sideColors= new String[2];
         if(side == null){
             sideColors[0]=ANSI_GRAY_BACKGROUND;
@@ -306,6 +299,18 @@ public class InfoCard  implements Views{
         //Views.clearScreen();
         //print the array
         System.out.println(printedCard);
+
+        //TODO: print the covered corners
+        if(corners != null){
+            System.out.print("Covered corners: ");
+            for (int i = 0; i < 4; i++) {
+               if(corners[i]){
+                   int j = i+1;
+                   System.out.print(j + " ");
+               }
+            }
+            System.out.println();
+        }
     }
 
 

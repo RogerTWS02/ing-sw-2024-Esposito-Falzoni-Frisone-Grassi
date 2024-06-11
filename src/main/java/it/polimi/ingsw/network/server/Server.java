@@ -328,9 +328,7 @@ public class Server extends UnicastRemoteObject{
                             //The winners might be multiple because there could be a draw,
                             //if winners[1] is null it means that there is only one winner
                             new Object[] {
-                                    Stream.of(winners)
-                                            .map(Player::getNickname)
-                                            .toList()
+                                    winners
                             }
                     )
             );
@@ -720,13 +718,27 @@ public class Server extends UnicastRemoteObject{
             return null;
         }
 
-        //estraggo una carta
-        PlayableCard replyCard = gameControllerMap
-                .get(message.getGameID())
-                .drawViewableCard((Boolean) params[0], (Integer) params[1]);
+        PlayableCard replyCard = null;
+        try{
+            //estraggo una carta
+            replyCard = gameControllerMap
+                    .get(message.getGameID())
+                    .drawViewableCard((Boolean) params[0], (Integer) params[1]);
+        }catch (IllegalArgumentException e){
+            idSocketMap.get(message.getSenderID()).sendMessage(
+                    new Message(
+                            REPLY_EMPTY_DECK,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            new Object[]{}
+                    )
+            );
 
-        //PER DEBUGGING
-        System.out.println("HO PESCATO: "+replyCard.getUUID());
+        }
+
+
+        //FOR DEBUGGING
+        System.out.println("I DREW: "+replyCard.getUUID());
 
         //la metto nella mano del giocatore dove adesso ho un vuoto
         for(int z = 0; z < 3; z++){
@@ -974,6 +986,15 @@ public class Server extends UnicastRemoteObject{
         }
         System.out.println("INFO ON CARD: "+card.getUUID());
 
+        Boolean[] coveredCorners = new Boolean[4];
+
+        for(int i= 0; i < 4; i++){
+            if(card.getCardCorners()[i].isCovered()){
+                coveredCorners[i] = true;
+            }
+            coveredCorners[i] = false;
+        }
+
         if(hasSocket) {
             idSocketMap.get(message.getSenderID()).sendMessage(
                     //TODO: A message with the new score should be sent to the player
@@ -983,7 +1004,8 @@ public class Server extends UnicastRemoteObject{
                             message.getGameID(),
                             new Object[]{
                                     card.getUUID(),
-                                    card.isFlipped()
+                                    card.isFlipped(),
+                                    coveredCorners
                             }
                     )
             );

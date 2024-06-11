@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.TUI;
 
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Resource;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
@@ -42,12 +43,13 @@ public class TUI extends Thread{
     private static Map<String, Integer> nicknames;
     private static String currentPlayerNickame;
     private List<Resource> playerResources= null;
-    boolean cardPlaced = false, updateChat = false;
+    boolean cardPlaced = false, updateChat = false, successfulDraw = true;
     private static final BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     int numHand = 0, positionX = 0, positionY = 0;
     int turnLeft = 3;
     private Queue<String> chatMessages = new LinkedList<>();
     private static boolean gameover = false;
+    private Player[] winners;
 
     public TUI() throws IOException, ParseException {
     }
@@ -185,9 +187,10 @@ public class TUI extends Thread{
             case REPLY_INFO_CARD:
                 String infoUUID = (String) message.getObj()[0];
                 Boolean isFlipped = (Boolean) message.getObj()[1];
+                Boolean[] coveredCorners = (Boolean[]) message.getObj()[2];
 
                 //stampo l'info della carta
-                infoC.showInfoCard(infoUUID, isFlipped);
+                infoC.showInfoCard(infoUUID, isFlipped, coveredCorners);
 
                 break;
 
@@ -240,6 +243,13 @@ public class TUI extends Thread{
                 gameover = true;
                 break;
 
+            case REPLY_EMPTY_DECK:
+                successfulDraw = false;
+                break;
+
+            case REPLY_END_GAME:
+                winners = (Player[]) message.getObj()[0];
+                break;
 
         }
     }
@@ -342,7 +352,7 @@ public class TUI extends Thread{
         String[] command;
         while(true){
             //Print the starting card
-            infoC.showInfoCard(cardToChooseUUID.get(0),null);
+            infoC.showInfoCard(cardToChooseUUID.get(0),null, null);
             //Choose the side to place the starting card
             System.out.print("Select which side to place the starting card (type front or back to choose): ");
             command = getCommandFromQueue();
@@ -362,8 +372,8 @@ public class TUI extends Thread{
         boolean side;
         while(true){
             //Print the two secret goal cards for choosing one of them
-            infoC.showInfoCard(cardToChooseUUID.get(1),null);
-            infoC.showInfoCard(cardToChooseUUID.get(2),null);
+            infoC.showInfoCard(cardToChooseUUID.get(1),null, null);
+            infoC.showInfoCard(cardToChooseUUID.get(2),null, null);
             //Choose the secret goal card
             System.out.print("Select your secret goal card (type 1 or 2 to choose): ");
             try{
@@ -486,6 +496,8 @@ public class TUI extends Thread{
             if(turnLeft != 0) { //If it is the last turn, the player doesn't draw a new card
                 //Now it's time to draw a new card
                 while (true) {
+
+                    successfulDraw = true; //reset the flag
                     draw.showDrawable(gUUID, rUUID);
                     System.out.print("""
                             Choose the type of the card you want to draw (golden or resource) \s
@@ -519,7 +531,8 @@ public class TUI extends Thread{
                                 deck,
                                 String.valueOf(3 - Integer.parseInt(choose))
                         });
-                    return;
+
+                    if(successfulDraw) return;
                 }
             }else{
                 //if it is the last turn, the player doesn't draw a new card but we have to notify the server
@@ -651,7 +664,7 @@ public class TUI extends Thread{
 
 
         while (!gameover){
-            System.out.print("Your game is over! Wait for the other players or type '/quitGame' to leave the game: ");
+            System.out.print("Your game is over! Wait for the other players to finish or type a command: ");
             if(!inputQueue.isEmpty() && !gameover){
                 Thread.onSpinWait();
             }
@@ -662,10 +675,12 @@ public class TUI extends Thread{
         }
 
         //facciamo vedere la schermata di fine gioco
+        System.out.print("Winner: ");
+        for(int i = 0; i < winners.length; i++){
+            System.out.print(winners[i].getNickname() + " ");
+        }
 
-        //TODO: SCHERMATA DI FINE GIOCO CON NOME GIOCATORE VINCENTE E PUNTEGGIO DI TUTTI
-        //TIPO CLASSIFICA IN ORDINE DECRESCENTE
-        System.out.println("IL GIOCO E' FINITO");
+        System.exit(0);
     }
 
     /**
