@@ -668,9 +668,9 @@ public class TUI extends Thread{
             Thread.currentThread().interrupt();
         }
 
+        System.out.print("Your game is over! Wait for the other players to finish or type a command: ");
         while (!gameover){
             try{
-                System.out.print("Your game is over! Wait for the other players to finish or type a command: ");
                 String input = inputQueue.poll(100, java.util.concurrent.TimeUnit.MILLISECONDS);
 
                 if(gameover) break;
@@ -678,6 +678,7 @@ public class TUI extends Thread{
                 if(input != null){
                     command = input.split(" ");
                     commonCommands(command);
+                    System.out.print("Your game is over! Wait for the other players to finish or type a command: ");
                 }
 
             } catch (InterruptedException e) {
