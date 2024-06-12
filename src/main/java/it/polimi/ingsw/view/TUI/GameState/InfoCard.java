@@ -391,9 +391,9 @@ public class InfoCard  implements Views{
 
             }
             case "PGC_8" -> {
-                card[3] = ANSI_BLUE + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
+                card[2] = ANSI_BLUE + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
+                card[3] = "  ░░  " + ANSI_PURPLE + "▇▇ " + ANSI_RESET + " ░░  ";
                 card[4] = "  ░░  " + ANSI_PURPLE + "▇▇ " + ANSI_RESET + " ░░  ";
-                card[5] = "  ░░  " + ANSI_PURPLE + "▇▇ " + ANSI_RESET + " ░░  ";
             }
 
 
