@@ -954,10 +954,6 @@ public class Server extends UnicastRemoteObject{
                 );
             }
         }
-
-        if(gameControllerMap.get(message.getGameID()).getCurrentGame().isGameOver()){
-            sendWinnerMessage(message.getGameID());
-        }
         return null;
     }
 
@@ -1026,11 +1022,12 @@ public class Server extends UnicastRemoteObject{
      * if the next player is the starting player, the game is over.
      * @param message the message received by the client
      */
-    public void notifyTurnPass(Message message){
+    public void notifyTurnPass(Message message) throws IOException {
 
         int playerNumber = gameControllerMap.get(message.getGameID()).advancePlayerTurn(); //advance the player turn
         if(playerNumber == gameControllerMap.get(message.getGameID()).getCurrentGame().getStartingPlayerId()){
             //if the next player is the starting player the game has to end
+            sendWinnerMessage(message.getGameID());
 
             for(int id: gameControllerMap.get(message.getGameID())
                     .getCurrentGame()

@@ -662,22 +662,33 @@ public class TUI extends Thread{
             }
         }
 
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         while (!gameover){
-            System.out.print("Your game is over! Wait for the other players to finish or type a command: ");
-            if(!inputQueue.isEmpty() && !gameover){
-                Thread.onSpinWait();
-            }
+            try{
+                System.out.print("Your game is over! Wait for the other players to finish or type a command: ");
+                String input = inputQueue.poll(100, java.util.concurrent.TimeUnit.MILLISECONDS);
 
-            if(gameover) continue;
-            command = getCommandFromQueue();
-            commonCommands(command);
+                if(gameover) break;
+
+                if(input != null){
+                    command = input.split(" ");
+                    commonCommands(command);
+                }
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
         //facciamo vedere la schermata di fine gioco
         System.out.print("Winner: ");
-        for(int i = 0; i < winners.length; i++){
-            System.out.print(winners[i].getNickname() + " ");
+        for (Player winner : winners) {
+            System.out.print(winner.getNickname() + " ");
         }
 
         System.exit(0);

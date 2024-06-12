@@ -249,50 +249,46 @@ public class Game implements Serializable{
      * @return The player who won the game.
      */
     public Player[] getWinner(){
-        Player[] winners = new Player[players.size()];
-        winners[0] = players.getFirst();
-        for(Player p : players){
-            if(p.getScore() > winners[0].getScore()){
-                winners[0] = p;
-            }
-        }
-        boolean draw = false;
-        Player[] drawPlayers = new Player[players.size()];
-        int i = 1;
-        drawPlayers[0] = winners[0];
+        List<Player> winners = new ArrayList<>();
+        Player topPlayer = players.getFirst();
 
+        //Find the player with the highest score
         for(Player p : players){
-            if(p.getScore() == winners[0].getScore() && p != winners[0]){
-                drawPlayers[i] = p;
-                i++;
-                draw = true;
+            if(p.getScore() > topPlayer.getScore()){
+                topPlayer = p;
             }
         }
 
-        Map<Player, Integer> objectivesReached = new HashMap<>();
-        if(draw){
-            for (Player p : drawPlayers){
-                if(p != null){
-                    objectivesReached.put(p, 0);
-                    for (GoalCard gc: getCommonGoalCards()) {
-                        if (gc != null) {
-                            objectivesReached.put(p, objectivesReached.get(p) + gc.checkGoal(p.getPlayerBoard()) / gc.getPoints());
-                        }
+        //Check if there are more players with the same score
+        for(Player p : players){
+            if(p.getScore() == topPlayer.getScore()){
+                winners.add(p);
+            }
+        }
+
+        //If there are more players with the same score, check the number of objectives reached
+        if(winners.size() > 1){
+            Map<Player, Integer> objectivesReached = new HashMap<>();
+            for (Player p : winners){
+                int objectives = 0;
+                for (GoalCard gc: getCommonGoalCards()) {
+                    if (gc != null) {
+                        objectives += gc.checkGoal(p.getPlayerBoard()) / gc.getPoints();
                     }
-                    objectivesReached.put(p, objectivesReached.get(p) + p.getSecretGoalCard().checkGoal(p.getPlayerBoard())/p.getSecretGoalCard().getPoints());
                 }
+                objectives += p.getSecretGoalCard().checkGoal(p.getPlayerBoard()) / p.getSecretGoalCard().getPoints();
+                objectivesReached.put(p, objectives);
             }
-        }
-        int maxObjectives = Collections.max(objectivesReached.values());
-        i = 0;
-        for (Map.Entry<Player, Integer> entry : objectivesReached.entrySet()) {
-            if (entry.getValue() == maxObjectives) {
-                winners[i] = entry.getKey();
-                i++;
-            }
+
+            //Max number of objectives reached
+            int maxObjectives = Collections.max(objectivesReached.values());
+
+            winners = winners.stream()
+                    .filter(p -> objectivesReached.get(p) == maxObjectives)
+                    .toList();
         }
 
-        return winners;
+        return winners.toArray(new Player[0]);
     }
 
     /**
