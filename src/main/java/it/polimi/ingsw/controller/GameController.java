@@ -56,8 +56,8 @@ public class GameController {
     public GoalCard drawGoalFromDeck(){
         Random random = new Random();
         int whichDeck = random.nextInt(2);
-        int randomIndex = random.nextInt(9);
         if(whichDeck == 0){
+            int randomIndex = random.nextInt(currentGame.resourcesGoalDeck.size());
             if(!currentGame.resourcesGoalDeck.isEmpty()){
                 JSONObject JSONcard = (JSONObject) currentGame.resourcesGoalDeck.get(randomIndex);
                 currentGame.resourcesGoalDeck.remove(randomIndex);
@@ -68,6 +68,7 @@ public class GameController {
                 return craftPatternGoalCard(JSONcard);
             }
         } else {
+            int randomIndex = random.nextInt(currentGame.patternGoalDeck.size());
             if(!currentGame.patternGoalDeck.isEmpty()){
                 JSONObject JSONcard = (JSONObject) currentGame.patternGoalDeck.get(randomIndex);
                 currentGame.patternGoalDeck.remove(randomIndex);
