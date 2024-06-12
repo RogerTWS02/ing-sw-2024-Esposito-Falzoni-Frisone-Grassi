@@ -55,8 +55,9 @@ public class GameController {
      */
     public GoalCard drawGoalFromDeck(){
         Random random = new Random();
-        int randomIndex = random.nextInt(2);
-        if(randomIndex == 0){
+        int whichDeck = random.nextInt(2);
+        int randomIndex = random.nextInt(17);
+        if(whichDeck == 0){
             if(!currentGame.resourcesGoalDeck.isEmpty()){
                 JSONObject JSONcard = (JSONObject) currentGame.resourcesGoalDeck.get(randomIndex);
                 currentGame.resourcesGoalDeck.remove(randomIndex);
