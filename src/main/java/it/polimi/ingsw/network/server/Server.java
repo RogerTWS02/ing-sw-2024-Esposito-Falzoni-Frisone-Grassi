@@ -29,6 +29,7 @@ public class Server extends UnicastRemoteObject{
     private volatile boolean running = true;
     private ServerSocket serverSocket;
     private final Logger logger = Logger.getLogger(getClass().getName());
+    private int preliminaryChoices = 0;
 
     //la chiave è il socket del player, il valore è il suo handler
     private final Map<Integer, ClientHandler> idSocketMap; //id - socket associated
@@ -220,6 +221,9 @@ public class Server extends UnicastRemoteObject{
                                 }
                         )
                 );
+                preliminaryChoices++;
+                if(preliminaryChoices == gameControllerMap.get(message.getGameID()).getCurrentGame().getPlayers().size())
+                    notifyGameFlowStarting(message.getGameID());
                 break;
 
             case REQUEST_INTERRUPT_GAME:
@@ -230,6 +234,29 @@ public class Server extends UnicastRemoteObject{
                 notifyTurnPass(message);
                 break;
 
+        }
+    }
+
+    /**
+     * Sends a message to clients in order to notify the start of the game, after all preliminary choices have been made by all players.
+     */
+    public void notifyGameFlowStarting(int gameID) {
+        for(int id: gameControllerMap.get(gameID)
+                .getCurrentGame()
+                .getPlayers()
+                .stream()
+                .map(Player::getClientPort)
+                .toArray(Integer[]::new)){
+            idSocketMap.get(id).sendMessage(
+                    new Message(
+                            NOTIFY_GAME_STARTING,
+                            this.serverSocket.getLocalPort(),
+                            gameID,
+                            new Object[] {
+                                    true
+                            }
+                    )
+            );
         }
     }
 

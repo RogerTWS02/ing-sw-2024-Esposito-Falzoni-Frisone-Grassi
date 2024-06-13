@@ -39,6 +39,7 @@ public class TUI extends Thread{
     List<int[]> available;
     Resource[][] onBoard;
     volatile boolean myTurn;
+    private volatile boolean preliminaryChoicesMade = false;
     TopRow topRow = new TopRow();
     private static Map<String, Integer> nicknames;
     private static String currentPlayerNickame;
@@ -251,6 +252,9 @@ public class TUI extends Thread{
                 winners = (Player[]) message.getObj()[0];
                 break;
 
+            case NOTIFY_GAME_STARTING:
+                preliminaryChoicesMade = true;
+                break;
         }
     }
 
@@ -608,6 +612,10 @@ public class TUI extends Thread{
         //TODO: code refactoring
         boolean first = true;
 
+        System.out.println("Waiting for all players to make their preliminary choices...\n");
+        while(!preliminaryChoicesMade)
+            Thread.onSpinWait();
+
         //Game flow implementation
         while(turnLeft > 0){
 
@@ -682,7 +690,7 @@ public class TUI extends Thread{
                 }
 
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                //Thread.currentThread().interrupt();
             }
         }
 
