@@ -49,8 +49,8 @@ public class TUI extends Thread{
     int numHand = 0, positionX = 0, positionY = 0;
     int turnLeft = 3;
     private Queue<String> chatMessages = new LinkedList<>();
-    private static boolean gameover = false;
-    private Player[] winners;
+    private volatile static boolean gameover = false;
+    private ArrayList<String> winners;
 
     public TUI() throws IOException, ParseException {
     }
@@ -249,7 +249,7 @@ public class TUI extends Thread{
                 break;
 
             case REPLY_END_GAME:
-                winners = (Player[]) message.getObj()[0];
+                winners = (ArrayList<String>) message.getObj()[0];
                 break;
 
             case NOTIFY_GAME_STARTING:
@@ -690,14 +690,19 @@ public class TUI extends Thread{
                 }
 
             } catch (InterruptedException e) {
-                //Thread.currentThread().interrupt();
+                Thread.currentThread().interrupt();
             }
+
         }
 
         //facciamo vedere la schermata di fine gioco
-        System.out.print("Winner: ");
-        for (Player winner : winners) {
-            System.out.print(winner.getNickname() + " ");
+        if(winners.size() == 1)
+            System.out.print("\n\nWinner: ");
+        else
+            System.out.print("\n\nDraw: ");
+        for (int i = 0; i < winners.size(); i++){
+            System.out.print(winners.get(i));
+            if(winners.size() > 1 && i != winners.size() - 1) System.out.print(", ");
         }
 
         System.exit(0);
@@ -907,6 +912,16 @@ public class TUI extends Thread{
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+                break;
+
+            case "/testendgame":
+                cli.sendMessage(
+                        new Message(
+                                TEST_END_GAME,
+                                cli.getSocketPort(),
+                                cli.getGameID()
+                        )
+                );
                 break;
 
             default:

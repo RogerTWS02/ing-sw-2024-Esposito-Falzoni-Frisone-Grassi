@@ -234,6 +234,11 @@ public class Server extends UnicastRemoteObject{
                 notifyTurnPass(message);
                 break;
 
+            case TEST_END_GAME:
+                for(int i = 0; i < 2; i++)
+                    gameControllerMap.get(message.getGameID()).getCurrentGame().getPlayers().get(i).setScore(19);
+                break;
+
         }
     }
 
@@ -339,6 +344,11 @@ public class Server extends UnicastRemoteObject{
 
     public void sendWinnerMessage(int gameID) throws IOException {
         Player[] winners = gameControllerMap.get(gameID).getCurrentGame().getWinner();
+        ArrayList <String> winnersNickname = new ArrayList<>();
+        for(int i = 0; i < winners.length; i++){
+            if(winners[i] != null)
+                winnersNickname.add(winners[i].getNickname());
+        }
 
         //Send a message to all the players of the same game with the winner
         for(int id: gameControllerMap.get(gameID)
@@ -355,12 +365,11 @@ public class Server extends UnicastRemoteObject{
                             //The winners might be multiple because there could be a draw,
                             //if winners[1] is null it means that there is only one winner
                             new Object[] {
-                                    winners
+                                    winnersNickname
                             }
                     )
             );
         }
-
     }
 
     /**
