@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.TUI.GameElements.Views;
+package it.polimi.ingsw.view.TUI.GameElements;
 import it.polimi.ingsw.view.TUI.GameState.Views;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

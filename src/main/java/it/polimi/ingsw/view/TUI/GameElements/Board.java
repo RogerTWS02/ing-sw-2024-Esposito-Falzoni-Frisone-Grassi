@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.TUI.GameElements.Views;
+package it.polimi.ingsw.view.TUI.GameElements;
 
 import it.polimi.ingsw.model.Resource;
 import it.polimi.ingsw.view.TUI.GameState.Views;

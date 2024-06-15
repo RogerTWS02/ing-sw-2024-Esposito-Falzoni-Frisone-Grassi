@@ -1,13 +1,12 @@
 package it.polimi.ingsw.view.TUI;
 
-import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Resource;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
-import it.polimi.ingsw.view.TUI.GameElements.Views.Board;
-import it.polimi.ingsw.view.TUI.GameElements.Views.HandCards;
-import it.polimi.ingsw.view.TUI.GameElements.Views.Objective;
-import it.polimi.ingsw.view.TUI.GameElements.Views.TopRow;
+import it.polimi.ingsw.view.TUI.GameElements.Board;
+import it.polimi.ingsw.view.TUI.GameElements.HandCards;
+import it.polimi.ingsw.view.TUI.GameElements.Objective;
+import it.polimi.ingsw.view.TUI.GameElements.TopRow;
 import it.polimi.ingsw.view.TUI.GameState.*;
 import org.json.simple.parser.ParseException;
 
