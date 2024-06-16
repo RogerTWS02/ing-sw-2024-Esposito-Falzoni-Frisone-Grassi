@@ -276,7 +276,7 @@ public class TUI extends Thread{
             cli.sendMessage(
                     new Message(
                             REQUEST_LOGIN,
-                            cli.getClientID(),
+                            cli.getSocketPort(),
                             -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
                             command[0])
             );
@@ -305,7 +305,7 @@ public class TUI extends Thread{
             cli.sendMessage(
                     new Message(
                             REQUEST_NEW_LOBBY,
-                            cli.getClientID(),
+                            cli.getSocketPort(),
                             -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
                             new Object[]{
                                     nameP,

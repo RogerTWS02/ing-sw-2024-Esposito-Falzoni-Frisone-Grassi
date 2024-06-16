@@ -584,8 +584,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
             //se non ho lobby gli chiedo di generarla
             if(!found) {
-                if (hasSocket) {
-
                     idClientMap.get(message.getSenderID()).sendMessageToClient(
                             new Message(
                                     REPLY_NEW_LOBBY,
@@ -597,16 +595,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                     }
                             )
                     );
-
-                    return null;
-                }else{
-                    return new Message(
-                            REPLY_NEW_LOBBY,
-                            message.getSenderID(),
-                            message.getGameID(),
-                            "No lobbies available, please create a new one!"
-                    );
-                }
             }
         }
         return null;
@@ -664,7 +652,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             lobbyPlayerMap.put(lobby, players);
         }
 
-        if(hasSocket) {
             idClientMap.get(message.getSenderID()).sendMessageToClient(
                     new Message(
                             REPLY_LOBBY_INFO,
@@ -676,20 +663,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                     "You just joined the lobby "+lobbyName
                             })
             );
-
-        }else{
-            return new Message(
-                    REPLY_LOBBY_INFO,
-                    message.getSenderID(),
-                    message.getGameID(),
-                    new Object[]{
-                            lobbyName,
-                            lobbySize,
-                            "You just joined the lobby "+lobbyName
-                    }
-
-            );
-        }
         return null;
     }
 
