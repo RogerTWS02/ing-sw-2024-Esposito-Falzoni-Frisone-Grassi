@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class ResourcesGoalCard extends GoalCard{
     private final Map<Resource, Integer> resources;
-    private final Map<Resource, Integer> countResources;
+    //private final Map<Resource, Integer> countResources;
     private final String UUID;
 
     /**
@@ -22,7 +22,7 @@ public class ResourcesGoalCard extends GoalCard{
         super(points, UUID);
         this.resources = resources;
         this.UUID = UUID;
-        this.countResources = new HashMap<>();
+        //this.countResources = new HashMap<>();
     }
 
 
@@ -34,12 +34,12 @@ public class ResourcesGoalCard extends GoalCard{
      */
     @Override
     public int checkGoal(PlayerBoard board) {
-
+        Map<Resource, Integer> countResources = new HashMap<>();
         /*Now I compare the resources in the resources array and check how many of them
         are there in the board*/
-
+        countResources.clear();
         for (Resource r : board.getResources()) {
-            this.countResources.put(r, this.countResources.getOrDefault(r, 0) + 1);
+            countResources.put(r, countResources.getOrDefault(r, 0) + 1);
         }
 
         /*Now I have to count the points*/
@@ -65,7 +65,7 @@ public class ResourcesGoalCard extends GoalCard{
      *
      * @return The amount of each resource required by the goal card.
      */
-    public Map<Resource, Integer> getCountResources() {
+    /*public Map<Resource, Integer> getCountResources() {
         return countResources;
-    }
+    }*/
 }

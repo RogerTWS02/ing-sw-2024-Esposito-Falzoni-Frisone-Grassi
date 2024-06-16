@@ -13,12 +13,10 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-//TODO: cardToChoose, showAvailableOnBoard, initializeGame, getPointsFromGoalCards, advancePlayerTurn
 
 public class GameControllerTest {
     GameController gameController;
     Game game;
-
 
     @Before
     public void setUp() throws FileNotFoundException {
@@ -30,6 +28,52 @@ public class GameControllerTest {
     public void tearDown() {
         this.gameController = null;
         this.game = null;
+    }
+
+    @Test
+    public void initializeGame_test() {
+        int i;
+        game.setPlayers(createFakePlayers());
+        gameController.initializeGame();
+        for(i = 0; i < 3; i++) {
+            assertNotNull(game.viewableGoldenCards[i]);
+            assertNotNull(game.viewableResourceCards[i]);
+        }
+        for(i = 0; i < 2; i++)
+            assertNotNull(game.commonGoalCards[i]);
+        for(Player player : game.getPlayers()) {
+            for(i = 0; i < 3; i++) {
+                assertNotNull(player.getHand()[i]);
+                if(i == 0)
+                    assert(player.getHand()[i] instanceof GoldenCard);
+                else
+                    assert(player.getHand()[i] instanceof ResourceCard);
+            }
+        }
+    }
+
+    @Test
+    public void advancePlayerTurn_test() {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        game.getPlayers().get(1).setPawn(Pawn.RED);
+        game.getPlayers().get(2).setPawn(Pawn.GREEN);
+        game.getPlayers().get(3).setPawn(Pawn.YELLOW);
+        game.setCurrentPlayer(game.getPlayers().get(3));
+        gameController.advancePlayerTurn();
+        assertEquals(game.getPlayers().get(0), game.getCurrentPlayer());
+    }
+
+    @Test
+    public void cardToChoose_test() {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        String[] temp = gameController.cardToChoose(game.getPlayers().get(0));
+        assertNotNull(temp);
+        assertEquals(3, temp.length);
+        for(int i = 0; i < 3; i++) {
+            assertNotNull(temp[i]);
+        }
     }
 
     @Test
@@ -70,11 +114,83 @@ public class GameControllerTest {
         PlayableCard card = gameController.drawPlayableFromDeck(game.startingDeck);
         gameController.placeCard(40, 40, card, game.getPlayers().get(0));
         card = gameController.drawPlayableFromDeck(game.resourceDeck);
+        card.setFlipped(true);
         gameController.placeCard(39, 41, card, game.getPlayers().get(0));
         assert(game.getPlayers().get(0).getPlayerBoard().getCard(39, 41).equals(card));
-        assert(game.getPlayers().get(0).getPlayerBoard().getState(39, 41).equals(State.OCCUPIED));
+        assert(game.getPlayers().get(0).getPlayerBoard().getState(41, 39).equals(State.OCCUPIED));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void placeCard_test_3() throws IllegalAccessException {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard card = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(40, 40, card, game.getPlayers().get(0));
+        card = gameController.drawPlayableFromDeck(game.goldenDeck);
+        gameController.placeCard(39, 41, card, game.getPlayers().get(0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void placeCard_test_4() throws IllegalAccessException {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard card = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(40, 40, card, game.getPlayers().get(0));
+        card = gameController.drawPlayableFromDeck(game.resourceDeck);
+        card.setFlipped(true);
+        gameController.placeCard(40, 40, card, game.getPlayers().get(0));
+    }
+
+    @Test
+    public void placeCard_test_5() throws IllegalAccessException {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard card = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(40, 40, card, game.getPlayers().get(0));
+        do {
+            card = gameController.drawPlayableFromDeck(game.resourceDeck);
+        } while(card.getPoints() != 0);
+        gameController.placeCard(39, 41, card, game.getPlayers().get(0));
+        assert(game.getPlayers().get(0).getPlayerBoard().getCard(39, 41).equals(card));
+        assert(game.getPlayers().get(0).getPlayerBoard().getState(41, 39).equals(State.OCCUPIED));
+        assertEquals(card.getPoints(), game.getPlayers().get(0).getScore());
+    }
+
+    @Test
+    public void placeCard_test_6() throws IllegalAccessException {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard card = gameController.drawPlayableFromDeck(game.startingDeck);
+        gameController.placeCard(40, 40, card, game.getPlayers().get(0));
+        JSONObject JSONCard = (JSONObject) game.resourceDeck.get(0);
+        card = gameController.craftResourceCard(JSONCard);
+        gameController.placeCard(41, 39, card, game.getPlayers().get(0));
+        JSONCard = (JSONObject) game.resourceDeck.get(1);
+        card = gameController.craftResourceCard(JSONCard);
+        gameController.placeCard(39, 39, card, game.getPlayers().get(0));
+        JSONCard = (JSONObject) game.resourceDeck.get(18);
+        card = gameController.craftResourceCard(JSONCard);
+        gameController.placeCard(38, 38, card, game.getPlayers().get(0));
+        JSONCard = (JSONObject) game.goldenDeck.get(5);
+        card = gameController.craftGoldenCard(JSONCard);
+        gameController.placeCard(40, 38, card, game.getPlayers().get(0));
+        assertEquals(4, game.getPlayers().get(0).getScore());
+    }
+
+    @Test
+    public void placeCard_test_7() throws IllegalAccessException {
+        game.setPlayers(createFakePlayers());
+        game.getPlayers().get(0).setPawn(Pawn.BLUE);
+        PlayableCard card;
+        gameController.placeCard(40, 40, gameController.craftStartingCard((JSONObject) game.startingDeck.get(3)), game.getPlayers().get(0));
+        JSONObject JSONCard = (JSONObject) game.resourceDeck.get(4);
+        card = gameController.craftResourceCard(JSONCard);
+        gameController.placeCard(41, 39, card, game.getPlayers().get(0));
+        JSONCard = (JSONObject) game.goldenDeck.get(0);
+        card = gameController.craftGoldenCard(JSONCard);
+        gameController.placeCard(39, 39, card, game.getPlayers().get(0));
+        assertEquals(2, game.getPlayers().get(0).getScore());
+    }
 
     @Test
     public void showAvailableOnBoard_test() throws IllegalAccessException {
@@ -89,42 +205,8 @@ public class GameControllerTest {
                 availableCorners++;
             }
         }
-        //assertEquals(availableCorners, gameController.showAvailableOnBoard(game.getPlayers().get(0)).size());
+        assertEquals(availableCorners, gameController.showAvailableOnBoard(game.getPlayers().get(0)).size());
     }
-
-    /*
-    @Test
-    public void updatePlayerPointsFromAllGoalCards_test() throws FileNotFoundException {
-        //TODO
-        Player fakeplayer= new Player("Donnie", 28064212);
-
-        GoalCard fgc1= new ResourcesGoalCard(5,null, "fgc1"){
-            @Override
-            public int checkGoal(PlayerBoard board) {
-                return this.getPoints();
-            }
-        };
-        fakeplayer.setSecretGoalCard(fgc1);
-        GoalCard fgc2= new ResourcesGoalCard(5,null, "fgc2"){
-            @Override
-            public int checkGoal(PlayerBoard board) {
-                return this.getPoints();
-            }
-        };
-        GoalCard fgc3= new ResourcesGoalCard(4,null, "fgc3"){
-            @Override
-            public int checkGoal(PlayerBoard board) {
-                return this.getPoints();
-            }
-
-        };
-
-         game.setCommonGoalCards(new GoalCard[]{fgc2, fgc3});
-         GoalCard[] goalCards = game.getCommonGoalCards();
-         gameController.getPointsFromGoalCards(fakeplayer);
-         assertEquals(14, fakeplayer.getScore());
-
-    } */
 
     @Test
     public void drawPlayableFromDeck_test_1() {
@@ -418,21 +500,22 @@ public class GameControllerTest {
 
     @Test
     public void addPlayer_test() {
-        ArrayList<Player> fakePlayers = createFakePlayers();
-        fakePlayers.remove(3);
-        game.setPlayers(fakePlayers);
-        String nickname = "testPlayer";
-        int clientPort = 8080;
-        //gameController.addPlayer(nickname);
-        Player player = null;
-        Player addedPlayer = null;
-        for (int i = 0; i < game.getPlayers().size(); i++) {
-            player = game.getPlayers().get(i);
-            if (player != null && player.getNickname().equals(nickname) && player.clientPort == clientPort) {
-                break;
-            }
-        }
-        assertNotNull(player);
+        ArrayList<Player> players = createFakePlayers();
+        players.removeFirst();
+        players.removeFirst();
+        players.removeFirst();
+        players.add(null);
+        players.add(null);
+        players.add(null);
+        game.setPlayers(players);
+        players = createFakePlayers();
+        gameController.addPlayer(players.get(0));
+        assertEquals(4, game.getPlayers().size());
+        for(int i = 0; i < 2; i++)
+            assertNotNull(game.getPlayers().get(i));
+        assertEquals(players.get(0), game.getPlayers().get(1));
+        for(int i = 2; i <4; i++)
+            assertNull(game.getPlayers().get(i));
     }
 
     @Test

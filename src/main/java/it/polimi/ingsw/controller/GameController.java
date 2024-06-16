@@ -270,7 +270,7 @@ public class GameController {
     /**
      * Sets a new viewable card in the deck and position specified by the parameters.
      *
-     * @param type The type of the card to be set.
+     * @param type The type of the card to be set, true if it's a golden card, false if it's a resource card.
      * @param index The index of the card to be set.
      */
     public void setNewViewableCard(boolean type, int index) {
@@ -290,12 +290,11 @@ public class GameController {
     }
 
     /**
-     * Adds a player to the game, with the nickname and the client port passed by parameter.
+     * Adds a player to the game.
      *
      * @param p The player to be added to the game.
      */
     public void addPlayer(Player p){
-
         ArrayList<Player> players = currentGame.getPlayers();
         for(int n = 0 ; n < currentGame.getPlayers().size(); n++) {
             if (currentGame.getPlayers().get(n) == null) {
@@ -402,33 +401,6 @@ public class GameController {
     }
 
     /**
-     * Calculates the player's score, considering the common goal cards.
-     *
-     * @param player The player whose score is to be calculated.
-     */
-    public void getPointsFromGoalCards(Player player){
-        // firstly common goal
-        System.out.println(currentGame);
-        for (GoalCard gc: currentGame.getCommonGoalCards()) {
-            if (gc != null) {
-                player.setScore(player.getScore() + gc.checkGoal(player.getPlayerBoard()));
-            }
-        }
-        //secondly secret goal
-        player.setScore(player.getScore() + player.getSecretGoalCard().checkGoal(player.getPlayerBoard()));
-    }
-
-    /**
-     * Player's PlayerBoard getter.
-     *
-     * @param p The player whose PlayerBoard is to be returned.
-     * @return the PlayerBoard object representing the player's board.
-     */
-    public PlayerBoard getPlayerBoard(Player p){
-        return p.getPlayerBoard();
-    }
-
-    /**
      * Sets the number of players in the game.
      *
      * @param number The number of players to be set.
@@ -472,18 +444,14 @@ public class GameController {
         //per ogni player
         for(Player p: currentGame.getPlayers()){
             //imposto la mano iniziale
-
             //una GoldenCard
             p.setHand(drawPlayableFromDeck(currentGame.goldenDeck), 0);
             //due ResourceCard
             p.setHand(drawPlayableFromDeck(currentGame.resourceDeck), 1);
             p.setHand(drawPlayableFromDeck(currentGame.resourceDeck), 2);
-
         }
-
-        //gli mando le carte obbiettivo comuni
+        //gli mando le carte obiettivo comuni
         setCommonGoalCards();
-
     }
 
     /**

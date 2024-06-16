@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * This class represents a generic card that can be played on a PlayerBoard.
  */
-public abstract class PlayableCard  implements Serializable {
+public abstract class PlayableCard implements Serializable {
     private State state;
     private boolean isFlipped;
     private final Resource[] permResource;

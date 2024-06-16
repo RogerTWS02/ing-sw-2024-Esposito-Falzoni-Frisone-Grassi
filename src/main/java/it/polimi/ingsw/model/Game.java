@@ -10,10 +10,10 @@ import org.json.simple.parser.ParseException;
 /**
  * The class Game represents a game and manages the game's data.
  */
-public class Game implements Serializable{
+public class Game implements Serializable {
     private Player startingPlayer;
     private ArrayList<Player> players;
-    private int gameID;
+    private final int gameID;
     public JSONArray resourceDeck;
     public JSONArray goldenDeck;
     public JSONArray startingDeck;
@@ -30,11 +30,10 @@ public class Game implements Serializable{
      * The constructor creates a new game with the given gameID, retrieving it from a previous saving if it exists.
      *
      * @param gameID The gameID of the game, which identifies it uniquely.
-     * @throws FileNotFoundException if the old saving file exists but can't be retrieved.
      */
-    public Game(int gameID) throws FileNotFoundException {
+    public Game(int gameID) {
         this.gameID = gameID;
-        if(checkOldGame(gameID)){
+        /*if(checkOldGame(gameID)){
             Game oldGame = retrieveGame(gameID);
             if (oldGame == null) {
                 throw new FileNotFoundException("Unable to retrieve old saving file!");
@@ -50,12 +49,11 @@ public class Game implements Serializable{
             this.viewableGoldenCards = oldGame.viewableGoldenCards;
             this.commonGoalCards = oldGame.commonGoalCards;
             this.currentPlayer = oldGame.currentPlayer;
-        } else {
+        } else { */
             createDecks();
             viewableResourceCards = new ResourceCard[3];
             viewableGoldenCards = new GoldenCard[3];
             commonGoalCards = new GoalCard[2];
-        }
     }
 
     /**
@@ -102,7 +100,7 @@ public class Game implements Serializable{
      *
      * @throws IOException If the file can't be saved.
      */
-    public void saveGame() throws IOException {
+    /*public void saveGame() throws IOException {
         //Delete old saving if it exists
         File oldGameFile = new File("savings/" + gameID + "game.svs");
         if(oldGameFile.exists()){
@@ -121,19 +119,19 @@ public class Game implements Serializable{
         } catch (IOException e){
             System.err.println("Error trying saving the game!");
         }
-    }
+    }*/
 
     /**
      * Deletes the old saving file of the game.
      */
-    public void deleteOldSaving(){
+    /*public void deleteOldSaving(){
         File old = new File("savings/" + gameID + "game.svs");
         if(old.exists()){
             if(!old.delete()){
                 throw new RuntimeException("Error trying deleting old saving!");
             }
         }
-    }
+    }*/
 
     /**
      * Retrieves the game from the file named after the gameID.
@@ -141,14 +139,14 @@ public class Game implements Serializable{
      * @param gameID The gameID of the game to retrieve.
      * @return The game retrieved from the file.
      */
-    public static Game retrieveGame(int gameID){
+    /*public static Game retrieveGame(int gameID){
         try(ObjectInputStream saving = new ObjectInputStream(new FileInputStream("savings/" + gameID + "game.svs"))){
             return (Game) saving.readObject();
         } catch (IOException | ClassNotFoundException e){
             System.err.println("Error trying restoring the game!");
         }
         return null;
-    }
+    }*/
 
     /**
      * Checks if an old game with the given gameID exists.
@@ -156,14 +154,14 @@ public class Game implements Serializable{
      * @param gameID The gameID of the game to check.
      * @return true if the game exists, false otherwise.
      */
-    public static boolean checkOldGame(int gameID){
+    /*public static boolean checkOldGame(int gameID){
         File old = new File("savings/" + gameID + "game.svs");
         if(old.exists()){
             return true;
         } else {
             return false;
         }
-    }
+    }*/
 
     /**
      * Sets a random player as the starting player.
@@ -244,11 +242,24 @@ public class Game implements Serializable{
     }
 
     /**
+     * Calculates the player's score, considering the common goal cards.
+     */
+    public void getPointsFromGoalCards() {
+        for(GoalCard gc : commonGoalCards){
+            for(Player p : players)
+                p.setScore(p.getScore() + gc.checkGoal(p.getPlayerBoard()));
+        }
+        for(Player p : players)
+            p.setScore(p.getScore() + p.getSecretGoalCard().checkGoal(p.getPlayerBoard()));
+    }
+
+    /**
      * Returns the player (or the players) who won the game.
      *
      * @return The player who won the game.
      */
     public Player[] getWinner(){
+        getPointsFromGoalCards();
         List<Player> winners = new ArrayList<>();
         Player topPlayer = players.getFirst();
 
