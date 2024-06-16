@@ -48,22 +48,18 @@ public class ClientServerTest {
 
         //ser = new Server(InetAddress.getByName("127.0.0.1"), 12345);
         ser = new Server();
-        cli = new Client(InetAddress.getLocalHost().getHostAddress(), 1234, null);
+        cli = new Client(true, InetAddress.getLocalHost().getHostAddress(), 1234, null);
     }
 
     @Test
     public void sendMessageToServer() throws IOException, InterruptedException {
         Thread serverThread = new Thread(() -> {
-            try {
-                ser.run(true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            ser.run();
         });
         serverThread.start();
         Thread.sleep(1000);
         //avvio la lettura/scrittura al server
-        cli.run(true);
+        cli.run();
         //mando il messaggio e chiudo la connessione
         cli.sendMessage(messaggio);
 

@@ -3,56 +3,44 @@ package it.polimi.ingsw.network.client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.server.RMIServerInterface;
 import it.polimi.ingsw.network.server.Server;
-import it.polimi.ingsw.view.TUI.RMIGameFlow;
 import it.polimi.ingsw.view.TUI.TUI;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Client  {
+public class Client extends UnicastRemoteObject implements ClientListenerInterface{
     private final String ipServ;
-
-    private final int port;
-
+    private final int port; //porta del server
     private TUI tui = null;
     private Socket socket;
     private String lobbyName = "";
-
     private int lobbySize = -1;
     private int gameID = -1;
     protected ObjectOutputStream out;
     protected ObjectInputStream inp;
     private final Logger logger = Logger.getLogger(getClass().getName());
-    private final int clientID; //Client identifier for RMI
+    private int clientID; //Client identifier for RMI
     private static int lastID = 0;
-    private final ClientListenerInterface clientListener;
+    private RMIServerInterface stub;
+    final boolean hasSocket;
 
-    public Client(String ip, int port, TUI tui) throws RemoteException {
+    public Client(boolean hasSocket, String ip, int port, TUI tui) throws RemoteException {
         this.tui = tui;
         this.ipServ = ip;
         this.port = port;
-        this.clientListener = new ClientListener();
-        this.clientID = generateNewClientID();
-    }
-
-    /**
-     * This method is used to generate a new client ID.
-     * @return the new client ID.
-     */
-    private synchronized static int generateNewClientID() {
-        return ++lastID;
+        this.hasSocket = hasSocket;
+        this.stub = null;
     }
 
     /**
@@ -61,8 +49,8 @@ public class Client  {
      */
     public void readFromSocketAsync(ObjectInputStream socketInput){
         Thread t = new Thread(() -> {
-            try{
-                while(!Thread.currentThread().isInterrupted()){
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
                     try {
                         Message recievedMessage = (Message) socketInput.readObject();
 
@@ -70,34 +58,47 @@ public class Client  {
                         tui.onMessageReceived(recievedMessage);
                         //per debugging
                         //System.out.println(recievedMessage.getObj().toString());
-                    }catch (IOException | ClassNotFoundException e) {
+                    } catch (IOException | ClassNotFoundException e) {
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
                 }
-            }finally {
+            } finally {
                 closeSocket();
             }
         });
         t.start();
     }
 
+    public void sendMessageToClient(Message message) throws IOException, ParseException {
+        tui.onMessageReceived(message);
+    }
 
     /**
      * This method is used to send a message to the server.
      * @param message the message to be sent to the server.
      */
+
     public synchronized void sendMessage(Message message){
         new Thread(() -> {
-            try{
-                //logger.log(Level.INFO, "Sending message to server");
-                out.reset();
-                out.writeObject(message);
-                out.flush();
+            if(hasSocket) {
+                try {
+                    //logger.log(Level.INFO, "Sending message to server");
+                    out.reset();
+                    out.writeObject(message);
+                    out.flush();
 
-            }catch(IOException e){
-                logger.log(Level.SEVERE, "Error in sending message to server");
-            };
+                } catch (IOException e) {
+                    logger.log(Level.SEVERE, "Error in sending message to server");
+                }
+                ;
+            }else{
+                try {
+                    stub.messageHandler(message);
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
         }).start();
     }
@@ -108,14 +109,14 @@ public class Client  {
 
     /**
      * This method is used to connect to the server using either RMI or socket.
-     * @param useSocket true if the client wants to connect using socket, false if the client wants to connect using RMI.
      */
-    public void run(boolean useSocket){
-        if(useSocket){
+    public void run(){
+        if(hasSocket){
             try{
                 this.socket = new Socket(ipServ, port);
                 out = new ObjectOutputStream(socket.getOutputStream());
                 inp = new ObjectInputStream(socket.getInputStream());
+                clientID = socket.getPort();
                 logger.log(Level.INFO, "Client has connected to the server");
 
                 readFromSocketAsync(inp);
@@ -125,12 +126,19 @@ public class Client  {
             }
         }else{
             try{
+                //cerco nel registry il nome del server e mi connetto
+                //al suo stub (simulazione in locale del server tramite dei metodi definiti)
                 Registry registry = LocateRegistry.getRegistry();
-                RMIServerInterface stub = (RMIServerInterface) registry.lookup(Server.NAME);
+                stub = (RMIServerInterface) registry.lookup(Server.NAME);
                 logger.log(Level.INFO, "Client has connected to the server using RMI");
 
-                RMIGameFlow play = new RMIGameFlow(stub, this);
-                play.run();
+                //TODO: DA CONTROLLARE POI...
+                clientID = stub.createSkeleton(this);
+
+                System.out.println("Fino a qui arrivo AAOAOAOAOAO");
+
+                //RMIGameFlow play = new RMIGameFlow(stub, this);
+                //play.run();
             }catch (NotBoundException | IOException e) {
                 logger.log(Level.SEVERE, "Error in connecting to server using RMI");
             }
@@ -179,25 +187,19 @@ public class Client  {
         return clientID;
     }
 
+    /*
     public ClientListenerInterface getClientListener() {
         return clientListener;
     }
-
     public class ClientListener extends UnicastRemoteObject implements ClientListenerInterface {
-
         public ClientListener() throws RemoteException {
             super();
         }
 
-
-        public void receiveMessage(String message) {
-            System.out.println(message);
+        public void receiveMessage(Message message) throws IOException, ParseException {
+            tui.onMessageReceived(message);
         }
     }
-
-    public static void main(String[] args) throws UnknownHostException, RemoteException {
-        Client client = new Client(InetAddress.getLocalHost().getHostAddress(), 1234, null);
-        client.run(false);
-    }
+    */
 
 }

@@ -1,5 +1,9 @@
 package it.polimi.ingsw.network.client;
 
+import it.polimi.ingsw.network.message.Message;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -11,5 +15,6 @@ public interface ClientListenerInterface extends Remote {
      * @param message The message to be sent.
      * @throws RemoteException if the remote operation fails.
      */
-    void receiveMessage(String message) throws RemoteException;
+    //void receiveMessage(Message message) throws IOException, ParseException;
+    void sendMessageToClient(Message message) throws IOException, ParseException;
 }

@@ -41,19 +41,15 @@ public class AppSocketTUITest {
     @Test
     public void startTUIonSocket() throws IOException, InterruptedException {
         Thread serverThread = new Thread(() -> {
-            try {
-                ser.run(true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            ser.run();
         });
         serverThread.start();
         Thread.sleep(1000);
         //avvio la lettura/scrittura al server
         try {
             //per il momento funziona solo su localHost con porta di default
-            tui.cli  = new Client(InetAddress.getLocalHost().getHostName(), 1234, tui);
-            tui.cli.run(true);
+            tui.cli  = new Client(true, InetAddress.getLocalHost().getHostName(), 1234, tui);
+            tui.cli.run();
             tui.start();
         }catch(Exception e){
             System.out.println("c'è un problema col client: "+e);

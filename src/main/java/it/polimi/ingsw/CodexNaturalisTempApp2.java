@@ -45,8 +45,8 @@ public class CodexNaturalisTempApp2 {
             TUI tui = new TUI();
             try {
                 //per il momento funziona solo su localHost con porta di default
-                tui.cli  = new Client(InetAddress.getLocalHost().getHostName(), 1234, tui);
-                tui.cli.run(hasSocket);
+                tui.cli  = new Client(hasSocket, InetAddress.getLocalHost().getHostName(), 1234, tui);
+                tui.cli.run();
                 tui.start();
 
             }catch(Exception e){
@@ -62,7 +62,7 @@ public class CodexNaturalisTempApp2 {
         Server server;
         try{
             server = new Server();
-            server.run(hasSocket);
+            server.run();
         } catch (IOException e){
             System.exit(1);
         }

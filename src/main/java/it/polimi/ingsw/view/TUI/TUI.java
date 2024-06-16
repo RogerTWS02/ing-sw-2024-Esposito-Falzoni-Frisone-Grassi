@@ -276,7 +276,7 @@ public class TUI extends Thread{
             cli.sendMessage(
                     new Message(
                             REQUEST_LOGIN,
-                            cli.getSocketPort(),
+                            cli.getClientID(),
                             -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
                             command[0])
             );
@@ -305,7 +305,7 @@ public class TUI extends Thread{
             cli.sendMessage(
                     new Message(
                             REQUEST_NEW_LOBBY,
-                            cli.getSocketPort(),
+                            cli.getClientID(),
                             -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
                             new Object[]{
                                     nameP,
@@ -401,7 +401,7 @@ public class TUI extends Thread{
         cli.sendMessage(
                 new Message(
                         NOTIFY_CHOICES_MADE,
-                        cli.getSocketPort(),
+                        cli.getClientID(),
                         cli.getGameID(),
                         new Object[]{
                                 cardToChooseUUID.get(0), //UUID della starting card
@@ -443,7 +443,7 @@ public class TUI extends Thread{
         cli.sendMessage(
                 new Message(
                         REQUEST_VIEWABLE_CARDS,
-                        cli.getSocketPort(),
+                        cli.getClientID(),
                         cli.getGameID())
         );
 
@@ -542,7 +542,7 @@ public class TUI extends Thread{
                 cli.sendMessage(
                         new Message(
                                 NOTIFY_LAST_TURN,
-                                cli.getSocketPort(),
+                                cli.getClientID(),
                                 cli.getGameID(),
                                 new Object[]{}
                         )
@@ -756,7 +756,7 @@ public class TUI extends Thread{
                 cli.sendMessage(
                         new Message(
                                 REQUEST_INTERRUPT_GAME,
-                                cli.getSocketPort(),
+                                cli.getClientID(),
                                 cli.getGameID()
                         )
                 );
@@ -783,7 +783,7 @@ public class TUI extends Thread{
                 cli.sendMessage(
                         new Message(
                                 REQUEST_INFO_CARD,
-                                cli.getSocketPort(),
+                                cli.getClientID(),
                                 cli.getGameID(),
                                 new Object[]{posX, posY})
                 );
@@ -798,7 +798,7 @@ public class TUI extends Thread{
                 cli.sendMessage(
                         new Message(
                                 REQUEST_VIEWABLE_CARDS,
-                                cli.getSocketPort(),
+                                cli.getClientID(),
                                 cli.getGameID())
                 );
                 try {
@@ -830,7 +830,7 @@ public class TUI extends Thread{
                 cli.sendMessage(
                         new Message(
                                 REQUEST_PLAYER_MOVE,
-                                cli.getSocketPort(),
+                                cli.getClientID(),
                                 cli.getGameID(),
                                 //Manca la carta da piazzare oltre alla posizione dove piazzarla
                                 new Object[]{
@@ -862,7 +862,7 @@ public class TUI extends Thread{
                     cli.sendMessage(
                             new Message(
                                     REQUEST_CARD,
-                                    cli.getSocketPort(),
+                                    cli.getClientID(),
                                     cli.getGameID(),
                                     new Object[]{true, pos - 1})
                     );
@@ -871,7 +871,7 @@ public class TUI extends Thread{
                     cli.sendMessage(
                             new Message(
                                     REQUEST_CARD,
-                                    cli.getSocketPort(),
+                                    cli.getClientID(),
                                     cli.getGameID(),
                                     new Object[]{false, pos - 1})
                     );
@@ -890,7 +890,7 @@ public class TUI extends Thread{
                     cli.sendMessage(
                             new Message(
                                     REQUEST_CARD,
-                                    cli.getSocketPort(),
+                                    cli.getClientID(),
                                     cli.getGameID(),
                                     new Object[]{true, 2})
                     );
@@ -898,7 +898,7 @@ public class TUI extends Thread{
                     cli.sendMessage(
                             new Message(
                                     REQUEST_CARD,
-                                    cli.getSocketPort(),
+                                    cli.getClientID(),
                                     cli.getGameID(),
                                     new Object[]{false, 2})
                     );
@@ -917,7 +917,7 @@ public class TUI extends Thread{
                 cli.sendMessage(
                         new Message(
                                 TEST_END_GAME,
-                                cli.getSocketPort(),
+                                cli.getClientID(),
                                 cli.getGameID()
                         )
                 );
@@ -973,7 +973,7 @@ public class TUI extends Thread{
                         cli.sendMessage(
                                 new Message(
                                         NEW_CHAT_MESSAGE,
-                                        cli.getSocketPort(),
+                                        cli.getClientID(),
                                         cli.getGameID(),
                                         new Object[]{"\033[38;5;208m" + nameP + ":\033[0m " + msg})
                         );

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.network.server;
 
+import it.polimi.ingsw.network.client.ClientListenerInterface;
 import it.polimi.ingsw.network.message.Message;
+import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,7 +12,7 @@ import java.util.logging.Logger;
 /**
  * Class which handles the connection with a client.
  */
-public class ClientHandler extends Thread {
+public class ClientHandler extends Thread implements ClientListenerInterface {
     private final Logger logger = Logger.getLogger(getClass().getName());
     private final Socket clientSocket;
     private final Server server;
@@ -75,6 +77,8 @@ public class ClientHandler extends Thread {
         } catch (ClassCastException | NullPointerException | ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Error in reception, closing socket because: "+e);
             disconnect();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -83,7 +87,7 @@ public class ClientHandler extends Thread {
      *
      * @param msg The message to be sent.
      */
-    public void sendMessage(Message msg){
+    public void sendMessageToClient(Message msg){
         try{
             synchronized (outLock){
                 out.writeObject(msg);
@@ -114,7 +118,13 @@ public class ClientHandler extends Thread {
             Thread.currentThread().interrupt();
 
             //NOTIFICO IL SERVER DELLA DISCONNESSIONE
-            server.notifyDisconnection(clientSocket.getPort());
+            try {
+                server.notifyDisconnection(clientSocket.getPort());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
