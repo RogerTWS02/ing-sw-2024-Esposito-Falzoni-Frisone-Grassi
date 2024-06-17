@@ -1,10 +1,13 @@
 package it.polimi.ingsw.view.TUI.GameState;
 
+/**
+ * LogInPort class is used to show the LogInPort view.
+ */
 public class LogInPort {
 
-
-
-
+    /**
+     * This method is used to show the LogInPort view.
+     */
     public void showLogInPort() {
         //clear the screen before printing something
         Views.clearScreen();
@@ -24,8 +27,6 @@ public class LogInPort {
                 //.append("─".repeat(46))
                 //.append("┘")
                 //.append("\n");
-
-
         System.out.print(sb);
 
     }

@@ -11,19 +11,75 @@ import org.json.simple.parser.ParseException;
  * The class Game represents a game and manages the game's data.
  */
 public class Game implements Serializable {
+
+    /**
+     * The player which starts the game.
+     */
     private Player startingPlayer;
+
+    /**
+     * The list of players in the game.
+     */
     private ArrayList<Player> players;
+
+    /**
+     * The gameID of the game, which identifies it uniquely.
+     */
     private final int gameID;
+
+    /**
+     * The JSON array of the game's resource card deck.
+     */
     public JSONArray resourceDeck;
+
+    /**
+     * The JSON array of the game's golden card deck.
+     */
     public JSONArray goldenDeck;
+
+    /**
+     * The JSON array of the game's starting card deck.
+     */
     public JSONArray startingDeck;
+
+    /**
+     * The JSON array of the game's resources goal card deck.
+     */
     public JSONArray resourcesGoalDeck;
+
+    /**
+     * The JSON array of the game's pattern goal card deck.
+     */
     public JSONArray patternGoalDeck;
+
+    /**
+     * The viewable resource cards of the game.
+     */
     public ResourceCard[] viewableResourceCards;
+
+    /**
+     * The viewable golden cards of the game.
+     */
     public GoldenCard[] viewableGoldenCards;
+
+    /**
+     * The common goal cards of the game.
+     */
     public GoalCard[] commonGoalCards;
+
+    /**
+     * The current player of the game.
+     */
     private Player currentPlayer;
+
+    /**
+     * The boolean value that indicates if the game is over.
+     */
     private boolean isOver = false;
+
+    /**
+     * The boolean value that indicates if the game is in the last phase.
+     */
     private boolean isInLastPhase = false;
 
     /**
@@ -33,27 +89,10 @@ public class Game implements Serializable {
      */
     public Game(int gameID) {
         this.gameID = gameID;
-        /*if(checkOldGame(gameID)){
-            Game oldGame = retrieveGame(gameID);
-            if (oldGame == null) {
-                throw new FileNotFoundException("Unable to retrieve old saving file!");
-            }
-            this.startingPlayer = oldGame.startingPlayer;
-            this.players = oldGame.players;
-            this.resourceDeck = oldGame.resourceDeck;
-            this.goldenDeck = oldGame.goldenDeck;
-            this.startingDeck = oldGame.startingDeck;
-            this.resourcesGoalDeck = oldGame.resourcesGoalDeck;
-            this.patternGoalDeck = oldGame.patternGoalDeck;
-            this.viewableResourceCards = oldGame.viewableResourceCards;
-            this.viewableGoldenCards = oldGame.viewableGoldenCards;
-            this.commonGoalCards = oldGame.commonGoalCards;
-            this.currentPlayer = oldGame.currentPlayer;
-        } else { */
-            createDecks();
-            viewableResourceCards = new ResourceCard[3];
-            viewableGoldenCards = new GoldenCard[3];
-            commonGoalCards = new GoalCard[2];
+        createDecks();
+        viewableResourceCards = new ResourceCard[3];
+        viewableGoldenCards = new GoldenCard[3];
+        commonGoalCards = new GoalCard[2];
     }
 
     /**
@@ -94,75 +133,6 @@ public class Game implements Serializable {
         }
     }
 
-
-    /**
-     * Saves the game in a file named after the gameID.
-     *
-     * @throws IOException If the file can't be saved.
-     */
-    /*public void saveGame() throws IOException {
-        //Delete old saving if it exists
-        File oldGameFile = new File("savings/" + gameID + "game.svs");
-        if(oldGameFile.exists()){
-            deleteOldSaving();
-        }
-        //Create a saving folder
-        File gameSavingFolder = new File("savings");
-        if(!gameSavingFolder.exists()){
-            if(!gameSavingFolder.mkdir()){
-                throw new RuntimeException("Error creating savings folder!");
-            }
-        }
-        //Save game
-        try(ObjectOutputStream gameSave = new ObjectOutputStream(new FileOutputStream("savings/" + gameID + "game.svs"))){
-            gameSave.writeObject(this);
-        } catch (IOException e){
-            System.err.println("Error trying saving the game!");
-        }
-    }*/
-
-    /**
-     * Deletes the old saving file of the game.
-     */
-    /*public void deleteOldSaving(){
-        File old = new File("savings/" + gameID + "game.svs");
-        if(old.exists()){
-            if(!old.delete()){
-                throw new RuntimeException("Error trying deleting old saving!");
-            }
-        }
-    }*/
-
-    /**
-     * Retrieves the game from the file named after the gameID.
-     *
-     * @param gameID The gameID of the game to retrieve.
-     * @return The game retrieved from the file.
-     */
-    /*public static Game retrieveGame(int gameID){
-        try(ObjectInputStream saving = new ObjectInputStream(new FileInputStream("savings/" + gameID + "game.svs"))){
-            return (Game) saving.readObject();
-        } catch (IOException | ClassNotFoundException e){
-            System.err.println("Error trying restoring the game!");
-        }
-        return null;
-    }*/
-
-    /**
-     * Checks if an old game with the given gameID exists.
-     *
-     * @param gameID The gameID of the game to check.
-     * @return true if the game exists, false otherwise.
-     */
-    /*public static boolean checkOldGame(int gameID){
-        File old = new File("savings/" + gameID + "game.svs");
-        if(old.exists()){
-            return true;
-        } else {
-            return false;
-        }
-    }*/
-
     /**
      * Sets a random player as the starting player.
      */
@@ -194,6 +164,11 @@ public class Game implements Serializable {
         return currentPlayer;
     }
 
+    /**
+     * Sets the new current player.
+     *
+     * @param currentPlayer The new current player.
+     */
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
@@ -303,29 +278,14 @@ public class Game implements Serializable {
     }
 
     /**
-     * Sets the state of the game to "over".
-     */
-    public void gameOver(){
-        isOver = true;
-    }
-
-    /**
      * Returns if the game is in the last phase.
      *
-     * @return true if the game is in the last phase, false otherwise.
+     * @return True if the game is in the last phase, false otherwise.
      */
     public boolean isInLastPhase(){
         return isInLastPhase;
     }
 
-    /**
-     * Returns if the game is over.
-     *
-     * @return true if the game is over, false otherwise.
-     */
-    public boolean isGameOver(){
-        return isOver;
-    }
 
     /**
      * Sets the game state as "in the last phase".
@@ -335,14 +295,10 @@ public class Game implements Serializable {
     }
 
     /**
-     * Returns the gameID of the game.
+     * Returns the starting player's id.
      *
-     * @return The gameID of the game.
+     * @return The starting player's id.
      */
-    public int getGameID(){
-        return gameID;
-    }
-
     public int getStartingPlayerId(){
         return startingPlayer.getClientPort();
     }

@@ -13,12 +13,40 @@ import java.util.logging.Logger;
  * Class which handles the connection with a client.
  */
 public class ClientHandler extends Thread implements ClientListenerInterface {
+
+    /**
+     * The logger of the connection handler.
+     */
     private final Logger logger = Logger.getLogger(getClass().getName());
+
+    /**
+     * The socket of the client.
+     */
     private final Socket clientSocket;
+
+    /**
+     * The server which the client is connected to.
+     */
     private final Server server;
+
+    /**
+     * The output stream of the client.
+     */
     private ObjectOutputStream out;
+
+    /**
+     * The input stream of the client.
+     */
     private ObjectInputStream inp;
+
+    /**
+     * The locks used to synchronize the input and output streams.
+     */
     private final Object inLock, outLock;
+
+    /**
+     * The boolean which indicates if the client is connected.
+     */
     private boolean isConnected;
 
     /**
@@ -34,7 +62,7 @@ public class ClientHandler extends Thread implements ClientListenerInterface {
         this.clientSocket = clientSocket;
         this.server = server;
         try {
-            // Inizializzazione degli stream di input/output
+            //Initializes the input/output streams
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             inp = new ObjectInputStream(clientSocket.getInputStream());
         } catch (IOException e) {
@@ -58,19 +86,19 @@ public class ClientHandler extends Thread implements ClientListenerInterface {
     /**
      * Sends the message sent from the client to the server.
      *
-     * @throws IOException if an error occurs while sending the message.
+     * @throws IOException If an error occurs while sending the message.
      */
     public void handleClient() throws IOException{
         try {
             while (isConnected && !Thread.currentThread().isInterrupted()) {
                 synchronized (inLock) {
-                    //messaggio che il server deve ricevere
+                    //Message the server has to receive
                     Message msg = (Message) inp.readObject();
 
-                    //PER DEBUGGING
+                    //DEBUGGING
                     System.out.println(msg.getMessageType());
 
-                    //lo mando al server
+                    //Send to server
                     server.messageHandler(msg);
                 }
             }
@@ -117,7 +145,7 @@ public class ClientHandler extends Thread implements ClientListenerInterface {
             isConnected = false;
             Thread.currentThread().interrupt();
 
-            //NOTIFICO IL SERVER DELLA DISCONNESSIONE
+            //Notify the server of the disconnection
             try {
                 server.notifyDisconnection(clientSocket.getPort());
             } catch (IOException e) {

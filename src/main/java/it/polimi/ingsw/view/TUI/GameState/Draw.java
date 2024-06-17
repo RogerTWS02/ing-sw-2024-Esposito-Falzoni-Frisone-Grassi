@@ -10,16 +10,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Objects;
 
-
+/**
+ * Draw class is used to show the cards that are on the table and can be drawn by the player.
+ */
 public class Draw implements Views {
 
-
-
-
-
+     /**
+      * JSON arrays containing the cards.
+      */
      JSONArray resourceJSONArray;
+
+     /**
+      * JSON arrays containing the cards.
+      */
      JSONArray goldJSONArray;
-     // colors used in the TUI
+
+     /**
+      * Colors of the TUI.
+      */
      public static final String ANSI_RED_BACKGROUND = "\u001B[48;5;88m";
      public static final String ANSI_GREEN_BACKGROUND = "\u001B[48;5;22m";
      public static final String ANSI_BLUE_BACKGROUND = "\u001B[48;5;26m";
@@ -28,9 +36,13 @@ public class Draw implements Views {
      public static final String ANSI_YELLOW = "\u001B[33m";
      public static final String ANSI_WHITE = "\u001B[38;5;231m";
 
-
+     /**
+      * Draws the cards on the table.
+      *
+      * @throws IOException If an I/O error occurs.
+      * @throws ParseException If there is an error in parsing the JSON file.
+      */
      public Draw() throws IOException, ParseException {
-
           JSONParser parser = new JSONParser();
           // read the JSON file with the cards
           InputStream inputGold = getClass().getResourceAsStream("/goldenDeck.json");
@@ -44,7 +56,15 @@ public class Draw implements Views {
 
 
      }
+
      // uuid gold card, uuid resource card, last one in each array: the covered one
+
+     /**
+      * Draws the drawable cards on the table.
+      *
+      * @param gUuids The UUIDs of the golden cards.
+      * @param rUuids The UUIDs of the resource cards.
+      */
      public void showDrawable (String[] gUuids, String[] rUuids){
           String[][] gStringCard = new String[10][3];
           String[][] rStringCard = new String[10][3];
@@ -119,9 +139,6 @@ public class Draw implements Views {
                gStringCard[2][x] = Views.stringToEmoji((String) JSONCard.get("permRes"));
 
           }
-
-
-
           // generating resource cards
           for(int x =0; x<3; x++){
                // check if a position is empty
@@ -359,11 +376,7 @@ public class Draw implements Views {
                   .append("─".repeat(89))
                   .append("┘")
                   .append("\n");
-
-
           //Views.clearScreen();
           System.out.println(cards);
-
      }
-
 }

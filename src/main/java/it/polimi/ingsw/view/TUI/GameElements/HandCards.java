@@ -13,15 +13,25 @@ import java.util.Objects;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 
+
+/**
+ * This class is used to draw the cards in the hand of a player.
+ */
 public class HandCards implements Views {
 
-
+    /**
+     * The JSONArray containing the resource cards.
+     */
     private final JSONArray resourceJSONArray;
+
+    /**
+     * The JSONArray containing the golden cards.
+     */
     private final JSONArray goldJSONArray;
 
-
-
-    // colors used in the TUI
+    /**
+     * Colors for drawing the cards.
+     */
     public static final String ANSI_RED_BACKGROUND = "\u001B[48;5;88m";
     public static final String ANSI_GREEN_BACKGROUND = "\u001B[48;5;22m";
     public static final String ANSI_BLUE_BACKGROUND = "\u001B[48;5;26m";
@@ -30,8 +40,12 @@ public class HandCards implements Views {
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_WHITE = "\u001B[38;5;231m";
 
-
-
+    /**
+     * Constructor for the HandCards class.
+     *
+     * @throws IOException If the file is not found.
+     * @throws ParseException If the file is not in the correct format.
+     */
     public HandCards() throws IOException, ParseException {
 
         JSONParser parser = new JSONParser();

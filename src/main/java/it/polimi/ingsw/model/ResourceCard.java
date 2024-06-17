@@ -5,6 +5,10 @@ package it.polimi.ingsw.model;
 
  */
 public class ResourceCard extends PlayableCard {
+
+    /**
+     * The points given by the card.
+     */
     private final int points;
 
     /**

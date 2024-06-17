@@ -7,8 +7,14 @@ import java.util.Map;
  * This class represents the goal cards that require the player to have a certain amount of resources in oder to score points.
  */
 public class ResourcesGoalCard extends GoalCard{
+
+    /**
+     * The resources required by the goal card in order to score points.
+     */
     private final Map<Resource, Integer> resources;
-    //private final Map<Resource, Integer> countResources;
+    /**
+     * The UUID of the goal card, which identifies it uniquely.
+     */
     private final String UUID;
 
     /**
@@ -22,9 +28,7 @@ public class ResourcesGoalCard extends GoalCard{
         super(points, UUID);
         this.resources = resources;
         this.UUID = UUID;
-        //this.countResources = new HashMap<>();
     }
-
 
     /**
      * Checks if the player has the required resources to score points with this goal card and how many times and returns the points scored.
@@ -59,13 +63,4 @@ public class ResourcesGoalCard extends GoalCard{
     public Map<Resource, Integer> getResourcesMap() {
         return resources;
     }
-
-    /**
-     * Returns the amount of each resource required by the goal card.
-     *
-     * @return The amount of each resource required by the goal card.
-     */
-    /*public Map<Resource, Integer> getCountResources() {
-        return countResources;
-    }*/
 }

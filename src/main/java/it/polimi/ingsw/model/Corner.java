@@ -6,11 +6,25 @@ import java.util.Optional;
  * The class Corner represents the corners of the cards.
  */
 public class Corner {
+
+    /**
+     * The id of the corner, which identifies its position in the card.
+     */
     private final int id;
+
+    /**
+     * The card to which the corner belongs.
+     */
     private final PlayableCard refCard;
 
+    /**
+     * The covering status of the corner.
+     */
     private boolean isCovered = false;
 
+    /**
+     * The resource that the corner provides.
+     */
     private final Optional<Resource> cornerResource;
 
     /**
@@ -24,24 +38,6 @@ public class Corner {
         this.id = id;
         this.refCard = refCard;
         this.cornerResource = cornerResource;
-    }
-
-    /**
-     * Returns the id of the corner.
-     *
-     * @return
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * Returns the reference card of the corner.
-     *
-     * @return The card to which the corner belongs.
-     */
-    public PlayableCard getRefCard() {
-        return refCard;
     }
 
     /**

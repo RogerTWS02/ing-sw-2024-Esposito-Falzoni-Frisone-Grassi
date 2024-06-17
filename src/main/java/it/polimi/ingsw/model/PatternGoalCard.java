@@ -7,9 +7,19 @@ import java.util.Arrays;
  */
 public class PatternGoalCard extends GoalCard {
     // array [0,0,x1,y1,x2,y2]  of relative position of the card in the pattern related to the first card
+    /**
+     * The relative position of the card in the pattern related to the card.
+     */
     private final int[] patternPosition;
    // array of resources, in the order in witch they are expected to be found
+    /**
+     * The resources that are expected to be found in the pattern.
+     */
     private final Resource[] patternResource;
+
+    /**
+     * The UUID of the card, which identifies it uniquely.
+     */
     private final String UUID;
 
     /**

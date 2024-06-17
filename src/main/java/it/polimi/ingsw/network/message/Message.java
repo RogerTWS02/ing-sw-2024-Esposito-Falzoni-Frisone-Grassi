@@ -6,9 +6,26 @@ import java.io.Serializable;
  * Message class is used to send messages between server and client.
  */
 public class Message implements Serializable{
+
+    /**
+     * The type of the message.
+     */
     private final MessageType messageType;
+
+    /**
+     * The objects to send.
+     */
     private final Object[] obj;
-    private final int senderID, gameID;
+
+    /**
+     * The client ID of the sender.
+     */
+    private final int senderID;
+
+    /**
+     * The game identifier.
+     */
+    private final int gameID;
 
     /**
      * The constructor initializes the message with the given parameters.

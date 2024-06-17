@@ -5,12 +5,25 @@ import it.polimi.ingsw.view.TUI.GameState.Views;
 
 import java.util.*;
 
+/**
+ * This class is used to show the top row of the game, which contains the scores of the players, the current player, the next player and the resources of the current player.
+ */
 public class TopRow implements Views {
 
+    /**
+     * Colors used in the TUI.
+     */
     public static final String ANSI_BLUE = "\u001B[34m";
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GRAY_BACKGROUND = "\u001B[32m";
 
+    /**
+     * Shows the top row of the game of a player.
+     *
+     * @param currentPlayer The current player of the game.
+     * @param nicknamesScores The scores of the players.
+     * @param playerResources The resources of the current player.
+     */
     public void showTopRow(String currentPlayer, Map<String, Integer> nicknamesScores, ArrayList<Resource> playerResources) {
 
         // Map of resources and their occurrences

@@ -1,21 +1,16 @@
 package it.polimi.ingsw.view.TUI.GameElements;
 
 import it.polimi.ingsw.model.Resource;
-import it.polimi.ingsw.view.TUI.GameState.Views;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is used to draw the board of the game
+ */
 public class Board {
 
+    /**
+     * Colors used in the TUI.
+     */
     private static final String mushroomColor = "\u001B[48;5;88m";
     private static final String leafColor = "\u001B[48;5;22m";
     private static final String wolfColor = "\u001B[48;5;26m";
@@ -24,20 +19,28 @@ public class Board {
     private static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
     private static final String ANSI_LIGHT_YELLOW = "\u001B[93m";
 
+    /**
+     * Constructor of the class.
+     */
     public Board() {
     }
 
     //The isFlipped parameter is used only to determine whether the starting card is flipped or not
+
+    /**
+     * Draw the board of the game of a player.
+     *
+     * @param boardResources The resources in the board.
+     * @param availablePositions The available positions in the board.
+     * @return The height of the board.
+     */
     public int drawBoard(Resource[][] boardResources, List<int[]> availablePositions) {
 
         String background;
         String border = "";
         StringBuilder sb = new StringBuilder();
         Object[][] mergedBoard = mergeBoards(boardResources, availablePositions);
-
         int sRow=0, sCol=0, eRow=81, eCol=81;
-
-
         //find the first useful column
         for (int i = 0; i < boardResources.length; i++) {
             boolean nullRow = false;
@@ -53,8 +56,6 @@ public class Board {
                 break;
             }
         }
-
-
         //find the first useful row
         for (int i = 0; i < boardResources.length; i++) {
             boolean nullRow = false;
@@ -70,8 +71,6 @@ public class Board {
                 break;
             }
         }
-
-
         //find the last useful column
         for (int i = boardResources.length - 1; i >= 0; i--) {
             boolean nullRow = false;
@@ -87,7 +86,6 @@ public class Board {
                 break;
             }
         }
-
         //find the last useful row
         for (int i = boardResources.length - 1; i >= 0; i--) {
             boolean nullRow = false;
@@ -104,20 +102,17 @@ public class Board {
             }
         }
         for(int i= sRow; i < eRow; i++) {
-
             //Print the top border of each card of the row
             for (int j = sCol; j < eCol; j++) {
                 if (mergedBoard[i][j] == null) {
                     sb.append(" ".repeat(10));
                     continue;
                 }
-
                 if (mergedBoard[i][j] == "available") {
                     border = ANSI_LIGHT_YELLOW;
                 } else {
                     border = resetColor;
                 }
-
                 sb.append(border)
                         .append("┌")
                         .append("─".repeat(7))
@@ -125,16 +120,13 @@ public class Board {
                         .append(" ")
                         .append(resetColor);
             }
-
             sb.append("\n");
-
             for (int j = sCol; j < eCol; j++) {
 
                 if (mergedBoard[i][j] == null) {
                     sb.append(" ".repeat(10));
                     continue;
                 }
-
                 switch (mergedBoard[i][j].toString()) {
                     case "MUSHROOM" -> {
                         background = mushroomColor;
@@ -241,10 +233,15 @@ public class Board {
         return (eRow-sRow)*3;
     }
 
+    /**
+     * Merge the board resources with the available positions.
+     *
+     * @param boardResources The resources in the board.
+     * @param availablePositions The available positions in the board.
+     * @return The merged board.
+     */
     public Object[][] mergeBoards(Resource[][] boardResources, List<int[]> availablePositions) {
-
         Object[][] mergedBoard = new Object[boardResources.length][boardResources.length];
-
         for (int i = 0; i < boardResources.length; i++) {
             for (int j = 0; j < boardResources.length; j++) {
                 if (boardResources[i][j] != null) {

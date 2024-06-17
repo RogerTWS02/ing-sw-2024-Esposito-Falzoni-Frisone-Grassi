@@ -6,11 +6,30 @@ import java.io.Serializable;
  * This class represents a generic card that can be played on a PlayerBoard.
  */
 public abstract class PlayableCard implements Serializable {
+
+    /**
+     * This enumeration represents the possible states of a card when played on a PlayerBoard.
+     */
     private State state;
+
+    /**
+     * This boolean represents the flipped status of the card.
+     */
     private boolean isFlipped;
+
+    /**
+     * This array represents the permanent resources of the card.
+     */
     private final Resource[] permResource;
+
+    /**
+     * This array represents the corners of the card.
+     */
     private Corner[] cardCorners;
 
+    /**
+     * This string represents the UUID of the card, which identifies it uniquely.
+     */
     private final String UUID;
 
     /**
@@ -104,7 +123,7 @@ public abstract class PlayableCard implements Serializable {
     public int getPoints(){return 0;}
 
     /**
-     * Returns the card's rule for giving points.
+     * Returns the card's rule for giving points, overriden in the subclasses.
      *
      * @return The card's rule for giving points.
      */

@@ -11,7 +11,15 @@ import static it.polimi.ingsw.model.State.*;
  * This class represents the player's board in the game.
  */
 public class PlayerBoard implements Serializable{
+
+    /**
+     * The grid of the player's board.
+     */
     protected PlayableCard[][] grid = new PlayableCard[81][81];
+
+    /**
+     * The pawn of the player.
+     */
     public Pawn pawn;
 
     /**
@@ -60,7 +68,7 @@ public class PlayerBoard implements Serializable{
     public int[] cornerCoordLookup(int index) {
         int coord[] = new int[2];
         switch (index) {
-            //NOTA BENE: LA PRIMA SONO LE Y, LA SECONDA SONO LE X
+            //The first element is the Y, the second is the X
             case 0:
                 coord[0] = -1;
                 coord[1] = -1;
@@ -100,8 +108,7 @@ public class PlayerBoard implements Serializable{
             }
         }
 
-        //NOTA BENE: LA PRIMA SONO LE Y, LA SECONDA SONO LE X
-        //MA LA NOTAZIONE SEGUENTE E' INVERSA!!!!
+        //switch x and y
         int temp = x;
         x = y;
         y = temp;
@@ -122,7 +129,7 @@ public class PlayerBoard implements Serializable{
                 grid[x + tempCoord[0]][y + tempCoord[1]] =
                         new ResourceCard(new Resource[]{}, new Corner[4], 0, "PLACEHOLDER");
 
-                //se l'angolo della carta che sto piazzando non è nullo
+                //If the corner of the card I'm placing is not null
                 if(card.getCardCorners()[i] != null || (card.isFlipped() && !(card instanceof StartingCard))) {
                     grid[x + tempCoord[0]][y + tempCoord[1]].setState(AVAILABLE);
                 } else{
@@ -130,7 +137,7 @@ public class PlayerBoard implements Serializable{
                 }
 
             } else {
-                //PER DEBUGGING
+                //DEBUGGING
                 System.out.println(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID()+": "+(y + tempCoord[1])+" "+(x + tempCoord[0])+" at index: "+i);
 
                 if(grid[x + tempCoord[0]][y + tempCoord[1]].getUUID().equals("PLACEHOLDER")){

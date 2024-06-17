@@ -2,14 +2,12 @@ package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.client.ClientListenerInterface;
 import it.polimi.ingsw.network.message.Message;
 import org.json.simple.parser.ParseException;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -23,28 +21,87 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * This class is used to create the server and handle the connection with the clients.
+ */
 public class Server extends UnicastRemoteObject implements RMIServerInterface{
+
+    /**
+     * The default port of the server.
+     */
     private static final int default_port = 1234;
+
+    /**
+     * The name of the server.
+     */
     public static final String NAME = "Codex_server";
+
+    /**
+     * The IP address of the server.
+     */
     private final InetAddress ip;
+
+    /**
+     * The port of the server.
+     */
     private final int port;
+
+    /**
+     * The boolean used to check if the server is running.
+     */
     private volatile boolean running = true;
+
+    /**
+     * The server socket used to handle the connection with the clients.
+     */
     private ServerSocket serverSocket;
+
+    /**
+     * The logger used by the server.
+     */
     private final Logger logger = Logger.getLogger(getClass().getName());
+
+    /**
+     * The number of how many players have made their preliminary choices.
+     */
     private int preliminaryChoices = 0;
 
-    //la chiave è il socket del player, il valore è il suo handler
+    //Key is the player's socket, value is the player's handler
+    /**
+     * The map used to associate the id of the client with the socket or the RMI client.
+     */
     private final Map<Integer, ClientListenerInterface> idClientMap; //id - socket associated
 
-    //la chiave è l'id del gioco, il valore è il gioco stesso
+    //Key is the gameID, value is the game
+    /**
+     * The map used to associate the id of the game with the game controller.
+     */
     private static Map<Integer, GameController> gameControllerMap; // gameId - controller
+
+    /**
+     * The map used to associate the lobby with the players.
+     */
     private final Map<Lobby, int[]> lobbyPlayerMap; //lobby - playerIds
+
+    /**
+     * The map used to associate the player id with the player.
+     */
     private final Map<Integer, Player> idPlayerMap; //playerId - player
 
+    /**
+     * The number which will be user for generating the RMI port.
+     */
     private int numRMI = 70000;
 
-    // prende in ingresso indirizzo di rete e porta, oppure usa la porta di default
-    // e genero il server
+    //Takes the network address and port as input, or uses the default port and generates the server
+
+    /**
+     * Constructor of the server.
+     *
+     * @param ip The IP address of the server.
+     * @param port The port of the server.
+     * @throws IOException If the server cannot be created.
+     */
     public Server(InetAddress ip, int port) throws IOException {
         this.lobbyPlayerMap = new HashMap<>();
         this.gameControllerMap = new HashMap<>();
@@ -54,14 +111,19 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.idPlayerMap = new HashMap<>();
     }
 
-    //gameControllerMap getter
+    /**
+     * Returns the map of the game controllers.
+     *
+     * @return The map of the game controllers.
+     */
     public static Map<Integer, GameController> getGameControllerMap() {
         return gameControllerMap;
     }
 
     /**
-     * Default constructor
-     * @throws IOException if the server cannot be created
+     * Default constructor of the server.
+     *
+     * @throws IOException If the server cannot be created.
      */
     public Server() throws IOException {
         this.lobbyPlayerMap = new HashMap<>();
@@ -73,9 +135,8 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     }
 
     /**
-     * Stops the server
+     * Stops the server.
      */
-
     public void stop(){
         running = false;
         try {
@@ -87,12 +148,12 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
 
     /**
-     * Checks if the id of the socket is valid
-     * @param message the message received
-     * @param socketHandler the socketHandler that received the message
-     * @return true if the id is valid, false otherwise
+     * Checks if the id of the socket is valid.
+     *
+     * @param message The message received.
+     * @param socketHandler The socketHandler that received the message.
+     * @return True if the id is valid, false otherwise.
      */
-
     public boolean checkIdSocket(Message message, ClientHandler socketHandler) {
         if (message.getMessageType() != REQUEST_LOGIN && idClientMap.get(message.getSenderID()) != socketHandler) {
             logger.log(Level.SEVERE, "Received message with invalid id");
@@ -101,17 +162,22 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         return true;
     }
 
-    //TODO: JAVADOC...
+    /**
+     * Creates a new skeleton for RMI communication.
+     *
+     * @param skelly The client listener interface.
+     * @return The id of the client.
+     */
     public synchronized int createSkeleton(ClientListenerInterface skelly){
         idClientMap.put(numRMI, skelly);
         return numRMI++;
     }
 
     /**
-     * Handles the message received from the client with a switch case
-     * @param message the message received
+     * Handles the message received from the client with a switch case.
+     *
+     * @param message The message received.
      */
-
     public void messageHandler(Message message) throws IOException, ParseException {
         logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderID());
         switch(message.getMessageType()){
@@ -120,7 +186,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 Object[] test = message.getObj();
                 System.out.println((String) test[0]);
 
-                //prendo l'handler corretto dal senderID del messaggio
+                //Get the correct handler from the senderID of the message
                 idClientMap.get(message.getSenderID()).sendMessageToClient(
                         new Message(
                                 TEST_MESSAGE,
@@ -160,8 +226,8 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 break;
 
             //Client requires to make a new lobby with nickname, lobbyName and lobbySize and to join it
-            //N.B. questo tipo di request viene generato sempre dopo un REQUEST_LOGIN => REPLY_NEW_LOBBY
-            //quindi si dà gia per scontato che il nick inviato sia valido (avrebbe generato prima REPLY_BAD_REQUEST)
+            //This type of request is always generated after a REQUEST_LOGIN => REPLY_NEW_LOBBY
+            //so it is already assumed that the nickname sent is valid (it would have generated REPLY_BAD_REQUEST first)
             case REQUEST_NEW_LOBBY:
                 requestNewLobby(message);
                 break;
@@ -180,19 +246,19 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 playerMove(message);
                 break;
 
-            //in base alle scelte fatte dal giocatore, aggiorno il game
+            //based on the choices made by the player, I update the game
             case NOTIFY_CHOICES_MADE:
                 String startingUUID = (String) message.getObj()[0];
                 String secretUUID = (String) message.getObj()[2];
                 boolean side = (boolean) message.getObj()[1];
 
-                //imposto il lato della carta prima di piazzarla
+                //set the side of the card before placing it
                 ((StartingCard) idPlayerMap.get(message.getSenderID()).getCardToChoose()[0]).setFlipped(side);
 
-                //imposto la secret goal card per il player
+                //set the secret goal card for the player
                 idPlayerMap.get(message.getSenderID()).setSecretGoalCard(secretUUID);
 
-                //piazzo la carta iniziale nella playerBoard
+                //set the starting card for the player
                 try {
                     gameControllerMap.get(message.getGameID()).placeCard(
                             40,
@@ -202,8 +268,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                     );
                 }catch (IllegalAccessException ignored){};
 
-                //notifico tutti i giocatori delle caselle disponibili
-                //mando a tutti gli spazi disponibili per piazzare altre carte
+                //notify all the players of the same game of the available spaces
                 idClientMap.get(message.getSenderID()).sendMessageToClient(
                         new Message(
                                 REPLY_CHOICES_MADE,
@@ -259,21 +324,25 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         }
     }
 
-    //notify all the player in the same lobby that a client disconnected
-    //and terminates the match for all of them
+    /**
+     * Notifies all the players in the same lobby that a client has disconnected and terminates the match for all of them.
+     *
+     * @param clientPort The port of the client that has disconnected.
+     * @throws IOException If an I/O error occurs.
+     * @throws ParseException If a parse error occurs.
+     */
     void notifyDisconnection(int clientPort) throws IOException, ParseException {
         System.out.println("Client on port " + clientPort + " disconnected");
         int gameID = -1;
 
         for(Lobby l: lobbyPlayerMap.keySet()){
             for(int socket: lobbyPlayerMap.get(l)){
-                //ho trovato la lobby del player che ha mandato la request
+                //Lobby found
                 if(socket == clientPort){
-                    //imposto il gameID (porta del primo giocatore che è entrato nella lobby)
+                    //Set the gameID (port of the first player that entered the lobby)
                     gameID = lobbyPlayerMap.get(l)[0];
                     for(int id: lobbyPlayerMap.get(l)){
-                        //questo if serve per evitare di iterare su socket per
-                        //giocatori che ancora non sono entrati nella lobby
+                        //This id is used to avoid iterating on sockets of players that have not yet entered the lobby
                         if(idClientMap.get(id) == null) continue;
                         idClientMap.get(id).sendMessageToClient(
                                 new Message(
@@ -292,14 +361,12 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                         //idClientMap.get(id).disconnect();
 
                         idClientMap.remove(id);
-                        //rimuovo anche il player associato
+                        //remove the player associated also
                         idPlayerMap.remove(id);
                     }
-
-                    //rimuovo il game controller con il game
+                    //remove the game controller also
                     gameControllerMap.remove(gameID);
-
-                    //rimuovo la lobby
+                    //remove the lobby
                     lobbyPlayerMap.remove(l);
                     return;
                 }
@@ -311,7 +378,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     /**
      * Handles the message which requests the viewable cards, sending the required information to the client.
      *
-     * @param message the message received.
+     * @param message The message received.
      */
     private void requestViewableCards(Message message) throws IOException, ParseException {
         String[] rUUID = new String[3];
@@ -336,9 +403,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
     /**
      * Method to send a message to all the players of the same notifying with the winner.
+     *
      * @param gameID The ID of the game.
      */
-
     public void sendWinnerMessage(int gameID) throws IOException, ParseException {
         Player[] winners = gameControllerMap.get(gameID).getCurrentGame().getWinner();
         ArrayList <String> winnersNickname = new ArrayList<>();
@@ -346,7 +413,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             if(winners[i] != null)
                 winnersNickname.add(winners[i].getNickname());
         }
-
         //Send a message to all the players of the same game with the winner
         for(int id: gameControllerMap.get(gameID)
                 .getCurrentGame()
@@ -369,7 +435,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         }
     }
 
-    //TODO: JAVADOC
+    /**
+     * Method to start the server.
+     */
     public void run(){
         try{
             Registry registry = LocateRegistry.createRegistry(1099);
@@ -390,16 +458,13 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         logger.log(Level.INFO, "Server started on port " + serverSocket.getLocalPort() + " and is waiting for connections\n");
         try{
             while(running && !Thread.currentThread().isInterrupted()){
-                //uso un clientHandler per evitare azioni bloccanti dal client
+                //Use a clientHandler to avoid blocking actions from the client
                 Socket clientSocket = serverSocket.accept();
-
-                //porta del client
+                //client port
                 System.out.println(clientSocket.getPort());
-
                 logger.log(Level.INFO,"Client connected");
                 ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
-
-                //associo alla porta del cliente il suo handler
+                //match the client port with the client handler
                 idClientMap.put(clientSocket.getPort(), clientHandler);
                 Thread t = new Thread(clientHandler,"server");
                 t.start();
@@ -411,16 +476,16 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         }
     }
 
+    //Players in a lobby do not have a gameID until the game starts
     /**
-     * Method to handle the login of the client
-     * @param message the message received
+     * Method to handle the login of the client.
+     *
+     * @param message The message received.
      */
-    //NOTA BENE: i giocatori di una lobby non hanno un proprio gameID fino a quando
-    //la partita non ha inizio!!!
     public synchronized Message serverLogin(Message message) throws IOException, ParseException {
         String requestNick = (String) message.getObj()[0];
 
-        //controllo se il nome è già presente
+        //check if the nickname is already present
         boolean duplicates = gameControllerMap.values().stream()
                 .filter(Objects::nonNull)
                 .map(GameController::getCurrentGame)
@@ -430,11 +495,8 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 .map(Player::getNickname)
                 .anyMatch(nick -> Objects.equals(nick, requestNick));
 
-
-
         if (duplicates || requestNick.isEmpty() ) {
-            //se è presente o nullo gli dico di cambiare nick
-
+            //if it's already present or null I ask to change the nickname
             idClientMap.get(message.getSenderID()).sendMessageToClient(
                     new Message(
                             REPLY_BAD_REQUEST,
@@ -445,14 +507,12 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             );
             return null;
         }else{
-
-            //se non è presente lo registro nella prima lobby valida
+            //if the nickname is valid I register the player in the first valid lobby
             boolean found = false;
 
             for(Lobby l: lobbyPlayerMap.keySet()) {
                 if(!l.isGameStarted() && !l.isLobbyFull()) {
-
-                    //comunico il nome della lobby e il gameID
+                    //send the lobby name and the gameID
                     idClientMap.get(message.getSenderID()).sendMessageToClient(
                             new Message(
                                     REPLY_LOBBY_INFO,
@@ -468,24 +528,21 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                     })
                     );
                     found = true;
-
-
-                    //aggiungo il playerID alla lobby
+                    //add the player to the lobby
                     lobbyPlayerMap.get(l)[l.getPlayersConnected()] = message.getSenderID();
                     l.incrementPlayersConnected();
 
-                    //aggiungo il nuovo giocatore alla partita
+                    //add the player to the game
                     Player p = new Player(requestNick, message.getSenderID());
                     gameControllerMap.get(lobbyPlayerMap.get(l)[0]).addPlayer(p);
                     idPlayerMap.put(message.getSenderID(), p);
                     p.setGameID(lobbyPlayerMap.get(l)[0]);
 
-
-                    //se raggiungo il numero stabilito di giocatori, avvio la partita
+                    //if the lobby is full, I start the game
                     if(l.isLobbyFull()){
                         l.setGameStarted(true);
 
-                        //inizializza le mani di tutti i giocatori e imposta le GoalCards comuni
+                        //initialize the hands of all the players and set the common GoalCards
                         gameControllerMap.get(p.getGameID()).initializeGame();
                         gameControllerMap.get(p.getGameID()).getCurrentGame().setStartingPlayer();
 
@@ -495,40 +552,36 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             playersScores.put(idPlayerMap.get(pId).getNickname(), idPlayerMap.get(pId).getScore());
                         }
 
-
-                        //per ogni giocatore della lobby
+                        //for each player in the lobby
                         for (int pID : lobbyPlayerMap.get(l)) {
-                            //mando un messaggio per aggiornare l'interfaccia
-
+                            //update the interface
                             idClientMap.get(pID).sendMessageToClient(
                                     new Message(
                                             REPLY_BEGIN_GAME,
                                             serverSocket.getLocalPort(),
-                                            //mando a tutti il gameID come primo parametro per la prima volta
+                                            //send the gameID as the first parameter for the first time
                                             lobbyPlayerMap.get(l)[0],
 
                                             new Object[]{
-
-                                                    //mando a tutti l'UUID delle carte delle loro mani
+                                                    //send the UUID of the cards in the player's hand
                                                     Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                                     .returnHand(idPlayerMap.get(pID)))
                                                             .map(PlayableCard::getUUID)
                                                             .collect(Collectors.toList()),
 
-                                                    //mando a tutti l'UUID delle common goal cards
+                                                    //send the UUID of the common goal cards
                                                     Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                                     .getCurrentGame()
                                                                     .getCommonGoalCards())
                                                             .map(GoalCard::getUUID)
                                                             .collect(Collectors.toList()),
 
-                                                    //mando a tutti la starting card e le secret goal cards da scegliere
+                                                    //send the UUID of the starting card and the secret goal cards to choose
                                                     Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
                                                             .cardToChoose(idPlayerMap.get(pID)))
                                                             .toList(),
 
-
-                                                    //inizializzo per tutti il booleano che gestisce il loro turno
+                                                    //initialize the boolean that manages the turn of the player
                                                     gameControllerMap.get(lobbyPlayerMap.get(l)[0]).getCurrentGame()
                                                             .getStartingPlayer().getNickname().equals(idPlayerMap.get(pID).getNickname()),
 
@@ -547,8 +600,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                                     idPlayerMap.get(pID)
                                                             .getPlayerBoard()
                                                             .getResources()
-
-
                                             }
                                     )
                             );
@@ -556,8 +607,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                     }
                 }
             }
-
-            //se non ho lobby gli chiedo di generarla
+            //if there's no lobby I ask to generate one
             if(!found) {
                     idClientMap.get(message.getSenderID()).sendMessageToClient(
                             new Message(
@@ -576,19 +626,18 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     }
 
     /**
-     * Method to handle the creation of a new lobby
-     * @param message the message received
+     * Method to handle the creation of a new lobby.
+     *
+     * @param message The message received.
      */
-
     public synchronized Message requestNewLobby(Message message) throws IOException, ParseException {
         String nickName = (String) message.getObj()[0];
         String lobbyName = (String) message.getObj()[1];
         int lobbySize = (Integer) message.getObj()[2];
         System.out.println("Valori ricevuti: "+nickName+" "+lobbyName+" "+lobbySize);
 
-        //se il nome non è valido gli mando un bad request
+        //If nickname is invalid I send a bad request
         if(lobbyName.isEmpty()){
-
             idClientMap.get(message.getSenderID()).sendMessageToClient(
                     new Message(
                             REPLY_BAD_REQUEST,
@@ -599,25 +648,20 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                     )
             );
         }else{
-
-            //genero il nuovo player per il client
+            //generate the new player for the client
             Player p = new Player(nickName, message.getSenderID());
             idPlayerMap.put(message.getSenderID(), p);
 
-            //Genero il game controller, lo aggiungo alla map e gli metto il player
             //If the player generates the lobby it becomes the gameID
             GameController gc = new GameController(message.getSenderID());
             gc.setNumberOfPlayers(lobbySize);
             gc.addPlayer(p);
             gameControllerMap.put(message.getSenderID(), gc);
-
-            //inizializzo la nuova lobby e gli metto il nuovo playerID
             Lobby lobby = new Lobby(lobbySize,1, lobbyName);
             int[] players = new int[lobbySize];
             players[0] = message.getSenderID();
             lobbyPlayerMap.put(lobby, players);
         }
-
             idClientMap.get(message.getSenderID()).sendMessageToClient(
                     new Message(
                             REPLY_LOBBY_INFO,
@@ -634,9 +678,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
     /**
      * Method to handle the request of a card.
+     *
      * @param message The message received.
      */
-
     public Message requestCard(Message message) throws IOException, ParseException {
         //First I need to check if it's actually the turn of the player making the request
         if(!gameControllerMap.get(message.getGameID()).getCurrentGame().getCurrentPlayer()
@@ -652,7 +696,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             );
             return null;
         }
-
         Object[] params = message.getObj();
         if((Integer) params[1] < 0 || (Integer) params[1] > 2){
             idClientMap.get(message.getSenderID()).sendMessageToClient(
@@ -665,10 +708,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 );
             return null;
         }
-
         PlayableCard replyCard = null;
         try{
-            //estraggo una carta
+            //draw a card
             replyCard = gameControllerMap
                     .get(message.getGameID())
                     .drawViewableCard((Boolean) params[0], (Integer) params[1]);
@@ -683,20 +725,16 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             );
 
         }
-
-
-        //FOR DEBUGGING
+        //DEBUGGING
         System.out.println("I DREW: "+replyCard.getUUID());
-
-        //la metto nella mano del giocatore dove adesso ho un vuoto
+        //put the card in the player's hand where there is a null
         for(int z = 0; z < 3; z++){
             if(idPlayerMap.get(message.getSenderID()).getHand()[z] == null){
                 idPlayerMap.get(message.getSenderID()).setHand(replyCard, z);
                 break;
             }
         }
-
-        //avanzo il turno al prossimo giocatore
+        //advance the turn to the next player
         int currPID = gameControllerMap
                 .get(message.getGameID()).advancePlayerTurn();
 
@@ -705,9 +743,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         //TODO: E SICCOME è FINITO IL TURNO DI QUESTO GIOCATORE MANDO A TUTTI IL SUO PUNTEGGIO AGGIORNATO
         //TODO: POI MANDO A TUTTI I GIOCATORI IL NOME DEL NUOVO GIOCATORE
 
-
-
-        //mando al client la nuova carta pescata
+        //send the new card to the client
         idClientMap.get(message.getSenderID()).sendMessageToClient(
                 new Message(
                         REPLY_HAND_UPDATE,
@@ -753,9 +789,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      *
      * @param message The message received.
      */
-
     public Message playerMove(Message message) throws IOException, ParseException {
-
         //First I need to check if it's actually the turn of the player making the request
         if(!gameControllerMap.get(message.getGameID()).getCurrentGame().getCurrentPlayer()
             .equals(idPlayerMap.get(message.getSenderID()))){
@@ -770,7 +804,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             );
             return null;
         }
-
         //Where the player wants to place the card
         int positionx = (int) message.getObj()[2];
         int positiony = (int) message.getObj()[3];
@@ -780,14 +813,13 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         PlayableCard card = idPlayerMap.get(message.getSenderID())
                 .getHand()[index];
 
-        //imposto il lato corretto
+        //set the correct side of the card
         card.setFlipped((boolean)message.getObj()[1]);
 
         try {
             gameControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
         }catch(IllegalArgumentException | IllegalAccessException e){
-            //se ho fatto una mossa non valida mando un messaggio di bad request
-
+            //if the move is invalid I send a bad request message
             idClientMap.get(message.getSenderID()).sendMessageToClient(
                     new Message(
                             REPLY_BAD_REQUEST,
@@ -796,17 +828,10 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             new Object[]{e.getMessage()}
                     )
             );
-
             return null;
         }
-
-        //una volta piazzata la carta quello spazio rimane vuoto nella mano
+        //once the card is placed, that space remains empty in the hand
         idPlayerMap.get(message.getSenderID()).setHand(null, index);
-
-
-
-
-
         idClientMap.get(message.getSenderID()).sendMessageToClient(
                 //TODO: A message with the new score should be sent to the player
                 new Message(
@@ -814,18 +839,14 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                         this.serverSocket.getLocalPort(),
                         message.getGameID(),
                         new Object[]{
-                                //restituisco i nuovi posti disponibili
+                                //send the new available spaces
                                 gameControllerMap.get(message.getGameID())
                                         .showAvailableOnBoard(idPlayerMap.get(message.getSenderID())),
-
-                                //restituisco la risorsa permanente della carta
+                                //send the permanent resource of the card
                                 card.getPermResource()[0],
-
                                 //return the new score of the player
                                 idPlayerMap.get(message.getSenderID()).getNickname(),
-
                                 idPlayerMap.get(message.getSenderID()).getScore(),
-
                                 //return the resources of the player
                                 gameControllerMap.get(message.getGameID())
                                         .getCurrentGame()
@@ -835,7 +856,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                         }
                 )
         );
-
         for(int id: gameControllerMap.get(message.getGameID())
                 .getCurrentGame()
                 .getPlayers()
@@ -857,22 +877,15 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                     )
             );
         }
-
-
-        //Avvio la fase finale del gioco
+        //start the end game phase
         if(gameControllerMap.get(message.getGameID()).checkEndGamePhase() && !gameControllerMap.get(message.getGameID()).getCurrentGame().isInLastPhase()){
             gameControllerMap.get(message.getGameID()).getCurrentGame().setLastPhase();
-
-            //dobbiamo finire il giro e poi fare un ultimo giro
+            //end the turn loop and start the last turn loop
             //Send a message to all the players of the same game with the winner
-
             ArrayList<Player> localPlayers = gameControllerMap.get(message.getGameID())
                                                               .getCurrentGame()
                                                               .getPlayers();
-
             int currIndex = localPlayers.indexOf(idPlayerMap.get(message.getSenderID()));
-
-
             for(int id: localPlayers.stream().map(Player::getClientPort).toArray(Integer[]::new)){
                 idClientMap.get(id).sendMessageToClient(
                         new Message(
@@ -889,7 +902,14 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         return null;
     }
 
-
+    /**
+     * Method to handle the request of the information of a card.
+     *
+     * @param message The message received.
+     * @return The message which contains the information of the card.
+     * @throws IOException If an I/O error occurs.
+     * @throws ParseException If a parse error occurs.
+     */
     public Message requestInfoCard(Message message) throws IOException, ParseException {
         //Where the player wants to place the card
         int posX = (int) message.getObj()[0];
@@ -920,8 +940,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 coveredCorners[i] = false;
             }
         }
-
-
         idClientMap.get(message.getSenderID()).sendMessageToClient(
                 //TODO: A message with the new score should be sent to the player
                 new Message(
@@ -940,10 +958,10 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     /**
      * This method is used when a player is on his last turn and has only to update the turn of the players,
      * if the next player is the starting player, the game is over.
-     * @param message the message received by the client
+     *
+     * @param message The message received by the client.
      */
     public void notifyTurnPass(Message message) throws IOException, ParseException {
-
         int playerNumber = gameControllerMap.get(message.getGameID()).advancePlayerTurn(); //advance the player turn
         if(playerNumber == gameControllerMap.get(message.getGameID()).getCurrentGame().getStartingPlayerId()){
             //if the next player is the starting player the game has to end
@@ -968,7 +986,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
         }else{
             //if the next player is not the starting player, the game continues for the remaining turns
-
             for(int id: gameControllerMap.get(message.getGameID())
                     .getCurrentGame()
                     .getPlayers()
@@ -999,11 +1016,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         }
 
     }
-
-
-    /**
-     * This class is used to handle the connection with the client using RMI
-     */
 
     /*
     public class RMIServerImpl extends UnicastRemoteObject implements RMIServerInterface{

@@ -6,8 +6,20 @@ import java.util.ArrayList;
  * GoldenCard class is a subclass of PlayableCard class, it represents the Golden cards in the game.
  */
 public class GoldenCard extends PlayableCard{
+
+    /**
+     * The points given by the card.
+     */
     private final int points;
+
+    /**
+     * The resources required to place the card.
+     */
     private final ArrayList<Resource> requiredResource;
+
+    /**
+     * The rule the card gives points for.
+     */
     private final Object rule;
 
     /**

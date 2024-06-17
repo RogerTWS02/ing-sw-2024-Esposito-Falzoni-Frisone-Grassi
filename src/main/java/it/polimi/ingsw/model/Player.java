@@ -1,19 +1,54 @@
 package it.polimi.ingsw.model;
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  * This class represents a player in the game.
  */
 public class Player implements Serializable {
+
+    /**
+     * The player's nickname.
+     */
     private String nickname;
+
+    /**
+     * The player's hand, containing three cards.
+     */
     private PlayableCard[] hand = new PlayableCard[3];
+
+    /**
+     * The player's client port.
+     */
     public int clientPort;
+
+    /**
+     * The player's score.
+     */
     private int score = 0;
+
+    /**
+     * The player's board.
+     */
     private PlayerBoard playerBoard;
+
+    /**
+     * The goal cards to choose from.
+     */
     private Object[] cardToChoose;
+
+    /**
+     * The player's secret goal card.
+     */
     private GoalCard secretGoalCard;
+
+    /**
+     * The player's pawn.
+     */
     private Pawn pawn;
+
+    /**
+     * The game identifier in which the player is playing.
+     */
     private int gameID;
 
     /**
@@ -32,18 +67,8 @@ public class Player implements Serializable {
      *
      * @return The player's board.
      */
-    //Player-board getter
     public PlayerBoard getPlayerBoard() {
         return playerBoard;
-    }
-
-    /**
-     * Returns the player's pawn.
-     *
-     * @return The player's pawn.
-     */
-    public Pawn getPawn() {
-        return pawn;
     }
 
     /**

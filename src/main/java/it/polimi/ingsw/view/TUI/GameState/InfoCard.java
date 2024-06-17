@@ -1,8 +1,5 @@
 package it.polimi.ingsw.view.TUI.GameState;
 
-import it.polimi.ingsw.model.Corner;
-import it.polimi.ingsw.model.GoldenCard;
-import it.polimi.ingsw.model.PlayableCard;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,20 +9,40 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
+/**
+ * Class that handles the printing of the card information.
+ */
 public class InfoCard  implements Views{
 
+    /**
+     * JSON arrays that contain the resource cards.
+     */
     private final JSONArray resourceJSONArray;
+
+    /**
+     * JSON arrays that contain the golden cards.
+     */
     private final JSONArray goldJSONArray;
+
+    /**
+     * JSON arrays that contain the pattern goal cards.
+     */
     private final JSONArray patternGoalJSONArray;
+
+    /**
+     * JSON arrays that contain the resource goal cards.
+     */
     private final JSONArray resourceGoalJSONArray;
+
+    /**
+     * JSON arrays that contain the starting cards.
+     */
     private final JSONArray startingJSONArray;
 
-
-
-
-    // colors used in the TUI
+    /**
+     * Colors of the TUI.
+     */
     public static final String ANSI_RED_BACKGROUND = "\u001B[48;5;88m";
     public static final String ANSI_DARK_YELLOW = "\u001B[38;5;214m";
     public static final String ANSI_GREEN_BACKGROUND = "\u001B[48;5;22m";
@@ -40,13 +57,13 @@ public class InfoCard  implements Views{
     public static final String ANSI_BLUE = "\u001B[38;5;26m";
     public static final String ANSI_PURPLE = "\u001B[38;5;91m";
 
-
-
-
+    /**
+     * Shows the information of the card.
+     *
+     * @throws IOException If an I/O error occurs.
+     * @throws ParseException If there is an error in the parsing.
+     */
     public InfoCard() throws IOException, ParseException {
-
-
-
         JSONParser parser = new JSONParser();
         // read the JSON file with the cards
         InputStream inputGold = getClass().getResourceAsStream("/goldenDeck.json");
@@ -70,9 +87,13 @@ public class InfoCard  implements Views{
         startingJSONArray = (JSONArray) parser.parse(bufferStarting);
     }
 
-
-    // method to print the card and its info
-
+    /**
+     * Prints the information of the card.
+     *
+     * @param uuid The UUID of the card.
+     * @param side The visible side of the card.
+     * @param corners The corners of the card.
+     */
     public void showInfoCard(String uuid, Boolean side, Boolean[] corners) {
         String[] sideColors= new String[2];
         if(side == null){
@@ -175,27 +196,16 @@ public class InfoCard  implements Views{
                     stringCard[i] = "░░";
                 }
 
-
-
-
-
-
                 switch (stringCard[2]) {
-
                     case "WOLF" ->stringCard[9]= stringCard[9].concat(ANSI_BLUE_BACKGROUND);
                     case "LEAF" ->stringCard[9]=stringCard[9].concat(ANSI_GREEN_BACKGROUND);
                     case "MUSHROOM" ->stringCard[9]= stringCard[9].concat(ANSI_RED_BACKGROUND);
                     case "BUTTERFLY" ->stringCard[9]= stringCard[9].concat(ANSI_PURPLE_BACKGROUND);
-
                 }
-
                 stringCard[2]=Views.stringToEmoji((String) JSONCard.get("permRes"));
-
             }
-
             int spaces= (33-stringCard[2].length())/2;
             stringCard[2]= " ".repeat(spaces).concat(stringCard[2]).concat(" ".repeat(spaces+1));
-
             // actively creating the array to print
             printedCard
                 .append(stringCard[9] + "╔══════════════════════════════════╗╔══════════════════════════════════╗"+ ANSI_RESET+"\n")
@@ -353,7 +363,12 @@ public class InfoCard  implements Views{
         }
     }
 
-
+    /**
+     * Converts the UUID of a card to a string, in order to print the card.
+     *
+     * @param uuid The UUID of the card.
+     * @param card The card to print.
+     */
     private void uuidToString(String uuid,String[] card) {
         switch (uuid) {
             case "PGC_1" -> {
@@ -397,21 +412,6 @@ public class InfoCard  implements Views{
                 card[3] = "  ░░  " + ANSI_PURPLE + "▇▇ " + ANSI_RESET + " ░░  ";
                 card[4] = "  ░░  " + ANSI_PURPLE + "▇▇ " + ANSI_RESET + " ░░  ";
             }
-
-
         }
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
 }

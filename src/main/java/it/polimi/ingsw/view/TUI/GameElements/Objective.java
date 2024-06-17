@@ -14,21 +14,36 @@ import java.util.ArrayList;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 
-
+/**
+ * Class that draws the objective cards.
+ */
 public class Objective implements  Views {
+
+    /**
+     * JSON array that contains the goal cards.
+     */
     private final JSONArray resourceGoalJSONArray;
+
+    /**
+     * JSON array that contains the pattern cards.
+     */
     private final JSONArray patternGoalJSONArray;
 
-    // colors used in the TUI
+    /**
+     * colors used in the TUI.
+     */
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[38;5;88m";
     public static final String ANSI_GREEN = "\u001B[38;5;22m";
     public static final String ANSI_BLUE = "\u001B[38;5;26m";
     public static final String ANSI_PURPLE = "\u001B[38;5;91m";
 
-
-
-
+    /**
+     * Constructor of the class.
+     *
+     * @throws IOException If an I/O error occurs.
+     * @throws ParseException If there is an error in the parsing.
+     */
     public Objective() throws IOException, ParseException {
         JSONParser parser = new JSONParser();
         // read the JSON file with the cards
@@ -39,9 +54,16 @@ public class Objective implements  Views {
         InputStream inputResourceGoal = getClass().getResourceAsStream("/resourcesGoalDeck.json");
         BufferedReader bufferResourceGoal = new BufferedReader(new InputStreamReader(inputResourceGoal));
         resourceGoalJSONArray = (JSONArray) parser.parse(bufferResourceGoal);
-
     }
 
+    /**
+     * Draw the goal cards.
+     *
+     * @param uuid Array of the UUID of the goal cards to be drawn.
+     * @return Array list of strings that represent the cards.
+     * @throws IOException If an I/O error occurs.
+     * @throws ParseException If there is an error in the parsing.
+     */
     public ArrayList<String> showObjective(String[] uuid) throws IOException, ParseException {
         /*
         Goal card structure
@@ -126,6 +148,13 @@ public class Objective implements  Views {
 
 
     // hard decode of the uuid of the pattern goal card
+
+    /**
+     * Convert the pattern of a pattern goal card to emoji, in order to be drawn.
+     *
+     * @param uuid The UUID of the card.
+     * @param card The array of strings that represent the pattern of the card.
+     */
     private void uuidToString(String uuid,String[] card) {
         switch (uuid) {
             case "PGC_1" -> {

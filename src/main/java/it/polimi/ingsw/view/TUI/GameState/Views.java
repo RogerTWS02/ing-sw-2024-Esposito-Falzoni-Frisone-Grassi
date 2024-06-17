@@ -1,8 +1,9 @@
 package it.polimi.ingsw.view.TUI.GameState;
 
-
+/**
+ * Interface that contains the methods to be implemented by the classes that represent the TUI views of the game.
+ */
 public interface Views {
-
 
     /**
      * Converts the resource to an emoji.
@@ -27,7 +28,8 @@ public interface Views {
 
 
     /**
-     * Converts the card to a string.
+     * Converts resources to emoji.
+     *
      * @param point The points the card gives everytime the rule is matched.
      * @param rule The rule to get the points.
      * @return The string representing the points and the rule of the card.
@@ -45,7 +47,6 @@ public interface Views {
              };
             }
         }
-
 
         /**
         * Clears the screen of the terminal.

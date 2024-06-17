@@ -4,7 +4,6 @@ import it.polimi.ingsw.model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.FileNotFoundException;
 import java.util.*;
 
 
@@ -12,15 +11,18 @@ import java.util.*;
  * GameController class controls the game, by managing decks, players, cards.
 */
 public class GameController {
+
+    /**
+     * The current game object, which is being managed by the GameController.
+     */
     private final Game currentGame;
 
     /**
      * Constructor of the GameController class. It creates a new Game object.
      *
      * @param gameID The ID of the game to be created, which identifies it uniquely.
-     * @throws FileNotFoundException in case error occurs in retrieving an old saving file.
      */
-    public GameController(int gameID) throws FileNotFoundException {
+    public GameController(int gameID) {
         this.currentGame = new Game(gameID);
     }
 
@@ -28,7 +30,7 @@ public class GameController {
      * Draws a random PlayableCard from the deck passed by parameter.
      *
      * @param deck The deck from which the card is drawn.
-     * @return the PlayableCard object drawn from the deck and instantiated.
+     * @return The PlayableCard object drawn from the deck and instantiated.
      */
     public PlayableCard drawPlayableFromDeck(JSONArray deck) {
         if(deck.isEmpty()){
@@ -51,7 +53,7 @@ public class GameController {
     /**
      * Draws a random GoalCard from the deck, which can be either a ResourcesGoalCard or a PatternGoalCard.
      *
-     * @return the GoalCard object drawn from the deck and instantiated.
+     * @return The GoalCard object drawn from the deck and instantiated.
      */
     public GoalCard drawGoalFromDeck(){
         Random random = new Random();
@@ -85,7 +87,7 @@ public class GameController {
      * Crafts a ResourcesGoalCard object from a JSON object, passed by parameter.
      *
      * @param JSONcard The JSON object from which the GoalCard is instantiated.
-     * @return the ResourcesGoalCard object crafted from the JSON object.
+     * @return The ResourcesGoalCard object crafted from the JSON object.
      */
     public GoalCard craftResourcesGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
@@ -113,7 +115,7 @@ public class GameController {
      * Crafts a PatternGoalCard object from a JSON object, passed by parameter.
      *
      * @param JSONcard The JSON object from which the GoalCard is instantiated.
-     * @return the PatternGoalCard object crafted from the JSON object.
+     * @return The PatternGoalCard object crafted from the JSON object.
      */
     public GoalCard craftPatternGoalCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
@@ -135,7 +137,7 @@ public class GameController {
      * Crafts a ResourceCard object from a JSON object, passed by parameter.
      *
      * @param JSONcard The JSON object from which the PlayableCard is instantiated.
-     * @return the ResourceCard object crafted from the JSON object.
+     * @return The ResourceCard object crafted from the JSON object.
      */
     public PlayableCard craftResourceCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
@@ -151,7 +153,7 @@ public class GameController {
      * Crafts a GoldenCard object from a JSON object, passed by parameter.
      *
      * @param JSONcard The JSON object from which the PlayableCard is instantiated.
-     * @return the GoldenCard object crafted from the JSON object.
+     * @return The GoldenCard object crafted from the JSON object.
      */
     public PlayableCard craftGoldenCard(JSONObject JSONcard){
         Object rule;
@@ -179,7 +181,7 @@ public class GameController {
      * Crafts a StartingCard object from a JSON object, passed by parameter.
      *
      * @param JSONcard The JSON object from which the PlayableCard is instantiated.
-     * @return the StartingCard object crafted from the JSON object.
+     * @return The StartingCard object crafted from the JSON object.
      */
     public PlayableCard craftStartingCard(JSONObject JSONcard){
         String UUID = (String) JSONcard.get("UUID");
@@ -200,7 +202,7 @@ public class GameController {
      * Converts a string to a Resource object.
      *
      * @param resource The string to be converted.
-     * @return the Resource object converted from the string.
+     * @return The Resource object converted from the string.
      */
     public Resource stringToResource(String resource){
         if(resource == null){
@@ -223,7 +225,7 @@ public class GameController {
      *
      * @param JSONCorners The JSON array from which the Corner array is instantiated.
      * @param card The PlayableCard object to which the Corner array belongs.
-     * @return the Corner array crafted from the JSON array.
+     * @return The Corner array crafted from the JSON array.
      */
     public Corner[] craftCornerArray(JSONArray JSONCorners, PlayableCard card){
         Corner[] corners = new Corner[4];
@@ -243,7 +245,7 @@ public class GameController {
      * Draws a card picked from the viewable cards, which can be either a golden card, a resource card or a card on the top of the decks.
      * Also, replaces the drawn card with a new one.
      *
-     * @return the picked PlayableCard object drawn from the viewable cards.
+     * @return The picked PlayableCard object drawn from the viewable cards.
      */
     public PlayableCard drawViewableCard(boolean whichType, int whichCard){
         //WhichType: true = golden, false = resource
@@ -262,7 +264,7 @@ public class GameController {
             card = currentGame.getViewableResourceCards()[whichCard];
         }
 
-        //sostituisco la carta che ho appena pescato dopo aver restituito la carta
+        //set the new card
         setNewViewableCard(whichType, whichCard);
         return card;
     }
@@ -316,8 +318,8 @@ public class GameController {
      * Player's hand getter.
      *
      * @param player The player whose hand is to be returned.
-     * @return the PlayableCard array representing the player's hand.
-     * @throws IllegalArgumentException in case the player is null or not in the game.
+     * @return The PlayableCard array representing the player's hand.
+     * @throws IllegalArgumentException In case the player is null or not in the game.
      */
     public PlayableCard[] returnHand(Player player){
         if(player == null || !currentGame.getPlayers().contains(player)) {
@@ -333,7 +335,7 @@ public class GameController {
      * @param y The Y coordinate of the position where the card is to be placed.
      * @param card The card to be placed on the board.
      * @param player The player who is placing the card.
-     * @throws IllegalArgumentException in case the position is invalid.
+     * @throws IllegalArgumentException In case the position is invalid.
      */
     public void placeCard(int x, int y, PlayableCard card, Player player) throws IllegalArgumentException, IllegalAccessException {
         if (card instanceof StartingCard) {
@@ -386,7 +388,7 @@ public class GameController {
      * Shows the available positions on the board where the player can place a card.
      *
      * @param player The player whose available positions are to be shown.
-     * @return the list of int arrays representing the available positions.
+     * @return The list of int arrays representing the available positions.
      */
     public List<int[]> showAvailableOnBoard(Player player){
         List<int[]> availablePosition = new ArrayList<>();
@@ -404,7 +406,7 @@ public class GameController {
      * Sets the number of players in the game.
      *
      * @param number The number of players to be set.
-     * @throws IllegalArgumentException in case the number of players is invalid.
+     * @throws IllegalArgumentException In case the number of players is invalid.
      */
     public void setNumberOfPlayers(int number) throws IllegalArgumentException {
         if(number < 5 && number > 1) {
@@ -422,7 +424,7 @@ public class GameController {
     /**
      * Draws two goal cards from the deck.
      *
-     * @return the array of GoalCard objects drawn from the deck.
+     * @return The array of GoalCard objects drawn from the deck.
      */
     public GoalCard[] drawGoalCardsToChoose(){
         GoalCard[] cards = new GoalCard[2];
@@ -432,25 +434,25 @@ public class GameController {
     }
 
     /**
-     * Performs a series of useful actions to begin the game.
+     * Performs a series of useful actions to begin the game, setting the viewable cards, the players' hands and the common goal cards.
      */
     public void initializeGame() {
-        //inizializzo viewableCards e cima dei mazzi
+        ///Initialize the viewable cards
         for(int i = 0; i < 3; i++){
             setNewViewableCard(false, i);
             setNewViewableCard(true, i);
         }
 
-        //per ogni player
+        //For each player
         for(Player p: currentGame.getPlayers()){
-            //imposto la mano iniziale
-            //una GoldenCard
+            //Set the hand
+            //Golden card
             p.setHand(drawPlayableFromDeck(currentGame.goldenDeck), 0);
-            //due ResourceCard
+            //Resource card
             p.setHand(drawPlayableFromDeck(currentGame.resourceDeck), 1);
             p.setHand(drawPlayableFromDeck(currentGame.resourceDeck), 2);
         }
-        //gli mando le carte obiettivo comuni
+        ///Set cards
         setCommonGoalCards();
     }
 
@@ -458,20 +460,20 @@ public class GameController {
      * Draws the cards for the player to choose before starting the game.
      *
      * @param p The player who has to choose the cards.
-     * @return the array of strings representing the UUIDs of the cards to be chosen.
+     * @return The array of strings representing the UUIDs of the cards to be chosen.
      */
     public String[] cardToChoose(Player p){
         StartingCard tempSC = (StartingCard) drawPlayableFromDeck(currentGame.startingDeck);
         GoalCard[] temp = drawGoalCardsToChoose();
 
-        //passo al giocatore le carte da scegliere
+        //Send the cards to choose
         p.setCardToChoose(new Object[]{
                 tempSC,
                 temp[0],
                 temp[1]
         });
 
-        //passo al server l'UUID delle carte da scegliere
+        //Send to server the cards UUID
         return new String[]{
                 tempSC.getUUID(),
                 temp[0].getUUID(),
@@ -482,7 +484,7 @@ public class GameController {
     /**
      * Returns the current game.
      *
-     * @return the Game object representing the current game.
+     * @return The Game object representing the current game.
      */
     public Game getCurrentGame() {
         return currentGame;
@@ -491,7 +493,7 @@ public class GameController {
     /**
      * Checks if it's time to begin the end game phase flow.
      *
-     * @return true if the end game phase has to be begun, false otherwise.
+     * @return True if the end game phase has to be begun, false otherwise.
      */
     public boolean checkEndGamePhase(){
         return (currentGame.viewableResourceCards[2] == null && currentGame.viewableGoldenCards[2] == null) || checkPlayersScore();
@@ -500,7 +502,7 @@ public class GameController {
     /**
      * Checks if a player has reached a score of 20 points.
      *
-     * @return true if a player has reached a score of 20 points, false otherwise.
+     * @return True if a player has reached a score of 20 points, false otherwise.
      */
     public boolean checkPlayersScore(){
         for(int i = 0; i < currentGame.getPlayers().size(); i++){
@@ -512,15 +514,16 @@ public class GameController {
 
     /**
      * This method advances the player turn to the next player.
-     * @return the clientPort of the player whose turn is next.
+     *
+     * @return The clientPort of the player whose turn is next.
      */
     public int advancePlayerTurn(){
-        //prendo l'indice del giocatore corrente
+        //Pick current player index
         int index = currentGame.getPlayers().indexOf(currentGame.getCurrentPlayer());
-        //vado al giocatore successivo
+        //Set the next player
         currentGame.setCurrentPlayer(
                 currentGame.getPlayers().get(
-                //il modulo sul numero di giocatori fa loop back
+                //Loopback case
                 (index + 1) % currentGame.getPlayers().size()
                 )
         );

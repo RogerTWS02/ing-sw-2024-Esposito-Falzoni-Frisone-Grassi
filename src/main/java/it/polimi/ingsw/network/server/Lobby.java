@@ -4,9 +4,25 @@ package it.polimi.ingsw.network.server;
  * Class that represents a game lobby in the server.
  */
 public class Lobby {
+
+    /**
+     * Boolean attribute that represents whether the game has started or not.
+     */
     private boolean gameStarted = false;
+
+    /**
+     * The name of the lobby.
+     */
     private final String lobbyName;
+
+    /**
+     * The number of players connected to the lobby.
+     */
     private int playersConnected;
+
+    /**
+     * The size of the lobby.
+     */
     private final int size;
 
     /**
@@ -74,6 +90,11 @@ public class Lobby {
         return gameStarted;
     }
 
+    /**
+     * Returns the size of the lobby.
+     *
+     * @return The size of the lobby.
+     */
     public int getSize() {
         return size;
     }

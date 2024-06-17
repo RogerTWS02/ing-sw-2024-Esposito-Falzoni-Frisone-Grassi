@@ -11,9 +11,24 @@ import java.util.logging.Logger;
  */
 public class ServerHandler implements Runnable {
 
+    /**
+     * The logger for the ServerHandler class.
+     */
     private final Logger logger = Logger.getLogger(getClass().getName());
+
+    /**
+     * The server socket which listens for incoming connections.
+     */
     private ServerSocket serverSocket;
+
+    /**
+     * The server which the handler is connected to.
+     */
     private final Server server;
+
+    /**
+     * The port on which the server is listening.
+     */
     private final int port;
 
     /**

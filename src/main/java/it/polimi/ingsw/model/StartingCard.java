@@ -4,7 +4,15 @@ package it.polimi.ingsw.model;
  * StartingCard class is a subclass of PlayableCard and represents the cards that are placed on the board at the beginning of the game for each player.
  */
 public class StartingCard extends PlayableCard{
+
+    /**
+     * The corners of the card when it is not flipped.
+     */
     private Corner[] FrontCardCorners;
+
+    /**
+     * The corners of the card when it is flipped.
+     */
     private Corner[] BackCardCorners;
 
     /**
@@ -35,7 +43,7 @@ public class StartingCard extends PlayableCard{
     /**
      * Sets the corners of the card on the front side.
      *
-     * @param FrontCardCorners
+     * @param FrontCardCorners The corners of the card when it is not flipped.
      */
     public void setFrontCardCorners(Corner[] FrontCardCorners) {
         this.FrontCardCorners = FrontCardCorners;
@@ -44,7 +52,7 @@ public class StartingCard extends PlayableCard{
     /**
      * Sets the corners of the card on the back side.
      *
-     * @param BackCardCorners
+     * @param BackCardCorners The corners of the card when it is flipped.
      */
     public void setBackCardCorners(Corner[] BackCardCorners) {
         this.BackCardCorners = BackCardCorners;

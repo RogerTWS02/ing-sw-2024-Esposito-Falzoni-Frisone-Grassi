@@ -1,9 +1,12 @@
 package it.polimi.ingsw.view.TUI.GameState;
 
+/**
+ * This class is used to print the message asking the user to insert the username */
 public class LoginUsername {
 
-
-
+    /**
+     * Shows the message asking the user to insert the username.
+     */
     public void showLogInUsername() {
         //clear the screen before printing something
         //Views.clearScreen();

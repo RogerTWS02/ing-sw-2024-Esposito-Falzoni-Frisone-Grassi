@@ -5,33 +5,37 @@ package it.polimi.ingsw.network.message;
  */
 public enum MessageType {
 
-    REPLY_BAD_REQUEST, //Per ogni richiesta del client che non va bene
-    REPLY_OK, //Per ogni notifica semplice andata a buon fine
+    //For every request that the client sends to the server
+    REPLY_BAD_REQUEST,
+    REPLY_OK,
 
-    //messaggi per richiedere/ricevere playable cards
+    //Messages for requesting/receiving playable cards
     REQUEST_INFO_CARD,
     REPLY_INFO_CARD,
-    REQUEST_CARD, //richiedo una carta tra quelle visibili o dai mazzi
-    REPLY_HAND_UPDATE, //ottengo la carta richiesta
+    //Ask for a card between the visible ones or from the decks
+    REQUEST_CARD,
+    //Get the card requested
+    REPLY_HAND_UPDATE,
     REPLY_EMPTY_DECK,
 
-    //messaggi per entrare in lobby/creare una nuova lobby
+    //Messages to enter a lobby/create a new lobby
     REQUEST_LOGIN,
     REQUEST_NEW_LOBBY,
     REPLY_LOBBY_INFO,
     REPLY_NEW_LOBBY,
 
-    //messaggi per iniziare il gioco
+    //Messages to start the game
     REPLY_BEGIN_GAME,
     NOTIFY_CHOICES_MADE,
     REPLY_END_GAME,
     REPLY_STARTING_PLAYER,
 
-    //messaggi per richiedere/ricevere il punteggio dei giocatori
+    //Messages to request/receive the score of the players
     REQUEST_PLAYERS_POINT,
     REPLY_POINTS_UPDATE,
     TEST_MESSAGE,
-    DISCONNECTION, //generic message
+
+    DISCONNECTION,
 
     //messages to make a move
     REQUEST_PLAYER_MOVE,

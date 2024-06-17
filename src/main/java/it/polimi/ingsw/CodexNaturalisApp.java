@@ -8,11 +8,13 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.net.InetAddress;
 
+/**
+ * Main class of the Codex Naturalis application.
+ */
 public class CodexNaturalisApp {
 
     public static void main(String[] args) throws IOException, ParseException {
-
-        //parametri iniziali: <gui/tui/server> <socket/rmi>
+        //initial parameters: <gui/tui/server> <socket/rmi>
         String param = args.length > 0 ? args[0].toLowerCase() : "cli";
         String network = args.length > 1 ? args[1].toLowerCase() : "socket";
         System.out.println(param+" "+network);

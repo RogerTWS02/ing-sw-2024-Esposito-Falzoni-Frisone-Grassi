@@ -1,14 +1,16 @@
 package it.polimi.ingsw.view.TUI.GameState;
 
+/**
+ * Chat class is used to print the chat on the screen.
+ */
 public class Chat implements Views{
 
-public void showChat(String[] msg){
-
-
-
-
-
-
+    /**
+     * Shows the chat on the screen.
+     *
+     * @param msg The messages to be shown on the chat.
+     */
+    public void showChat(String[] msg){
     StringBuilder sb = new StringBuilder();
     sb
             .append("┌")
@@ -41,6 +43,4 @@ public void showChat(String[] msg){
     Views.clearScreen();
     // print the Chat
     System.out.println(sb);}
-
-
-};
+}
