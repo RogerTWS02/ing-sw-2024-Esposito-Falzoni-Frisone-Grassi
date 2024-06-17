@@ -47,6 +47,7 @@ public class HandCards implements Views {
 
     public ArrayList<String> showHand(String[] uuid) throws IOException, ParseException {
         String[][] stringCard = new String[10][3];
+        //inizialize the array to remove null exceptions
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 3; j++){
                 stringCard[i][j] = " ";
@@ -71,6 +72,7 @@ public class HandCards implements Views {
          */
 
         for(int x =0; x< 3; x++){
+            // checks if it's an empty card, and cretea a blank card
             if(Objects.equals(uuid[x], "")){
                 stringCard[0][x]= "";
                 stringCard[1][x]="0";
@@ -80,14 +82,17 @@ public class HandCards implements Views {
                 stringCard[9][x]=ANSI_RESET;
                 continue;
             }
+            // get the index of the card from the UUID
             int index = Integer.parseInt(uuid[x].replaceAll("[A-Z]+_", ""));
             JSONObject JSONCard;
 
+            // check if it's a resource or a golden card
             if(uuid[x].charAt(0)=='R'){
                 // create the resource card and set the color
                 JSONCard = (JSONObject) resourceJSONArray.get(index-1);
                 stringCard[0][x]="Resource Card";
                 stringCard[9][x]=ANSI_WHITE;
+                //required resources needs to be empty
                 stringCard[8][x]=" ".repeat(21);
 
             } else {
@@ -96,27 +101,32 @@ public class HandCards implements Views {
                 stringCard[0][x]="Golden Card";
                 stringCard[9][x]=ANSI_YELLOW;
 
+                // get the required resources
                 JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
-
+                // convert the required resources to emoji
                 for (Object o : JSONRequire) {
 
                     stringCard[8][x] += (Views.stringToEmoji((String) o));
                 }
+                // formatting the resources to be centered
                 int spaces= (21-stringCard[8][x].length())/2;
                 stringCard[8][x] = " ".repeat(spaces).concat(stringCard[8][x]).concat(" ".repeat(spaces));
+                //rule to obtain the points
                 stringCard[7][x]= (String) JSONCard.get("rule");
             }
 
-            //((Number) JSONCard.get("points")).intValue();
+            //set the points permanent resources of the card
             stringCard[1][x]= String.valueOf(((Number) JSONCard.get("points")).intValue());
             stringCard[2][x]= (String) JSONCard.get("permRes");
 
+            //set the corners of the card and convert them to emoji
             for(int i = 0; i < 4; i++){
                 stringCard[i+3][x] =Views.stringToEmoji(
                         (String)(((JSONArray) JSONCard.get("corners")).get(i))
                 );
             }
 
+            //set the background color of the card
             switch (stringCard[2][x]){
 
                 case "WOLF" -> stringCard[9][x] = stringCard[9][x].concat(ANSI_BLUE_BACKGROUND);

@@ -1,6 +1,4 @@
 package it.polimi.ingsw.view.TUI.GameState;
-import it.polimi.ingsw.model.PlayableCard;
-import it.polimi.ingsw.view.TUI.GameState.Views;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -10,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Objects;
 
 
@@ -47,7 +44,7 @@ public class Draw implements Views {
 
 
      }
-     // uuid gold card, uuid resource card, last one: the covered one
+     // uuid gold card, uuid resource card, last one in each array: the covered one
      public void showDrawable (String[] gUuids, String[] rUuids){
           String[][] gStringCard = new String[10][3];
           String[][] rStringCard = new String[10][3];
@@ -70,6 +67,7 @@ public class Draw implements Views {
 
           // generating golden cards
           for(int x =0; x<3; x++){
+               // check if a position is empty
                if(Objects.equals(gUuids[2-x], "")){
                     gStringCard[0][x]= " No card here ";
                     gStringCard[1][x]="0";
@@ -80,43 +78,53 @@ public class Draw implements Views {
                     continue;
                }
 
-
+               //starting creating the cards in reverse order
                int index = Integer.parseInt(gUuids[2-x].replaceAll("[A-Z]+_", ""));
                JSONObject JSONCard;
                //create the golden card and set the color
                JSONCard = (JSONObject) goldJSONArray.get(index-1);
                gStringCard[0][x] = "Golden Card" + "[" + (x) + "]";
                if(x==0){gStringCard[0][x] = " Golden Deck  " ;}
-               gStringCard[9][x] = ANSI_YELLOW;
 
+               // check the array rapresentation of the card
+               gStringCard[9][x] = ANSI_YELLOW;
                gStringCard[1][x]=String.valueOf(((Number) JSONCard.get("points")).intValue());
                gStringCard[2][x]=Views.stringToEmoji((String) JSONCard.get("permRes"));
+
+               // creating the corners of the card with the emojis
                for(int i = 0; i < 4; i++){
                     gStringCard[i+3][x] =Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
                }
+
+               //obtaining the required resources and formatting the string
                JSONArray JSONRequire = (JSONArray) JSONCard.get("require");
                gStringCard[8][x]="";
                for (Object o : JSONRequire) {
-
                     gStringCard[8][x]= gStringCard[8][x].concat(Views.stringToEmoji((String) o));
                }
                int spaces= (23-gStringCard[8][x].length())/2;
                gStringCard[8][x] = " ".repeat(spaces).concat(gStringCard[8][x]).concat(" ".repeat(spaces+1));
+
+               // getting the rule to obtain the points and the permRes
                gStringCard[7][x]= (String) JSONCard.get("rule");
                gStringCard[2][x] = (String) JSONCard.get("permRes");
+               //using the permanent resources to update the background color
                switch (gStringCard[2][x]){
-
                     case "WOLF" -> gStringCard[9][x]=gStringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
                     case "LEAF" -> gStringCard[9][x]=gStringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
                     case "MUSHROOM" -> gStringCard[9][x]=gStringCard[9][x].concat(ANSI_RED_BACKGROUND);
                     case "BUTTERFLY" -> gStringCard[9][x]=gStringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
                }
+               // turn the permanent resource into an emoji
                gStringCard[2][x] = Views.stringToEmoji((String) JSONCard.get("permRes"));
 
           }
 
+
+
           // generating resource cards
           for(int x =0; x<3; x++){
+               // check if a position is empty
                if(Objects.equals(gUuids[2-x], "")){
                     rStringCard[0][x]= "  No card here  ";
                     rStringCard[1][x]="0";
@@ -126,7 +134,7 @@ public class Draw implements Views {
                     rStringCard[9][x]=ANSI_RESET;
                     continue;
                }
-
+               //starting creating the cards in reverse order
                int index = Integer.parseInt(rUuids[2-x].replaceAll("[A-Z]+_", ""));
                JSONObject JSONCard;
                //create the golden card and set the color
@@ -135,22 +143,26 @@ public class Draw implements Views {
                if(x==0){rStringCard[0][x] = " Resource Deck  " ;}
                rStringCard[9][x] = ANSI_WHITE;
 
+               // getting the points
                rStringCard[1][x] = String.valueOf(((Number) JSONCard.get("points")).intValue());
-
+               // turning resources in the corners into emojis
                for(int i = 0; i < 4; i++){
                     rStringCard[i+3][x] = Views.stringToEmoji((String)((JSONArray)JSONCard.get("corners")).get(i));
                }
 
+               // required resources needs to be empty if the card is a resource card
                rStringCard[8][x] = " ".repeat(23);
-               rStringCard[7][x]= (String) JSONCard.get("rule");
+               rStringCard[7][x]= "NONE";
                rStringCard[2][x] = (String) JSONCard.get("permRes");
-               switch (rStringCard[2][x]){
 
+               // using the permanent resource to update the background color
+               switch (rStringCard[2][x]){
                     case "WOLF" -> rStringCard[9][x]=rStringCard[9][x].concat(ANSI_BLUE_BACKGROUND);
                     case "LEAF" -> rStringCard[9][x]=rStringCard[9][x].concat(ANSI_GREEN_BACKGROUND);
                     case "MUSHROOM" -> rStringCard[9][x]=rStringCard[9][x].concat(ANSI_RED_BACKGROUND);
                     case "BUTTERFLY" -> rStringCard[9][x]=rStringCard[9][x].concat(ANSI_PURPLE_BACKGROUND);
                }
+               //turning the permanent resource into an emoji
                rStringCard[2][x] = Views.stringToEmoji((String) JSONCard.get("permRes"));
           }
 

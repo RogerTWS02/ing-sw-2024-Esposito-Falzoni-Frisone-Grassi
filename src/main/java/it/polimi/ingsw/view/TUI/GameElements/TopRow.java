@@ -13,12 +13,11 @@ public class TopRow implements Views {
 
     public void showTopRow(String currentPlayer, Map<String, Integer> nicknamesScores, ArrayList<Resource> playerResources) {
 
+        // Map of resources and their occurrences
         Map<Resource, Integer> resourceOccurrences = new HashMap<>();
-        TreeMap<String, Integer> treeMap = new TreeMap<>(Collections.reverseOrder());
 
         List<String> players = new ArrayList<>(nicknamesScores.keySet());
-
-        treeMap.putAll(nicknamesScores);
+        // If the player has resources, count the occurrences of each resource
         if (playerResources != null) {
             for (Resource item : playerResources) {
                 if (resourceOccurrences.containsKey(item)) {
@@ -29,6 +28,7 @@ public class TopRow implements Views {
             }
 
         }
+        // Get the next player
         String nextPlayer = players.get((players.indexOf(currentPlayer) + 1) % players.size());
 
 
@@ -42,7 +42,9 @@ public class TopRow implements Views {
                 .append(" ")
                 .append("Points ");
 
-        for (Map.Entry<String, Integer> entry : treeMap.entrySet()) {
+
+        // Print the nicknames and the scores of the players
+        for (Map.Entry<String, Integer> entry : nicknamesScores.entrySet()) {
             topRow
                     .append(ANSI_GRAY_BACKGROUND)
                     .append(entry.getKey())
@@ -51,6 +53,7 @@ public class TopRow implements Views {
                     .append(entry.getValue())
                     .append(" ");
         }
+        // Print the current player, the next player
             topRow
                     .append("\n")
                     .append(" Now it's ")
@@ -65,6 +68,7 @@ public class TopRow implements Views {
                     .append(ANSI_RESET)
                     .append(" │ ")
                     .append(" Resources:");
+            // Print the resources of the player
             for (Map.Entry<Resource, Integer> entry : resourceOccurrences.entrySet()) {
                 topRow
                         .append(" ")

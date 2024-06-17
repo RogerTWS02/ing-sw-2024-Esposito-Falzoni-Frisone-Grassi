@@ -114,7 +114,7 @@ public class InfoCard  implements Views{
 
         // crafting a playable card
         if(uuid.charAt(1)=='C'){
-
+            //crafting the starting card
             if (uuid.charAt(0)=='S'){
                 JSONCard = (JSONObject) startingJSONArray.get(index - 1);
                 stringCard[0] = "Starting Card";
@@ -137,14 +137,16 @@ public class InfoCard  implements Views{
                 }
 
             } else{
-
+                //crafting a resource card
                 if (uuid.charAt(0) == 'R') {
                     // create the resource card and set the color
                     JSONCard = (JSONObject) resourceJSONArray.get(index - 1);
                     stringCard[0] = "Resource Card";
                     stringCard[9] = ANSI_WHITE;
+                    // create the resource card and set the color
                     stringCard[8]= " ".repeat(28);
                     stringCard[7]= "NONE";
+                //crafting a golden card
                 } else {
                     // create the golden card and set the color
                     JSONCard = (JSONObject) goldJSONArray.get(index - 1);

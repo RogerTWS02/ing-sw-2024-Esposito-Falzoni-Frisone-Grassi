@@ -52,12 +52,14 @@ public class Objective implements  Views {
         card[4]=pattern/decorator
          */
         String[][] stringObjective = new String[3][5];
+
         for (int x = 0; x < uuid.length; x++) {
+            // get the index from the UUID
             int index = Integer.parseInt(uuid[x].replaceAll("[A-Z]+_", ""));
             JSONObject JSONCard;
 
             if (uuid[x].charAt(0) == 'P') {
-                // create the resource card and set the color
+                // create the pattern card and the pattern required to obtain the points
                 JSONCard = (JSONObject) patternGoalJSONArray.get(index - 1);
                 stringObjective[x][0] = "Pattern goal card ";
                 uuidToString(uuid[x], stringObjective[x]);
@@ -66,8 +68,10 @@ public class Objective implements  Views {
                 JSONCard = (JSONObject) resourceGoalJSONArray.get(index - 1);
                 String resources = "";
                 for (int i = 0; i < 3; i++) {
+                    // convert the resources requested by the goal card to emoji
                     resources  = resources.concat(" " + Views.stringToEmoji((String) ((JSONArray) JSONCard.get("resources")).get(i)));
                 }
+                // some goal card require just 2 resources so we add a space to format the card
                 if (resources.length() < 3) {
                     resources = resources + " ";
                 }
@@ -76,7 +80,7 @@ public class Objective implements  Views {
                 stringObjective[x][3] = "│ " + resources + "  │";
                 stringObjective[x][4] = "└────────────┘";
             }
-            stringObjective[x][1]= "   "+String.valueOf(((Number)JSONCard.get("points")).intValue()) + " points   ";
+            stringObjective[x][1]= "   "+(((Number)JSONCard.get("points")).intValue()) + " points   ";
         }
 
         if(uuid.length == 3){
@@ -120,6 +124,8 @@ public class Objective implements  Views {
 
     }
 
+
+    // hard decode of the uuid of the pattern goal card
     private void uuidToString(String uuid,String[] card) {
         switch (uuid) {
             case "PGC_1" -> {
@@ -128,9 +134,9 @@ public class Objective implements  Views {
                 card[4] = ANSI_RED + "▇▇ " + ANSI_RESET + " ░░  ░░  ";
             }
             case "PGC_2" -> {
-                card[4] = "  ░░  ░░ " + ANSI_GREEN + " ▇▇  "+ANSI_RESET;
-                card[3] = "  ░░  " + ANSI_GREEN + "▇▇  " + ANSI_RESET + "░░  ";
                 card[2] = ANSI_GREEN + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
+                card[3] = "  ░░  " + ANSI_GREEN + "▇▇  " + ANSI_RESET + "░░  ";
+                card[4] = "  ░░  ░░ " + ANSI_GREEN + " ▇▇  "+ANSI_RESET;
             }
             case "PGC_3" -> {
                 card[2] = "  ░░  ░░ " + ANSI_BLUE + " ▇▇  "+ANSI_RESET;
@@ -138,9 +144,9 @@ public class Objective implements  Views {
                 card[4] = ANSI_BLUE + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
             }
             case "PGC_4" -> {
-                card[4] = "  ░░  ░░ " + ANSI_PURPLE + " ▇▇  "+ANSI_RESET;
-                card[3] = "  ░░  " + ANSI_PURPLE + "▇▇  " + ANSI_RESET + "░░  ";
                 card[2] = ANSI_PURPLE + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
+                card[3] = "  ░░  " + ANSI_PURPLE + "▇▇  " + ANSI_RESET + "░░  ";
+                card[4] = "  ░░  ░░ " + ANSI_PURPLE + " ▇▇  "+ANSI_RESET;
             }
             case "PGC_5" -> {
                 card[2] = "  ░░  " + ANSI_RED + "▇▇ " + ANSI_RESET + " ░░  ";

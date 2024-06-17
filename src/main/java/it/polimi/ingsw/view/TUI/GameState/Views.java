@@ -33,7 +33,7 @@ public interface Views {
      * @return The string representing the points and the rule of the card.
      */
      static String cardToPoint(String point, String rule){
-            if (point == null || rule == null){return "     ";}
+            if (point == null && rule == null){return "     ";}
             if (point.equals("0")){return "     ";}
             else{
               return point + switch (rule){
