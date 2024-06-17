@@ -9,17 +9,17 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Client extends UnicastRemoteObject implements ClientListenerInterface{
+public class Client extends UnicastRemoteObject implements ClientListenerInterface, Serializable {
     private final String ipServ;
     private final int port; //porta del server
     private TUI tui = null;
@@ -91,7 +91,6 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                 } catch (IOException e) {
                     logger.log(Level.SEVERE, "Error in sending message to server");
                 }
-                ;
             }else{
                 try {
                     stub.messageHandler(message);
@@ -116,7 +115,7 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                 this.socket = new Socket(ipServ, port);
                 out = new ObjectOutputStream(socket.getOutputStream());
                 inp = new ObjectInputStream(socket.getInputStream());
-                clientID = socket.getPort();
+                clientID = socket.getLocalPort();
                 logger.log(Level.INFO, "Client has connected to the server");
 
                 readFromSocketAsync(inp);
@@ -134,8 +133,6 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
 
                 //TODO: DA CONTROLLARE POI...
                 clientID = stub.createSkeleton(this);
-
-                System.out.println("Fino a qui arrivo AAOAOAOAOAO");
 
                 //RMIGameFlow play = new RMIGameFlow(stub, this);
                 //play.run();

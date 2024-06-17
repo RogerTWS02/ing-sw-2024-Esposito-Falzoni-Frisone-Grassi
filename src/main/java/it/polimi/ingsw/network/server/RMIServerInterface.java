@@ -18,5 +18,5 @@ public interface RMIServerInterface extends Remote {
     //Methods that the client can call on the server
     void messageHandler(Message message) throws IOException, ParseException;
 
-    int createSkeleton(Client skelly) throws IOException;
+    int createSkeleton(ClientListenerInterface skelly) throws IOException;
 }

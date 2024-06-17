@@ -103,11 +103,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     }
 
     //TODO: JAVADOC...
-    public synchronized int createSkeleton(Client skelly){
-        System.out.println("Arrivo nel server almeno!!!");
-        return 666;
-        //idClientMap.put(numRMI, skelly);
-        //return numRMI++;
+    public synchronized int createSkeleton(ClientListenerInterface skelly){
+        idClientMap.put(numRMI, skelly);
+        return numRMI++;
     }
 
     /**
@@ -511,27 +509,26 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                         //per ogni giocatore della lobby
                         for (int pID : lobbyPlayerMap.get(l)) {
                             //mando un messaggio per aggiornare l'interfaccia
-                            if (hasSocket) {
 
-                                idClientMap.get(pID).sendMessageToClient(
-                                        new Message(
-                                                REPLY_BEGIN_GAME,
-                                                serverSocket.getLocalPort(),
-                                                //mando a tutti il gameID come primo parametro per la prima volta
-                                                lobbyPlayerMap.get(l)[0],
+                            idClientMap.get(pID).sendMessageToClient(
+                                    new Message(
+                                            REPLY_BEGIN_GAME,
+                                            serverSocket.getLocalPort(),
+                                            //mando a tutti il gameID come primo parametro per la prima volta
+                                            lobbyPlayerMap.get(l)[0],
 
-                                                new Object[]{
+                                            new Object[]{
 
                                                     //mando a tutti l'UUID delle carte delle loro mani
                                                     Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                            .returnHand(idPlayerMap.get(pID)))
+                                                                    .returnHand(idPlayerMap.get(pID)))
                                                             .map(PlayableCard::getUUID)
                                                             .collect(Collectors.toList()),
 
                                                     //mando a tutti l'UUID delle common goal cards
                                                     Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                            .getCurrentGame()
-                                                            .getCommonGoalCards())
+                                                                    .getCurrentGame()
+                                                                    .getCommonGoalCards())
                                                             .map(GoalCard::getUUID)
                                                             .collect(Collectors.toList()),
 
@@ -546,18 +543,15 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                                             .getStartingPlayer().getNickname().equals(idPlayerMap.get(pID).getNickname()),
 
 
-
                                                     //send all the nicknames
                                                     playersScores,
 
 
-
-
                                                     //return the current player
                                                     gameControllerMap.get(lobbyPlayerMap.get(l)[0])
-                                                           .getCurrentGame()
-                                                           .getCurrentPlayer()
-                                                           .getNickname(),
+                                                            .getCurrentGame()
+                                                            .getCurrentPlayer()
+                                                            .getNickname(),
 
                                                     //return the resources of the player
                                                     idPlayerMap.get(pID)
@@ -565,18 +559,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                                             .getResources()
 
 
-                                                }
-                                        )
-                                );
-
-                            }else{
-                                return new Message(
-                                        REPLY_BEGIN_GAME,
-                                        pID,
-                                        message.getGameID(),
-                                        new Object[]{}
-                                );
-                            }
+                                            }
+                                    )
+                            );
                         }
                     }
                 }
@@ -613,25 +598,16 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
         //se il nome non è valido gli mando un bad request
         if(lobbyName.isEmpty()){
-            if(hasSocket) {
-                idClientMap.get(message.getSenderID()).sendMessageToClient(
-                        new Message(
-                                REPLY_BAD_REQUEST,
-                                this.serverSocket.getLocalPort(),
-                                message.getGameID(),
-                                "Invalid lobby name or size!!" +
-                                        "REMINDER: If you're already in a lobby you cannot join another one"
-                        )
-                );
-            }else{
-                return new Message(
-                        REPLY_BAD_REQUEST,
-                        message.getSenderID(),
-                        message.getGameID(),
-                        "Invalid lobby name or size!!\n " +
-                                "REMINDER: If you're already in a lobby you cannot join another one"
-                );
-            }
+
+            idClientMap.get(message.getSenderID()).sendMessageToClient(
+                    new Message(
+                            REPLY_BAD_REQUEST,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            "Invalid lobby name or size!!" +
+                                    "REMINDER: If you're already in a lobby you cannot join another one"
+                    )
+            );
         }else{
 
             //genero il nuovo player per il client
@@ -689,8 +665,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
         Object[] params = message.getObj();
         if((Integer) params[1] < 0 || (Integer) params[1] > 2){
-            if(hasSocket) {
-                idClientMap.get(message.getSenderID()).sendMessageToClient(
+            idClientMap.get(message.getSenderID()).sendMessageToClient(
                         new Message(
                                 REPLY_BAD_REQUEST,
                                 this.serverSocket.getLocalPort(),
@@ -698,14 +673,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                 "Range given is out of bound!"
                         )
                 );
-            }else{
-                return new Message(
-                        REPLY_BAD_REQUEST,
-                        message.getSenderID(),
-                        message.getGameID(),
-                        "Range given is out of bound!"
-                );
-            }
             return null;
         }
 
@@ -749,51 +716,42 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         //TODO: POI MANDO A TUTTI I GIOCATORI IL NOME DEL NUOVO GIOCATORE
 
 
-        if(hasSocket) {
-            //mando al client la nuova carta pescata
-            idClientMap.get(message.getSenderID()).sendMessageToClient(
+
+        //mando al client la nuova carta pescata
+        idClientMap.get(message.getSenderID()).sendMessageToClient(
+                new Message(
+                        REPLY_HAND_UPDATE,
+                        this.serverSocket.getLocalPort(),
+                        message.getGameID(),
+                        replyCard.getUUID()
+                )
+        );
+
+        for(int id: gameControllerMap.get(message.getGameID())
+                .getCurrentGame()
+                .getPlayers()
+                .stream()
+                .map(Player::getClientPort)
+                .toArray(Integer[]::new)) {
+
+            boolean myTurn = gameControllerMap.get(message.getGameID())
+                    .getCurrentGame()
+                    .getCurrentPlayer()
+                    .equals(idPlayerMap.get(id));
+
+            idClientMap.get(id).sendMessageToClient(
                     new Message(
-                            REPLY_HAND_UPDATE,
+                            REPLY_YOUR_TURN,
                             this.serverSocket.getLocalPort(),
                             message.getGameID(),
-                            replyCard.getUUID()
+                            new Object[]{
+                                    gameControllerMap.get(message.getGameID())
+                                            .getCurrentGame()
+                                            .getCurrentPlayer()
+                                            .getNickname(),
+                                    myTurn
+                            }
                     )
-            );
-
-            for(int id: gameControllerMap.get(message.getGameID())
-                    .getCurrentGame()
-                    .getPlayers()
-                    .stream()
-                    .map(Player::getClientPort)
-                    .toArray(Integer[]::new)){
-
-                boolean myTurn = gameControllerMap.get(message.getGameID())
-                        .getCurrentGame()
-                        .getCurrentPlayer()
-                        .equals(idPlayerMap.get(id));
-
-                idClientMap.get(id).sendMessageToClient(
-                        new Message(
-                                REPLY_YOUR_TURN,
-                                this.serverSocket.getLocalPort(),
-                                message.getGameID(),
-                                new Object[]{
-                                        gameControllerMap.get(message.getGameID())
-                                                .getCurrentGame()
-                                                .getCurrentPlayer()
-                                                .getNickname(),
-                                        myTurn
-                                }
-                        )
-                );
-
-            }
-        }else{
-            return new Message(
-                    REPLY_HAND_UPDATE,
-                    message.getSenderID(),
-                    message.getGameID(),
-                    replyCard.getUUID()
             );
         }
 
@@ -839,23 +797,16 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             gameControllerMap.get(message.getGameID()).placeCard(positionx, positiony, card, idPlayerMap.get(message.getSenderID()));
         }catch(IllegalArgumentException | IllegalAccessException e){
             //se ho fatto una mossa non valida mando un messaggio di bad request
-            if(hasSocket) {
-                idClientMap.get(message.getSenderID()).sendMessageToClient(
-                        new Message(
-                                REPLY_BAD_REQUEST,
-                                this.serverSocket.getLocalPort(),
-                                message.getGameID(),
-                                new Object[]{e.getMessage()}
-                        )
-                );
-            }else{
-                return new Message(
-                        REPLY_BAD_REQUEST,
-                        message.getSenderID(),
-                        message.getGameID(),
-                        new Object[]{e.getMessage()}
-                );
-            }
+
+            idClientMap.get(message.getSenderID()).sendMessageToClient(
+                    new Message(
+                            REPLY_BAD_REQUEST,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            new Object[]{e.getMessage()}
+                    )
+            );
+
             return null;
         }
 
@@ -864,59 +815,59 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
 
 
-        if(hasSocket) {
 
-            idClientMap.get(message.getSenderID()).sendMessageToClient(
-                    //TODO: A message with the new score should be sent to the player
+
+        idClientMap.get(message.getSenderID()).sendMessageToClient(
+                //TODO: A message with the new score should be sent to the player
+                new Message(
+                        REPLY_UPDATED_SCORE,
+                        this.serverSocket.getLocalPort(),
+                        message.getGameID(),
+                        new Object[]{
+                                //restituisco i nuovi posti disponibili
+                                gameControllerMap.get(message.getGameID())
+                                        .showAvailableOnBoard(idPlayerMap.get(message.getSenderID())),
+
+                                //restituisco la risorsa permanente della carta
+                                card.getPermResource()[0],
+
+                                //return the new score of the player
+                                idPlayerMap.get(message.getSenderID()).getNickname(),
+
+                                idPlayerMap.get(message.getSenderID()).getScore(),
+
+                                //return the resources of the player
+                                gameControllerMap.get(message.getGameID())
+                                        .getCurrentGame()
+                                        .getCurrentPlayer()
+                                        .getPlayerBoard()
+                                        .getResources()
+                        }
+                )
+        );
+
+        for(int id: gameControllerMap.get(message.getGameID())
+                .getCurrentGame()
+                .getPlayers()
+                .stream()
+                .map(Player::getClientPort)
+                .toArray(Integer[]::new)) {
+            if (id == message.getSenderID()) continue;
+            idClientMap.get(id).sendMessageToClient(
                     new Message(
-                            REPLY_UPDATED_SCORE,
+                            REPLY_POINTS_UPDATE,
                             this.serverSocket.getLocalPort(),
                             message.getGameID(),
                             new Object[]{
-                                    //restituisco i nuovi posti disponibili
-                                    gameControllerMap.get(message.getGameID())
-                                            .showAvailableOnBoard(idPlayerMap.get(message.getSenderID())),
-
-                                    //restituisco la risorsa permanente della carta
-                                    card.getPermResource()[0],
-
-                                    //return the new score of the player
+                                    //Player name
                                     idPlayerMap.get(message.getSenderID()).getNickname(),
-
+                                    //Player score
                                     idPlayerMap.get(message.getSenderID()).getScore(),
-
-                                    //return the resources of the player
-                                    gameControllerMap.get(message.getGameID())
-                                            .getCurrentGame()
-                                            .getCurrentPlayer()
-                                            .getPlayerBoard()
-                                            .getResources()
                             }
                     )
             );
-
-            for(int id: gameControllerMap.get(message.getGameID())
-                    .getCurrentGame()
-                    .getPlayers()
-                    .stream()
-                    .map(Player::getClientPort)
-                    .toArray(Integer[]::new)){
-                if(id == message.getSenderID()) continue;
-                idClientMap.get(id).sendMessageToClient(
-                        new Message(
-                                REPLY_POINTS_UPDATE,
-                                this.serverSocket.getLocalPort(),
-                                message.getGameID(),
-                                new Object[]{
-                                        //Player name
-                                        idPlayerMap.get(message.getSenderID()).getNickname(),
-                                        //Player score
-                                        idPlayerMap.get(message.getSenderID()).getScore(),
-                                }
-                        )
-                );
-            }
         }
+
 
         //Avvio la fase finale del gioco
         if(gameControllerMap.get(message.getGameID()).checkEndGamePhase() && !gameControllerMap.get(message.getGameID()).getCurrentGame().isInLastPhase()){
@@ -980,31 +931,19 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             }
         }
 
-        if(hasSocket) {
-            idClientMap.get(message.getSenderID()).sendMessageToClient(
-                    //TODO: A message with the new score should be sent to the player
-                    new Message(
-                            REPLY_INFO_CARD,
-                            this.serverSocket.getLocalPort(),
-                            message.getGameID(),
-                            new Object[]{
-                                    card.getUUID(),
-                                    card.isFlipped(),
-                                    coveredCorners
-                            }
-                    )
-            );
-        }else{
-            return new Message(
-                    REPLY_INFO_CARD,
-                    message.getSenderID(),
-                    message.getGameID(),
-                    new Object[]{
-                            card.getUUID(),
-                            card.isFlipped()
-                    }
-            );
-        }
+
+        idClientMap.get(message.getSenderID()).sendMessageToClient(
+                //TODO: A message with the new score should be sent to the player
+                new Message(
+                        REPLY_INFO_CARD,
+                        this.serverSocket.getLocalPort(),
+                        message.getGameID(),
+                        new Object[]{
+                                card.getUUID(),
+                                card.isFlipped(),
+                                coveredCorners
+                        })
+        );
         return null;
     }
 

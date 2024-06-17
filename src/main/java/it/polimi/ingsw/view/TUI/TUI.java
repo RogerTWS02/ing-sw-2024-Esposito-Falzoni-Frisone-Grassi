@@ -276,7 +276,7 @@ public class TUI extends Thread{
             cli.sendMessage(
                     new Message(
                             REQUEST_LOGIN,
-                            cli.getSocketPort(),
+                            cli.getClientID(),
                             -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
                             command[0])
             );
@@ -295,8 +295,17 @@ public class TUI extends Thread{
      * @param nameP The nickname of the player who creates the lobby.
      */
     public void createNewLobby(String nameP) {
+        int size;
         while(cli.getLobbySize() == -1){
-            int size = Integer.parseInt(getCommandFromQueue()[0]);
+
+            try{
+                 size = Integer.parseInt(getCommandFromQueue()[0]);
+            }catch (NumberFormatException e){
+                System.out.println("Invalid input, please insert a number between 2 and 4");
+                System.out.print("Insert lobby size (4 players max): ");
+                continue;
+            }
+
             if(size < 2 || size > 4){
                 System.out.println("A game needs a number of players between 2 and 4 included!");
                 System.out.print("Insert lobby size (4 players max): ");
@@ -305,7 +314,7 @@ public class TUI extends Thread{
             cli.sendMessage(
                     new Message(
                             REQUEST_NEW_LOBBY,
-                            cli.getSocketPort(),
+                            cli.getClientID(),
                             -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
                             new Object[]{
                                     nameP,
@@ -461,7 +470,13 @@ public class TUI extends Thread{
                 continue;
             }
 
-            int cardIndex = Integer.parseInt(command[0]);
+            int cardIndex;
+            try {
+                cardIndex = Integer.parseInt(command[0]) - 1;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input, please insert a number between 1 and 3");
+                continue;
+            }
             if (cardIndex < 1 || cardIndex > 3) {
                 System.out.println("Invalid input, please insert a number between 1 and 3");
                 continue;
