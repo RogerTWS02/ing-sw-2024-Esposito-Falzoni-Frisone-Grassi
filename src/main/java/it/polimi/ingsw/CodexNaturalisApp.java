@@ -13,6 +13,13 @@ import java.net.InetAddress;
  */
 public class CodexNaturalisApp {
 
+    /**
+     * Main method of the Codex Naturalis application.
+     *
+     * @param args Command line arguments.
+     * @throws IOException If an I/O error occurs.
+     * @throws ParseException If a parse error occurs.
+     */
     public static void main(String[] args) throws IOException, ParseException {
         //initial parameters: <gui/tui/server> <socket/rmi>
         String param = args.length > 0 ? args[0].toLowerCase() : "cli";
