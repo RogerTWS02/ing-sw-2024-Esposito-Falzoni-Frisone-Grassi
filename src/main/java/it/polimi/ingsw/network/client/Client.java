@@ -31,7 +31,6 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
     protected ObjectInputStream inp;
     private final Logger logger = Logger.getLogger(getClass().getName());
     private int clientID; //Client identifier for RMI
-    private static int lastID = 0;
     private RMIServerInterface stub;
     final boolean hasSocket;
 

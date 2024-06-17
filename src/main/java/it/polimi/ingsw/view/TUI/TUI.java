@@ -472,7 +472,7 @@ public class TUI extends Thread{
 
             int cardIndex;
             try {
-                cardIndex = Integer.parseInt(command[0]) - 1;
+                cardIndex = Integer.parseInt(command[0]);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input, please insert a number between 1 and 3");
                 continue;
