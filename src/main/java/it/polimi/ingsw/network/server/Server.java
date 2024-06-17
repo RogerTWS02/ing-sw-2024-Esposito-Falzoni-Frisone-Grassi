@@ -40,7 +40,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     private static Map<Integer, GameController> gameControllerMap; // gameId - controller
     private final Map<Lobby, int[]> lobbyPlayerMap; //lobby - playerIds
     private final Map<Integer, Player> idPlayerMap; //playerId - player
-    private boolean hasSocket = false;
 
     private int numRMI = 70000;
 
@@ -435,24 +434,16 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
         if (duplicates || requestNick.isEmpty() ) {
             //se è presente o nullo gli dico di cambiare nick
-            if(hasSocket){
-                idClientMap.get(message.getSenderID()).sendMessageToClient(
-                        new Message(
-                                REPLY_BAD_REQUEST,
-                                this.serverSocket.getLocalPort(),
-                                message.getGameID(),
-                                "Invalid nickname, please try a different one!"
-                        )
-                );
-                return null;
-            }else{
-                return new Message(
-                        REPLY_BAD_REQUEST,
-                        message.getSenderID(),
-                        message.getGameID(),
-                        "Invalid nickname, please try a different one!"
-                );
-            }
+
+            idClientMap.get(message.getSenderID()).sendMessageToClient(
+                    new Message(
+                            REPLY_BAD_REQUEST,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            "Invalid nickname, please try a different one!"
+                    )
+            );
+            return null;
         }else{
 
             //se non è presente lo registro nella prima lobby valida
@@ -460,25 +451,24 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
             for(Lobby l: lobbyPlayerMap.keySet()) {
                 if(!l.isGameStarted() && !l.isLobbyFull()) {
-                    if(hasSocket) {
-                        //comunico il nome della lobby e il gameID
-                        idClientMap.get(message.getSenderID()).sendMessageToClient(
-                                new Message(
-                                        REPLY_LOBBY_INFO,
-                                        this.serverSocket.getLocalPort(),
-                                        //In the gameController constructor a new game is created with the gameID,
-                                        //so also the gameID is the gameID of the first player
-                                        //We cannot assign a gameID to the player when the game starts otherwise
-                                        //the file saving will not work
-                                        message.getSenderID(),
-                                        new Object[]{
-                                                l.getLobbyName(),
-                                                l.getSize()
-                                        }
-                                )
-                        );
-                        found = true;
-                    }
+
+                    //comunico il nome della lobby e il gameID
+                    idClientMap.get(message.getSenderID()).sendMessageToClient(
+                            new Message(
+                                    REPLY_LOBBY_INFO,
+                                    this.serverSocket.getLocalPort(),
+                                    //In the gameController constructor a new game is created with the gameID,
+                                    //so also the gameID is the gameID of the first player
+                                    //We cannot assign a gameID to the player when the game starts otherwise
+                                    //the file saving will not work
+                                    message.getSenderID(),
+                                    new Object[]{
+                                            l.getLobbyName(),
+                                            l.getSize()
+                                    })
+                    );
+                    found = true;
+
 
                     //aggiungo il playerID alla lobby
                     lobbyPlayerMap.get(l)[l.getPlayersConnected()] = message.getSenderID();
