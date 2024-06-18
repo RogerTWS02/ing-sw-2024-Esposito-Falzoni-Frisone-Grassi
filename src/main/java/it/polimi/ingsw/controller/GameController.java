@@ -57,25 +57,28 @@ public class GameController {
      */
     public GoalCard drawGoalFromDeck(){
         Random random = new Random();
+        int randomIndex;
         int whichDeck = random.nextInt(2);
         if(whichDeck == 0){
-            int randomIndex = random.nextInt(currentGame.resourcesGoalDeck.size());
             if(!currentGame.resourcesGoalDeck.isEmpty()){
+                randomIndex = random.nextInt(currentGame.resourcesGoalDeck.size());
                 JSONObject JSONcard = (JSONObject) currentGame.resourcesGoalDeck.get(randomIndex);
                 currentGame.resourcesGoalDeck.remove(randomIndex);
                 return craftResourcesGoalCard(JSONcard);
             } else {
+                randomIndex = random.nextInt(currentGame.patternGoalDeck.size());
                 JSONObject JSONcard = (JSONObject) currentGame.patternGoalDeck.get(randomIndex);
                 currentGame.patternGoalDeck.remove(randomIndex);
                 return craftPatternGoalCard(JSONcard);
             }
         } else {
-            int randomIndex = random.nextInt(currentGame.patternGoalDeck.size());
             if(!currentGame.patternGoalDeck.isEmpty()){
+                randomIndex = random.nextInt(currentGame.patternGoalDeck.size());
                 JSONObject JSONcard = (JSONObject) currentGame.patternGoalDeck.get(randomIndex);
                 currentGame.patternGoalDeck.remove(randomIndex);
                 return craftPatternGoalCard(JSONcard);
             } else {
+                randomIndex = random.nextInt(currentGame.resourcesGoalDeck.size());
                 JSONObject JSONcard = (JSONObject) currentGame.resourcesGoalDeck.get(randomIndex);
                 currentGame.resourcesGoalDeck.remove(randomIndex);
                 return craftResourcesGoalCard(JSONcard);

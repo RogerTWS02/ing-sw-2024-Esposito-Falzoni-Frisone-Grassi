@@ -6,17 +6,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.*;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
+/**
+ * Unit test for the Game class.
+ */
 public class GameTest {
     GameController gameController;
     Game game;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         gameController = new GameController(123);
         game = gameController.getCurrentGame();
         game.setPlayers(createFakePlayers()[0]);

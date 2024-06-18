@@ -1,9 +1,7 @@
 package it.polimi.ingsw.network;
 
 import it.polimi.ingsw.model.GoalCard;
-import it.polimi.ingsw.model.PatternGoalCard;
 import it.polimi.ingsw.model.Resource;
-import it.polimi.ingsw.model.ResourcesGoalCard;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.server.Server;
@@ -13,8 +11,10 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Map;
 
+/**
+ * Test for the TUI with Socket connection.
+ */
 public class AppSocketTUITest {
     GoalCard card, cardResource;
     int[] patternPosition = null;

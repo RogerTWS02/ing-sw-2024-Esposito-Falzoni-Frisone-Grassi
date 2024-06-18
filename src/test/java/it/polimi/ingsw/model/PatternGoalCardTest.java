@@ -1,13 +1,14 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-
+/**
+ * Unit test for PatternGoalCard class.
+ */
 public class PatternGoalCardTest {
 
     GoalCard card = null;

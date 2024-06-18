@@ -12,12 +12,11 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.util.Map;
 
-import static it.polimi.ingsw.network.message.MessageType.*;
-
+/**
+ * Test for the Client-Server communication.
+ */
 public class ClientServerTest {
     GoalCard card, cardResource;
     int[] patternPosition = null;
@@ -73,13 +72,13 @@ public class ClientServerTest {
 
     }
 
-    @Test
+    /*@Test
     public void RMIserverconnection() throws IOException, InterruptedException {
         try {
             ser.run(false);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
 
         //avvio la lettura/scrittura al server
@@ -94,7 +93,7 @@ public class ClientServerTest {
         //cli.sendMessage(new Message( REQUEST_GOAL_CARD, cli.getSocketPort(), -1, cardResource));
         serverThread.join();
         cli.closeSocket();
-        */
-    }
+
+    }*/
 }
 

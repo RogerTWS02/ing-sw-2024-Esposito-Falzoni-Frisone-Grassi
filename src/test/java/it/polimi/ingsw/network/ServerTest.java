@@ -1,9 +1,8 @@
 package it.polimi.ingsw.network;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
+/**
+ * This class tests the Server class.
+ */
 public class ServerTest {
 
 }

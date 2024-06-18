@@ -7,6 +7,9 @@ import org.junit.Test;
 
 import java.util.*;
 
+/**
+ * Unit tests for ResourcesGoalCard class.
+ */
 public class ResourcesGoalCardTest {
     GoalCard card = null;
     Map<Resource, Integer> requiredResources = null;

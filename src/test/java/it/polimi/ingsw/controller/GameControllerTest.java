@@ -13,7 +13,9 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-
+/**
+ * Unit test for GameController class and, indirectly, for PlayerBoard class.
+ */
 public class GameControllerTest {
     GameController gameController;
     Game game;
