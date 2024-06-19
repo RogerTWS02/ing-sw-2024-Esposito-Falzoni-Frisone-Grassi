@@ -339,6 +339,7 @@ public class GameController {
      * @param card The card to be placed on the board.
      * @param player The player who is placing the card.
      * @throws IllegalArgumentException In case the position is invalid.
+     * @throws IllegalAccessException In case the card can't be placed on the board.
      */
     public void placeCard(int x, int y, PlayableCard card, Player player) throws IllegalArgumentException, IllegalAccessException {
         if (card instanceof StartingCard) {

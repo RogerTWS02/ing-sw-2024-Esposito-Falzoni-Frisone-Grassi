@@ -32,6 +32,9 @@ public class GameControllerTest {
         this.game = null;
     }
 
+    /**
+     * Checks if the game is correctly initialized, setting the viewable cards, the players' hands and the common goal cards correctly.
+     */
     @Test
     public void initializeGame_test() {
         int i;
@@ -54,6 +57,9 @@ public class GameControllerTest {
         }
     }
 
+    /**
+     * Checks if the player's turn is correctly advanced.
+     */
     @Test
     public void advancePlayerTurn_test() {
         game.setPlayers(createFakePlayers());
@@ -66,6 +72,9 @@ public class GameControllerTest {
         assertEquals(game.getPlayers().get(0), game.getCurrentPlayer());
     }
 
+    /**
+     * Checks if the preliminary choices of the player are correctly handled.
+     */
     @Test
     public void cardToChoose_test() {
         game.setPlayers(createFakePlayers());
@@ -78,6 +87,9 @@ public class GameControllerTest {
         }
     }
 
+    /**
+     * Checks if the starting card is placed in the right position in every case and if the cells of the player board are correctly updated.
+     */
     @Test
     public void placeCard_test_1() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
@@ -109,6 +121,9 @@ public class GameControllerTest {
         }
     }
 
+    /**
+     * Checks if the placement of a 'flipped' card is performed correctly.
+     */
     @Test
     public void placeCard_test_2() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
@@ -122,6 +137,9 @@ public class GameControllerTest {
         assert(game.getPlayers().get(0).getPlayerBoard().getState(41, 39).equals(State.OCCUPIED));
     }
 
+    /**
+     * Checks if the placement of a golden card without having the required resources is correctly handled.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void placeCard_test_3() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
@@ -132,6 +150,9 @@ public class GameControllerTest {
         gameController.placeCard(39, 41, card, game.getPlayers().get(0));
     }
 
+    /**
+     * Checks if the placement of a card in an occupied cell is correctly handled.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void placeCard_test_4() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
@@ -143,6 +164,9 @@ public class GameControllerTest {
         gameController.placeCard(40, 40, card, game.getPlayers().get(0));
     }
 
+    /**
+     * Checks if the placement of a resource card which gives points is correctly handled.
+     */
     @Test
     public void placeCard_test_5() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
@@ -158,6 +182,9 @@ public class GameControllerTest {
         assertEquals(card.getPoints(), game.getPlayers().get(0).getScore());
     }
 
+    /**
+     * Checks if the placement of a golden card which gives points is correctly handled in the case of giving points for every corner covered.
+     */
     @Test
     public void placeCard_test_6() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
@@ -179,6 +206,9 @@ public class GameControllerTest {
         assertEquals(4, game.getPlayers().get(0).getScore());
     }
 
+    /**
+     * Checks if the placement of a golden card which gives points is correctly handled in the case of giving points for the resources quantity on the board.
+     */
     @Test
     public void placeCard_test_7() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
@@ -194,6 +224,9 @@ public class GameControllerTest {
         assertEquals(2, game.getPlayers().get(0).getScore());
     }
 
+    /**
+     * Checks if the available position on the board are correctly shown.
+     */
     @Test
     public void showAvailableOnBoard_test() throws IllegalAccessException {
         game.setPlayers(createFakePlayers());
@@ -210,6 +243,9 @@ public class GameControllerTest {
         assertEquals(availableCorners, gameController.showAvailableOnBoard(game.getPlayers().get(0)).size());
     }
 
+    /**
+     * Checks if drawing a card from the deck is correctly handled.
+     */
     @Test
     public void drawPlayableFromDeck_test_1() {
         assertNotNull(gameController.drawPlayableFromDeck(game.resourceDeck));
@@ -217,6 +253,9 @@ public class GameControllerTest {
         assertNotNull(gameController.drawPlayableFromDeck(game.startingDeck));
     }
 
+    /**
+     * Checks if drawing a card from an empty deck is correctly handled.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void drawPlayableFromDeck_test_2() {
         for(int i = 0; i < 41; i++) {
@@ -224,12 +263,18 @@ public class GameControllerTest {
         }
     }
 
+    /**
+     * Checks if drawing a goal card is correctly handled.
+     */
     @Test
     public void drawGoalFromDeck_test() {
         GoalCard card = gameController.drawGoalFromDeck();
         assertNotNull(card);
     }
 
+    /**
+     * Checks if the crafting a resources goal card is correctly performed.
+     */
     @Test
     public void craftResourcesGoalCard_test() {
         JSONObject JSONcard = new JSONObject();
@@ -241,7 +286,6 @@ public class GameControllerTest {
         resources.add("MUSHROOM");
         JSONcard.put("resources", resources);
         GoalCard card = gameController.craftResourcesGoalCard(JSONcard);
-
         assertNotNull(card);
         assertEquals("testUUID", card.getUUID());
         assertEquals(99, card.getPoints());
@@ -251,6 +295,9 @@ public class GameControllerTest {
         assertEquals(2, resourcesMap.get(Resource.MUSHROOM).intValue());
     }
 
+    /**
+     * Checks if the crafting a pattern goal card is correctly performed.
+     */
     @Test
     public void craftPatternGoalCard_test() {
         JSONObject JSONcard = new JSONObject();
@@ -270,7 +317,6 @@ public class GameControllerTest {
         resources.add("LEAF");
         JSONcard.put("resources", resources);
         GoalCard card = gameController.craftPatternGoalCard(JSONcard);
-
         assertNotNull(card);
         assertEquals("testUUID", card.getUUID());
         assertEquals(99, card.getPoints());
@@ -279,6 +325,9 @@ public class GameControllerTest {
         assertArrayEquals(new Resource[]{Resource.WOLF, Resource.MUSHROOM, Resource.LEAF}, patternGoalCard.getPatternResource());
     }
 
+    /**
+     * Checks if the crafting a resource card is correctly performed.
+     */
     @Test
     public void craftResourceCard_test() {
         JSONObject JSONcard = new JSONObject();
@@ -292,7 +341,6 @@ public class GameControllerTest {
         corners.add("EMPTY");
         JSONcard.put("corners", corners);
         PlayableCard card = gameController.craftResourceCard(JSONcard);
-
         assertNotNull(card);
         assertEquals("testUUID", card.getUUID());
         ResourceCard resourceCard = (ResourceCard) card;
@@ -310,6 +358,9 @@ public class GameControllerTest {
         }
     }
 
+    /**
+     * Checks if the crafting a golden card is correctly performed.
+     */
     @Test
     public void craftGoldenCard_test() {
         JSONObject JSONcard = new JSONObject();
@@ -329,7 +380,6 @@ public class GameControllerTest {
         require.add("LEAF");
         JSONcard.put("require", require);
         PlayableCard card = gameController.craftGoldenCard(JSONcard);
-
         assertNotNull(card);
         assertEquals("testUUID", card.getUUID());
         GoldenCard goldenCard = (GoldenCard) card;
@@ -356,6 +406,9 @@ public class GameControllerTest {
         }
     }
 
+    /**
+     * Checks if the crafting a starting card is correctly performed.
+     */
     @Test
     public void craftStartingCard_test() {
         JSONObject JSONcard = new JSONObject();
@@ -377,11 +430,9 @@ public class GameControllerTest {
         backCorners.add("EMPTY");
         JSONcard.put("backCorners", backCorners);
         PlayableCard card = gameController.craftStartingCard(JSONcard);
-
         assertNotNull(card);
         assertEquals("testUUID", card.getUUID());
         assertArrayEquals(new Resource[]{Resource.WOLF, Resource.MUSHROOM}, card.getPermResource());
-
         StartingCard startingCard = (StartingCard) card;
         Corner[] frontCornersArray = startingCard.getFrontCardCorners();
         for (int i = 0; i < frontCornersArray.length; i++) {
@@ -393,7 +444,6 @@ public class GameControllerTest {
                 assertNull(frontCorners.get(i));
             }
         }
-
         Corner[] backCornersArray = startingCard.getBackCardCorners();
         for (int i = 0; i < backCornersArray.length; i++) {
             if (backCornersArray[i] != null && backCornersArray[i].getCornerResource().isPresent()) {
@@ -406,6 +456,9 @@ public class GameControllerTest {
         }
     }
 
+    /**
+     * Checks if the conversion of a string to a resource is correctly performed.
+     */
     @Test
     public void stringToResource_test() {
         assertNull(gameController.stringToResource("test"));
@@ -419,6 +472,9 @@ public class GameControllerTest {
         assertEquals(Resource.GLASSVIAL, gameController.stringToResource("GLASSVIAL"));
     }
 
+    /**
+     * Checks if creating a corner array of a card is correctly performed.
+     */
     @Test
     public void craftCornerArray_test() {
         JSONArray JSONCorners = new JSONArray();
@@ -428,7 +484,6 @@ public class GameControllerTest {
         JSONCorners.add("EMPTY");
         PlayableCard card = new ResourceCard(new Resource[]{Resource.WOLF}, null, 99, "testUUID");
         Corner[] corners = gameController.craftCornerArray(JSONCorners, card);
-
         assertNotNull(corners);
         assertEquals(4, corners.length);
         assertEquals(Resource.WOLF, corners[0].getCornerResource().get());
@@ -437,16 +492,25 @@ public class GameControllerTest {
         assertTrue(corners[3].getCornerResource().isEmpty());
     }
 
+    /**
+     * Checks if drawing a viewable card with an unexpected index is correctly handled.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void drawViewableCard_test_1() {
         gameController.drawViewableCard(true, -1);
     }
 
+    /**
+     * Checks if drawing a viewable card with an unexpected index is correctly handled.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void drawViewableCard_test_2() {
         gameController.drawViewableCard(true, 3);
     }
 
+    /**
+     * Checks if drawing a viewable card is correctly handled.
+     */
     @Test
     public void drawViewableCard_test_3() {
         for(int i = 0; i < 3; i++)
@@ -463,11 +527,17 @@ public class GameControllerTest {
         assertNotNull(game.viewableResourceCards[0]);
     }
 
+    /**
+     * Checks if trying to get a player's hand with a 'null' player is correctly handled.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void getHand_test_1() {
         gameController.returnHand(null);
     }
 
+    /**
+     * Checks if trying to get a player's hand with a player which is not in the game is correctly handled.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void getHand_test_2() {
         ArrayList<Player> fakePlayers1 = createFakePlayers();
@@ -476,22 +546,34 @@ public class GameControllerTest {
         gameController.returnHand(fakePlayers2.get(0));
     }
 
+    /**
+     * Checks if trying to set up a game with an unexpected number of players is correctly handled.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void setNumberOfPlayers_test_1() {
         gameController.setNumberOfPlayers(0);
     }
 
+    /**
+     * Checks if trying to set up a game with an unexpected number of players is correctly handled.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void setNumberOfPlayers_test_2() {
         gameController.setNumberOfPlayers(5);
     }
 
+    /**
+     * Checks if setting up a game with an ok number of players is correctly handled.
+     */
     @Test
     public void setNumberOfPlayers_test_3() {
         gameController.setNumberOfPlayers(3);
         assertEquals(3, game.getPlayers().size());
     }
 
+    /**
+     * Checks if drawing goal cards to choose is correctly handled.
+     */
     @Test
     public void drawGoalCardsToChoose_test() {
         GoalCard[] cards = gameController.drawGoalCardsToChoose();
@@ -500,6 +582,9 @@ public class GameControllerTest {
         assertNotNull(cards[1]);
     }
 
+    /**
+     * Checks if adding a player to the game is correctly handled.
+     */
     @Test
     public void addPlayer_test() {
         ArrayList<Player> players = createFakePlayers();
@@ -520,6 +605,9 @@ public class GameControllerTest {
             assertNull(game.getPlayers().get(i));
     }
 
+    /**
+     * Checks if the starting of the end game phase is correctly recognized.
+     */
     @Test
     public void checkEndGamePhase_test() {
         game.setPlayers(createFakePlayers());
@@ -538,6 +626,9 @@ public class GameControllerTest {
         assertFalse(gameController.checkEndGamePhase());
     }
 
+    /**
+     * Checks if a player which reaches a score of 20 is correctly recognized.
+     */
     @Test
     public void checkPlayersScore_test() {
         game.setPlayers(createFakePlayers());
@@ -549,7 +640,6 @@ public class GameControllerTest {
         game.getPlayers().get(3).setScore(0);
         assertFalse(gameController.checkPlayersScore());
     }
-
     //Create an arrayList of fake players
     public ArrayList<Player> createFakePlayers(){
         ArrayList<Player> players = new ArrayList<>();

@@ -30,18 +30,17 @@ public class PatternGoalCardTest {
     @After
     public void tearDown(){card = null;}
 
-    
-    
+    /**
+     * Checks if the points for reaching the goal are calculated correctly.
+     */
      @Test
-    public void checkGoal_correctInput_correctOutput(){
+    public void checkGoalcorrectOutput(){
 
         Pawn r = null;
         Corner[] corners = new Corner[4];
         for(int x=0; x<4; x++){
             corners[x]= new Corner(x, null,null);
         }
-
-
         Resource[] resource1= new Resource[1];
         resource1[0]= Resource.MUSHROOM;
         PlayableCard prima= new ResourceCard(resource1,corners,3, "CG_1");
@@ -66,6 +65,4 @@ public class PatternGoalCardTest {
 
         assertEquals(card.checkGoal(fakePlayerboard), 3);
     }
-
-
 }

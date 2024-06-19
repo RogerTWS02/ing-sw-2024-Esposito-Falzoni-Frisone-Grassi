@@ -44,6 +44,9 @@ public class PlayerTest {
         this.game = null;
     }
 
+    /**
+     * Tests the setCardToChoose method, which checks if the secret goal card is set correctly, accordingly to the player's choice.
+     */
     @Test
     public void setSecretGoalCard_test() {
         Object[] myCards = new Object[3];

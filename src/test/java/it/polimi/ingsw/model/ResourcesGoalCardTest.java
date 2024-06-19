@@ -26,8 +26,11 @@ public class ResourcesGoalCardTest {
     @After
     public void tearDown(){card = null;}
 
+    /**
+     * Checks if the points for reaching the goal are calculated correctly.
+     */
     @Test
-    public void checkGoal_correctInput_correctOutput(){
+    public void checkGoal_correctOutput(){
         Pawn r = null;
         ArrayList<Resource> resources = new ArrayList<>();
         resources.add(Resource.WOLF);
@@ -41,10 +44,12 @@ public class ResourcesGoalCardTest {
                 return resources;
             }
         };
-
-        assertEquals(((ResourcesGoalCard) card).checkGoal(fakePlayerboard), 3);
+        assertEquals(card.checkGoal(fakePlayerboard), 3);
     }
 
+    /**
+     * Checks if the points for reaching the goal are calculated correctly int he case the player has not reached the goal.
+     */
     @Test
     public void checkGoal_zeroPointsInput_correctOutput(){
         Pawn r = null;
@@ -57,18 +62,19 @@ public class ResourcesGoalCardTest {
                 return (ArrayList<Resource>) resources;
             }
         };
-
         assertEquals(card.checkGoal(fakePlayerboard), 0);
     }
 
+    /**
+     * Checks if the points for reaching the goal are calculated correctly in the case the player has not reached the goal, having no resources in the player board.
+     */
     @Test
     public void checkGoal_emptyResourcesListInput_correctOutput(){
         Pawn r = null;
         ArrayList<Resource> resources = new ArrayList<>();
-
         PlayerBoard fakePlayerboard = new PlayerBoard(r){
             public ArrayList<Resource> getResources(){
-                return (ArrayList<Resource>) resources;
+                return resources;
             }
         };
         assertEquals(card.checkGoal(fakePlayerboard), 0);

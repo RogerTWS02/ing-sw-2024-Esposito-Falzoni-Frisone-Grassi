@@ -46,6 +46,9 @@ public class GameTest {
         this.game = null;
     }
 
+    /**
+     * Checks if the winner of a game is correctly calculated.
+     */
     @Test
     public void getWinner_test_1() {
         ArrayList<Player> players = createFakePlayers()[0];
@@ -74,6 +77,9 @@ public class GameTest {
         assertEquals(1, game.getWinner().length);
     }
 
+    /**
+     * Checks if the winner of a game is correctly calculated in the case of a draw and zero goals achieved.
+     */
     @Test
     public void getWinner_test_2() {
         ArrayList<Player> players = createFakePlayers()[0];
@@ -104,6 +110,9 @@ public class GameTest {
         assertEquals(2, game.getWinner().length);
     }
 
+    /**
+     * Checks if the winner of a game is correctly calculated in the case of a draw and != zero goals achieved.
+     */
     @Test
     public void getWinner_test_3() throws IllegalAccessException {
         ArrayList<Player> players = createFakePlayers()[0];
@@ -145,6 +154,9 @@ public class GameTest {
         assertEquals(2, game.getWinner().length);
     }
 
+    /**
+     * Checks if the winner of a game is correctly calculated in the case of equal points and != number of goals achieved.
+     */
     @Test
     public void getWinner_test_4() throws IllegalAccessException {
         ArrayList<Player> players = createFakePlayers()[0];
@@ -182,6 +194,9 @@ public class GameTest {
         assertEquals(1, game.getWinner().length);
     }
 
+    /**
+     * Checks if the winner of a game is correctly calculated in the case of equal points and != number of goals achieved.
+     */
     @Test
     public void getWinner_test_5() throws IllegalAccessException {
         ArrayList<Player> players = createFakePlayers()[0];
@@ -237,6 +252,9 @@ public class GameTest {
             assertEquals(game.getPlayers().get(0), game.getStartingPlayer());
     }
 
+    /**
+     * Checks if trying to set the starting player with a null list of players is correctly handled.
+     */
     @Test(expected = RuntimeException.class)
     public void setStartingPlayer_test_2(){
         ArrayList<Player>[] playersLists = createFakePlayers();
@@ -244,6 +262,9 @@ public class GameTest {
         game.setStartingPlayer();
     }
 
+    /**
+     * Checks if trying to set the starting player when the list of players is not full is correctly handled.
+     */
     @Test(expected = RuntimeException.class)
     public void setStartingPlayer_test_3(){
         ArrayList<Player>[] playersLists = createFakePlayers();
@@ -251,6 +272,9 @@ public class GameTest {
         game.setStartingPlayer();
     }
 
+    /**
+     * Checks if decks are correctly created.
+     */
     @Test
     public void createDecks_test() {
         game.createDecks();
@@ -260,66 +284,4 @@ public class GameTest {
         assertNotNull(game.resourcesGoalDeck);
         assertNotNull(game.patternGoalDeck);
     }
-
-/*
-    @Test
-    public void checkOldGame_test(){
-        initSaving(123);
-        assertTrue(Game.checkOldGame(123));
-        assertFalse(game.checkOldGame(777));
-        game.deleteOldSaving();
-        assertFalse(game.checkOldGame(123));
-        deleteSavingFolder();
-    }
-
-    @Test
-    public void retrieveGame_test() throws IOException {
-        initSaving(123);
-        assertNull(Game.retrieveGame(123));
-        game.saveGame();
-        assertNotNull(Game.retrieveGame(123));
-        game.deleteOldSaving();
-        deleteSavingFolder();
-    }
-
-    public void initSaving(int gameID) {
-        File oldGameFile = new File("savings/" + gameID + "game.svs");
-        File directory = oldGameFile.getParentFile();
-        if (!directory.exists()){
-            directory.mkdirs();
-        } else {
-            for (File file : directory.listFiles()) {
-                file.delete();
-            }
-        }
-        try{
-            oldGameFile.createNewFile();
-        } catch (Exception e){
-            System.err.println("Error creating the dummy saving file!");
-        }
-    }
-
-    public void deleteSavingFolder() {
-        File oldGameFile = new File("savings/game.svs");
-        File directory = oldGameFile.getParentFile();
-        directory.delete();
-    }
-
-    @Test
-    public void deleteOldSaving_test() {
-        initSaving(123);
-        game.deleteOldSaving();
-        assertFalse(game.checkOldGame(123));
-        deleteSavingFolder();
-    }
-
-    @Test
-    public void saveGame_test() throws IOException {
-        initSaving(123);
-        game.deleteOldSaving();
-        game.saveGame();
-        assertTrue(game.checkOldGame(123));
-        game.deleteOldSaving();
-        deleteSavingFolder();
-    } */
 }
