@@ -35,7 +35,11 @@ public enum MessageType {
     REPLY_POINTS_UPDATE,
     TEST_MESSAGE,
 
+    //Messages to request/receive the status of the game
     DISCONNECTION,
+    HEARTBEAT,
+    HEARTBEAT_ACK,
+
 
     //messages to make a move
     REQUEST_PLAYER_MOVE,

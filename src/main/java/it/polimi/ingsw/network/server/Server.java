@@ -17,6 +17,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -89,9 +92,25 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     private final Map<Integer, Player> idPlayerMap; //playerId - player
 
     /**
-     * The number which will be user for generating the RMI port.
+     * The number which will be used for generating the RMI port.
      */
     private int numRMI = 70000;
+
+
+    /**
+     * The scheduler used to send the heartbeat messages (to check if a player in the lobby disconnected).
+     */
+    private ScheduledExecutorService heartbeatScheduler;
+
+    /**
+     * The timeout of the heartbeat.
+     */
+    private final long HEARTBEAT_TIMEOUT = 5000;
+
+    /**
+     * This map is used to associate the player id with the last heartbeat received.
+     */
+    private final Map<Integer, Long> lastHeartbeat = new ConcurrentHashMap<>();
 
     //Takes the network address and port as input, or uses the default port and generates the server
 
@@ -109,6 +128,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.ip = ip;
         this.port = port;
         this.idPlayerMap = new HashMap<>();
+        heartbeatScheduler = Executors.newScheduledThreadPool(1);
     }
 
     /**
@@ -121,7 +141,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     }
 
     /**
-     * Default constructor of the server.
+     * Default constructor of the server, it also starts the heartbeat of the server.
      *
      * @throws IOException If the server cannot be created.
      */
@@ -132,6 +152,8 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.idPlayerMap = new HashMap<>();
         this.ip = InetAddress.getLocalHost();
         this.port = default_port;
+        heartbeatScheduler = Executors.newScheduledThreadPool(1);
+        startHeartBeat();
     }
 
     /**
@@ -298,6 +320,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                     gameControllerMap.get(message.getGameID()).getCurrentGame().getPlayers().get(i).setScore(19);
                 break;
 
+            case HEARTBEAT_ACK:
+                lastHeartbeat.put(message.getSenderID(), System.currentTimeMillis());
+                break;
         }
     }
 
@@ -325,13 +350,25 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     }
 
     /**
+     * This method handles the disconnection of the clients.
+     * @param clientPort the client who disconnected.
+     */
+    public void handleDisconnection(int clientPort){
+        try{
+            notifyDisconnection(clientPort);
+        }catch (IOException | ParseException e){
+            System.out.println("Error while handling disconnection");
+        }
+    }
+
+    /**
      * Notifies all the players in the same lobby that a client has disconnected and terminates the match for all of them.
      *
      * @param clientPort The port of the client that has disconnected.
      * @throws IOException If an I/O error occurs.
      * @throws ParseException If a parse error occurs.
      */
-    void notifyDisconnection(int clientPort) throws IOException, ParseException {
+    public void notifyDisconnection(int clientPort) throws IOException, ParseException {
         System.out.println("Client on port " + clientPort + " disconnected");
         int gameID = -1;
 
@@ -474,6 +511,33 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         }finally {
             stop();
         }
+    }
+
+    /**
+     * This method is used to send a heartbeat message to the clients every 5 seconds,
+     * if the client doesn't respond in (at max) 5 seconds the server declares that client as disconnected.
+     */
+
+    public void startHeartBeat(){
+        heartbeatScheduler.scheduleAtFixedRate(() -> {
+            long currentTime = System.currentTimeMillis();
+            for(Map.Entry<Integer, ClientListenerInterface> entry: idClientMap.entrySet()){
+                int client = entry.getKey();
+                ClientListenerInterface clientInterface = entry.getValue();
+                try {
+                    clientInterface.sendMessageToClient(new Message(HEARTBEAT, serverSocket.getLocalPort(), entry.getKey(), (Object) null));
+                    lastHeartbeat.put(client, currentTime);
+
+                    if (currentTime - lastHeartbeat.get(client) > HEARTBEAT_TIMEOUT) {
+                        System.err.println("No heartbeat response from client: " + client);
+                        handleDisconnection(client);
+                    }
+                } catch (IOException | ParseException e) {
+                    System.err.println("Failed to send heartbeat to client");
+                    handleDisconnection(client);
+                }
+            }
+        }, 0, 5, java.util.concurrent.TimeUnit.SECONDS);
     }
 
     //Players in a lobby do not have a gameID until the game starts
@@ -1016,62 +1080,4 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         }
 
     }
-
-    /*
-    public class RMIServerImpl extends UnicastRemoteObject implements RMIServerInterface{
-        private final Server server;
-        private final List<ClientListenerInterface> clients;
-        public RMIServerImpl(Server server) throws RemoteException {
-            this.server = server;
-            this.clients = new ArrayList<>();
-        }
-        @Override
-        public void loginRequest(String nickname, ClientListenerInterface client, int clientID) throws IOException, ParseException {
-            clients.add(client);
-            Message result = server.serverLogin(new Message(null, clientID, -1, nickname));
-            client.receiveMessage(result);
-        }
-
-        @Override
-        public void newLobbyRequest(String nickname, String lobbyName, int lobbySize, ClientListenerInterface client, int clientID) throws IOException, ParseException {
-            clients.add(client);
-            Message result = server.requestNewLobby(new Message(null, clientID, -1, nickname, lobbyName, lobbySize));
-            client.receiveMessage(result);
-        }
-
-        @Override
-        public void cardRequest(boolean visible, int index, int clientID) throws IOException, ParseException {
-
-            //PlayerId is the clientPort of the player
-            if(visible){
-                Message result = server.requestCard(new Message(null, clientID, getGameControllerMap()
-                        .get(clientID)
-                        .getCurrentGame().getGameID(), new Object[]{1,index}));
-                clients.get(clientID).receiveMessage(result);
-            }else{
-                Message result = server.requestCard(new Message(null, clientID, getGameControllerMap()
-                        .get(clientID)
-                        .getCurrentGame().getGameID(), new Object[]{0,index}));
-                clients.get(clientID).receiveMessage(result);
-            }
-        }
-
-        @Override
-        public void playerMove(int clientID, PlayableCard card, int x, int y) throws IOException, ParseException {
-            Message result = server.playerMove(new Message(
-                    null,
-                    clientID,
-                    server.getGameControllerMap().get(clientID).getCurrentGame().getGameID(),
-                    new Object[]{card, x, y}
-            ));
-
-            clients.get(clientID).receiveMessage(result);
-        }
-        @Override
-        public void requestinfoCard(int x, int y, int clientID) throws IOException, ParseException {
-            Message result = server.requestInfoCard(new Message(null,clientID, -1, new Object[]{x, y}));
-            clients.get(clientID).receiveMessage(result);
-        }
-    }
-    */
 }

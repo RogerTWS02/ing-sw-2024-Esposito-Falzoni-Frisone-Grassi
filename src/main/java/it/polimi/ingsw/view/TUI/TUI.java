@@ -254,6 +254,10 @@ public class TUI extends Thread{
             case NOTIFY_GAME_STARTING:
                 preliminaryChoicesMade = true;
                 break;
+
+            case HEARTBEAT:
+                Thread heartbeatAck = new Thread(this::replyHeartbeat);
+                break;
         }
     }
 
@@ -1015,5 +1019,20 @@ public class TUI extends Thread{
             Thread.currentThread().interrupt();
         }
         return command.split(" ");
+    }
+
+    /**
+     * This method is used to reply to a heartbeat message to check whether a client is still connected or not.
+     */
+    private void replyHeartbeat() {
+
+        cli.sendMessage(
+                new Message(
+                        HEARTBEAT_ACK,
+                        cli.getClientID(),
+                        cli.getGameID()
+                )
+        );
+
     }
 }
