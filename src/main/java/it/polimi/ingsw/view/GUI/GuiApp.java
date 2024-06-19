@@ -10,7 +10,7 @@ import javafx.stage.Stage;
  * GUI App main class.
  */
 public class GuiApp extends Application {
-    private static final String fxmlPath = "/graphics/fxml/";
+    private static final String fxmlPath = "/fxml/";
     private static Stage mainStage;
     private static Parent welcomeScreenRoot;
     private static WelcomeScreenController welcomeScreenController;
