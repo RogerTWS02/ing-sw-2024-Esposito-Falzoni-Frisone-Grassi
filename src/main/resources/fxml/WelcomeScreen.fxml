@@ -6,8 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController">
+<GridPane fx:id="gridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
   </columnConstraints>
@@ -15,7 +14,7 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <TextField maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="300.0" promptText="Insert nickname" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+      <TextField fx:id="textField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="300.0" promptText="Insert nickname" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
          <GridPane.margin>
             <Insets top="140.0" />
          </GridPane.margin>
@@ -26,14 +25,22 @@
             <Glow />
          </effect>
       </TextField>
-      <Button alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="60.0" text="Done" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+      <Button fx:id="doneButton" onAction="#ButtonPressed" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="60.0" text="Done" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
          <GridPane.margin>
             <Insets top="240.0" />
          </GridPane.margin>
       </Button>
-      <Slider blockIncrement="4.0" majorTickUnit="4.0" max="4.0" maxHeight="-Infinity" maxWidth="-Infinity" min="2.0" minHeight="-Infinity" minWidth="-Infinity" prefWidth="300.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="2.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+      <Slider fx:id="playerSlider" blockIncrement="4.0" majorTickUnit="4.0" max="4.0" maxHeight="-Infinity" maxWidth="-Infinity" min="2.0" minHeight="-Infinity" minWidth="-Infinity" prefWidth="300.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="2.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
          <GridPane.margin>
             <Insets top="165.0" />
          </GridPane.margin></Slider>
+      <Label fx:id="textLabel"  alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" textAlignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+         <font>
+            <Font size="16.0" />
+         </font>
+         <GridPane.margin>
+            <Insets left="650.0" top="60.0" />
+         </GridPane.margin>
+      </Label>
    </children>
 </GridPane>
