@@ -2,6 +2,7 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.server.Server;
+import it.polimi.ingsw.view.GUI.GuiApp;
 import it.polimi.ingsw.view.TUI.TUI;
 import org.json.simple.parser.ParseException;
 import java.io.IOException;
@@ -29,13 +30,13 @@ public class CodexNaturalisApp {
         String network = args.length > 1 ? args[1].toLowerCase() : "socket";
         System.out.println(param+" "+network);
 
-        System.out.print("Insert the server IP to connect, or press enter to connect to localHost: ");
-        try{
-            String temp = scanner.nextLine();
-            if(!temp.isEmpty()) ipAddr = InetAddress.getByName(temp);
-        }catch(UnknownHostException e){
-            System.out.println("Ip entered not valid, trying connection on localHost");
-        }
+            System.out.print("Insert the server IP, or press enter to connect to localHost: ");
+            try{
+                String temp = scanner.nextLine();
+                if(!temp.isEmpty()) ipAddr = InetAddress.getByName(temp);
+            }catch(UnknownHostException e){
+                System.out.println("IP not valid, connecting to localHost...");
+            }
 
         switch(network) {
             case "rmi":
@@ -64,11 +65,11 @@ public class CodexNaturalisApp {
      */
     private static void launchClient(boolean hasGUI, boolean hasSocket) throws IOException, ParseException {
         if (hasGUI) {
-            //TODO: tutta la parte della GUI con JavaFX
+            GuiApp guiApp = new GuiApp();
+            guiApp.main(null);
         } else {
             TUI tui = new TUI();
             try {
-                //per il momento funziona solo su localHost con porta di default
                 tui.cli  = new Client(hasSocket,
                         ((ipAddr == null)? InetAddress.getLocalHost(): ipAddr).getHostName()
                         , 1234, tui);

@@ -29,7 +29,7 @@ public class CodexNaturalisTempApp1 {
         String network = args.length > 1 ? args[1].toLowerCase() : "socket";
         System.out.println(param+" "+network);
 
-        System.out.print("Insert the server IP to connect, or press enter to connect to localHost: ");
+        System.out.print("Insert the server IP, or press enter to connect to localHost: ");
         try{
             String temp = scanner.nextLine();
             if(!temp.isEmpty()) ipAddr = InetAddress.getByName(temp);

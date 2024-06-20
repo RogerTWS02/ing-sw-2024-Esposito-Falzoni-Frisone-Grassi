@@ -32,7 +32,7 @@ public class WelcomeScreenController implements Initializable {
      * @param resourceBundle Ignored.
      */
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        gridPane.setStyle("-fx-background-image: url('/gui_graphics/WelcomeScreenBackground.png'); -fx-background-size: contain;");
+        gridPane.setStyle("-fx-background-image: url('/gui_graphics/WelcomeScreenBackground.png'); -fx-background-size: stretch;");
         playerSlider.setVisible(false);
         playerSlider.setDisable(true);
         textLabel.setVisible(false);
