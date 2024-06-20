@@ -192,6 +192,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      */
     public synchronized int createSkeleton(ClientListenerInterface skelly){
         idClientMap.put(numRMI, skelly);
+        lastHeartbeat.put(numRMI, System.currentTimeMillis());
         return numRMI++;
     }
 
@@ -357,7 +358,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         try{
             notifyDisconnection(clientPort);
         }catch (IOException | ParseException e){
-            System.out.println("Error while handling disconnection");
+            System.out.println("Error while handling disconnection: "+e);
         }
     }
 
@@ -381,6 +382,10 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                     for(int id: lobbyPlayerMap.get(l)){
                         //This id is used to avoid iterating on sockets of players that have not yet entered the lobby
                         if(idClientMap.get(id) == null) continue;
+
+                        //PER DEBUGGNG
+                        System.out.println("MESSAGGIO DI DISCONNESSIONE MANDATO A: "+id);
+
                         idClientMap.get(id).sendMessageToClient(
                                 new Message(
                                         REPLY_INTERRUPT_GAME,
@@ -392,10 +397,8 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                 )
                         );
 
-                        //disconnetto l'handler e lo rimuovo dal server una volta notificato della fine della partita
-
-                        //TODO: DA SISTEMARE PER FAVORE
-                        //idClientMap.get(id).disconnect();
+                        //disconnetto l'handler/stub e lo rimuovo dal server una volta notificato della fine della partita
+                        idClientMap.get(id).disconnect();
 
                         idClientMap.remove(id);
                         //remove the player associated also
@@ -503,6 +506,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 ClientHandler clientHandler = new ClientHandler(this ,clientSocket);
                 //match the client port with the client handler
                 idClientMap.put(clientSocket.getPort(), clientHandler);
+                lastHeartbeat.put(clientSocket.getPort(), System.currentTimeMillis());
                 Thread t = new Thread(clientHandler,"server");
                 t.start();
             }
@@ -521,20 +525,28 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     public void startHeartBeat(){
         heartbeatScheduler.scheduleAtFixedRate(() -> {
             long currentTime = System.currentTimeMillis();
-            for(Map.Entry<Integer, ClientListenerInterface> entry: idClientMap.entrySet()){
-                int client = entry.getKey();
-                ClientListenerInterface clientInterface = entry.getValue();
+            for(int clientID : idClientMap.keySet()){
                 try {
-                    clientInterface.sendMessageToClient(new Message(HEARTBEAT, serverSocket.getLocalPort(), entry.getKey(), (Object) null));
-                    lastHeartbeat.put(client, currentTime);
+                    idClientMap.get(clientID).sendMessageToClient(
+                            new Message(
+                                    HEARTBEAT,
+                                    serverSocket.getLocalPort(),
+                                    clientID,
+                                    (Object) null
+                            )
+                    );
+                    //lastHeartbeat.put(clientID, currentTime);
 
-                    if (currentTime - lastHeartbeat.get(client) > HEARTBEAT_TIMEOUT) {
-                        System.err.println("No heartbeat response from client: " + client);
-                        handleDisconnection(client);
+                    //PER DEBUGGING
+                    System.out.println("Tempo trascorso per "+clientID+": "+(currentTime - lastHeartbeat.get(clientID)));
+
+                    if (currentTime - lastHeartbeat.get(clientID) > HEARTBEAT_TIMEOUT) {
+                        System.err.println("No heartbeat response from client: " + clientID);
+                        handleDisconnection(clientID);
                     }
                 } catch (IOException | ParseException e) {
-                    System.err.println("Failed to send heartbeat to client");
-                    handleDisconnection(client);
+                    System.err.println("Failed to send heartbeat to client: "+e);
+                    handleDisconnection(clientID);
                 }
             }
         }, 0, 5, java.util.concurrent.TimeUnit.SECONDS);

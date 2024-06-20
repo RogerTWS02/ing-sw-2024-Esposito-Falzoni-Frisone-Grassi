@@ -20,4 +20,5 @@ public interface ClientListenerInterface extends Remote {
      */
     //void receiveMessage(Message message) throws IOException, ParseException;
     void sendMessageToClient(Message message) throws IOException, ParseException;
+    void disconnect() throws IOException;
 }

@@ -68,7 +68,7 @@ public class ClientServerTest {
         Thread.sleep(1000);
         //cli.sendMessage(new Message( REQUEST_GOAL_CARD, cli.getSocketPort(), -1, cardResource));
         serverThread.join();
-        cli.closeSocket();
+        cli.closeConnection();
 
     }
 

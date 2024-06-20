@@ -144,15 +144,6 @@ public class ClientHandler extends Thread implements ClientListenerInterface {
             }
             isConnected = false;
             Thread.currentThread().interrupt();
-
-            //Notify the server of the disconnection
-            try {
-                server.notifyDisconnection(clientSocket.getPort());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }

@@ -72,8 +72,6 @@ public class CodexNaturalisTempApp2 {
                 tui.cli  = new Client(hasSocket,
                         ((ipAddr == null)? InetAddress.getLocalHost(): ipAddr).getHostName()
                         , 1234, tui);
-
-                Thread.sleep(1000);
                 tui.cli.run();
                 tui.start();
             }catch(Exception e){

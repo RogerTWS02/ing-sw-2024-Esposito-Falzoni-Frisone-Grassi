@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -127,7 +129,7 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                     }
                 }
             } finally {
-                closeSocket();
+                closeConnection();
             }
         });
         t.start();
@@ -196,7 +198,7 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                 readFromSocketAsync(inp);
             }catch (IOException e){
                 logger.log(Level.SEVERE, "Error in reading from socket");
-                closeSocket();
+                closeConnection();
             }
         }else{
             try{
@@ -217,16 +219,28 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
 
     }
 
+    public void disconnect(){
+        try {
+            Naming.unbind(Server.NAME);
+        } catch (RemoteException | NotBoundException | MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.exit(0);
+    }
 
     /**
      * This method is used to close the socket and the streams.
      */
-    public synchronized void closeSocket(){
-        try{
-            inp.close();
-            out.close();
-            socket.close();
-        }catch(IOException ignored){}
+    public synchronized void closeConnection(){
+        if(hasSocket){
+            try{
+                inp.close();
+                out.close();
+                socket.close();
+            }catch(IOException ignored){}
+
+        }
         System.exit(0);
     }
 
@@ -292,20 +306,5 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
     public int getClientID() {
         return clientID;
     }
-
-    /*
-    public ClientListenerInterface getClientListener() {
-        return clientListener;
-    }
-    public class ClientListener extends UnicastRemoteObject implements ClientListenerInterface {
-        public ClientListener() throws RemoteException {
-            super();
-        }
-
-        public void receiveMessage(Message message) throws IOException, ParseException {
-            tui.onMessageReceived(message);
-        }
-    }
-    */
 
 }

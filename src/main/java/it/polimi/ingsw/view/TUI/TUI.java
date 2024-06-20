@@ -229,7 +229,9 @@ public class TUI extends Thread{
 
             case REPLY_INTERRUPT_GAME:
                 System.out.println((String) message.getObj()[0]);
-                cli.closeSocket();
+
+                //close the connection client-side according to the client network protocol
+                cli.closeConnection();
                 break;
 
             case REPLY_POINTS_UPDATE:
@@ -255,7 +257,8 @@ public class TUI extends Thread{
                 break;
 
             case HEARTBEAT:
-                Thread heartbeatAck = new Thread(this::replyHeartbeat);
+                replyHeartbeat();
+                //Thread heartbeatAck = new Thread(this::replyHeartbeat);
                 break;
         }
     }
