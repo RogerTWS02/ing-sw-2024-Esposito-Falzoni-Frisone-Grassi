@@ -4,14 +4,17 @@ import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.server.Server;
 import it.polimi.ingsw.view.TUI.TUI;
 import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 
 /**
  * Main class of the Codex Naturalis application.
  */
 public class CodexNaturalisApp {
+    private static Scanner scanner = new Scanner(System.in);
+    private static InetAddress ipAddr;
 
     /**
      * Main method of the Codex Naturalis application.
@@ -25,6 +28,14 @@ public class CodexNaturalisApp {
         String param = args.length > 0 ? args[0].toLowerCase() : "cli";
         String network = args.length > 1 ? args[1].toLowerCase() : "socket";
         System.out.println(param+" "+network);
+
+        System.out.print("Insert the server IP to connect, or press enter to connect to localHost: ");
+        try{
+            String temp = scanner.nextLine();
+            if(!temp.isEmpty()) ipAddr = InetAddress.getByName(temp);
+        }catch(UnknownHostException e){
+            System.out.println("Ip entered not valid, trying connection on localHost");
+        }
 
         switch(network) {
             case "rmi":
@@ -40,6 +51,7 @@ public class CodexNaturalisApp {
                             case "gui" -> launchClient(true, true);
                             case "server" -> launchServer(true);
                         }
+                        break;
             default:
                 launchClient(false, true);
         }
@@ -57,7 +69,9 @@ public class CodexNaturalisApp {
             TUI tui = new TUI();
             try {
                 //per il momento funziona solo su localHost con porta di default
-                tui.cli  = new Client(hasSocket, InetAddress.getLocalHost().getHostName(), 1234, tui);
+                tui.cli  = new Client(hasSocket,
+                        ((ipAddr == null)? InetAddress.getLocalHost(): ipAddr).getHostName()
+                        , 1234, tui);
                 tui.cli.run();
                 tui.start();
             }catch(Exception e){
@@ -72,7 +86,7 @@ public class CodexNaturalisApp {
     private static void launchServer(Boolean hasSocket) {
         Server server;
         try{
-            server = new Server();
+            server = (ipAddr == null)? new Server(): new Server(ipAddr, 1234);
             server.run();
         } catch (IOException e){
             System.exit(1);

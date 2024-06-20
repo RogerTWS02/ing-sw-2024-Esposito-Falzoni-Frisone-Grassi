@@ -19,7 +19,6 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 
 public class TUI extends Thread{
     public static Client cli;
-
     private String nameP;
     private static List<String> cardToChooseUUID;
     private ArrayList<String> currentHandUUID;
