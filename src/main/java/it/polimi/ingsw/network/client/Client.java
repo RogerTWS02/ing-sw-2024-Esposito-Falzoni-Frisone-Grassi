@@ -214,6 +214,7 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                 //play.run();
             }catch (NotBoundException | IOException e) {
                 logger.log(Level.SEVERE, "Error in connecting to server using RMI");
+                System.exit(1);
             }
         }
 
@@ -238,8 +239,9 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                 inp.close();
                 out.close();
                 socket.close();
-            }catch(IOException ignored){}
-
+            }catch(Exception e){
+                System.exit(1);
+            }
         }
         System.exit(0);
     }

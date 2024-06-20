@@ -7,7 +7,6 @@ import it.polimi.ingsw.view.TUI.TUI;
 import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 /**
@@ -26,24 +25,57 @@ public class CodexNaturalisApp {
      */
     public static void main(String[] args) throws IOException, ParseException {
         //initial parameters: <gui/cli/server> <socket/rmi>
-        String param = args.length > 0 ? args[0].toLowerCase() : "cli";
-        String network = args.length > 1 ? args[1].toLowerCase() : "socket";
-        System.out.println(param+" "+network);
+        String param = "cli", network = "socket";
+        for(int i = 0; i < args.length; i++)
+            args[i] = args[i].toLowerCase();
 
-        System.out.print("Insert the server IP, or press enter to connect to localHost: ");
-        try{
-            String temp = scanner.nextLine();
-            if(!temp.isEmpty()) ipAddr = InetAddress.getByName(temp);
-        }catch(UnknownHostException e){
-            System.out.println("IP not valid, connecting to localHost...");
+        handleInput: {
+            if(args.length == 0) {
+                param = "cli";
+                network = "socket";
+                break handleInput;
+            }
+            if(args[0].equals("server")) {
+                param = "server";
+                network = "socket"; //Not a true socket obv, just for the code flow
+                try {
+                    ipAddr = InetAddress.getByName(args[1]);
+                } catch (Exception e) {
+                    System.out.println("'localhost' selected\n");
+                }
+                break handleInput;
+            }
+            if(!args[0].equals("cli") && !args[0].equals("gui")) {
+                System.out.println("Syntax: <server> <server-IP> / <cli/gui> <socket/rmi> <server-IP>");
+                System.exit(1);
+            } else {
+                param = args[0];
+                network = "socket";
+            }
+            if(args.length > 1 && !args[1].equals("socket") && !args[1].equals("rmi")) {
+                System.out.println("Syntax: <server> <server-IP> / <cli/gui> <socket/rmi> <server-IP>");
+                System.exit(1);
+            } else {
+                if(args.length > 1)
+                    network = args[1];
+            }
+            if(args.length > 2) {
+                try {
+                    ipAddr = InetAddress.getByName(args[2]);
+                } catch (Exception e) {
+                    System.out.println("IP not valid, 'localhost' selected\n");
+                }
+            }
         }
+
+        //Debug
+        System.out.println(param + " " + network + "\n");
 
         switch(network) {
             case "rmi":
                         switch (param) {
                             case "cli" -> launchClient(false, false);
                             case "gui" -> launchClient(true, false);
-                            case "server" -> launchServer(false);
                         }
                         break;
             case "socket":
@@ -65,18 +97,19 @@ public class CodexNaturalisApp {
      */
     private static void launchClient(boolean hasGUI, boolean hasSocket) throws IOException, ParseException {
         if (hasGUI) {
+            //TODO: connessione. E se non c'è server, devo far sì che non si apra la GUI.
             GuiApp guiApp = new GuiApp();
             guiApp.main(null);
         } else {
             TUI tui = new TUI();
             try {
                 tui.cli  = new Client(hasSocket,
-                        ((ipAddr == null)? InetAddress.getLocalHost(): ipAddr).getHostName()
+                        ((ipAddr == null) ? InetAddress.getLocalHost(): ipAddr).getHostName()
                         , 1234, tui);
                 tui.cli.run();
                 tui.start();
             }catch(Exception e){
-                System.out.println("c'è un problema col client: "+e);
+                System.out.println("Error: " + e);
             }
         }
     }
