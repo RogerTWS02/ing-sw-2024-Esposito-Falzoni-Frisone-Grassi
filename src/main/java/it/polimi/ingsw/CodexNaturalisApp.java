@@ -25,18 +25,18 @@ public class CodexNaturalisApp {
      * @throws ParseException If a parse error occurs.
      */
     public static void main(String[] args) throws IOException, ParseException {
-        //initial parameters: <gui/tui/server> <socket/rmi>
+        //initial parameters: <gui/cli/server> <socket/rmi>
         String param = args.length > 0 ? args[0].toLowerCase() : "cli";
         String network = args.length > 1 ? args[1].toLowerCase() : "socket";
         System.out.println(param+" "+network);
 
-            System.out.print("Insert the server IP, or press enter to connect to localHost: ");
-            try{
-                String temp = scanner.nextLine();
-                if(!temp.isEmpty()) ipAddr = InetAddress.getByName(temp);
-            }catch(UnknownHostException e){
-                System.out.println("IP not valid, connecting to localHost...");
-            }
+        System.out.print("Insert the server IP, or press enter to connect to localHost: ");
+        try{
+            String temp = scanner.nextLine();
+            if(!temp.isEmpty()) ipAddr = InetAddress.getByName(temp);
+        }catch(UnknownHostException e){
+            System.out.println("IP not valid, connecting to localHost...");
+        }
 
         switch(network) {
             case "rmi":

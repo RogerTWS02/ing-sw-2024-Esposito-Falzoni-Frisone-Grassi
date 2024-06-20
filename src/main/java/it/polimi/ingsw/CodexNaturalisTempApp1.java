@@ -2,6 +2,7 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.server.Server;
+import it.polimi.ingsw.view.GUI.GuiApp;
 import it.polimi.ingsw.view.TUI.TUI;
 import org.json.simple.parser.ParseException;
 import java.io.IOException;
@@ -64,7 +65,8 @@ public class CodexNaturalisTempApp1 {
      */
     private static void launchClient(boolean hasGUI, boolean hasSocket) throws IOException, ParseException {
         if (hasGUI) {
-            //TODO: tutta la parte della GUI con JavaFX
+            GuiApp guiApp = new GuiApp();
+            guiApp.main(null);
         } else {
             TUI tui = new TUI();
             try {
