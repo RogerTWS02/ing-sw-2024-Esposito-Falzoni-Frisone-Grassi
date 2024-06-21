@@ -15,13 +15,13 @@
 ### Server
 
 ```bash
-java -jar PSP25.jar server
+java -jar <server.jar> server
 ```
 
 ### Client
 
 ```bash
-java -jar PSP25.jar [cli|gui] [socket|rmi] <server-IP>
+java -jar <client.jar> [cli|gui] [socket|rmi] <server-IP>
 ``` 
 Startup options:
 
