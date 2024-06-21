@@ -38,11 +38,7 @@ public class CodexNaturalisApp {
             if(args[0].equals("server")) {
                 param = "server";
                 network = "socket"; //Not a true socket obv, just for the code flow
-                //try {
                     ipAddr = InetAddress.getLocalHost();
-                //} catch (Exception e) {
-                    //System.out.println("'localhost' selected\n");
-                //}
                 break handleInput;
             }
             if(!args[0].equals("cli") && !args[0].equals("gui")) {
