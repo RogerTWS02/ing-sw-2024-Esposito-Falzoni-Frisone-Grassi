@@ -321,7 +321,55 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             case REQUEST_AVAILABLE_LOBBIES:
                 replyAvailableLobbies(message);
                 break;
+
+            case REQUEST_PLAYER_BOARD:
+                requestPlayerBoardHandler(message);
+                break;
+
+            case REPLY_PLAYER_BOARD_INFOS:
+                replyPlayerBoardInfosHandler(message);
+                break;
         }
+    }
+
+    /**
+     * Handles the receiving of the player board's infos by a certain player.
+     *
+     * @param message The message which contains the player's board infos.
+     */
+    public void replyPlayerBoardInfosHandler(Message message) throws IOException, ParseException {
+        idClientMap.get(message.getObj()[0]).sendMessageToClient(
+                new Message(
+                        REPLY_PLAYER_BOARD,
+                        this.serverSocket.getLocalPort(),
+                        message.getGameID(),
+                        new Object[] {message.getObj()[3], message.getObj()[1], message.getObj()[2]}
+                )
+        );
+    }
+
+    /**
+     * Handles the request of displaying a player's board.
+     *
+     * @param message The message which contains the request.
+     */
+    public void requestPlayerBoardHandler(Message message) throws IOException, ParseException {
+        ArrayList<Player> gamePlayers = gameControllerMap.get(message.getGameID()).getCurrentGame().getPlayers();
+        int targetPlayerClientPort = 0;
+        for(int i = 0; i < gamePlayers.size(); i++) {
+            if(gamePlayers.get(i).getNickname().equals(message.getObj()[0])) {
+                targetPlayerClientPort = gamePlayers.get(i).getClientPort();
+                break;
+            }
+        }
+        idClientMap.get(targetPlayerClientPort).sendMessageToClient(
+                new Message(
+                        REQUEST_PLAYER_BOARD_INFOS,
+                        this.serverSocket.getLocalPort(),
+                        message.getGameID(),
+                        new Object[] {message.getSenderID()}
+                )
+        );
     }
 
     /**

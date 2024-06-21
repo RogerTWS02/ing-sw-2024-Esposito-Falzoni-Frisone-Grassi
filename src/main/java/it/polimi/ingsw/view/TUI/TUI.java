@@ -266,7 +266,42 @@ public class TUI extends Thread{
             case REPLY_AVAILABLE_LOBBIES:
                 handleReplyAvailableLobbies(message);
                 break;
+
+            case REQUEST_PLAYER_BOARD_INFOS:
+                requestPlayerBoardInfosHandler(message);
+                break;
+
+            case REPLY_PLAYER_BOARD:
+                replyPlayerBoardHandler(message);
+                break;
         }
+    }
+
+    /**
+     * Handles the receiving of infos about a player's player board.
+     *
+     * @param message The message received.
+     */
+    public void replyPlayerBoardHandler(Message message) {
+        System.out.println("\n" + message.getObj()[0] + "'s board: \n");
+        Board tempBoard = new Board();
+        tempBoard.drawBoard((Resource[][]) message.getObj()[1], (List<int[]>) message.getObj()[2]);
+        System.out.println("\n");
+    }
+
+    /**
+     * Handles the request for the player board infos.
+     *
+     * @param message The message received.
+     */
+    public void requestPlayerBoardInfosHandler(Message message) {
+        cli.sendMessage(
+                new Message(
+                        REPLY_PLAYER_BOARD_INFOS,
+                        cli.getClientID(),
+                        message.getGameID(),
+                        new Object[]{message.getObj()[0], onBoard, available, nameP})
+        );
     }
 
     /**
@@ -636,6 +671,12 @@ public class TUI extends Thread{
         inputThread.setDaemon(true);
         inputThread.start();
 
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         //Show game logo
         startGame.ShowStartGame();
 
@@ -817,6 +858,7 @@ public class TUI extends Thread{
                             
                             /infoCard posX posY - Returns infos about a card on the player's board
                             /showCommonCards - Shows the common resource and golden cards
+                            /showBoard PlayerNickname - Shows the board of the given player
                             /openChat - Opens the chat tab, where you can read and send messages to other players
                             /quitGame - Quits the current session and ends the game for all the other players
                             
@@ -1002,11 +1044,42 @@ public class TUI extends Thread{
                 );
                 break;
 
+            case "/showboard":
+                if(!nicknames.containsKey(command[1])) {
+                    System.out.println("\nA player with the nickname '" + command[1] + "' doesn't exist!");
+                    break;
+                }
+                requestShowBoard(command[1]);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+
             default:
                 System.out.println("Command not valid, try '/help' to view syntax");
         }
     }
 
+    /**
+     * Displays the board of the player with the given nickname.
+     *
+     * @param playerNickname The nickname of the player whose board has to be displayed.
+     */
+    public void requestShowBoard(String playerNickname) {
+        cli.sendMessage(
+                new Message(
+                        REQUEST_PLAYER_BOARD,
+                        cli.getClientID(),
+                        cli.getGameID(),
+                        new Object[]{playerNickname})
+        );
+    }
+
+    /**
+     * Displays the chat.
+     */
     void chat(){
         String [] command;
         for(int i = 0; i < 100; i++){
