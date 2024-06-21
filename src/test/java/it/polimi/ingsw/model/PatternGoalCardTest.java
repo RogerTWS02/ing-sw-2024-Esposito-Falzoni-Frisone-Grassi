@@ -149,4 +149,14 @@ public class PatternGoalCardTest {
         fakePlayerboard.placeCard(prima,39,43);
         assertEquals(card.checkGoal(fakePlayerboard), 0);
     }
+
+    /**
+     * Check the checkGoal method by controlling the case of empty player's board.
+     */
+    @Test
+    public void checkGoal_empty_board(){
+        Pawn r = null;
+        PlayerBoard fakePlayerboard = new PlayerBoard(r);
+        assertEquals(card.checkGoal(fakePlayerboard), 0);
+    }
 }
