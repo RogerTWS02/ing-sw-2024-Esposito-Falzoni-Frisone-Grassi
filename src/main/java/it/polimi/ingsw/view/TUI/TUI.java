@@ -328,7 +328,7 @@ public class TUI extends Thread{
     public void handleReplyAvailableLobbies(Message message) {
         String[] availableLobbies = (String[]) message.getObj()[0];
         if(availableLobbies.length == 0){
-            System.out.println("No lobbies available at the moment. Creating a new one...\n");
+            System.out.println("\nNo lobbies available at the moment. Creating a new one...\n");
             areThereAvailableLobbies = false;
             return;
         }
@@ -702,7 +702,15 @@ public class TUI extends Thread{
             Thread.onSpinWait();
         if(areThereAvailableLobbies) {
             do {
+                areThereAvailableLobbies = null;
                 requestLobbies();
+                while(areThereAvailableLobbies == null)
+                    Thread.onSpinWait();
+                if(!areThereAvailableLobbies) {
+                    //System.out.println("\n\nNo more available lobbies! Press 'enter'.\nInsert username (max 16 characters): ");
+                    command = new String[]{"create"};
+                    break;
+                }
                 System.out.println("\nAvailable lobbies:");
                 for (String lobby : availableLobbies)
                         System.out.println(lobby);
