@@ -79,4 +79,12 @@ fabric.properties
 
 # Graphics resources:
 /src/main/resources/graphics/**
+
 /target/**
+/.idea/
+/.mvn/
+/META-INF/
+UML method.png
+UML versione 2.0 .drawio.png
+mvnw
+mvnw.cmd
