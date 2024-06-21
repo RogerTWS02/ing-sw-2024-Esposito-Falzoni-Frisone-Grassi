@@ -144,6 +144,8 @@ public class GameTest {
         PlayableCard card_2 = gameController.craftStartingCard(JSONCard);
         gameController.placeCard(40, 40, card_2, game.getPlayers().get(0));
         gameController.placeCard(40, 40, card_2, game.getPlayers().get(3));
+        JSONCard = (JSONObject) game.goldenDeck.get(0);
+        card_2 = gameController.craftGoldenCard(JSONCard);
         JSONCard = (JSONObject) game.resourceDeck.get(0);
         card_2 = gameController.craftResourceCard(JSONCard);
         gameController.placeCard(39, 39, card_2, game.getPlayers().get(0));

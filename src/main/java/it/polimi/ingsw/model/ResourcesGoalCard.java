@@ -41,7 +41,6 @@ public class ResourcesGoalCard extends GoalCard{
         Map<Resource, Integer> countResources = new HashMap<>();
         /*Now I compare the resources in the resources array and check how many of them
         are there in the board*/
-        countResources.clear();
         for (Resource r : board.getResources()) {
             countResources.put(r, countResources.getOrDefault(r, 0) + 1);
         }
