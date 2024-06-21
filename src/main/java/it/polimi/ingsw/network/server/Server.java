@@ -129,6 +129,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.port = port;
         this.idPlayerMap = new HashMap<>();
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
+        startHeartBeat();
     }
 
     /**
@@ -409,6 +410,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
                         //remove the player associated also
                         idPlayerMap.remove(id);
+
+                        //remove the heartbeat associated to the player
+                        lastHeartbeat.remove(id);
                     }
                     //remove the game controller also
                     gameControllerMap.remove(gameID);
@@ -541,7 +545,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                     (Object) null
                             )
                     );
-                    //lastHeartbeat.put(clientID, currentTime);
 
                     //PER DEBUGGING
                     System.out.println("Tempo trascorso per "+clientID+": "+(currentTime - lastHeartbeat.get(clientID)));
