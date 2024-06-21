@@ -67,7 +67,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     /**
      * The number of how many players have made their preliminary choices.
      */
-    private int preliminaryChoices = 0;
+    private Map<Integer, Integer> preliminaryChoices = new HashMap<>(); //<gameID, number of players that made their choices>
 
     //Key is the player's socket, value is the player's handler
     /**
@@ -130,15 +130,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.idPlayerMap = new HashMap<>();
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
         startHeartBeat();
-    }
-
-    /**
-     * Returns the map of the game controllers.
-     *
-     * @return The map of the game controllers.
-     */
-    public static Map<Integer, GameController> getGameControllerMap() {
-        return gameControllerMap;
     }
 
     /**
@@ -304,8 +295,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                 }
                         )
                 );
-                preliminaryChoices++;
-                if(preliminaryChoices == gameControllerMap.get(message.getGameID()).getCurrentGame().getPlayers().size())
+
+                preliminaryChoices.merge(message.getGameID(), 1, Integer::sum);
+                if(preliminaryChoices.get(message.getGameID()) == gameControllerMap.get(message.getGameID()).getCurrentGame().getPlayers().size())
                     notifyGameFlowStarting(message.getGameID());
                 break;
 
