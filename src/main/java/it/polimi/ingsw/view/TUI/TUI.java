@@ -49,6 +49,8 @@ public class TUI extends Thread{
     private Queue<String> chatMessages = new LinkedList<>();
     private volatile static boolean gameover = false;
     private ArrayList<String> winners;
+    private volatile Boolean areThereAvailableLobbies = null;
+    private List<String> availableLobbies = new ArrayList<>();
 
     public TUI() throws IOException, ParseException {
     }
@@ -260,7 +262,31 @@ public class TUI extends Thread{
                 replyHeartbeat();
                 //Thread heartbeatAck = new Thread(this::replyHeartbeat);
                 break;
+
+            case REPLY_AVAILABLE_LOBBIES:
+                handleReplyAvailableLobbies(message);
+                break;
         }
+    }
+
+    /**
+     * Handles the reply containing the available lobbies.
+     *
+     * @param message The message received.
+     */
+    public void handleReplyAvailableLobbies(Message message) {
+        String[] availableLobbies = (String[]) message.getObj()[0];
+        if(availableLobbies.length == 0){
+            System.out.println("No lobbies available at the moment. Creating a new one...\n");
+            areThereAvailableLobbies = false;
+            return;
+        }
+        /*System.out.println("\nAvailable lobbies:");
+        for (String lobby : availableLobbies) {
+            System.out.println(lobby);
+        }*/
+        areThereAvailableLobbies = true;
+        this.availableLobbies = new ArrayList<>(Arrays.asList(availableLobbies));
     }
 
     /**
@@ -268,7 +294,7 @@ public class TUI extends Thread{
      *
      * @return The nickname chosen by the player.
      */
-    public String insertNickname() {
+    public String insertNickname(String lobby) {
         String[] command = null;
         while(cli.getLobbyName().isEmpty()) {
             do {
@@ -284,7 +310,7 @@ public class TUI extends Thread{
                             REQUEST_LOGIN,
                             cli.getClientID(),
                             -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
-                            command[0])
+                            new Object[]{command[0], lobby})
             );
             try {
                 Thread.sleep(1000);
@@ -571,9 +597,25 @@ public class TUI extends Thread{
                 return;
             }
         }
-
     }
 
+    /**
+     * This method is used to request the lobbies available.
+     */
+    public void requestLobbies() {
+        cli.sendMessage(
+                new Message(
+                        REQUEST_AVAILABLE_LOBBIES,
+                        cli.getClientID(),
+                        cli.getGameID(),
+                        new Object[]{}
+                )
+        );
+    }
+
+    /**
+     * This method is the main thread of the TUI.
+     */
     public void run(){
         //Initialize scanner in order to read user input
         String[] command;
@@ -601,8 +643,23 @@ public class TUI extends Thread{
         //Show game logo
         startGame.ShowStartGame();
 
+        //Request available lobbies
+        requestLobbies();
+        while(areThereAvailableLobbies == null)
+            Thread.onSpinWait();
+        if(areThereAvailableLobbies) {
+            availableLobbies.add("create");
+            do {
+                requestLobbies();
+                System.out.print("\nInsert the name of the lobby you want to join, or type 'create' (press 'enter' to refresh): ");
+                command = getCommandFromQueue();
+            } while(command.length == 0 || command[0].isEmpty() || command.length > 1 || !availableLobbies.contains(command[0]));
+        } else {
+            command = new String[]{"create"};
+        }
+
         //Insert nickname
-        nameP = insertNickname();
+        nameP = insertNickname(command[0]);
 
         //Choose lobby size and create it
         createNewLobby(nameP);

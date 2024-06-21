@@ -317,7 +317,33 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             case HEARTBEAT_ACK:
                 lastHeartbeat.put(message.getSenderID(), System.currentTimeMillis());
                 break;
+
+            case REQUEST_AVAILABLE_LOBBIES:
+                replyAvailableLobbies(message);
+                break;
         }
+    }
+
+    /**
+     * Handles the request of sending available lobbies.
+     *
+     * @param message The message received.
+     */
+    public void replyAvailableLobbies(Message message) throws IOException, ParseException {
+        String[] availableLobbies = lobbyPlayerMap.keySet().stream()
+                .filter(l -> !l.isGameStarted() && !l.isLobbyFull())
+                .map(Lobby::getLobbyName)
+                .toArray(String[]::new);
+        idClientMap.get(message.getSenderID()).sendMessageToClient(
+                new Message(
+                        REPLY_AVAILABLE_LOBBIES,
+                        this.serverSocket.getLocalPort(),
+                        message.getGameID(),
+                        new Object[]{
+                                availableLobbies
+                        }
+                )
+        );
     }
 
     /**
@@ -407,6 +433,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                         lastHeartbeat.remove(id);
                     }
                     //remove the game controller also
+                    preliminaryChoices.remove(gameID);
                     gameControllerMap.remove(gameID);
                     //remove the lobby
                     lobbyPlayerMap.remove(l);
@@ -584,10 +611,114 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             );
             return null;
         }else{
-            //if the nickname is valid I register the player in the first valid lobby
             boolean found = false;
+            if(!message.getObj()[1].equals("create")) {
+                Lobby lobbyToJoin = null;
+                found = true;
+                //I make the player join the chosen lobby
+                for(Lobby lobby : lobbyPlayerMap.keySet()) {
+                    if(lobby.getLobbyName().equals(message.getObj()[1])) {
+                        lobbyToJoin = lobby;
+                        break;
+                    }
+                }
 
-            for(Lobby l: lobbyPlayerMap.keySet()) {
+                idClientMap.get(message.getSenderID()).sendMessageToClient(
+                        new Message(
+                                REPLY_LOBBY_INFO,
+                                this.serverSocket.getLocalPort(),
+                                //In the gameController constructor a new game is created with the gameID,
+                                //so also the gameID is the gameID of the first player
+                                //We cannot assign a gameID to the player when the game starts otherwise
+                                //the file saving will not work
+                                message.getSenderID(),
+                                new Object[]{
+                                        lobbyToJoin.getLobbyName(),
+                                        lobbyToJoin.getSize()
+                                })
+                );
+
+                //add the player to the lobby
+                lobbyPlayerMap.get(lobbyToJoin)[lobbyToJoin.getPlayersConnected()] = message.getSenderID();
+                lobbyToJoin.incrementPlayersConnected();
+
+                //add the player to the game
+                Player p = new Player(requestNick, message.getSenderID());
+                gameControllerMap.get(lobbyPlayerMap.get(lobbyToJoin)[0]).addPlayer(p);
+                idPlayerMap.put(message.getSenderID(), p);
+                p.setGameID(lobbyPlayerMap.get(lobbyToJoin)[0]);
+
+                if(lobbyToJoin.isLobbyFull()){
+                    lobbyToJoin.setGameStarted(true);
+
+                    //initialize the hands of all the players and set the common GoalCards
+                    gameControllerMap.get(p.getGameID()).initializeGame();
+                    gameControllerMap.get(p.getGameID()).getCurrentGame().setStartingPlayer();
+
+                    Map<String, Integer> playersScores = new HashMap<>();
+
+                    for(int pId : lobbyPlayerMap.get(lobbyToJoin)){
+                        playersScores.put(idPlayerMap.get(pId).getNickname(), idPlayerMap.get(pId).getScore());
+                    }
+
+                    //for each player in the lobby
+                    for (int pID : lobbyPlayerMap.get(lobbyToJoin)) {
+                        //update the interface
+                        idClientMap.get(pID).sendMessageToClient(
+                                new Message(
+                                        REPLY_BEGIN_GAME,
+                                        serverSocket.getLocalPort(),
+                                        //send the gameID as the first parameter for the first time
+                                        lobbyPlayerMap.get(lobbyToJoin)[0],
+
+                                        new Object[]{
+                                                //send the UUID of the cards in the player's hand
+                                                Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(lobbyToJoin)[0])
+                                                                .returnHand(idPlayerMap.get(pID)))
+                                                        .map(PlayableCard::getUUID)
+                                                        .collect(Collectors.toList()),
+
+                                                //send the UUID of the common goal cards
+                                                Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(lobbyToJoin)[0])
+                                                                .getCurrentGame()
+                                                                .getCommonGoalCards())
+                                                        .map(GoalCard::getUUID)
+                                                        .collect(Collectors.toList()),
+
+                                                //send the UUID of the starting card and the secret goal cards to choose
+                                                Arrays.stream(gameControllerMap.get(lobbyPlayerMap.get(lobbyToJoin)[0])
+                                                        .cardToChoose(idPlayerMap.get(pID)))
+                                                        .toList(),
+
+                                                //initialize the boolean that manages the turn of the player
+                                                gameControllerMap.get(lobbyPlayerMap.get(lobbyToJoin)[0]).getCurrentGame()
+                                                        .getStartingPlayer().getNickname().equals(idPlayerMap.get(pID).getNickname()),
+
+
+                                                //send all the nicknames
+                                                playersScores,
+
+
+                                                //return the current player
+                                                gameControllerMap.get(lobbyPlayerMap.get(lobbyToJoin)[0])
+                                                        .getCurrentGame()
+                                                        .getCurrentPlayer()
+                                                        .getNickname(),
+
+                                                //return the resources of the player
+                                                idPlayerMap.get(pID)
+                                                        .getPlayerBoard()
+                                                        .getResources()
+                                        }
+                                )
+                        );
+                    }
+                }
+                return null;
+            }
+
+            //if the nickname is valid I register the player in the first valid lobby
+            /*for(Lobby l: lobbyPlayerMap.keySet()) {
                 if(!l.isGameStarted() && !l.isLobbyFull()) {
                     //send the lobby name and the gameID
                     idClientMap.get(message.getSenderID()).sendMessageToClient(
@@ -683,22 +814,23 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                         }
                     }
                 }
-            }
+            }*/
             //if there's no lobby I ask to generate one
-            if(!found) {
+            //if(!found) {
+                    String newLobbyName = "Lobby" + (lobbyPlayerMap.size() + 1);
                     idClientMap.get(message.getSenderID()).sendMessageToClient(
                             new Message(
                                     REPLY_NEW_LOBBY,
                                     this.serverSocket.getLocalPort(),
                                     message.getGameID(),
                                     new Object[]{
-                                            UUID.randomUUID().toString(), //nome della nuova lobby
+                                            newLobbyName, //nome della nuova lobby
                                             "Insert lobby size (4 players max): "
                                     }
                             )
                     );
             }
-        }
+        //}
         return null;
     }
 

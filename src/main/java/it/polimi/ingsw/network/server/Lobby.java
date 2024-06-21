@@ -13,7 +13,7 @@ public class Lobby {
     /**
      * The name of the lobby.
      */
-    private final String lobbyName;
+    private String lobbyName;
 
     /**
      * The number of players connected to the lobby.
@@ -61,6 +61,15 @@ public class Lobby {
      */
     public String getLobbyName() {
         return lobbyName;
+    }
+
+    /**
+     * Sets the lobby name to the given value.
+     *
+     * @param lobbyName The value to set the lobby name to.
+     */
+    public void setLobbyName(String lobbyName) {
+        this.lobbyName = lobbyName;
     }
 
     /**
