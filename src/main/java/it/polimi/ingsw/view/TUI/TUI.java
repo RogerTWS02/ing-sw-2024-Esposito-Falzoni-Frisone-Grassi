@@ -646,7 +646,6 @@ public class TUI extends Thread{
         if(areThereAvailableLobbies) {
             do {
                 requestLobbies();
-                availableLobbies.add("create");
                 System.out.println("\nAvailable lobbies:");
                 for (String lobby : availableLobbies) {
                     if(!lobby.equals("create"))
@@ -654,7 +653,10 @@ public class TUI extends Thread{
                 }
                 System.out.print("\nInsert the name of the lobby you want to join, or type 'create' (press 'enter' to refresh): ");
                 command = getCommandFromQueue();
-            } while(command.length == 0 || command[0].isEmpty() || command.length > 1 || !availableLobbies.contains(command[0]));
+
+                if(command.length == 1 && command[0].equals("create")) break; //If the user wants to create a new lobby
+
+            } while(command.length != 1 || !availableLobbies.contains(command[0]));
         } else {
             command = new String[]{"create"};
         }
