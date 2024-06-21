@@ -707,7 +707,6 @@ public class TUI extends Thread{
                 while(areThereAvailableLobbies == null)
                     Thread.onSpinWait();
                 if(!areThereAvailableLobbies) {
-                    //System.out.println("\n\nNo more available lobbies! Press 'enter'.\nInsert username (max 16 characters): ");
                     command = new String[]{"create"};
                     break;
                 }
@@ -1072,6 +1071,10 @@ public class TUI extends Thread{
             case "/showboard":
                 if(command.length < 2) {
                     System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+                if(nameP.equals(command[1])) {
+                    System.out.println("\nYou don't need this...");
                     break;
                 }
                 if(!nicknames.containsKey(command[1])) {
