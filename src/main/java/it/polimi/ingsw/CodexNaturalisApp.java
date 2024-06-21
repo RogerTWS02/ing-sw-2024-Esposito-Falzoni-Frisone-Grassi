@@ -41,22 +41,18 @@ public class CodexNaturalisApp {
             if(args[0].equals("server")) {
                 param = "server";
                 network = "socket"; //Not a true socket obv, just for the code flow
-                try {
-                    ipAddr = InetAddress.getByName(args[1]);
-                } catch (Exception e) {
-                    System.out.println("'localhost' selected\n");
-                }
+                    ipAddr = InetAddress.getLocalHost();
                 break handleInput;
             }
             if(!args[0].equals("cli") && !args[0].equals("gui")) {
-                System.out.println("Syntax: <server> <server-IP> / <cli/gui> <socket/rmi> <server-IP>");
+                System.out.println("Syntax: <server> / <cli/gui> <socket/rmi> <server-IP>");
                 System.exit(1);
             } else {
                 param = args[0];
                 network = "socket";
             }
             if(args.length > 1 && !args[1].equals("socket") && !args[1].equals("rmi")) {
-                System.out.println("Syntax: <server> <server-IP> / <cli/gui> <socket/rmi> <server-IP>");
+                System.out.println("Syntax: <server> / <cli/gui> <socket/rmi> <server-IP>");
                 System.exit(1);
             } else {
                 if(args.length > 1)
@@ -72,7 +68,11 @@ public class CodexNaturalisApp {
         }
 
         //Debug
-        System.out.println(param + " " + network + "\n");
+        System.out.print(param + " " + network + " ");
+        if(ipAddr != null)
+            System.out.println(ipAddr + "\n");
+        else
+            System.out.println(InetAddress.getLocalHost() + "\n");
 
         switch(network) {
             case "rmi":
@@ -85,7 +85,7 @@ public class CodexNaturalisApp {
                         switch (param) {
                             case "cli" -> launchClient(false, true);
                             case "gui" -> launchClient(true, true);
-                            case "server" -> launchServer(true);
+                            case "server" -> launchServer();
                         }
                         break;
             default:
@@ -107,8 +107,8 @@ public class CodexNaturalisApp {
             TUI tui = new TUI();
             try {
                 tui.cli  = new Client(hasSocket,
-                        ((ipAddr == null) ? InetAddress.getLocalHost(): ipAddr).getHostName()
-                        , 1234, tui);
+                        ((ipAddr == null) ? InetAddress.getLocalHost() : ipAddr).getHostName(),
+                        1234, tui);
                 tui.cli.run();
                 tui.start();
             }catch(Exception e){
@@ -120,10 +120,10 @@ public class CodexNaturalisApp {
     /**
      * Initializes and launches the Codex Naturalis server app.
      */
-    private static void launchServer(Boolean hasSocket) {
+    private static void launchServer() {
         Server server;
         try{
-            server = (ipAddr == null)? new Server(): new Server(ipAddr, 1234);
+            server = new Server(ipAddr, 1234);
             server.run();
         } catch (IOException e){
             System.exit(1);

@@ -352,10 +352,10 @@ public class TUI extends Thread{
 
             if(!inputQueue.isEmpty()){
                 command = getCommandFromQueue();
-                if(command[0].equals("/quitGame")) {
+                if(command[0].equals("/quitGame") || command[0].equals("/quitgame")) {
                     commonCommands(command);
                 }else{
-                    System.out.print("Wait for the lobby fill or type '/quitGame' to leave the lobby: ");
+                    System.out.print("Wait for the lobby to fill up or type '/quitGame' to leave the lobby: ");
                 }
             }
         }

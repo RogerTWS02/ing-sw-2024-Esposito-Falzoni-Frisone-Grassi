@@ -21,7 +21,7 @@ java -jar PSP25.jar server
 ### Client
 
 ```bash
-java -jar PSP25.jar [cli|gui] [socket|rmi]
+java -jar PSP25.jar [cli|gui] [socket|rmi] <server-IP>
 ``` 
 Startup options:
 
@@ -30,7 +30,7 @@ Startup options:
 - `socket` : starts client in socket connection mode.
 - `rmi` : starts client in RMI connection mode.
 
->Note: with no arguments, the client starts in TUI mode with socket connection (default modes). With one argument specified, the second one is set to default.
+>Note: with no arguments, the software starts in client TUI mode with socket connection (default modes). With just the first argument specified, the second one is set to default. If no server IP is provided, "localhost" is selected.
 
 ## Authors
 
