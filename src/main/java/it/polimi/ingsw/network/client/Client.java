@@ -220,13 +220,14 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
 
     }
 
-    public void disconnect(){
+    public void disconnect() throws IOException{
+        /*
         try {
             Naming.unbind(Server.NAME);
         } catch (RemoteException | NotBoundException | MalformedURLException e) {
             throw new RuntimeException(e);
         }
-
+        */
         System.exit(0);
     }
 

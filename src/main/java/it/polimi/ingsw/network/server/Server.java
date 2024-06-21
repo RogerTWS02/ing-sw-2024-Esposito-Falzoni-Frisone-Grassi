@@ -386,21 +386,27 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                         //PER DEBUGGNG
                         System.out.println("MESSAGGIO DI DISCONNESSIONE MANDATO A: "+id);
 
-                        idClientMap.get(id).sendMessageToClient(
-                                new Message(
-                                        REPLY_INTERRUPT_GAME,
-                                        this.serverSocket.getLocalPort(),
-                                        gameID,
-                                        new Object[] {
-                                                "\nA player disconnected! The game is ending..."
-                                        }
-                                )
-                        );
+                        try {
+                            idClientMap.get(id).sendMessageToClient(
+                                    new Message(
+                                            REPLY_INTERRUPT_GAME,
+                                            this.serverSocket.getLocalPort(),
+                                            gameID,
+                                            new Object[]{
+                                                    "\nA player disconnected! The game is ending..."
+                                            }
+                                    )
+                            );
+                        }catch(Exception e){
+                            // Printing the 'actual' exception:
+                            System.out.println("Underlying exception: " + e.getCause());
+                        }
 
-                        //disconnetto l'handler/stub e lo rimuovo dal server una volta notificato della fine della partita
-                        idClientMap.get(id).disconnect();
+                        //TODO: SISTEMARE IL METODO DISCONNECT
+                        //idClientMap.get(id).disconnect();
 
                         idClientMap.remove(id);
+
                         //remove the player associated also
                         idPlayerMap.remove(id);
                     }
