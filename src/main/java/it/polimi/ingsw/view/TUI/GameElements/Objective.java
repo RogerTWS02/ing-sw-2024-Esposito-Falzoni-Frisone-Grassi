@@ -160,7 +160,7 @@ public class Objective implements  Views {
             case "PGC_1" -> {
                 card[2] = "  ░░  ░░ " + ANSI_RED + " ▇▇  "+ANSI_RESET;
                 card[3] = "  ░░ " + ANSI_RED + " ▇▇ " + ANSI_RESET + " ░░  ";
-                card[4] = ANSI_RED + "▇▇ " + ANSI_RESET + " ░░  ░░  ";
+                card[4] = ANSI_RED + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
             }
             case "PGC_2" -> {
                 card[2] = ANSI_GREEN + "  ▇▇ " + ANSI_RESET + " ░░  ░░  ";
