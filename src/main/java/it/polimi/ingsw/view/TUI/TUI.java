@@ -281,10 +281,6 @@ public class TUI extends Thread{
             areThereAvailableLobbies = false;
             return;
         }
-        /*System.out.println("\nAvailable lobbies:");
-        for (String lobby : availableLobbies) {
-            System.out.println(lobby);
-        }*/
         areThereAvailableLobbies = true;
         this.availableLobbies = new ArrayList<>(Arrays.asList(availableLobbies));
     }
@@ -648,9 +644,14 @@ public class TUI extends Thread{
         while(areThereAvailableLobbies == null)
             Thread.onSpinWait();
         if(areThereAvailableLobbies) {
-            availableLobbies.add("create");
             do {
                 requestLobbies();
+                availableLobbies.add("create");
+                System.out.println("\nAvailable lobbies:");
+                for (String lobby : availableLobbies) {
+                    if(!lobby.equals("create"))
+                        System.out.println(lobby);
+                }
                 System.out.print("\nInsert the name of the lobby you want to join, or type 'create' (press 'enter' to refresh): ");
                 command = getCommandFromQueue();
             } while(command.length == 0 || command[0].isEmpty() || command.length > 1 || !availableLobbies.contains(command[0]));
