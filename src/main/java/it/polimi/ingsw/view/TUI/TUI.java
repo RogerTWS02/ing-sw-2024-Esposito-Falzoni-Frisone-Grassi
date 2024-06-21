@@ -647,10 +647,8 @@ public class TUI extends Thread{
             do {
                 requestLobbies();
                 System.out.println("\nAvailable lobbies:");
-                for (String lobby : availableLobbies) {
-                    //if(!lobby.equals("create"))
+                for (String lobby : availableLobbies)
                         System.out.println(lobby);
-                }
                 System.out.print("\nInsert the name of the lobby you want to join, or type 'create' (press 'enter' to refresh): ");
                 command = getCommandFromQueue();
 
