@@ -189,10 +189,8 @@ public class TUI extends Thread{
                 String infoUUID = (String) message.getObj()[0];
                 Boolean isFlipped = (Boolean) message.getObj()[1];
                 Boolean[] coveredCorners = (Boolean[]) message.getObj()[2];
-
                 //stampo l'info della carta
                 infoC.showInfoCard(infoUUID, isFlipped, coveredCorners);
-
                 break;
 
             case REPLY_NEW_LOBBY:
@@ -274,7 +272,25 @@ public class TUI extends Thread{
             case REPLY_PLAYER_BOARD:
                 replyPlayerBoardHandler(message);
                 break;
+
+            case REPLY_PLAYER_CARD:
+                replyPlayerCardHandler(message);
+                break;
         }
+    }
+
+    /**
+     * Handles the reply about a certain card's infos of a certain player.
+     *
+     * @param message The message received.
+     */
+    public void replyPlayerCardHandler(Message message) {
+        String infoUUID = (String) message.getObj()[0];
+        Boolean isFlipped = (Boolean) message.getObj()[1];
+        Boolean[] coveredCorners = (Boolean[]) message.getObj()[2];
+        System.out.println("\n" + message.getObj()[3] + "'s card in requested position is: \n");
+        infoC.showInfoCard(infoUUID, isFlipped, coveredCorners);
+        System.out.println("\n");
     }
 
     /**
@@ -859,6 +875,7 @@ public class TUI extends Thread{
                             /infoCard posX posY - Returns infos about a card on the player's board
                             /showCommonCards - Shows the common resource and golden cards
                             /showBoard PlayerNickname - Shows the board of the given player
+                            /infoCardOfPlayer PlayerNickname posX posY - Shows the given card's details of the given player
                             /openChat - Opens the chat tab, where you can read and send messages to other players
                             /quitGame - Quits the current session and ends the game for all the other players
                             
@@ -1045,6 +1062,10 @@ public class TUI extends Thread{
                 break;
 
             case "/showboard":
+                if(command.length < 2) {
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
                 if(!nicknames.containsKey(command[1])) {
                     System.out.println("\nA player with the nickname '" + command[1] + "' doesn't exist!");
                     break;
@@ -1057,9 +1078,52 @@ public class TUI extends Thread{
                 }
                 break;
 
+            case "/infocardofplayer":
+                if(command.length < 4) {
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+                if(!nicknames.containsKey(command[1])) {
+                    System.out.println("\nA player with the nickname '" + command[1] + "' doesn't exist!");
+                    break;
+                }
+                if(nameP.equals(command[1])) {
+                    System.out.println("\nYou can use '/infoCard instead!");
+                    break;
+                }
+                try {
+                    requestCardInfos(command[1], Integer.parseInt(command[2]), Integer.parseInt(command[3]));
+                } catch(Exception e) {
+                    System.out.println("Command not valid, try '/help' to view syntax");
+                    break;
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+
             default:
                 System.out.println("Command not valid, try '/help' to view syntax");
         }
+    }
+
+    /**
+     * Displays the da details of the given card of the player with the given nickname.
+     *
+     * @param playerNickname The nickname of the player whose card has to be displayed.
+     * @param posX The X position of the card.
+     * @param posY The Y position of the card.
+     */
+    public void requestCardInfos(String playerNickname, int posX, int posY) {
+        cli.sendMessage(
+                new Message(
+                        REQUEST_PLAYER_CARD,
+                        cli.getClientID(),
+                        cli.getGameID(),
+                        new Object[]{playerNickname, posX, posY})
+        );
     }
 
     /**

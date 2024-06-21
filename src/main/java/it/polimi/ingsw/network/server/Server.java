@@ -329,7 +329,63 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             case REPLY_PLAYER_BOARD_INFOS:
                 replyPlayerBoardInfosHandler(message);
                 break;
+
+            case REQUEST_PLAYER_CARD:
+                requestPlayerCardHandler(message);
+                break;
         }
+    }
+
+    /**
+     * Handles the request of a card infos, of a certain player.
+     *
+     * @param message The message which contains the request.
+     */
+    public void requestPlayerCardHandler(Message message) throws IOException, ParseException {
+        //Where the player wants to place the card
+        int posX = (int) message.getObj()[1];
+        int posY = (int) message.getObj()[2];
+        ArrayList<Player> gamePlayers = gameControllerMap.get(message.getGameID()).getCurrentGame().getPlayers();
+        int targetPlayerClientPort = 0;
+        for(int i = 0; i < gamePlayers.size(); i++) {
+            if(gamePlayers.get(i).getNickname().equals(message.getObj()[0])) {
+                targetPlayerClientPort = gamePlayers.get(i).getClientPort();
+                break;
+            }
+        }
+        PlayableCard card = idPlayerMap.get(targetPlayerClientPort).getPlayerBoard().getCard(posX, posY);
+        if(card == null || card.getUUID().equals("PLACEHOLDER")){
+            idClientMap.get(message.getSenderID()).sendMessageToClient(
+                    new Message(
+                            REPLY_BAD_REQUEST,
+                            this.serverSocket.getLocalPort(),
+                            message.getGameID(),
+                            new Object[]{
+                                    "There is no card on the board at the given coordinates!"
+                            }
+                    )
+            );
+            return;
+        }
+        Boolean[] coveredCorners = new Boolean[4];
+        for(int i = 0; i < 4; i++){
+            if(card.getCardCorners()[i] != null && card.getCardCorners()[i].isCovered()) {
+                coveredCorners[i] = true;
+            } else {
+                coveredCorners[i] = false;
+            }
+        }
+        idClientMap.get(message.getSenderID()).sendMessageToClient(
+                new Message(
+                        REPLY_PLAYER_CARD,
+                        this.serverSocket.getLocalPort(),
+                        message.getGameID(),
+                        new Object[]{
+                                card.getUUID(),
+                                card.isFlipped(),
+                                coveredCorners, message.getObj()[0]
+                        })
+        );
     }
 
     /**
@@ -838,6 +894,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      * @param message The message received.
      */
     public Message requestCard(Message message) throws IOException, ParseException {
+
         //First I need to check if it's actually the turn of the player making the request
         if(!gameControllerMap.get(message.getGameID()).getCurrentGame().getCurrentPlayer()
                 .equals(idPlayerMap.get(message.getSenderID()))){
@@ -1080,7 +1137,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             this.serverSocket.getLocalPort(),
                             message.getGameID(),
                             new Object[]{
-                                    "there is no card on the board at the given coordinates!"
+                                    "There is no card on the board at the given coordinates!"
                             }
                     )
             );
