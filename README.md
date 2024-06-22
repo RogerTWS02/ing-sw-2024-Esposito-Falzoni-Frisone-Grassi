@@ -15,13 +15,13 @@
 ### Server
 
 ```bash
-java -jar <server.jar> server
+java -jar Codex_Naturalis.jar server
 ```
 
 ### Client
 
 ```bash
-java -jar <client.jar> [cli|gui] [socket|rmi] <server-IP>
+java -jar Codex_Naturalis.jar [cli|gui] [socket|rmi] <server-IP>
 ``` 
 Startup options:
 

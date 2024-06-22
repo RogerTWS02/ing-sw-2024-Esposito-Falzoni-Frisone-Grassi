@@ -752,7 +752,7 @@ public class TUI extends Thread{
         //Choose lobby size and create it
         createNewLobby(nameP);
 
-        System.out.println("You just joined the lobby " + cli.getLobbyName() + "\n");
+        System.out.println("You just joined " + cli.getLobbyName() + "\n");
 
 
         //If user is the first to join the lobby, he will be the one to start the game

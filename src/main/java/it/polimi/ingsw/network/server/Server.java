@@ -821,8 +821,24 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 return null;
             }
 
-            //if there's no lobby I ask to generate one
-        String newLobbyName = "Lobby" + (lobbyPlayerMap.size() + 1);
+        //if there's no lobby I ask to generate one
+        String newLobbyName;
+        if(lobbyPlayerMap.isEmpty())
+            newLobbyName = "Lobby1";
+        else {
+            //Find the first available lobby name
+            ArrayList<String> unavailableLobbyNames = new ArrayList<>();
+            for(Lobby lobby : lobbyPlayerMap.keySet())
+                unavailableLobbyNames.add(lobby.getLobbyName());
+            int i = 0;
+            while(true) {
+                i++;
+                if(!unavailableLobbyNames.contains("Lobby" + i)) {
+                    newLobbyName = "Lobby" + i;
+                    break;
+                }
+            }
+        }
         idClientMap.get(message.getSenderID()).sendMessageToClient(
             new Message(
                 REPLY_NEW_LOBBY,
