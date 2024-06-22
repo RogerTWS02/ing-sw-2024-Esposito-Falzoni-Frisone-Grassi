@@ -352,7 +352,7 @@ public class TUI extends Thread{
                         new Message(
                                 REQUEST_LOGIN,
                                 cli.getClientID(),
-                                -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
+                                -1, //gameID is not set until the game actually starts
                                 new Object[]{command[0], "create"})
                 );
                 try {
@@ -374,10 +374,9 @@ public class TUI extends Thread{
                     new Message(
                             REQUEST_LOGIN,
                             cli.getClientID(),
-                            -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
+                            -1, //gameID is not set until the game actually starts
                             new Object[]{command[0], lobby})
             );
-            //alreadyTriedToChooseLobby = true;
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

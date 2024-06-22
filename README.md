@@ -32,6 +32,8 @@ Startup options:
 
 >Note: with no arguments, the software starts in client TUI mode with socket connection (default modes). With just the first argument specified, the second one is set to default. If no server IP is provided, "localhost" is selected.
 
+>Note: in order to join a specific match, launch subsequent clients after the first one has effectively created a new lobby.
+
 ## Authors
 
 - Lorenzo Esposito
