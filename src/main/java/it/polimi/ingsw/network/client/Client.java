@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -39,7 +37,7 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
     /**
      * The TUI of the client.
      */
-    private TUI tui;
+    private Object view;
 
     /**
      * The socket of the client.
@@ -97,11 +95,11 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
      * @param hasSocket The flag which indicates if the client has a socket.
      * @param ip The IP address of the server.
      * @param port The port of the server.
-     * @param tui The TUI of the client.
+     * @param view The TUI of the client.
      * @throws RemoteException If there is an error in the remote operation.
      */
-    public Client(boolean hasSocket, String ip, int port, TUI tui) throws RemoteException {
-        this.tui = tui;
+    public Client(boolean hasSocket, String ip, int port, Object view) throws RemoteException {
+        this.view = view;
         this.ipServ = ip;
         this.port = port;
         this.hasSocket = hasSocket;
@@ -120,7 +118,7 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                     try {
                         Message recievedMessage = (Message) socketInput.readObject();
                         //Forward the message to the client by extracting from the type of interface
-                        tui.onMessageReceived(recievedMessage);
+                        ((TUI) view).onMessageReceived(recievedMessage);
                         //debugging
                         //System.out.println(recievedMessage.getObj().toString());
                     } catch (IOException | ClassNotFoundException e) {
@@ -143,7 +141,7 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
      * @throws ParseException If there is an error in the parsing operation.
      */
     public void sendMessageToClient(Message message) throws IOException, ParseException {
-        tui.onMessageReceived(message);
+        ((TUI) view).onMessageReceived(message);
     }
 
     /**

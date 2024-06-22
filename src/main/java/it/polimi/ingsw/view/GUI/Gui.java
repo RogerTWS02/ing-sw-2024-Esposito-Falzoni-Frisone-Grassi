@@ -1,22 +1,13 @@
 package it.polimi.ingsw.view.GUI;
 
-import it.polimi.ingsw.view.GameView;
+import it.polimi.ingsw.network.client.Client;
 import javafx.application.Application;
 
 /**
  * The GUI view.
  */
 public class Gui {
-
-
-    /**
-     * Updates the view with the new game elements.
-     *
-     * @param gameView The viewable game elements.
-     */
-    public void updateView(GameView gameView) {
-        //TODO
-    }
+    public Client client;
 
     /**
      * Runs the GUI.

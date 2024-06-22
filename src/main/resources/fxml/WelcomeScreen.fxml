@@ -42,5 +42,13 @@
             <Insets left="800.0" top="60.0" />
          </GridPane.margin>
       </Label>
+      <Label fx:id="textField_ConnectedTo" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" textAlignment="CENTER" visible="false" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+         <GridPane.margin>
+            <Insets left="800.0" top="450.0" />
+         </GridPane.margin>
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
    </children>
 </GridPane>

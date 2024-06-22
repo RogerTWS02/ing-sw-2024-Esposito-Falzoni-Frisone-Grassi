@@ -2,7 +2,7 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.server.Server;
-import it.polimi.ingsw.view.GUI.GuiApp;
+import it.polimi.ingsw.view.GUI.Gui;
 import it.polimi.ingsw.view.TUI.TUI;
 import org.json.simple.parser.ParseException;
 import java.io.IOException;
@@ -97,9 +97,10 @@ public class CodexNaturalisApp {
      */
     private static void launchClient(boolean hasGUI, boolean hasSocket) throws IOException, ParseException {
         if (hasGUI) {
-            //TODO: connessione. E se non c'è server, devo far sì che non si apra la GUI.
-            GuiApp guiApp = new GuiApp();
-            guiApp.main(null);
+            Gui gui = new Gui();
+            gui.client = new Client(hasSocket,((ipAddr == null) ? InetAddress.getLocalHost() : ipAddr).getHostName(),1234, gui);
+            gui.client.run();
+            gui.run();
         } else {
             TUI tui = new TUI();
             try {

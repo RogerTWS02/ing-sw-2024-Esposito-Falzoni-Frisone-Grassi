@@ -21,6 +21,7 @@ public class WelcomeScreenController implements Initializable {
     public GridPane gridPane;
     public Slider playerSlider;
     public Label textLabel;
+    public Label textField_ConnectedTo;
     private String playerNickname = "";
     private int lobbySize = 0;
     private boolean insertedNickname = false;
@@ -37,6 +38,7 @@ public class WelcomeScreenController implements Initializable {
         playerSlider.setDisable(true);
         textLabel.setVisible(false);
         textLabel.setDisable(true);
+        //TODO: new label for the connection status
     }
 
     /**
