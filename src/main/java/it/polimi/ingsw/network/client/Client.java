@@ -203,15 +203,12 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
         }else{
             try{
                 //Search for the server in the registry and connect to its stub
-                Registry registry = LocateRegistry.getRegistry();
+                Registry registry = LocateRegistry.getRegistry(ipServ,1099);
                 stub = (RMIServerInterface) registry.lookup(Server.NAME);
                 logger.log(Level.INFO, "Client has connected to the server using RMI");
 
                 //TODO: DA CONTROLLARE POI...
                 clientID = stub.createSkeleton(this);
-
-                //RMIGameFlow play = new RMIGameFlow(stub, this);
-                //play.run();
             }catch (NotBoundException | IOException e) {
                 logger.log(Level.SEVERE, "Error in connecting to server using RMI");
                 System.exit(1);
