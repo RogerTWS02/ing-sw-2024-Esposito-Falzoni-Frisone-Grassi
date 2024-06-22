@@ -51,6 +51,7 @@ public class TUI extends Thread{
     private ArrayList<String> winners;
     private volatile Boolean areThereAvailableLobbies = null;
     private List<String> availableLobbies = new ArrayList<>();
+    private boolean alreadyTriedToChooseLobby = false;
 
     public TUI() throws IOException, ParseException {
     }
@@ -72,6 +73,8 @@ public class TUI extends Thread{
 
             case REPLY_BAD_REQUEST:
                 srvRep = (String) message.getObj()[0];
+                if(srvRep.equals("The chosen lobby is full! Creating a new one..."))
+                    alreadyTriedToChooseLobby = true;
                 System.out.println("Bad request: " + srvRep);
                 break;
 
@@ -342,7 +345,6 @@ public class TUI extends Thread{
      * @return The nickname chosen by the player.
      */
     public String insertNickname(String lobby) {
-        boolean alreadyTriedToChooseLobby = false;
         String[] command = null;
         while(cli.getLobbyName().isEmpty()) {
             if(alreadyTriedToChooseLobby) {
@@ -365,9 +367,9 @@ public class TUI extends Thread{
                 command = getCommandFromQueue();
                 if(command[0].length() > 16)
                     System.out.println("The nickname must be less than 16 characters!");
-                if(command.length > 1)
+                if(command.length > 1 || command[0].isEmpty())
                     System.out.println("The nickname must be a single word!");
-            } while(command[0].length() > 16 || command.length != 1);
+            } while(command[0].length() > 16 || command.length != 1 || command[0].isEmpty());
             cli.sendMessage(
                     new Message(
                             REQUEST_LOGIN,
@@ -375,7 +377,7 @@ public class TUI extends Thread{
                             -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
                             new Object[]{command[0], lobby})
             );
-            alreadyTriedToChooseLobby = true;
+            //alreadyTriedToChooseLobby = true;
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
