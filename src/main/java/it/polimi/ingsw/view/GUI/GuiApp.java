@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.GUI;
 
 import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -41,6 +42,12 @@ public class GuiApp extends Application {
         mainStage.setFullScreenExitHint("");
         mainStage.setFullScreen(true);
         mainStage.show();
+
+        //Close the application when the main stage is closed
+        mainStage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
     }
 
     /**

@@ -1,14 +1,12 @@
 package it.polimi.ingsw.view.GUI;
 
-import it.polimi.ingsw.utils.GuiObservers;
 import it.polimi.ingsw.view.GameView;
-import it.polimi.ingsw.view.RunnableView;
 import javafx.application.Application;
 
 /**
  * The GUI view.
  */
-public class Gui extends GuiObservers implements RunnableView {
+public class Gui {
 
 
     /**
