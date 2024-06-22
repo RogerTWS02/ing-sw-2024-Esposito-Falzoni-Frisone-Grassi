@@ -722,6 +722,17 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 //I make the player join the chosen lobby
                 for(Lobby lobby : lobbyPlayerMap.keySet()) {
                     if(lobby.getLobbyName().equals(message.getObj()[1])) {
+                        if(lobby.isLobbyFull() || lobby.isGameStarted()) {
+                            idClientMap.get(message.getSenderID()).sendMessageToClient(
+                                    new Message(
+                                            REPLY_BAD_REQUEST,
+                                            this.serverSocket.getLocalPort(),
+                                            message.getGameID(),
+                                            "The chosen lobby is full! Creating a new one..."
+                                    )
+                            );
+                            return null;
+                        }
                         lobbyToJoin = lobby;
                         break;
                     }

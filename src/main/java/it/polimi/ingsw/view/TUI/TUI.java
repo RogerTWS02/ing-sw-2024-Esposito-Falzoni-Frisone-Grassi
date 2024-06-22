@@ -342,8 +342,24 @@ public class TUI extends Thread{
      * @return The nickname chosen by the player.
      */
     public String insertNickname(String lobby) {
+        boolean alreadyTriedToChooseLobby = false;
         String[] command = null;
         while(cli.getLobbyName().isEmpty()) {
+            if(alreadyTriedToChooseLobby) {
+                cli.sendMessage(
+                        new Message(
+                                REQUEST_LOGIN,
+                                cli.getClientID(),
+                                -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
+                                new Object[]{command[0], "create"})
+                );
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                return command[0];
+            }
             do {
                 loginUsername.showLogInUsername();
                 command = getCommandFromQueue();
@@ -359,6 +375,7 @@ public class TUI extends Thread{
                             -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
                             new Object[]{command[0], lobby})
             );
+            alreadyTriedToChooseLobby = true;
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
