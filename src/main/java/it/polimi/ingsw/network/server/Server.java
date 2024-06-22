@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 import static it.polimi.ingsw.network.message.MessageType.*;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -38,11 +39,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      * The name of the server.
      */
     public static final String NAME = "Codex_server";
-
-    /**
-     * The IP address of the server.
-     */
-    private final InetAddress ip;
 
     /**
      * The port of the server.
@@ -117,15 +113,14 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     /**
      * Constructor of the server.
      *
-     * @param ip The IP address of the server.
+     *
      * @param port The port of the server.
      * @throws IOException If the server cannot be created.
      */
-    public Server(InetAddress ip, int port) throws IOException {
+    public Server(int port) throws IOException {
         this.lobbyPlayerMap = new HashMap<>();
         this.gameControllerMap = new HashMap<>();
         this.idClientMap = new HashMap<>();
-        this.ip = ip;
         this.port = port;
         this.idPlayerMap = new HashMap<>();
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
@@ -142,7 +137,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.gameControllerMap = new HashMap<>();
         this.idClientMap = new HashMap<>();
         this.idPlayerMap = new HashMap<>();
-        this.ip = InetAddress.getLocalHost();
         this.port = default_port;
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
         startHeartBeat();
@@ -623,7 +617,8 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         }
 
         try{
-            this.serverSocket = new ServerSocket(port, 66, ip);
+            this.serverSocket = new ServerSocket(port, 66);
+            System.out.println("Server ip address:"+ Inet4Address.getLocalHost().getHostAddress());
         }catch (IOException e){
             logger.log(Level.SEVERE, "Exception while creating server socket");
         }

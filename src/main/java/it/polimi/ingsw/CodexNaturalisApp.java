@@ -120,7 +120,7 @@ public class CodexNaturalisApp {
     private static void launchServer() {
         Server server;
         try{
-            server = new Server(ipAddr, 1234);
+            server = new Server( 1234);
             server.run();
         } catch (IOException e){
             System.exit(1);

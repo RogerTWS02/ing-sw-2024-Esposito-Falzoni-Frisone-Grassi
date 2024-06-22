@@ -88,7 +88,7 @@ public class CodexNaturalisTempApp1 {
     private static void launchServer(Boolean hasSocket) {
         Server server;
         try{
-            server = (ipAddr == null)? new Server(): new Server(ipAddr, 1234);
+            server = (ipAddr == null)? new Server(): new Server(1234);
             server.run();
         } catch (IOException e){
             System.exit(1);
