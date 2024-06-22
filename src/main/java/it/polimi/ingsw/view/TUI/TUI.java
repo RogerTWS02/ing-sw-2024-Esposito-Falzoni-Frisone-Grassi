@@ -435,6 +435,29 @@ public class TUI extends Thread{
     }
 
     /**
+     * This method waits for all the players to make the preliminary actions,
+     * if a player wants to quit the game, he can type '/quitGame'.
+     */
+
+    public void waitForPreliminaryActions(){
+        String[] command;
+        while(true){
+            System.out.println("Waiting for all players to make their preliminary choices...\n");
+            System.out.print("If you want to leave the game type '/quitGame': ");
+            while(!preliminaryChoicesMade && inputQueue.isEmpty()) {
+                Thread.onSpinWait();
+            }
+
+            if(preliminaryChoicesMade){
+                break;
+            }else{
+                command = getCommandFromQueue();
+                commonCommands(command);
+            }
+        }
+    }
+
+    /**
      * Makes the player choosing how to place the starting card and places it.
      *
      * @return The side chosen by the player to place the starting card.
@@ -754,9 +777,8 @@ public class TUI extends Thread{
         //TODO: code refactoring
         boolean first = true;
 
-        System.out.println("Waiting for all players to make their preliminary choices...\n");
-        while(!preliminaryChoicesMade)
-            Thread.onSpinWait();
+        waitForPreliminaryActions(); //We wait for every player to finish choices
+
 
         //Game flow implementation
         while(turnLeft > 0){
