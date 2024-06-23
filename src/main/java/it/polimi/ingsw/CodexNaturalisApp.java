@@ -99,8 +99,8 @@ public class CodexNaturalisApp {
         if (hasGUI) {
             Gui gui = new Gui();
             try {
-                gui.client = new Client(hasSocket,((ipAddr == null) ? InetAddress.getLocalHost() : ipAddr).getHostName(),1234, gui);
-                gui.client.run();
+                gui.cli = new Client(hasSocket,((ipAddr == null) ? InetAddress.getLocalHost() : ipAddr).getHostName(),1234, gui, true);
+                gui.cli.run();
                 gui.run();
             } catch (Exception e) {
                 System.out.println("Error: " + e);
@@ -110,7 +110,7 @@ public class CodexNaturalisApp {
             try {
                 tui.cli  = new Client(hasSocket,
                         ((ipAddr == null) ? InetAddress.getLocalHost() : ipAddr).getHostName(),
-                        1234, tui);
+                        1234, tui, false);
                 tui.cli.run();
                 tui.start();
             }catch(Exception e){

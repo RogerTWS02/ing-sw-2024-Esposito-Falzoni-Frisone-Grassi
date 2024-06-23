@@ -3,6 +3,7 @@ package it.polimi.ingsw.network.client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.network.server.RMIServerInterface;
 import it.polimi.ingsw.network.server.Server;
+import it.polimi.ingsw.view.GUI.Gui;
 import it.polimi.ingsw.view.TUI.TUI;
 import org.json.simple.parser.ParseException;
 
@@ -90,6 +91,11 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
     final boolean hasSocket;
 
     /**
+     * The flag which indicates if the client has a GUI.
+     */
+    private boolean hasGui;
+
+    /**
      * This constructor is used to create a client.
      *
      * @param hasSocket The flag which indicates if the client has a socket.
@@ -98,12 +104,13 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
      * @param view The TUI of the client.
      * @throws RemoteException If there is an error in the remote operation.
      */
-    public Client(boolean hasSocket, String ip, int port, Object view) throws RemoteException {
+    public Client(boolean hasSocket, String ip, int port, Object view, boolean hasGui) throws RemoteException {
         this.view = view;
         this.ipServ = ip;
         this.port = port;
         this.hasSocket = hasSocket;
         this.stub = null;
+        this.hasGui = hasGui;
     }
 
     /**
@@ -118,7 +125,10 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                     try {
                         Message recievedMessage = (Message) socketInput.readObject();
                         //Forward the message to the client by extracting from the type of interface
-                        ((TUI) view).onMessageReceived(recievedMessage);
+                        if(hasGui)
+                            ((Gui) view).onMessageReceived(recievedMessage);
+                        else
+                            ((TUI) view).onMessageReceived(recievedMessage);
                     } catch (IOException | ClassNotFoundException e) {
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
@@ -139,7 +149,10 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
      * @throws ParseException If there is an error in the parsing operation.
      */
     public void sendMessageToClient(Message message) throws IOException, ParseException {
-        ((TUI) view).onMessageReceived(message);
+        if(hasGui)
+            ((Gui) view).onMessageReceived(message);
+        else
+            ((TUI) view).onMessageReceived(message);
     }
 
     /**
@@ -298,4 +311,12 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
         return clientID;
     }
 
+    /**
+     * Returns the IP address of the server.
+     *
+     * @return The IP address of the server.
+     */
+    public String getIpServ() {
+        return ipServ;
+    }
 }

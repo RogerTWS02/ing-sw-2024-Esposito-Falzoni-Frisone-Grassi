@@ -73,7 +73,7 @@ public class CodexNaturalisTempApp4 {
                 //per il momento funziona solo su localHost con porta di default
                 tui.cli  = new Client(hasSocket,
                         ((ipAddr == null)? InetAddress.getLocalHost(): ipAddr).getHostName()
-                        , 1234, tui);
+                        , 1234, tui, false);
                 tui.cli.run();
                 tui.start();
             }catch(Exception e){

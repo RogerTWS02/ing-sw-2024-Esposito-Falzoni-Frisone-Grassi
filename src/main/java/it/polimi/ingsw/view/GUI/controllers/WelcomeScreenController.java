@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.GUI.controllers;
 
+import it.polimi.ingsw.view.GUI.GuiApp;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -9,7 +10,9 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
 /**
@@ -38,7 +41,16 @@ public class WelcomeScreenController implements Initializable {
         playerSlider.setDisable(true);
         textLabel.setVisible(false);
         textLabel.setDisable(true);
-        //TODO: new label for the connection status
+        try {
+            if(GuiApp.getGui().cli.getIpServ().equals(InetAddress.getLocalHost().toString()))
+                textField_ConnectedTo.setText("Connected to: localhost");
+            else
+                textField_ConnectedTo.setText("Connected to: " + GuiApp.getGui().cli.getIpServ());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        textField_ConnectedTo.setVisible(true);
+        textField_ConnectedTo.setDisable(false);
     }
 
     /**

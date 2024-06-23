@@ -12,6 +12,7 @@ import javafx.stage.Stage;
  * GUI App main class.
  */
 public class GuiApp extends Application {
+    private static Gui gui;
     private static final String fxmlPath = "/fxml/";
     private static Stage mainStage;
     private static Parent welcomeScreenRoot;
@@ -57,5 +58,30 @@ public class GuiApp extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    /**
+     * Returns the welcome screen controller.
+     */
+    public static WelcomeScreenController getWelcomeScreenController() {
+        return welcomeScreenController;
+    }
+
+    /**
+     * Sets the GUI.
+     *
+     * @param gui The GUI.
+     */
+    public static void setGui(Gui gui) {
+        GuiApp.gui = gui;
+    }
+
+    /**
+     * Returns the GUI.
+     *
+     * @return The GUI.
+     */
+    public static Gui getGui() {
+        return gui;
     }
 }
