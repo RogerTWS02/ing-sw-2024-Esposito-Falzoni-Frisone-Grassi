@@ -53,6 +53,9 @@ public class TUI extends Thread{
     private List<String> availableLobbies = new ArrayList<>();
     private boolean alreadyTriedToChooseLobby = false;
 
+    public TUI() throws IOException, ParseException {
+    }
+
     /**
      * Handles arriving message from the server and updates the TUI.
      *
