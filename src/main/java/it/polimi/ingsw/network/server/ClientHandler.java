@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,6 +78,8 @@ public class ClientHandler extends Thread implements ClientListenerInterface {
     public void run(){
         try {
             handleClient();
+        }catch (SocketException e){
+            disconnect();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "An error occurred handling the client: "+e);
             disconnect();

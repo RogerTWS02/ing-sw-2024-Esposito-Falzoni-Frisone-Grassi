@@ -10,7 +10,6 @@ import static it.polimi.ingsw.network.message.MessageType.*;
 
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.RemoteException;
@@ -101,7 +100,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     /**
      * The timeout of the heartbeat.
      */
-    private final long HEARTBEAT_TIMEOUT = 5000;
+    private final long HEARTBEAT_TIMEOUT = 8000;
 
     /**
      * This map is used to associate the player id with the last heartbeat received.
@@ -133,10 +132,10 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      * @throws IOException If the server cannot be created.
      */
     public Server() throws IOException {
-        this.lobbyPlayerMap = new HashMap<>();
-        this.gameControllerMap = new HashMap<>();
-        this.idClientMap = new HashMap<>();
-        this.idPlayerMap = new HashMap<>();
+        this.lobbyPlayerMap = new ConcurrentHashMap<>();
+        this.gameControllerMap = new ConcurrentHashMap<>();
+        this.idClientMap = new ConcurrentHashMap<>();
+        this.idPlayerMap = new ConcurrentHashMap<>();
         this.port = default_port;
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
         startHeartBeat();
@@ -152,22 +151,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception while closing server socket");
         }
-    }
-
-
-    /**
-     * Checks if the id of the socket is valid.
-     *
-     * @param message The message received.
-     * @param socketHandler The socketHandler that received the message.
-     * @return True if the id is valid, false otherwise.
-     */
-    public boolean checkIdSocket(Message message, ClientHandler socketHandler) {
-        if (message.getMessageType() != REQUEST_LOGIN && idClientMap.get(message.getSenderID()) != socketHandler) {
-            logger.log(Level.SEVERE, "Received message with invalid id");
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -471,7 +454,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      * This method handles the disconnection of the clients.
      * @param clientPort the client who disconnected.
      */
-    public void handleDisconnection(int clientPort){
+    public synchronized void handleDisconnection(int clientPort){
         try{
             notifyDisconnection(clientPort);
         }catch (IOException | ParseException e){
@@ -500,10 +483,8 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                         //This id is used to avoid iterating on sockets of players that have not yet entered the lobby
                         if(idClientMap.get(id) == null) continue;
 
-                        //PER DEBUGGNG
-                        System.out.println("MESSAGGIO DI DISCONNESSIONE MANDATO A: "+id);
-
                         try {
+                            if(id != clientPort){ //We don't have to send the message to the player disconnected
                             idClientMap.get(id).sendMessageToClient(
                                     new Message(
                                             REPLY_INTERRUPT_GAME,
@@ -513,14 +494,14 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                                     "\nA player disconnected! The game is ending..."
                                             }
                                     )
-                            );
+                            );}
                         }catch(Exception e){
                             // Printing the 'actual' exception:
                             System.out.println("Underlying exception: " + e.getCause());
                         }
 
-                        //TODO: SISTEMARE IL METODO DISCONNECT
-                        //idClientMap.get(id).disconnect();
+
+                        idClientMap.get(id).disconnect();
 
                         idClientMap.remove(id);
 
@@ -529,6 +510,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
 
                         //remove the heartbeat associated to the player
                         lastHeartbeat.remove(id);
+
                     }
                     //remove the game controller also
                     preliminaryChoices.remove(gameID);

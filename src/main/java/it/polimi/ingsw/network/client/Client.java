@@ -119,8 +119,6 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                         Message recievedMessage = (Message) socketInput.readObject();
                         //Forward the message to the client by extracting from the type of interface
                         ((TUI) view).onMessageReceived(recievedMessage);
-                        //debugging
-                        //System.out.println(recievedMessage.getObj().toString());
                     } catch (IOException | ClassNotFoundException e) {
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
@@ -216,13 +214,8 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
     }
 
     public void disconnect() throws IOException{
-        /*
-        try {
-            Naming.unbind(Server.NAME);
-        } catch (RemoteException | NotBoundException | MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        */
+
+        //Disconnect the client using RMI
         System.exit(0);
     }
 
