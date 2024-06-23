@@ -53,12 +53,14 @@ public class TUI extends Thread{
     private List<String> availableLobbies = new ArrayList<>();
     private boolean alreadyTriedToChooseLobby = false;
 
-    public TUI() throws IOException, ParseException {
-    }
-
-    //Faccio l'aggiornamento della tui in base ai messaggi ricevuti
+    /**
+     * Handles arriving message from the server and updates the TUI.
+     *
+     * @param message The message received.
+     * @throws IOException If an I/O error occurs.
+     * @throws ParseException If an error occurs during parsing.
+     */
     public void onMessageReceived(Message message) throws IOException, ParseException {
-        //System.out.println(message.getMessageType() + " sent by " + message.getSenderID());
         String srvRep;
         switch (message.getMessageType()) {
             case REPLY_CHAT_MESSAGE:
@@ -88,22 +90,21 @@ public class TUI extends Thread{
                 gUUID = (String[]) message.getObj()[1];
                 break;
 
-            //quando si raggiunge il numero prefissato di persone nella lobby
+            //When the lobby is full
             case REPLY_BEGIN_GAME:
-
-                //imposto il gameID nel client
+                //Set the gameID in the client
                 cli.setGameID(message.getGameID());
 
-                //mano del giocatore
+                //Hand of the player
                 currentHandUUID = new ArrayList<>((List<String>) message.getObj()[0]);
 
-                //obbiettivi comuni
+                //Common goal cards
                 allGoalsUUID = (List<String>) message.getObj()[1];
 
-                //carte da scegliere
+                //Cards to choose
                 cardToChooseUUID = (List<String>) message.getObj()[2];
 
-                //booleano che controlla il turno
+                //Turn checking boolean
                 myTurn = (boolean) message.getObj()[3];
 
                 // update list of players
@@ -116,83 +117,51 @@ public class TUI extends Thread{
                 // update player resources
                 playerResources = (List<Resource>) message.getObj()[6];
 
-
-
-                //System.out.println("VALORE DEL TURNO: "+myTurn);
-
-                //vado alla scena di gioco impostando i parametri ricevuti
-                //ovvero le carte della mano e le common goal cards
                 System.out.println("\nLet's go! The game is starting...");
-
                 break;
 
-            //in risposta ai comandi di /drawCardFromDeck e /drawCardFromViewable
+            //Replying to the commands /drawCardFromDeck and /drawCardFromViewable
             case REPLY_HAND_UPDATE:
                 String newCardUUID = (String) message.getObj()[0];
-
-                //aggiungo la nuova carta
+                //Adds the new card to the hand
                 for(int i = 0; i < 3; i++){
                     if(currentHandUUID.get(i).isEmpty()){
                         currentHandUUID.set(i, newCardUUID);
                         break;
                     }
                 }
-
-                //mostro l'update fatto
-                /*
-                try {
-                    printFullScreen();
-                    System.out.print("Type '/help' to view the commands list: ");
-                } catch (IOException | ParseException e) {
-                    throw new RuntimeException(e);
-                }
-                */
-
                 break;
 
-            //viene chiamato dopo che un giocatore piazza una carta
+            //After a player places a card
             case REPLY_UPDATED_SCORE:
-
-                //RIMUOVO L'ELEMENTO DALLA MANO SOLO QUANDO SONO
-                //SICURO CHE LA MOSSA SIA ANDATA A BUON FINE!!!
                 currentHandUUID.set(numHand, "");
-
-                //spazi disponibili
+                //Available places
                 available = (List<int[]>) message.getObj()[0];
 
-                //aggiorno la visualizzazione con la risorsa permanente
+                //Update the board with the placed card
                 onBoard[positionY][positionX] = (Resource) message.getObj()[1];
                 cardPlaced = true;
-
                 String nick = (String) message.getObj()[2];
                 int score = (int) message.getObj()[3];
-
                 nicknames.put(nick, score);
-
                 playerResources = (List<Resource>) message.getObj()[4];
-
 
                 try {
 
                     topRow.showTopRow(currentPlayerNickame, nicknames, (ArrayList<Resource>) playerResources);
-                    //con l'UUID aggiorno lo stato dello schermo della console
+                    //Refresh the screen
                     goals.showObjective(allGoalsUUID.toArray(new String[0]));
-                    //handcards.showHand(currentHandUUID.toArray(new String[0]));
-
-                    //stampo la playerBoard
+                    //Prints the player's board
                     board.drawBoard(onBoard, available);
-
                 } catch (IOException | ParseException e) {
                     throw new RuntimeException(e);
                 }
-
                 break;
 
             case REPLY_INFO_CARD:
                 String infoUUID = (String) message.getObj()[0];
                 Boolean isFlipped = (Boolean) message.getObj()[1];
                 Boolean[] coveredCorners = (Boolean[]) message.getObj()[2];
-                //stampo l'info della carta
                 infoC.showInfoCard(infoUUID, isFlipped, coveredCorners);
                 break;
 
@@ -200,39 +169,29 @@ public class TUI extends Thread{
                 String LobbyName = (String) message.getObj()[0];
                 cli.setLobbyName(LobbyName);
                 System.out.print((String) message.getObj()[1]);
-                //vado nello stato di richiesta nuova lobby
                 break;
 
             case REPLY_CHOICES_MADE:
-
-                //spazi disponibili
+                //View free spaces
                 available = (List<int[]>) message.getObj()[0];
-
-                //inizializzo la visualizzazione della board
                 onBoard = new Resource[80][80];
-
-                //TODO: IMPOSTARE LA RISORSA CHE INDICA LA STARTING CARD!!!
                 onBoard[40][40] = Resource.WOLF;
-
                 break;
 
             case REPLY_YOUR_TURN:
                 currentPlayerNickame = (String) message.getObj()[0];
                 printFullScreen();
                 myTurn = (boolean) message.getObj()[1]; //Update turn
-
                 break;
 
             case NOTIFY_END_GAME:
                 System.out.println("Turns left: "+message.getObj()[0]);
-
-                //update number of remaining turns
+                //Update number of remaining turns
                 turnLeft = (Integer) message.getObj()[0];
                 break;
 
             case REPLY_INTERRUPT_GAME:
                 System.out.println((String) message.getObj()[0]);
-
                 //close the connection client-side according to the client network protocol
                 cli.closeConnection();
                 break;
@@ -261,7 +220,6 @@ public class TUI extends Thread{
 
             case HEARTBEAT:
                 replyHeartbeat();
-                //Thread heartbeatAck = new Thread(this::replyHeartbeat);
                 break;
 
             case REPLY_AVAILABLE_LOBBIES:
@@ -412,7 +370,7 @@ public class TUI extends Thread{
                     new Message(
                             REQUEST_NEW_LOBBY,
                             cli.getClientID(),
-                            -1, //il gameId non viene settato fino all'avvio vero e proprio della partita
+                            -1, //gameID is not set until the game actually starts
                             new Object[]{
                                     nameP,
                                     cli.getLobbyName(),
@@ -518,7 +476,6 @@ public class TUI extends Thread{
             if(num == 1 || num == 2){
                 selectedUUID = cardToChooseUUID.get(num);
                 allGoalsUUID.add(selectedUUID);
-                //System.out.println("\nThe player has chosen the card: " + selectedUUID);
                 //after choosing the secret goal card, the player chooses
                 //the side to place the starting card on the board
                 side = placeStartingCard();
@@ -533,9 +490,9 @@ public class TUI extends Thread{
                         cli.getClientID(),
                         cli.getGameID(),
                         new Object[]{
-                                cardToChooseUUID.get(0), //UUID della starting card
-                                side,                    //lato scelto
-                                selectedUUID             //secret goal card scelta
+                                cardToChooseUUID.get(0), //Starting card uuid
+                                side,                    //chosen side
+                                selectedUUID             //secret goal card chosen
                         }
                 )
         );
@@ -565,9 +522,7 @@ public class TUI extends Thread{
     /**
      * This method simulates the player's turn (places a card and then draws a new one).
      */
-
     public void playerTurn(){
-
         //update the current viewable cards
         cli.sendMessage(
                 new Message(
@@ -578,7 +533,6 @@ public class TUI extends Thread{
 
         while(true) {
             String[] command;
-
             //Ask for the card the player wants to play
             System.out.println("\nChoose the card you want to play(1, 2 or 3)");
             System.out.print("or write a different command (type /help to view the list of commands): ");
@@ -705,7 +659,6 @@ public class TUI extends Thread{
      * This method is the main thread of the TUI.
      */
     public void run(){
-        //Initialize scanner in order to read user input
         String[] command;
 
         /*
@@ -724,7 +677,6 @@ public class TUI extends Thread{
                 }
             }
         });
-
         inputThread.setDaemon(true);
         inputThread.start();
 
@@ -826,7 +778,7 @@ public class TUI extends Thread{
                     }
                 }
 
-                //chiedo all'utente di inserire un comando comune
+                //Ask to insert a command
                 System.out.print("Type '/help' to view the commands list: ");
                 while(!myTurn && inputQueue.isEmpty()){
                     Thread.onSpinWait();
@@ -877,7 +829,7 @@ public class TUI extends Thread{
 
         }
 
-        //facciamo vedere la schermata di fine gioco
+        //Display the end game screen
         if(winners.size() == 1)
             System.out.print("\n\nWinner: ");
         else
@@ -947,8 +899,6 @@ public class TUI extends Thread{
                 );
                 return;
 
-            //chiedo l'UUID della carta al server e genero i dati dal JSON
-            // messaggio del tipo: /infoCard posX posY
             case "/infocard":
                 if(command.length < 3) {
                     System.out.println("Command not valid, try '/help' to view syntax");
@@ -964,7 +914,6 @@ public class TUI extends Thread{
                     break;
                 }
 
-                //mando la richiesta di info
                 cli.sendMessage(
                         new Message(
                                 REQUEST_INFO_CARD,
@@ -1009,7 +958,6 @@ public class TUI extends Thread{
 
                 String sidE = command[2].toLowerCase();
 
-                //riporto all'indice dell'array
                 numHand--;
 
                 cli.sendMessage(
@@ -1233,7 +1181,6 @@ public class TUI extends Thread{
                     }
                     return;
                 }else{
-                    //ricompatto il messaggio
                     String msg = String.join(" ", command);
                     if (msg.isEmpty()) continue;
                     else {

@@ -98,9 +98,13 @@ public class CodexNaturalisApp {
     private static void launchClient(boolean hasGUI, boolean hasSocket) throws IOException, ParseException {
         if (hasGUI) {
             Gui gui = new Gui();
-            gui.client = new Client(hasSocket,((ipAddr == null) ? InetAddress.getLocalHost() : ipAddr).getHostName(),1234, gui);
-            gui.client.run();
-            gui.run();
+            try {
+                gui.client = new Client(hasSocket,((ipAddr == null) ? InetAddress.getLocalHost() : ipAddr).getHostName(),1234, gui);
+                gui.client.run();
+                gui.run();
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+            }
         } else {
             TUI tui = new TUI();
             try {
