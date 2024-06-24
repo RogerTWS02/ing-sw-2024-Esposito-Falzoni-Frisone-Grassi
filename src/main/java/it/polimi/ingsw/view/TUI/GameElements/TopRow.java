@@ -4,6 +4,8 @@ import it.polimi.ingsw.model.Resource;
 import it.polimi.ingsw.view.TUI.GameState.Views;
 
 import java.util.*;
+import java.awt.*;
+import java.util.List;
 
 /**
  * This class is used to show the top row of the game, which contains the scores of the players, the current player, the next player and the resources of the current player.
@@ -16,6 +18,19 @@ public class TopRow implements Views {
     public static final String ANSI_BLUE = "\u001B[34m";
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GRAY_BACKGROUND = "\u001B[32m";
+
+    int widthInChars;
+
+    public TopRow() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        Frame frame = new Frame();
+        frame.addNotify();
+        Font font = new Font("Monospaced", Font.PLAIN, 10); // Usa un font monospaced
+        FontMetrics fontMetrics = frame.getFontMetrics(font);
+        int charWidth = fontMetrics.charWidth('─');
+        this.widthInChars = screenWidth / charWidth;
+    }
 
     /**
      * Shows the top row of the game of a player.
@@ -49,7 +64,7 @@ public class TopRow implements Views {
         topRow
                 .append("\n")
                 .append("┌")
-                .append("─".repeat(125))
+                .append("─".repeat(widthInChars-2))
                 .append("┐")
                 .append("\n")
                 .append(" ")
@@ -93,7 +108,7 @@ public class TopRow implements Views {
             topRow
                     .append("\n")
                     .append("└")
-                    .append("─".repeat(125))
+                    .append("─".repeat(widthInChars-2))
                     .append("┘")
                     .append("\n");
 

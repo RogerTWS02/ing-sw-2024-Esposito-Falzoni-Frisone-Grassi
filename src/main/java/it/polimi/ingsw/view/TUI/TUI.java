@@ -39,6 +39,7 @@ public class TUI extends Thread{
     volatile boolean myTurn;
     private volatile boolean preliminaryChoicesMade = false;
     TopRow topRow = new TopRow();
+    Endgame endgame = new Endgame();
     private static Map<String, Integer> nicknames;
     private static String currentPlayerNickame;
     private List<Resource> playerResources= null;
@@ -833,15 +834,7 @@ public class TUI extends Thread{
         }
 
         //Display the end game screen
-        if(winners.size() == 1)
-            System.out.print("\n\nWinner: ");
-        else
-            System.out.print("\n\nDraw: ");
-        for (int i = 0; i < winners.size(); i++){
-            System.out.print(winners.get(i));
-            if(winners.size() > 1 && i != winners.size() - 1) System.out.print(", ");
-        }
-
+        endgame.showEndgame(winners);
         System.exit(0);
     }
 
