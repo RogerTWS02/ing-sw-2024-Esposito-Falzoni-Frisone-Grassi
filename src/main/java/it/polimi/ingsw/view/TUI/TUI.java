@@ -26,6 +26,7 @@ public class TUI extends Thread{
     Scanner scanner = new Scanner(System.in);
     StartGame startGame = new StartGame();
     LoginUsername loginUsername = new LoginUsername();
+    Chat chat = new Chat();
     HandCards handcards = new HandCards();
     Objective goals = new Objective();
     InfoCard infoC = new InfoCard();
@@ -1146,17 +1147,7 @@ public class TUI extends Thread{
         }
         while(true){
             if(updateChat){
-                //TODO: INTERFACCIA PER MOSTRARE I MESSAGGIO DELLA CHAT
-                for(int i = 0; i < 100; i++){
-                    System.out.println();
-                }
-                System.out.println("""
-                    +--------------------------------+
-                    |           Chat Room            |
-                    +--------------------------------+
-                    """);
-                chatMessages.forEach(System.out::println);
-                System.out.println("+--------------------------------+");
+                chat.showChat(chatMessages);
                 updateChat = false;
             }else {
 
@@ -1185,7 +1176,7 @@ public class TUI extends Thread{
                                         NEW_CHAT_MESSAGE,
                                         cli.getClientID(),
                                         cli.getGameID(),
-                                        new Object[]{"\033[38;5;208m" + nameP + ":\033[0m " + msg})
+                                        new Object[]{" \033[38;5;208m" + nameP + ":\033[0m " + msg})
                         );
                         try {
                             Thread.sleep(1000);

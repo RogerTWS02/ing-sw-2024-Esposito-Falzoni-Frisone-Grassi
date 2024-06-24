@@ -1,5 +1,8 @@
 package it.polimi.ingsw.view.TUI.GameState;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * Chat class is used to print the chat on the screen.
  */
@@ -10,37 +13,33 @@ public class Chat implements Views{
      *
      * @param msg The messages to be shown on the chat.
      */
-    public void showChat(String[] msg){
+    public void showChat(Queue<String> msg){
     StringBuilder sb = new StringBuilder();
-    sb
-            .append("┌")
-            .append("─".repeat(106))
-            .append("┐")
-            .append("\n")
-            .append("│")
-            .append(" ".repeat(51))
-            .append("CHAT")
-            .append(" ".repeat(51))
-            .append("│")
-            .append("\n")
-            .append("├")
-            .append("─".repeat(106))
-            .append("┤")
-            .append("\n");
-             for(int line = 25; line >0; line --){
-                 sb
-                      .append("│ ")
-                      .append(msg[msg.length-line])
-                      .append(" │")
-                      .append("\n");
-             }
-    sb
-            .append("└")
-            .append("─".repeat(106))
-            .append("┘")
-            .append("\n");
-    // Clear the screen before printing something
+    StringBuilder st = new StringBuilder();
     Views.clearScreen();
-    // print the Chat
-    System.out.println(sb);}
+        System.out.println("\n".repeat(100));
+    sb
+            .append("+")
+            .append("-".repeat(106))
+            .append("+")
+            .append("\n")
+            .append(" ".repeat(47))
+            .append("Chat Room")
+            .append(" ".repeat(30))
+            .append("\n")
+            .append("+")
+            .append("-".repeat(106))
+            .append("+")
+            .append("\n");
+        System.out.println(sb);
+            msg.forEach(System.out::println);
+    st
+            .append("+")
+            .append("-".repeat(106))
+            .append("+")
+            .append("\n");
+    System.out.println(st);
+    // Clear the screen before printing something
+
+    }
 }
