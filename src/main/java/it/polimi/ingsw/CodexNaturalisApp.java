@@ -104,6 +104,7 @@ public class CodexNaturalisApp {
                 gui.run();
             } catch (Exception e) {
                 System.out.println("Error: " + e);
+                e.printStackTrace();
             }
         } else {
             TUI tui = new TUI();

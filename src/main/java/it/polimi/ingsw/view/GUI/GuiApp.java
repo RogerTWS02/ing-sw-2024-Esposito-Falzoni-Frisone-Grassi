@@ -17,6 +17,9 @@ public class GuiApp extends Application {
     private static Stage mainStage;
     private static Parent welcomeScreenRoot;
     private static WelcomeScreenController welcomeScreenController;
+    private static Parent mainPlayerViewRoot;
+    private static WelcomeScreenController mainPlayerViewController;
+    public static volatile boolean guiStarted = false;
 
     /**
      * Starts the GUI.
@@ -31,6 +34,10 @@ public class GuiApp extends Application {
         welcomeScreenRoot = loader.load();
         welcomeScreenController = loader.getController();
 
+        loader = new FXMLLoader(getClass().getResource(fxmlPath + "MainPlayerView.fxml"));
+        mainPlayerViewRoot = loader.load();
+        mainPlayerViewController = loader.getController();
+
         //TODO: all other roots
 
         Scene scene = new Scene(welcomeScreenRoot);
@@ -43,6 +50,8 @@ public class GuiApp extends Application {
         mainStage.setFullScreenExitHint("");
         mainStage.setFullScreen(true);
         mainStage.show();
+
+        guiStarted = true;
 
         //Close the application when the main stage is closed
         mainStage.setOnCloseRequest(e -> {

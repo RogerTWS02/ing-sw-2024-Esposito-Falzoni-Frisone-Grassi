@@ -3,15 +3,25 @@ package it.polimi.ingsw.view.GUI.controllers;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-public class MainPlayerViewController extends Application {
+import java.net.URL;
+import java.util.ResourceBundle;
 
+public class MainPlayerViewController implements Initializable {
+
+    /**
+     * Initializes the GridPane with buttons.
+     *
+     * @param url Ignored.
+     * @param resourceBundle Ignored.
+     */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         GridPane gridPane = new GridPane();
 
         // Loop to create and add buttons to the GridPane
@@ -31,17 +41,16 @@ public class MainPlayerViewController extends Application {
                 gridPane.add(button, colIndex, rowIndex);
             }
         }
-        Scene scene = new Scene(gridPane, 400, 400);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Chessboard Buttons");
-        primaryStage.show();
     }
 
+    /**
+     * Handles the button click event.
+     *
+     * @param rowIndex The row index of the clicked button.
+     * @param colIndex The column index of the clicked button.
+     * @return An array containing the row and column indexes of the clicked button.
+     */
     public Integer[] onButtonClicked(Integer rowIndex, Integer colIndex){
         return new Integer[]{rowIndex, colIndex};
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

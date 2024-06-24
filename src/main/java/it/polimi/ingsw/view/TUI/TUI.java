@@ -834,6 +834,8 @@ public class TUI extends Thread{
 
         }
 
+        System.out.println("\n");
+        Views.clearScreen();
         //Display the end game screen
         endgame.showEndgame(winners);
         System.exit(0);

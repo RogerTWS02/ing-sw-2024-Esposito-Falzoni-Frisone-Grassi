@@ -25,7 +25,7 @@
             <Glow />
          </effect>
       </TextField>
-      <Button fx:id="doneButton" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#ButtonPressed" prefHeight="40.0" prefWidth="60.0" text="Done" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+      <Button fx:id="doneButton" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#DoneButtonPressed" prefHeight="40.0" prefWidth="60.0" text="Done" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
          <GridPane.margin>
             <Insets top="240.0" />
          </GridPane.margin>
@@ -50,5 +50,15 @@
             <Font size="16.0" />
          </font>
       </Label>
+      <Button fx:id="refreshButton" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#refreshButtonPressed" prefHeight="40.0" prefWidth="80.0" text="Refresh" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+         <GridPane.margin>
+            <Insets right="160.0" top="240.0" />
+         </GridPane.margin>
+      </Button>
+      <Button fx:id="createButton" onAction="#createButtonPressed" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="80.0" text="Create" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+         <GridPane.margin>
+            <Insets left="160.0" top="240.0" />
+         </GridPane.margin>
+      </Button>
    </children>
 </GridPane>
