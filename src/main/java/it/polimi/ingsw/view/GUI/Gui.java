@@ -217,12 +217,12 @@ public class Gui {
         //Starts the first flow: lobby, nickname, lobby size
         welcomeScreenFlow_LobbyAndNickname();
 
-        while (gameState == GameFlowState.LOBBY) {
+        while (gameState != GameFlowState.END) {
             synchronized (lock) {
                 try {
                     lock.wait();
                 } catch (Exception e) {
-                    System.err.println("Error in GUI: waiting for lock (LOBBY)");
+                    System.err.println("Error in GUI class");
                 }
             }
         }
@@ -259,6 +259,7 @@ public class Gui {
     private enum GameFlowState {
         LOBBY,
         GAME,
+        WINNER_DISPLAY,
         END
     }
 }
