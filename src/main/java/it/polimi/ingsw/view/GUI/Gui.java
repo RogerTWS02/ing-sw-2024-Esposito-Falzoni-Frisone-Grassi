@@ -64,18 +64,27 @@ public class Gui {
                 break;
 
             case REPLY_BEGIN_GAME:
-                cli.setGameID(message.getGameID());
-                currentHandUUID = new ArrayList<>((List<String>) message.getObj()[0]);
-                allGoalsUUID = (List<String>) message.getObj()[1];
-                cardToChooseUUID = (List<String>) message.getObj()[2];
-                myTurn = (boolean) message.getObj()[3];
-                nicknames = (Map<String, Integer>) message.getObj()[4];
-                currentPlayerNickname = (String) message.getObj()[5];
-                startingPlayer = (String) message.getObj()[5];
-                playerResources = (List<Resource>) message.getObj()[6];
-                GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
+                replyBeginGameHandler(message);
                 break;
         }
+    }
+
+    /**
+     * Handles the receiving of the message notifying the beginning of the game.
+     *
+     * @param message The message received.
+     */
+    public void replyBeginGameHandler(Message message) {
+        cli.setGameID(message.getGameID());
+        currentHandUUID = new ArrayList<>((List<String>) message.getObj()[0]);
+        allGoalsUUID = (List<String>) message.getObj()[1];
+        cardToChooseUUID = (List<String>) message.getObj()[2];
+        myTurn = (boolean) message.getObj()[3];
+        nicknames = (Map<String, Integer>) message.getObj()[4];
+        currentPlayerNickname = (String) message.getObj()[5];
+        startingPlayer = (String) message.getObj()[5];
+        playerResources = (List<Resource>) message.getObj()[6];
+        GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
     }
 
     /**
