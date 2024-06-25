@@ -10,7 +10,6 @@ import java.util.List;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
 
-
 /**
  * The GUI view.
  */
