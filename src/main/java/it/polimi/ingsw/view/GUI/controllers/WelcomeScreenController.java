@@ -106,6 +106,11 @@ public class WelcomeScreenController implements Initializable {
             screenState = state;
 
         Platform.runLater(() -> {
+            createButton.setVisible(false);
+            createButton.setDisable(true);
+            refreshButton.setVisible(false);
+            refreshButton.setDisable(true);
+            textField.setText("");
             textField.setPromptText("Insert nickname");
             textField.setVisible(true);
             textField.setDisable(false);
@@ -142,14 +147,12 @@ public class WelcomeScreenController implements Initializable {
      * @param actionEvent Ignored.
      */
     public void doneButtonPressed(ActionEvent actionEvent) {
-        if(screenState == WelComeScreenStateEnum.INSERTING_NICKNAME)
-            GuiApp.getGui().setNickname(textField.getText());
+        if(screenState == WelComeScreenStateEnum.INSERTING_NICKNAME || screenState == WelComeScreenStateEnum.INSERTING_JUST_NICKNAME)
+            new Thread(() -> GuiApp.getGui().setNickname(textField.getText())).start();
         else if(screenState == WelComeScreenStateEnum.INSERTING_LOBBY_SIZE)
             GuiApp.getGui().setLobbySize((int) playerSlider.getValue());
         else if(screenState == WelComeScreenStateEnum.CHOOSING_LOBBY)
-            GuiApp.getGui().handleLobbyChoice(textField.getText());
-        else if(screenState == WelComeScreenStateEnum.INSERTING_JUST_NICKNAME)
-            GuiApp.getGui().setNickname(textField.getText());
+            new Thread(() -> GuiApp.getGui().handleLobbyChoice(textField.getText())).start();
     }
 
     /**
@@ -196,6 +199,8 @@ public class WelcomeScreenController implements Initializable {
     public void waitForOtherPlayers() {
         screenState = WelComeScreenStateEnum.WAITING_FOR_OTHER_PLAYERS;
         Platform.runLater(() -> {
+            textField.setVisible(false);
+            textField.setDisable(true);
             doneButton.setDisable(true);
             doneButton.setVisible(false);
             playerSlider.setDisable(true);
@@ -214,7 +219,7 @@ public class WelcomeScreenController implements Initializable {
      * @param actionEvent Ignored.
      */
     public void refreshButtonPressed(ActionEvent actionEvent) {
-        GuiApp.getGui().refreshAvailableLobbies();
+        new Thread(() -> GuiApp.getGui().refreshAvailableLobbies()).start();
     }
 
     /**
@@ -227,7 +232,7 @@ public class WelcomeScreenController implements Initializable {
         createButton.setDisable(true);
         refreshButton.setVisible(false);
         refreshButton.setDisable(true);
-        GuiApp.getGui().createNewLobbyOnRequest();
+        new Thread(() -> GuiApp.getGui().createNewLobbyOnRequest()).start();
     }
 
     /**

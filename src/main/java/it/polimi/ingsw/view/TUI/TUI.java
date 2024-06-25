@@ -42,7 +42,7 @@ public class TUI extends Thread{
     private TopRow topRow = new TopRow();
     private Endgame endgame = new Endgame();
     private static Map<String, Integer> nicknames;
-    private static String currentPlayerNickame;
+    private static String currentPlayerNickname;
     private List<Resource> playerResources= null;
     private boolean cardPlaced = false, updateChat = false, successfulDraw = true;
     private static final BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
@@ -116,7 +116,7 @@ public class TUI extends Thread{
                 nicknames = (Map<String, Integer>) message.getObj()[4];
 
                 // update current player
-                currentPlayerNickame = (String) message.getObj()[5];
+                currentPlayerNickname = (String) message.getObj()[5];
                 startingPlayer = (String) message.getObj()[5];
 
                 // update player resources
@@ -153,7 +153,7 @@ public class TUI extends Thread{
 
                 try {
 
-                    topRow.showTopRow(currentPlayerNickame, nicknames, (ArrayList<Resource>) playerResources);
+                    topRow.showTopRow(currentPlayerNickname, nicknames, (ArrayList<Resource>) playerResources);
                     //Refresh the screen
                     goals.showObjective(allGoalsUUID.toArray(new String[0]));
                     //Prints the player's board
@@ -184,7 +184,7 @@ public class TUI extends Thread{
                 break;
 
             case REPLY_YOUR_TURN:
-                currentPlayerNickame = (String) message.getObj()[0];
+                currentPlayerNickname = (String) message.getObj()[0];
                 printFullScreen();
                 myTurn = (boolean) message.getObj()[1]; //Update turn
                 break;
@@ -844,7 +844,7 @@ public class TUI extends Thread{
     public void printFullScreen() throws IOException, ParseException {
         Views.clearScreen();
 
-        topRow.showTopRow(currentPlayerNickame, nicknames, (ArrayList<Resource>) playerResources);
+        topRow.showTopRow(currentPlayerNickname, nicknames, (ArrayList<Resource>) playerResources);
         //Print player's board
         int lines=board.drawBoard(onBoard, available)*3;
         if(lines<20){System.out.println("\n".repeat(20-lines));}

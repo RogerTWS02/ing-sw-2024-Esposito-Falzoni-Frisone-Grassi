@@ -70,10 +70,28 @@ public class GuiApp extends Application {
     }
 
     /**
+     * Changes the scene of the main stage.
+     *
+     * @param root The new root.
+     */
+    public static void changeScene(Parent root) {
+        Platform.runLater(() -> mainStage.getScene().setRoot(root));
+    }
+
+    /**
      * Returns the welcome screen controller.
      */
     public static WelcomeScreenController getWelcomeScreenController() {
         return welcomeScreenController;
+    }
+
+    /**
+     * Returns the root of the player's game view.
+     *
+     * @return The root of the player's game view.
+     */
+    public static Parent getMainPlayerViewRoot() {
+        return mainPlayerViewRoot;
     }
 
     /**

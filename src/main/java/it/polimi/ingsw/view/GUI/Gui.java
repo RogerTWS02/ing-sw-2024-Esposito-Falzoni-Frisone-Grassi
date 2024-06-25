@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.GUI;
 
+import it.polimi.ingsw.model.Resource;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
@@ -8,6 +9,7 @@ import javafx.application.Application;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
 
@@ -24,6 +26,14 @@ public class Gui {
     private volatile Boolean validatedNickname = null;
     private volatile Boolean validatedLobby = null;
     private final Object lock = new Object();
+    private ArrayList<String> currentHandUUID;
+    private List<String> allGoalsUUID;
+    private List<String> cardToChooseUUID;
+    private volatile boolean myTurn;
+    private Map<String, Integer> nicknames;
+    private String currentPlayerNickname;
+    private String startingPlayer;
+    private List<Resource> playerResources;
 
     /**
      * Handles arriving message from the server and updates the TUI.
@@ -51,6 +61,19 @@ public class Gui {
 
             case REPLY_LOBBY_INFO:
                 replyLobbyInfoHandler(message);
+                break;
+
+            case REPLY_BEGIN_GAME:
+                cli.setGameID(message.getGameID());
+                currentHandUUID = new ArrayList<>((List<String>) message.getObj()[0]);
+                allGoalsUUID = (List<String>) message.getObj()[1];
+                cardToChooseUUID = (List<String>) message.getObj()[2];
+                myTurn = (boolean) message.getObj()[3];
+                nicknames = (Map<String, Integer>) message.getObj()[4];
+                currentPlayerNickname = (String) message.getObj()[5];
+                startingPlayer = (String) message.getObj()[5];
+                playerResources = (List<Resource>) message.getObj()[6];
+                GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
                 break;
         }
     }
