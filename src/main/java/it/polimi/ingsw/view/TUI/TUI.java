@@ -749,7 +749,6 @@ public class TUI extends Thread{
         preliminaryActions();
         System.out.println("Starting player is: " + startingPlayer);
 
-        //TODO: code refactoring
         boolean first = true;
 
         waitForPreliminaryActions(); //We wait for every player to finish choices
@@ -758,7 +757,6 @@ public class TUI extends Thread{
         //Game flow implementation
         while(turnLeft > 0){
 
-            //TODO: Usando myTurn gestire il gameFlow del giocatore
             if(myTurn){
                 if(first) {
                     try {
@@ -772,7 +770,6 @@ public class TUI extends Thread{
                 playerTurn();
             }else{
 
-                //TODO: AGGIORNO LO STATO DELLA TUI IN BASE ALLA SCELTA FATTA
                 if(first) {
                     first = false;
                     try {

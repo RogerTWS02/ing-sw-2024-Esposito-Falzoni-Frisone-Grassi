@@ -667,7 +667,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      *
      * @param message The message received.
      */
-    public synchronized Message serverLogin(Message message) throws IOException, ParseException {
+    public synchronized void serverLogin(Message message) throws IOException, ParseException {
         String requestNick = (String) message.getObj()[0];
 
         //check if the nickname is already present
@@ -690,12 +690,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             "Invalid nickname, please try a different one!"
                     )
             );
-            return null;
         }else{
-            boolean found = false;
             if(!message.getObj()[1].equals("create")) {
                 Lobby lobbyToJoin = null;
-                found = true;
                 //I make the player join the chosen lobby
                 for(Lobby lobby : lobbyPlayerMap.keySet()) {
                     if(lobby.getLobbyName().equals(message.getObj()[1])) {
@@ -708,7 +705,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                             "The chosen lobby is full! Creating a new one..."
                                     )
                             );
-                            return null;
+                            return;
                         }
                         lobbyToJoin = lobby;
                         break;
@@ -806,7 +803,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                         );
                     }
                 }
-                return null;
+                return;
             }
 
         //if there's no lobby I ask to generate one
@@ -838,7 +835,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 )
             );
         }
-        return null;
     }
 
     /**
@@ -846,7 +842,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      *
      * @param message The message received.
      */
-    public synchronized Message requestNewLobby(Message message) throws IOException, ParseException {
+    public synchronized void requestNewLobby(Message message) throws IOException, ParseException {
         String nickName = (String) message.getObj()[0];
         String lobbyName = (String) message.getObj()[1];
         int lobbySize = (Integer) message.getObj()[2];
@@ -889,7 +885,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                     "You just joined the lobby "+lobbyName
                             })
             );
-        return null;
     }
 
     /**
@@ -897,7 +892,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      *
      * @param message The message received.
      */
-    public Message requestCard(Message message) throws IOException, ParseException {
+    public void requestCard(Message message) throws IOException, ParseException {
 
         //First I need to check if it's actually the turn of the player making the request
         if(!gameControllerMap.get(message.getGameID()).getCurrentGame().getCurrentPlayer()
@@ -911,7 +906,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             "Invalid request, it's not your turn!"
                     )
             );
-            return null;
+            return;
         }
         Object[] params = message.getObj();
         if((Integer) params[1] < 0 || (Integer) params[1] > 2){
@@ -923,7 +918,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                 "Range given is out of bound!"
                         )
                 );
-            return null;
+            return;
         }
         PlayableCard replyCard = null;
         try{
@@ -952,13 +947,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             }
         }
         //advance the turn to the next player
-        int currPID = gameControllerMap
-                .get(message.getGameID()).advancePlayerTurn();
-
-
-        //TODO: DA CAMBIARE!!!!
-        //TODO: E SICCOME è FINITO IL TURNO DI QUESTO GIOCATORE MANDO A TUTTI IL SUO PUNTEGGIO AGGIORNATO
-        //TODO: POI MANDO A TUTTI I GIOCATORI IL NOME DEL NUOVO GIOCATORE
+        gameControllerMap.get(message.getGameID()).advancePlayerTurn();
 
         //send the new card to the client
         idClientMap.get(message.getSenderID()).sendMessageToClient(
@@ -997,8 +986,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                     )
             );
         }
-
-        return null;
     }
 
     /**
@@ -1006,7 +993,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      *
      * @param message The message received.
      */
-    public Message playerMove(Message message) throws IOException, ParseException {
+    public void playerMove(Message message) throws IOException, ParseException {
         //First I need to check if it's actually the turn of the player making the request
         if(!gameControllerMap.get(message.getGameID()).getCurrentGame().getCurrentPlayer()
             .equals(idPlayerMap.get(message.getSenderID()))){
@@ -1019,7 +1006,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             "Invalid request: it's not your turn!"
                     )
             );
-            return null;
+            return;
         }
         //Where the player wants to place the card
         int positionx = (int) message.getObj()[2];
@@ -1045,12 +1032,11 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             new Object[]{e.getMessage()}
                     )
             );
-            return null;
+            return;
         }
         //once the card is placed, that space remains empty in the hand
         idPlayerMap.get(message.getSenderID()).setHand(null, index);
         idClientMap.get(message.getSenderID()).sendMessageToClient(
-                //TODO: A message with the new score should be sent to the player
                 new Message(
                         REPLY_UPDATED_SCORE,
                         this.serverSocket.getLocalPort(),
@@ -1116,7 +1102,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                 );
             }
         }
-        return null;
     }
 
     /**
@@ -1127,7 +1112,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      * @throws IOException If an I/O error occurs.
      * @throws ParseException If a parse error occurs.
      */
-    public Message requestInfoCard(Message message) throws IOException, ParseException {
+    public void requestInfoCard(Message message) throws IOException, ParseException {
         //Where the player wants to place the card
         int posX = (int) message.getObj()[0];
         int posY = (int) message.getObj()[1];
@@ -1135,7 +1120,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         PlayableCard card = idPlayerMap.get(message.getSenderID()).getPlayerBoard().getCard(posX, posY);
         if(card == null || card.getUUID().equals("PLACEHOLDER")){
             idClientMap.get(message.getSenderID()).sendMessageToClient(
-                    //TODO: A message with the new score should be sent to the player
                     new Message(
                             REPLY_BAD_REQUEST,
                             this.serverSocket.getLocalPort(),
@@ -1145,7 +1129,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             }
                     )
             );
-            return null;
+            return;
         }
         System.out.println("INFO ON CARD: "+card.getUUID());
 
@@ -1158,7 +1142,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             }
         }
         idClientMap.get(message.getSenderID()).sendMessageToClient(
-                //TODO: A message with the new score should be sent to the player
                 new Message(
                         REPLY_INFO_CARD,
                         this.serverSocket.getLocalPort(),
@@ -1169,7 +1152,6 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                 coveredCorners
                         })
         );
-        return null;
     }
 
     /**
