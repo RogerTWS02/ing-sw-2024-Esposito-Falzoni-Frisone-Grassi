@@ -106,15 +106,15 @@ public class WelcomeScreenController implements Initializable {
             screenState = state;
 
         Platform.runLater(() -> {
-                textField.setPromptText("Insert nickname");
-                textField.setVisible(true);
-                textField.setDisable(false);
-                doneButton.setText("Done");
-                doneButton.setVisible(true);
-                doneButton.setDisable(false);
-                textLabel.setText("Insert your nickname:");
-                textLabel.setVisible(true);
-                textLabel.setDisable(false);
+            textField.setPromptText("Insert nickname");
+            textField.setVisible(true);
+            textField.setDisable(false);
+            doneButton.setText("Done");
+            doneButton.setVisible(true);
+            doneButton.setDisable(false);
+            textLabel.setText("Insert your nickname:");
+            textLabel.setVisible(true);
+            textLabel.setDisable(false);
         });
     }
 
@@ -146,10 +146,9 @@ public class WelcomeScreenController implements Initializable {
             GuiApp.getGui().setNickname(textField.getText());
         else if(screenState == WelComeScreenStateEnum.INSERTING_LOBBY_SIZE)
             GuiApp.getGui().setLobbySize((int) playerSlider.getValue());
-        else if(screenState == WelComeScreenStateEnum.CHOOSING_LOBBY) {
-            String lobby = textField.getText();
-            GuiApp.getGui().handleLobbyChoice(lobby);
-        } else if(screenState == WelComeScreenStateEnum.INSERTING_JUST_NICKNAME)
+        else if(screenState == WelComeScreenStateEnum.CHOOSING_LOBBY)
+            GuiApp.getGui().handleLobbyChoice(textField.getText());
+        else if(screenState == WelComeScreenStateEnum.INSERTING_JUST_NICKNAME)
             GuiApp.getGui().setNickname(textField.getText());
     }
 
