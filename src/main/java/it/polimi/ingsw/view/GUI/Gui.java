@@ -270,10 +270,10 @@ public class Gui {
      * Runs the GUI.
      */
     public void run() throws InterruptedException {
+        GuiApp.setGui(this);
         Thread guiAppThread = new Thread(() -> Application.launch(GuiApp.class));
         guiAppThread.start();
 
-        GuiApp.setGui(this);
         while(!GuiApp.guiStarted)
             Thread.onSpinWait();
 
