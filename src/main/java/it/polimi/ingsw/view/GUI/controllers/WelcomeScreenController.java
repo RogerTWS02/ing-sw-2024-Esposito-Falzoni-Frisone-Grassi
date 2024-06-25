@@ -72,10 +72,10 @@ public class WelcomeScreenController implements Initializable {
      */
     public void showAvailableLobbies(ArrayList<String> availableLobbies) {
         screenState = WelComeScreenStateEnum.CHOOSING_LOBBY;
-        String toShow = "Available lobbies: ";
+        StringBuilder toShow = new StringBuilder("Available lobbies: ");
         for(String lobby : availableLobbies)
-            toShow += lobby + " ";
-        String finalToShow = toShow;
+            toShow.append(lobby).append(" ");
+        String finalToShow = toShow.toString();
         Platform.runLater(() -> {
             textLabel.setText(finalToShow);
             textLabel.setVisible(true);
@@ -96,10 +96,8 @@ public class WelcomeScreenController implements Initializable {
     /**
      * Sets up for nickname and lobby size insertion.
      */
-    public void setUpNicknameInsertion() {
-        if(screenState != WelComeScreenStateEnum.INSERTING_NICKNAME) {
-            screenState = WelComeScreenStateEnum.INSERTING_NICKNAME;
-        } else {
+    public void setUpNicknameInsertion(WelComeScreenStateEnum state) {
+        if(screenState == WelComeScreenStateEnum.INSERTING_NICKNAME || screenState == WelComeScreenStateEnum.INSERTING_JUST_NICKNAME) {
             Platform.runLater(() -> {
                 textLabel.setText("Nickname must be 1 word, 1-16!");
                 textLabel.setVisible(true);
@@ -107,10 +105,14 @@ public class WelcomeScreenController implements Initializable {
             });
             return;
         }
+        if(state != null)
+            screenState = state;
+
         Platform.runLater(() -> {
             textField.setPromptText("Insert nickname");
             textField.setVisible(true);
             textField.setDisable(false);
+            doneButton.setText("Done");
             doneButton.setVisible(true);
             doneButton.setDisable(false);
             textLabel.setText("Insert your nickname:");
@@ -142,11 +144,56 @@ public class WelcomeScreenController implements Initializable {
      *
      * @param actionEvent Ignored.
      */
-    public void DoneButtonPressed(ActionEvent actionEvent) {
+    public void doneButtonPressed(ActionEvent actionEvent) {
         if(screenState == WelComeScreenStateEnum.INSERTING_NICKNAME)
             GuiApp.getGui().setNickname(textField.getText());
         else if(screenState == WelComeScreenStateEnum.INSERTING_LOBBY_SIZE)
             GuiApp.getGui().setLobbySize((int) playerSlider.getValue());
+        else if(screenState == WelComeScreenStateEnum.CHOOSING_LOBBY) {
+            screenState = WelComeScreenStateEnum.INSERTING_JUST_NICKNAME;
+            String lobby = textField.getText();
+            GuiApp.getGui().handleLobbyChoice(lobby);
+        } else if(screenState == WelComeScreenStateEnum.INSERTING_JUST_NICKNAME) {
+            GuiApp.getGui().setNickname(textField.getText());
+        }
+    }
+
+    /**
+     * Shows the error message for full lobby.
+     */
+    public void showFullLobbyError() {
+        Platform.runLater(() -> {
+            doneButton.setVisible(false);
+            doneButton.setDisable(true);
+            textField.setVisible(false);
+            textField.setDisable(true);
+            createButton.setVisible(false);
+            createButton.setDisable(true);
+            refreshButton.setVisible(false);
+            refreshButton.setDisable(true);
+            textLabel.setText("The chosen lobby is full!");
+            textLabel.setVisible(true);
+            textLabel.setDisable(false);
+        });
+    }
+
+    /**
+     * Shows the error message for invalid lobby name.
+     */
+    public void showInvalidLobbyNameError() {
+        Platform.runLater(() -> {
+            doneButton.setVisible(false);
+            doneButton.setDisable(true);
+            textField.setVisible(false);
+            textField.setDisable(true);
+            createButton.setVisible(false);
+            createButton.setDisable(true);
+            refreshButton.setVisible(false);
+            refreshButton.setDisable(true);
+            textLabel.setText("No lobby with that name!");
+            textLabel.setVisible(true);
+            textLabel.setDisable(false);
+        });
     }
 
     /**
@@ -190,11 +237,21 @@ public class WelcomeScreenController implements Initializable {
     }
 
     /**
+     * Returns the state of the welcome screen.
+     *
+     * @return The state of the welcome screen.
+     */
+    public WelComeScreenStateEnum getScreenState() {
+        return screenState;
+    }
+
+    /**
      * Enumerates the possible states of the welcome screen.
      */
-    private enum WelComeScreenStateEnum {
+    public enum WelComeScreenStateEnum {
         PRELIMINARY_WAITING,
         INSERTING_NICKNAME,
+        INSERTING_JUST_NICKNAME,
         INSERTING_LOBBY_SIZE,
         WAITING_FOR_OTHER_PLAYERS,
         CHOOSING_LOBBY

@@ -48,7 +48,7 @@ public class GuiApp extends Application {
         mainStage.setResizable(true);
         mainStage.setMaximized(false);
         mainStage.setFullScreenExitHint("");
-        mainStage.setFullScreen(true);
+        //mainStage.setFullScreen(true);
         mainStage.show();
 
         guiStarted = true;

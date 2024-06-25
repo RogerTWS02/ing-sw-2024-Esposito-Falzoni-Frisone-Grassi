@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.GUI;
 
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
+import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
 import javafx.application.Application;
 
 import java.util.ArrayList;
@@ -14,13 +15,14 @@ import static it.polimi.ingsw.network.message.MessageType.*;
  * The GUI view.
  */
 public class Gui {
-    private GameFlowState gameState = GameFlowState.LOBBY;
+    private GameFlowState gameState;
     public Client cli;
     private volatile Boolean areThereAvailableLobbies = null;
     private List<String> availableLobbies;
     private volatile String nameP = null;
     private volatile int lobbySize = 0;
     private volatile Boolean validatedNickname = null;
+    private volatile Boolean validatedLobby = null;
     private final Object lock = new Object();
 
     /**
@@ -30,6 +32,10 @@ public class Gui {
      */
     public void onMessageReceived(Message message) {
         switch (message.getMessageType()) {
+
+            case HEARTBEAT:
+                replyHeartbeat();
+                break;
 
             case REPLY_AVAILABLE_LOBBIES:
                 handleReplyAvailableLobbies(message);
@@ -53,6 +59,7 @@ public class Gui {
      * Refreshes the available lobbies.
      */
     public void refreshAvailableLobbies() {
+        areThereAvailableLobbies = null;
         availableLobbies = null;
         welcomeScreenFlow_LobbyAndNickname();
     }
@@ -97,6 +104,12 @@ public class Gui {
     public void replyBadRequestHandler(Message message) {
         if(message.getObj()[0].equals("Invalid nickname, please try a different one!"))
             validatedNickname = false;
+        else if(message.getObj()[0].equals("The chosen lobby is full! Creating a new one...")) {
+            GuiApp.getWelcomeScreenController().showFullLobbyError();
+            sleep(3000);
+            validatedLobby = false;
+            validatedNickname = false;
+        }
     }
 
     /**
@@ -106,12 +119,16 @@ public class Gui {
      */
     public void handleReplyAvailableLobbies(Message message) {
         String[] availableLobbies = (String[]) message.getObj()[0];
+        if(availableLobbies == null) {
+            areThereAvailableLobbies = false;
+            return;
+        }
         if(availableLobbies.length == 0){
             areThereAvailableLobbies = false;
             return;
         }
-        areThereAvailableLobbies = true;
         this.availableLobbies = new ArrayList<>(Arrays.asList(availableLobbies));
+        areThereAvailableLobbies = true;
     }
 
     /**
@@ -138,9 +155,8 @@ public class Gui {
             Thread.onSpinWait();
 
         //If there are available lobbies, show them to the user, otherwise create a new one
-        if(areThereAvailableLobbies) {
+        if(areThereAvailableLobbies)
             GuiApp.getWelcomeScreenController().showAvailableLobbies((ArrayList<String>) availableLobbies);
-        }
         else
             createNewLobbyOnRequest();
     }
@@ -149,12 +165,43 @@ public class Gui {
      * This method is used to create a new lobby on request.
      */
     public void createNewLobbyOnRequest() {
-        GuiApp.getWelcomeScreenController().setUpNicknameInsertion();
+        GuiApp.getWelcomeScreenController().setUpNicknameInsertion(WelcomeScreenController.WelComeScreenStateEnum.INSERTING_NICKNAME);
 
-        while(nameP == null && lobbySize == 0)
+        while(nameP == null || lobbySize == 0)
             Thread.onSpinWait();
 
         requestLoginForNewLobby();
+    }
+
+    /**
+     * Handles the choice of the lobby, if the user wants to join an existing one.
+     */
+    public void handleLobbyChoice(String lobbyChoice) {
+        if(availableLobbies.contains(lobbyChoice)) {
+            GuiApp.getWelcomeScreenController().setUpNicknameInsertion(WelcomeScreenController.WelComeScreenStateEnum.INSERTING_JUST_NICKNAME);
+            while(nameP == null)
+                Thread.onSpinWait();
+
+            cli.sendMessage(
+                    new Message(
+                            REQUEST_LOGIN,
+                            cli.getClientID(),
+                            -1, //gameID is not set until the game actually starts
+                            new Object[]{nameP, lobbyChoice}));
+
+            while(validatedNickname == null && validatedLobby == null)
+                Thread.onSpinWait();
+
+            if(!validatedNickname || !validatedLobby) {
+                validatedNickname = null;
+                validatedLobby = null;
+                welcomeScreenFlow_LobbyAndNickname();
+            }
+        } else {
+            GuiApp.getWelcomeScreenController().showInvalidLobbyNameError();
+            sleep(3000);
+            welcomeScreenFlow_LobbyAndNickname();
+        }
     }
 
     /**
@@ -180,6 +227,19 @@ public class Gui {
     }
 
     /**
+     * This method is used to reply to a heartbeat message to check whether a client is still connected or not.
+     */
+    private void replyHeartbeat() {
+        cli.sendMessage(
+                new Message(
+                        HEARTBEAT_ACK,
+                        cli.getClientID(),
+                        cli.getGameID()
+                )
+        );
+    }
+
+    /**
      * Sets the nickname of the player.
      *
      * @param nickname The nickname of the player.
@@ -187,9 +247,11 @@ public class Gui {
     public void setNickname(String nickname) {
         nickname = nickname.trim();
         if(nickname.isEmpty() || nickname.length() > 16 || nickname.contains(" "))
-            GuiApp.getWelcomeScreenController().setUpNicknameInsertion();
+            GuiApp.getWelcomeScreenController().setUpNicknameInsertion(null);
         else {
             nameP = nickname;
+            if(GuiApp.getWelcomeScreenController().getScreenState() == WelcomeScreenController.WelComeScreenStateEnum.INSERTING_JUST_NICKNAME)
+                return;
             GuiApp.getWelcomeScreenController().setUpLobbySizeSelection();
         }
     }
@@ -200,6 +262,7 @@ public class Gui {
      * @param lobbySize The size of the lobby.
      */
     public void setLobbySize(int lobbySize) {
+        cli.setLobbySize(lobbySize);
         this.lobbySize = lobbySize;
     }
 
