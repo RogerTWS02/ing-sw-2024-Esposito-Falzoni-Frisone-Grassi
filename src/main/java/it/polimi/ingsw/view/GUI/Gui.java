@@ -27,7 +27,7 @@ public class Gui {
     private volatile Boolean validatedLobby = null;
     private final Object lock = new Object();
     private ArrayList<String> currentHandUUID;
-    private List<String> allGoalsUUID;
+    private List<String> allGoalsUUID = new ArrayList<>();
     private List<String> cardToChooseUUID;
     private volatile boolean myTurn;
     private Map<String, Integer> nicknames;
@@ -80,6 +80,28 @@ public class Gui {
                 notifyGameStartingHandler();
                 break;
         }
+    }
+
+    /**
+     * Notify to server the preliminary choices made by the player.
+     *
+     * @param choicesMade The preliminary choices made by the player.
+     */
+    public void preliminaryChoicesMade(Boolean[] choicesMade) {
+        String selectedUUID = cardToChooseUUID.get(choicesMade[0] ? 0 : 1);
+        boolean side = !choicesMade[1];
+        cli.sendMessage(
+                new Message(
+                        NOTIFY_CHOICES_MADE,
+                        cli.getClientID(),
+                        cli.getGameID(),
+                        new Object[]{
+                                cardToChooseUUID.get(0), //Starting card uuid
+                                side,                    //chosen side
+                                selectedUUID             //secret goal card chosen
+                        }
+                )
+        );
     }
 
     /**
@@ -351,6 +373,24 @@ public class Gui {
     }
 
     /**
+     * Returns the UUIDs of the common goal cards.
+     *
+     * @return The UUIDs of the common goal cards.
+     */
+    public List<String> getAllGoalsUUID() {
+        return allGoalsUUID;
+    }
+
+    /**
+     * Returns the UUIDs of the cards to choose.
+     *
+     * @return The UUIDs of the cards to choose.
+     */
+    public List<String> getCardToChooseUUID() {
+        return cardToChooseUUID;
+    }
+
+    /**
      * Runs the GUI.
      */
     public void run() throws InterruptedException {
@@ -364,7 +404,7 @@ public class Gui {
         //Starts the first flow: lobby, nickname, lobby size
         welcomeScreenFlow_LobbyAndNickname();
 
-        while (gameState != GameFlowState.END) {
+        while (gameState != GameFlowState.USEFUL) {
             synchronized (lock) {
                 try {
                     lock.wait();
@@ -389,24 +429,13 @@ public class Gui {
     }
 
     /**
-     * Sets the state of the game.
-     *
-     * @param state The state of the game.
-     */
-    private void setState(Gui.GameFlowState state) {
-        synchronized (lock) {
-            this.gameState = state;
-            lock.notifyAll();
-        }
-    }
-
-    /**
      * Enumerates the possible states of the game.
      */
     private enum GameFlowState {
         LOBBY,
         PRELIMINARY_CHOICES,
         GAME,
-        END
+        END,
+        USEFUL
     }
 }

@@ -36,7 +36,8 @@ public class GuiApp extends Application {
      */
     public void start(Stage stage) throws Exception {
         mainStage = stage;
-        //Load roots
+
+        //Load first root
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath + "WelcomeScreen.fxml"));
         welcomeScreenRoot = loader.load();
         welcomeScreenController = loader.getController();
@@ -61,7 +62,6 @@ public class GuiApp extends Application {
         mainStage.setResizable(true);
         mainStage.setMaximized(false);
         mainStage.setFullScreenExitHint("");
-        mainStage.setFullScreen(true);
         mainStage.show();
 
         //Synchronize the GUI with the GUI thread
