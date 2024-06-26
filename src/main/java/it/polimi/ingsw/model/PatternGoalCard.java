@@ -17,10 +17,6 @@ public class PatternGoalCard extends GoalCard {
      */
     private final Resource[] patternResource;
 
-    /**
-     * The UUID of the card, which identifies it uniquely.
-     */
-    private final String UUID;
 
     /**
      * The constructor of the class, it creates a new PatternGoalCard with the given parameters.
@@ -34,7 +30,7 @@ public class PatternGoalCard extends GoalCard {
         super(points, UUID);
         this.patternPosition = patternPosition;
         this.patternResource = patternResource;
-        this.UUID = UUID;
+
     }
 
     /**

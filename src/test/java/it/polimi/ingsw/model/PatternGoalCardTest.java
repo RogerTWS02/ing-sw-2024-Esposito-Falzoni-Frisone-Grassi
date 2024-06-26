@@ -39,7 +39,7 @@ public class PatternGoalCardTest {
         Pawn r = null;
         Corner[] corners = new Corner[4];
         for(int x=0; x<4; x++){
-            corners[x]= new Corner(x, null,null);
+            corners[x]= new Corner(x, null);
         }
          Resource[] resourceWolf= new Resource[1];
          resourceWolf[0]= Resource.WOLF;
@@ -71,7 +71,7 @@ public class PatternGoalCardTest {
         Pawn r = null;
         Corner[] corners = new Corner[4];
         for(int x=0; x<4; x++){
-            corners[x]= new Corner(x, null,null);
+            corners[x]= new Corner(x, null);
         }
         Resource[] resourceWolf= new Resource[1];
         resourceWolf[0]= Resource.WOLF;
@@ -100,7 +100,7 @@ public class PatternGoalCardTest {
         Pawn r = null;
         Corner[] corners = new Corner[4];
         for(int x=0; x<4; x++){
-            corners[x]= new Corner(x, null,null);
+            corners[x]= new Corner(x, null);
         }
         Resource[] resourceWolf= new Resource[1];
         resourceWolf[0]= Resource.WOLF;
@@ -132,7 +132,7 @@ public class PatternGoalCardTest {
         Pawn r = null;
         Corner[] corners = new Corner[4];
         for(int x=0; x<4; x++){
-            corners[x]= new Corner(x, null,null);
+            corners[x]= new Corner(x, null);
         }
         Resource[] resourceWolf= new Resource[1];
         resourceWolf[0]= Resource.WOLF;

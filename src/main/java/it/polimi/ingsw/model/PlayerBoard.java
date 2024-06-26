@@ -103,7 +103,7 @@ public class PlayerBoard implements Serializable{
             if(card.isFlipped()){
                 Corner[] newCorners = new Corner[4];
                 for(int i = 0; i < 4; i++)
-                    newCorners[i] = new Corner(i, card, Optional.empty());
+                    newCorners[i] = new Corner(i, Optional.empty());
                 card.setCorners(newCorners);
             }
         }

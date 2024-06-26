@@ -13,11 +13,6 @@ public class ResourcesGoalCard extends GoalCard{
      */
     private final Map<Resource, Integer> resources;
     /**
-     * The UUID of the goal card, which identifies it uniquely.
-     */
-    private final String UUID;
-
-    /**
      * The constructor creates a goal card, given the points, the resources and the UUID of the card.
      *
      * @param points The points given by the goal card.
@@ -27,7 +22,6 @@ public class ResourcesGoalCard extends GoalCard{
     public ResourcesGoalCard(int points, Map<Resource, Integer> resources, String UUID) {
         super(points, UUID);
         this.resources = resources;
-        this.UUID = UUID;
     }
 
     /**

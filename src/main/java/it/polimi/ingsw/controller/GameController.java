@@ -236,9 +236,9 @@ public class GameController {
             if(JSONCorners.get(i) == null){
                 corners[i] = null;
             } else if(JSONCorners.get(i).equals("EMPTY")){
-                corners[i] = new Corner(i, card, Optional.empty());
+                corners[i] = new Corner(i, Optional.empty());
             } else {
-                corners[i] = new Corner(i, card, Optional.ofNullable(stringToResource((String) JSONCorners.get(i))));
+                corners[i] = new Corner(i, Optional.ofNullable(stringToResource((String) JSONCorners.get(i))));
             }
         }
         return corners;

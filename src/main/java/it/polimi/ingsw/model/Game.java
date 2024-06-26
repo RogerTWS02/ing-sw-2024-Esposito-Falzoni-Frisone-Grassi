@@ -72,10 +72,6 @@ public class Game implements Serializable {
      */
     private Player currentPlayer;
 
-    /**
-     * The boolean value that indicates if the game is over.
-     */
-    private boolean isOver = false;
 
     /**
      * The boolean value that indicates if the game is in the last phase.

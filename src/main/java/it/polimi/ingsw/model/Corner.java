@@ -13,11 +13,6 @@ public class Corner {
     private final int id;
 
     /**
-     * The card to which the corner belongs.
-     */
-    private final PlayableCard refCard;
-
-    /**
      * The covering status of the corner.
      */
     private boolean isCovered = false;
@@ -31,12 +26,11 @@ public class Corner {
      * The constructor creates a corner with the given id, reference card and corner resource.
      *
      * @param id It identifies the position of the corner in the card.
-     * @param refCard It is the card to which the corner belongs.
+     *
      * @param cornerResource It is the resource that the corner provides.
      */
-    public Corner(int id, PlayableCard refCard, Optional<Resource> cornerResource) {
+    public Corner(int id, Optional<Resource> cornerResource) {
         this.id = id;
-        this.refCard = refCard;
         this.cornerResource = cornerResource;
     }
 

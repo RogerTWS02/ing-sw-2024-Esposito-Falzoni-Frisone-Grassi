@@ -801,7 +801,7 @@ public class TUI extends Thread{
                     Thread.sleep(100); // Pausa breve per evitare il busy-waiting
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                }
+                }Views.clearScreen();
 
             }
         }
@@ -832,7 +832,6 @@ public class TUI extends Thread{
         }
 
         System.out.println("\n");
-        Views.clearScreen();
         //Display the end game screen
         endgame.showEndgame(winners, nicknames);
         System.exit(0);
