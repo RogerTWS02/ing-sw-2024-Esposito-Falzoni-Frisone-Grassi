@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -75,9 +76,9 @@ public class PreliminaryChoicesViewController implements Initializable {
     /**
      * Handles the secret goal 1 button press.
      *
-     * @param actionEvent Ignored.
+     * @param mouseEvent Ignored.
      */
-    public void secretGoal1ButtonPressed(ActionEvent actionEvent) {
+    public void secretGoal1ButtonPressed(javafx.scene.input.MouseEvent mouseEvent) {
         choicesMade[0] = true;
         updateChoicesMadeLabel();
     }
@@ -85,9 +86,9 @@ public class PreliminaryChoicesViewController implements Initializable {
     /**
      * Handles the secret goal 2 button press.
      *
-     * @param actionEvent Ignored.
+     * @param mouseEvent Ignored.
      */
-    public void secretGoal2ButtonPressed(ActionEvent actionEvent) {
+    public void secretGoal2ButtonPressed(javafx.scene.input.MouseEvent mouseEvent) {
         choicesMade[0] = false;
         updateChoicesMadeLabel();
     }
@@ -95,9 +96,9 @@ public class PreliminaryChoicesViewController implements Initializable {
     /**
      * Handles the starting front button press.
      *
-     * @param actionEvent Ignored.
+     * @param mouseEvent Ignored.
      */
-    public void startingFrontButtonPressed(ActionEvent actionEvent) {
+    public void startingFrontButtonPressed(javafx.scene.input.MouseEvent mouseEvent) {
         choicesMade[1] = true;
         updateChoicesMadeLabel();
     }
@@ -105,9 +106,9 @@ public class PreliminaryChoicesViewController implements Initializable {
     /**
      * Handles the starting back button press.
      *
-     * @param actionEvent Ignored.
+     * @param mouseEvent Ignored.
      */
-    public void startingBackButtonPressed(ActionEvent actionEvent) {
+    public void startingBackButtonPressed(javafx.scene.input.MouseEvent mouseEvent) {
         choicesMade[1] = false;
         updateChoicesMadeLabel();
     }
@@ -125,10 +126,6 @@ public class PreliminaryChoicesViewController implements Initializable {
         }
         confirmButton.setVisible(false);
         confirmButton.setDisable(true);
-        secretGoal1Button.setDisable(true);
-        secretGoal2Button.setDisable(true);
-        startingFrontButton.setDisable(true);
-        startingBackButton.setDisable(true);
         choicesMadeLabel.setText(choicesMadeLabel.getText() + "\n\nWaiting for all the players to\nmake their preliminary choices...");
         GuiApp.getGui().preliminaryChoicesMade(choicesMade);
     }

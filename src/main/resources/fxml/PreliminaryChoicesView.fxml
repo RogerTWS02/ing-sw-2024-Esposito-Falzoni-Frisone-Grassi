@@ -40,11 +40,11 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <ImageView fx:id="secretGoal_2" fitHeight="188.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <ImageView fx:id="secretGoal_2" fitHeight="188.0" fitWidth="250.0" onMouseClicked="#secretGoal2ButtonPressed" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets left="350.0" top="50.0" />
          </GridPane.margin></ImageView>
-      <ImageView fx:id="secretGoal_1" fitHeight="188.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <ImageView fx:id="secretGoal_1" fitHeight="188.0" fitWidth="250.0" onMouseClicked="#secretGoal1ButtonPressed" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets right="350.0" top="50.0" />
          </GridPane.margin>
@@ -57,12 +57,12 @@
             <Insets top="300.0" />
          </GridPane.margin>
       </Label>
-      <ImageView fx:id="startingFront" fitHeight="188.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <ImageView fx:id="startingFront" fitHeight="188.0" fitWidth="250.0" onMouseClicked="#startingFrontButtonPressed" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets right="350.0" top="550.0" />
          </GridPane.margin>
       </ImageView>
-      <ImageView fx:id="startingBack" fitHeight="188.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <ImageView fx:id="startingBack" fitHeight="188.0" fitWidth="250.0" onMouseClicked="#startingBackButtonPressed" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets left="350.0" top="550.0" />
          </GridPane.margin>
@@ -78,26 +78,6 @@
       <Button fx:id="confirmButton" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#confirmButtonPressed" prefHeight="40.0" prefWidth="80.0" text="Confirm" textAlignment="CENTER" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
          <GridPane.margin>
             <Insets right="150.0" top="550.0" />
-         </GridPane.margin>
-      </Button>
-      <Button fx:id="secretGoal1Button" mnemonicParsing="false" onAction="#secretGoal1ButtonPressed" prefHeight="188.0" prefWidth="250.0" visible="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets right="350.0" top="50.0" />
-         </GridPane.margin>
-      </Button>
-      <Button fx:id="secretGoal2Button" mnemonicParsing="false" onAction="#secretGoal2ButtonPressed" prefHeight="188.0" prefWidth="250.0" text="Button" visible="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets left="350.0" top="50.0" />
-         </GridPane.margin>
-      </Button>
-      <Button fx:id="startingFrontButton" mnemonicParsing="false" onAction="#startingFrontButtonPressed" prefHeight="188.0" prefWidth="250.0" text="Button" visible="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets right="350.0" top="550.0" />
-         </GridPane.margin>
-      </Button>
-      <Button fx:id="startingBackButton" mnemonicParsing="false" onAction="#startingBackButtonPressed" prefHeight="188.0" prefWidth="250.0" visible="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets left="350.0" top="550.0" />
          </GridPane.margin>
       </Button>
    </children>
