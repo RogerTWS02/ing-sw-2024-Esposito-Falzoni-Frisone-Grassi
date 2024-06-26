@@ -216,7 +216,6 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
                 stub = (RMIServerInterface) registry.lookup(Server.NAME);
                 logger.log(Level.INFO, "Client has connected to the server using RMI");
 
-                //TODO: DA CONTROLLARE POI...
                 clientID = stub.createSkeleton(this);
             }catch (NotBoundException | IOException e) {
                 logger.log(Level.SEVERE, "Error in connecting to server using RMI");
@@ -226,7 +225,11 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
 
     }
 
-    public void disconnect() throws IOException{
+    /**
+     * This method is used to disconnect the client.
+     */
+    @Override
+    public void disconnect(){
 
         //Disconnect the client using RMI
         System.exit(0);
