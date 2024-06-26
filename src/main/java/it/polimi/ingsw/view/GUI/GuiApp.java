@@ -42,6 +42,7 @@ public class GuiApp extends Application {
         welcomeScreenRoot = loader.load();
         welcomeScreenController = loader.getController();
 
+        /*
         loader = new FXMLLoader(getClass().getResource(fxmlPath + "PreliminaryChoicesView.fxml"));
         preliminaryChoicesViewRoot = loader.load();
         preliminaryChoicesViewController = loader.getController();
@@ -53,6 +54,7 @@ public class GuiApp extends Application {
         loader = new FXMLLoader(getClass().getResource(fxmlPath + "EndGameScreen.fxml"));
         endGameScreenRoot = loader.load();
         endGameScreenController = loader.getController();
+        */
 
         Scene scene = new Scene(welcomeScreenRoot);
         mainStage.setTitle("Codex Naturalis");

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.GUI.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
@@ -8,6 +9,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainPlayerViewController implements Initializable {
+    public GridPane startingCard;
 
     /**
      * Initializes the GridPane with buttons.
@@ -17,9 +19,7 @@ public class MainPlayerViewController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        GridPane gridPane = new GridPane();
-
-        // Loop to create and add buttons to the GridPane
+        /*/ Loop to create and add buttons to the GridPane
         for (int rowIndex = 0; rowIndex < 81; rowIndex++) {
             for (int colIndex = 0; colIndex < 81; colIndex++) {
                 if((rowIndex+colIndex) % 2 != 0) continue;
@@ -36,6 +36,22 @@ public class MainPlayerViewController implements Initializable {
                 gridPane.add(button, colIndex, rowIndex);
             }
         }
+        */
+    }
+
+    public void startPlayerBoard(String UUID){
+        Platform.runLater(() -> {
+            startingCard.setVisible(true);
+            startingCard.setDisable(true);
+
+            //set the right background for the starting card
+            String imagePath = "/graphics/startingDeck/" + UUID + ".png";
+            String style = String.format("-fx-background-image: url('%s');", imagePath);
+            startingCard.setStyle(style);
+
+
+
+        });
     }
 
     /**
