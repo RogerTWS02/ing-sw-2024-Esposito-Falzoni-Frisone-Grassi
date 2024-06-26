@@ -10,7 +10,7 @@
     <center>
         <ScrollPane fitToHeight="true" fitToWidth="true" nodeOrientation="RIGHT_TO_LEFT">
             <content>
-            <BorderPane>
+            <BorderPane prefWidth="1324.0">
                <center>
                       <GridPane fx:id="startingCard" alignment="CENTER" gridLinesVisible="true" maxHeight="65.0" maxWidth="80.0" prefHeight="65.0" prefWidth="80.0">
                           <columnConstraints>
@@ -65,30 +65,34 @@
 
     <!-- Area inferiore per le carte della mano -->
     <bottom>
-        <GridPane prefHeight="100.0" prefWidth="1600.0">
+        <GridPane prefHeight="130.0" prefWidth="1600.0">
             <columnConstraints>
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="250.0" minWidth="10.0" prefWidth="250.0" />
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="250.0" minWidth="10.0" prefWidth="250.0" />
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="250.0" minWidth="10.0" prefWidth="250.0" />
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="203.0" minWidth="0.0" prefWidth="0.0" />
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="250.0" minWidth="10.0" prefWidth="250.0" />
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="250.0" minWidth="10.0" prefWidth="250.0" />
-                <ColumnConstraints hgrow="ALWAYS" maxWidth="250.0" minWidth="10.0" prefWidth="250.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="340.0" minWidth="10.0" prefWidth="184.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="384.0" minWidth="10.0" prefWidth="184.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="481.0" minWidth="10.0" prefWidth="184.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="252.0" minWidth="0.0" prefWidth="23.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="479.0" minWidth="10.0" prefWidth="184.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="250.0" minWidth="10.0" prefWidth="184.0" />
+                <ColumnConstraints hgrow="ALWAYS" maxWidth="250.0" minWidth="10.0" prefWidth="184.0" />
             </columnConstraints>
             <rowConstraints>
-            <RowConstraints maxHeight="58.0" minHeight="10.0" prefHeight="22.0" vgrow="ALWAYS" />
-                <RowConstraints maxHeight="78.0" minHeight="42.0" prefHeight="78.0" vgrow="ALWAYS" />
+            <RowConstraints maxHeight="58.0" minHeight="1.0" prefHeight="15.0" vgrow="ALWAYS" />
+                <RowConstraints maxHeight="146.0" minHeight="60.0" prefHeight="115.0" vgrow="ALWAYS" />
             </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" prefHeight="88.0" prefWidth="365.0" style="-fx-background-image: url('/gui_graphics/WelcomeScreenBackground.png');" GridPane.columnIndex="6" GridPane.rowIndex="1" />
-            <Button mnemonicParsing="false" prefHeight="90.0" prefWidth="318.0" style="-fx-background-image: url('/gui_graphics/WelcomeScreenBackground.png');" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-            <Button mnemonicParsing="false" prefHeight="147.0" prefWidth="367.0" style="-fx-background-image: url('/gui_graphics/WelcomeScreenBackground.png');" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Button mnemonicParsing="false" prefHeight="98.0" prefWidth="302.0" style="-fx-background-image: url('/gui_graphics/WelcomeScreenBackground.png');" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label prefHeight="17.0" prefWidth="280.0" text="HAND CARDS" />
-            <Label prefHeight="17.0" prefWidth="279.0" text="COMMON OBJECTIVES" GridPane.columnIndex="4" />
-            <Label prefHeight="17.0" prefWidth="260.0" text="SECRET OBJECTIVE" GridPane.columnIndex="6" />
-            <Button mnemonicParsing="false" prefHeight="109.0" prefWidth="392.0" style="-fx-background-image: url('/gui_graphics/WelcomeScreenBackground.png');" GridPane.rowIndex="1" />
-            <Button mnemonicParsing="false" prefHeight="79.0" prefWidth="415.0" style="-fx-background-image: url('/gui_graphics/WelcomeScreenBackground.png');" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+            <Label prefHeight="17.0" prefWidth="280.0" text="  HAND CARDS" />
+            <Label prefHeight="17.0" prefWidth="279.0" text="  COMMON GOALS" GridPane.columnIndex="4" />
+            <Label prefHeight="17.0" prefWidth="260.0" text="  SECRET GOAL" GridPane.columnIndex="6" />
+            <ImageView fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ImageView fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ImageView fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ImageView fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ImageView fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
          </children>
             <!-- Qui puoi aggiungere elementi per visualizzare le carte della mano -->
         </GridPane>
@@ -110,14 +114,14 @@
                   <RowConstraints maxHeight="250.0" minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Button mnemonicParsing="false" prefHeight="239.0" prefWidth="207.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <Button mnemonicParsing="false" prefHeight="177.0" prefWidth="207.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <Button mnemonicParsing="false" prefHeight="158.0" prefWidth="176.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label text="RESOURCE" />
-                  <Label prefHeight="17.0" prefWidth="95.0" text="GOLDEN" GridPane.columnIndex="1" />
-                  <Button mnemonicParsing="false" prefHeight="147.0" prefWidth="161.0" GridPane.rowIndex="1" />
-                  <Button mnemonicParsing="false" prefHeight="150.0" prefWidth="171.0" GridPane.rowIndex="2" />
-                  <Button mnemonicParsing="false" prefHeight="181.0" prefWidth="182.0" GridPane.rowIndex="3" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" text="     RESOURCE" textAlignment="CENTER" />
+                  <Label prefHeight="17.0" prefWidth="95.0" text="       GOLDEN" GridPane.columnIndex="1" />
+                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
                </children>
             </GridPane>
          </children>
