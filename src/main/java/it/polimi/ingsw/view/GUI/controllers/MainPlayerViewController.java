@@ -2,7 +2,6 @@ package it.polimi.ingsw.view.GUI.controllers;
 
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 
 import java.net.URL;
