@@ -66,7 +66,19 @@ public class Gui {
             case REPLY_BEGIN_GAME:
                 replyBeginGameHandler(message);
                 break;
+
+            case REPLY_INTERRUPT_GAME:
+                handleReplyInterruptGame(message);
+                break;
         }
+    }
+
+    /**
+     * Handles the interruption of the game.
+     */
+    public void handleReplyInterruptGame(Message message) {
+        System.out.println((String) message.getObj()[0]);
+        cli.closeConnection();
     }
 
     /**

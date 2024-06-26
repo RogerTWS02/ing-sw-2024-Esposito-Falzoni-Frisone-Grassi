@@ -1,5 +1,7 @@
 package it.polimi.ingsw.view.GUI;
 
+import it.polimi.ingsw.view.GUI.controllers.EndGameScreenController;
+import it.polimi.ingsw.view.GUI.controllers.MainPlayerViewController;
 import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -18,7 +20,9 @@ public class GuiApp extends Application {
     private static Parent welcomeScreenRoot;
     private static WelcomeScreenController welcomeScreenController;
     private static Parent mainPlayerViewRoot;
-    private static WelcomeScreenController mainPlayerViewController;
+    private static MainPlayerViewController mainPlayerViewController;
+    private static Parent endGameScreenRoot;
+    private static EndGameScreenController endGameScreenController;
     public static volatile boolean guiStarted = false;
 
     /**
@@ -38,7 +42,11 @@ public class GuiApp extends Application {
         mainPlayerViewRoot = loader.load();
         mainPlayerViewController = loader.getController();
 
-        //TODO: all other roots
+        //TODO: other roots
+
+        loader = new FXMLLoader(getClass().getResource(fxmlPath + "EndGameScreen.fxml"));
+        endGameScreenRoot = loader.load();
+        endGameScreenController = loader.getController();
 
         Scene scene = new Scene(welcomeScreenRoot);
         mainStage.setTitle("Codex Naturalis");
@@ -92,6 +100,33 @@ public class GuiApp extends Application {
      */
     public static Parent getMainPlayerViewRoot() {
         return mainPlayerViewRoot;
+    }
+
+    /**
+     * Returns the main player view controller.
+     *
+     * @return The main player view controller.
+     */
+    public static MainPlayerViewController getMainPlayerViewController() {
+        return mainPlayerViewController;
+    }
+
+    /**
+     * Returns the root of the end game screen.
+     *
+     * @return The root of the end game screen.
+     */
+    public static Parent getEndGameScreenRoot() {
+        return endGameScreenRoot;
+    }
+
+    /**
+     * Returns the end game screen controller.
+     *
+     * @return The end game screen controller.
+     */
+    public static EndGameScreenController getEndGameScreenController() {
+        return endGameScreenController;
     }
 
     /**
