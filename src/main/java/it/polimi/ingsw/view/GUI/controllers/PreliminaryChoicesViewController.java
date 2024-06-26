@@ -25,7 +25,7 @@ public class PreliminaryChoicesViewController implements Initializable {
     public Button secretGoal2Button;
     public Button startingFrontButton;
     public Button startingBackButton;
-    Image[] commonGoalCards, secretGoalCards, startingCard;
+    Image[] commonGoalCards = new Image[2], secretGoalCards = new Image[2], startingCard = new Image[2];
     private Boolean choicesMade[] = new Boolean[]{null, null}; //1 for secret goal, 2 for starting card; true/false: 1 or 2, front or back
 
     /**
@@ -35,7 +35,13 @@ public class PreliminaryChoicesViewController implements Initializable {
      * @param resourceBundle Ignored.
      */
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //Retrieve common goal cards
+        //EMPTY!
+    }
+
+    /**
+     * Initializes the preliminary choices view.
+     */
+    public void initialize_2() {
         for(int i = 0; i < 2; i++) {
             if(GuiApp.getGui().getAllGoalsUUID().get(i).contains("RGC"))
                 commonGoalCards[i] = new Image(getClass().getResourceAsStream("/graphics/resourcesGoalDeck/" + GuiApp.getGui().getAllGoalsUUID().get(i) + ".png"));
@@ -56,12 +62,14 @@ public class PreliminaryChoicesViewController implements Initializable {
         startingCard[1] = new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + GuiApp.getGui().getCardToChooseUUID().get(0) + "_B.png"));
 
         //Set images
-        commonGoal_1.setImage(commonGoalCards[0]);
-        commonGoal_2.setImage(commonGoalCards[1]);
-        secretGoal_1.setImage(secretGoalCards[0]);
-        secretGoal_2.setImage(secretGoalCards[1]);
-        startingFront.setImage(startingCard[0]);
-        startingBack.setImage(startingCard[1]);
+        Platform.runLater(() -> {
+            commonGoal_1.setImage(commonGoalCards[0]);
+            commonGoal_2.setImage(commonGoalCards[1]);
+            secretGoal_1.setImage(secretGoalCards[0]);
+            secretGoal_2.setImage(secretGoalCards[1]);
+            startingFront.setImage(startingCard[0]);
+            startingBack.setImage(startingCard[1]);
+        });
     }
 
     /**
@@ -110,6 +118,11 @@ public class PreliminaryChoicesViewController implements Initializable {
      * @param actionEvent Ignored.
      */
     public void confirmButtonPressed(ActionEvent actionEvent) {
+        if(choicesMade[0] == null || choicesMade[1] == null) {
+            String oldText = choicesMadeLabel.getText();
+            choicesMadeLabel.setText(oldText + "\n\nYou must make all the choices before confirming!");
+            return;
+        }
         confirmButton.setVisible(false);
         confirmButton.setDisable(true);
         secretGoal1Button.setDisable(true);

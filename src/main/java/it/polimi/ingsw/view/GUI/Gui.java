@@ -5,6 +5,7 @@ import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
 import javafx.application.Application;
+import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,6 +110,7 @@ public class Gui {
      */
     public void notifyGameStartingHandler() {
         gameState = GameFlowState.GAME;
+        Platform.runLater(() -> GuiApp.getEndGameScreenController().initialize_2());
         GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
     }
 
@@ -149,6 +151,7 @@ public class Gui {
         startingPlayer = (String) message.getObj()[5];
         playerResources = (List<Resource>) message.getObj()[6];
         gameState = GameFlowState.PRELIMINARY_CHOICES;
+        Platform.runLater(() -> GuiApp.getPreliminaryChoicesViewController().initialize_2());
         GuiApp.changeScene(GuiApp.getPreliminaryChoicesViewRoot());
     }
 

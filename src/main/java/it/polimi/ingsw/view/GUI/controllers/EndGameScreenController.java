@@ -24,18 +24,23 @@ public class EndGameScreenController implements Initializable {
      */
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gridPane.setStyle("-fx-background-image: url('/gui_graphics/EndScreenBackground.png'); -fx-background-size: stretch;");
+    }
+
+    /**
+     * Initializes the end game screen.
+     */
+    public void initialize_2() {
         StringBuilder winners;
         if(GuiApp.getGui().getWinners().size() == 1) {
             winners = new StringBuilder("Winner: " + GuiApp.getGui().getWinners().get(0));
-            winnersLabel.setText(winners.toString());
+            Platform.runLater(() -> winnersLabel.setText(winners.toString()));
             return;
         }
         winners = new StringBuilder("Winners:\n\n");
         for(int i = 0; i < GuiApp.getGui().getWinners().size(); i++)
             winners.append((i + 1)).append(": ").append(GuiApp.getGui().getWinners().get(i)).append("\n");
-        winnersLabel.setText(winners.toString());
+        Platform.runLater(() -> winnersLabel.setText(winners.toString()));
     }
-
     /**
      * Handles the close button pressed event.
      *
