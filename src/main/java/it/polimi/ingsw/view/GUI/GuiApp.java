@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.GUI;
 
 import it.polimi.ingsw.view.GUI.controllers.EndGameScreenController;
 import it.polimi.ingsw.view.GUI.controllers.MainPlayerViewController;
+import it.polimi.ingsw.view.GUI.controllers.PreliminaryChoicesViewController;
 import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -23,6 +24,8 @@ public class GuiApp extends Application {
     private static MainPlayerViewController mainPlayerViewController;
     private static Parent endGameScreenRoot;
     private static EndGameScreenController endGameScreenController;
+    private static Parent preliminaryChoicesViewRoot;
+    private static PreliminaryChoicesViewController preliminaryChoicesViewController;
     public static volatile boolean guiStarted = false;
 
     /**
@@ -38,11 +41,13 @@ public class GuiApp extends Application {
         welcomeScreenRoot = loader.load();
         welcomeScreenController = loader.getController();
 
+        loader = new FXMLLoader(getClass().getResource(fxmlPath + "PreliminaryChoicesView.fxml"));
+        preliminaryChoicesViewRoot = loader.load();
+        preliminaryChoicesViewController = loader.getController();
+
         loader = new FXMLLoader(getClass().getResource(fxmlPath + "MainPlayerView.fxml"));
         mainPlayerViewRoot = loader.load();
         mainPlayerViewController = loader.getController();
-
-        //TODO: other roots
 
         loader = new FXMLLoader(getClass().getResource(fxmlPath + "EndGameScreen.fxml"));
         endGameScreenRoot = loader.load();
@@ -56,9 +61,10 @@ public class GuiApp extends Application {
         mainStage.setResizable(true);
         mainStage.setMaximized(false);
         mainStage.setFullScreenExitHint("");
-        //mainStage.setFullScreen(true);
+        mainStage.setFullScreen(true);
         mainStage.show();
 
+        //Synchronize the GUI with the GUI thread
         guiStarted = true;
 
         //Close the application when the main stage is closed
@@ -109,6 +115,24 @@ public class GuiApp extends Application {
      */
     public static MainPlayerViewController getMainPlayerViewController() {
         return mainPlayerViewController;
+    }
+
+    /**
+     * Returns the root of the preliminary choices view.
+     *
+     * @return The root of the preliminary choices view.
+     */
+    public static Parent getPreliminaryChoicesViewRoot() {
+        return preliminaryChoicesViewRoot;
+    }
+
+    /**
+     * Returns the preliminary choices view controller.
+     *
+     * @return The preliminary choices view controller.
+     */
+    public static PreliminaryChoicesViewController getPreliminaryChoicesViewController() {
+        return preliminaryChoicesViewController;
     }
 
     /**

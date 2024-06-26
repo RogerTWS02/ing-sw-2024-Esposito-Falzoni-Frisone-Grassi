@@ -17,7 +17,7 @@ import static it.polimi.ingsw.network.message.MessageType.*;
  * The GUI view.
  */
 public class Gui {
-    private GameFlowState gameState;
+    private GameFlowState gameState = GameFlowState.LOBBY;
     public Client cli;
     private volatile Boolean areThereAvailableLobbies = null;
     private List<String> availableLobbies;
@@ -34,6 +34,7 @@ public class Gui {
     private String currentPlayerNickname;
     private String startingPlayer;
     private List<Resource> playerResources;
+    private ArrayList<String> winners;
 
     /**
      * Handles arriving message from the server and updates the TUI.
@@ -70,15 +71,44 @@ public class Gui {
             case REPLY_INTERRUPT_GAME:
                 handleReplyInterruptGame(message);
                 break;
+
+            case REPLY_END_GAME:
+                replyEndGameHandler(message);
+                break;
+
+            case NOTIFY_GAME_STARTING:
+                notifyGameStartingHandler();
+                break;
         }
+    }
+
+    /**
+     * Handles the message notifying the beginning of the game.
+     */
+    public void notifyGameStartingHandler() {
+        gameState = GameFlowState.GAME;
+        GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
+    }
+
+    /**
+     * Handles the message containing the winners of the game.
+     *
+     * @param message The message received.
+     */
+    public void replyEndGameHandler(Message message) {
+        winners = (ArrayList<String>) message.getObj()[0];
+        gameState = GameFlowState.END;
+        GuiApp.changeScene(GuiApp.getEndGameScreenRoot());
     }
 
     /**
      * Handles the interruption of the game.
      */
     public void handleReplyInterruptGame(Message message) {
-        System.out.println((String) message.getObj()[0]);
-        cli.closeConnection();
+        if(gameState != GameFlowState.END) {
+            System.out.println((String) message.getObj()[0]);
+            cli.closeConnection();
+        }
     }
 
     /**
@@ -96,7 +126,8 @@ public class Gui {
         currentPlayerNickname = (String) message.getObj()[5];
         startingPlayer = (String) message.getObj()[5];
         playerResources = (List<Resource>) message.getObj()[6];
-        GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
+        gameState = GameFlowState.PRELIMINARY_CHOICES;
+        GuiApp.changeScene(GuiApp.getPreliminaryChoicesViewRoot());
     }
 
     /**
@@ -311,6 +342,15 @@ public class Gui {
     }
 
     /**
+     * Returns the winner of the game.
+     *
+     * @return The winner of the game.
+     */
+    public ArrayList<String> getWinners() {
+        return winners;
+    }
+
+    /**
      * Runs the GUI.
      */
     public void run() throws InterruptedException {
@@ -365,8 +405,8 @@ public class Gui {
      */
     private enum GameFlowState {
         LOBBY,
+        PRELIMINARY_CHOICES,
         GAME,
-        WINNER_DISPLAY,
         END
     }
 }
