@@ -35,7 +35,11 @@ public class Gui {
     private String startingPlayer;
     private List<Resource> playerResources;
     private ArrayList<String> winners;
-    private List<int[]> available;
+    private String[] gUUID = new String[3];
+    private String[] rUUID = new String[3];
+    private List<Integer> available;
+    private Resource[][] onBoard;
+    private int positionX = 0, positionY = 0;
 
     private Queue<String> chatMessages = new LinkedList<>();
     private int numHand;
@@ -96,6 +100,26 @@ public class Gui {
                 replyYourTurnHandler(message);
                 break;
 
+            case REPLY_VIEWABLE_CARDS:
+                replyViewableCardsHandler(message);
+                break;
+
+            case REPLY_HAND_UPDATE:
+                replyHandUpdateHandler(message);
+                break;
+
+            case REPLY_UPDATED_SCORE:
+                replyUpdatedScoreHandler(message);
+                break;
+
+            case REQUEST_PLAYER_BOARD_INFOS:
+                requestPlayerBoardInfosHandler(message);
+                break;
+
+            case REPLY_POINTS_UPDATE:
+                replyPointsUpdateHandler(message);
+                break;
+
             case REPLY_CHOICES_MADE:
                 handleChoicesMade(message);
                 break;
@@ -123,6 +147,98 @@ public class Gui {
 
         //Update the view of the player board
         GuiApp.getPlayerBoardController().updatePlayerBoard(prevUUID, side, (Resource) message.getObj()[1], available);
+    }
+
+    /**
+     * Updates the main player view top row.
+     */
+    public void updateScores() {
+        StringBuilder text = null;
+        for(int i = 0; i < nicknames.size(); i++)
+            text.append(nicknames.keySet().toArray()[i]).append(": ").append(nicknames.values().toArray()[i]).append("   ");
+        GuiApp.getMainPlayerViewController().updateTopRowLabel(text.toString());
+    }
+
+    /**
+     * Handles the message containing the updated points.
+     *
+     * @param message The message received.
+     */
+    public void replyPointsUpdateHandler(Message message){
+        String name = (String) message.getObj()[0];
+        int points = (int) message.getObj()[1];
+        nicknames.put(name, points);
+
+        updateScores();
+    }
+
+    /**
+     * Handles the message containing the request of the player board infos.
+     *
+     * @param message The message received.
+     */
+    public void requestPlayerBoardInfosHandler(Message message) {
+        cli.sendMessage(
+                new Message(
+                        REPLY_PLAYER_BOARD_INFOS,
+                        cli.getClientID(),
+                        message.getGameID(),
+                        new Object[]{message.getObj()[0], onBoard, available, nameP})
+        );
+    }
+
+    /**
+     * Handles the message containing the updated score.
+     *
+     * @param message The message received.
+     */
+    public void replyUpdatedScoreHandler(Message message) {
+        available = (List<Integer>) message.getObj()[0];
+        onBoard[positionY][positionX] = (Resource) message.getObj()[1];
+        String nick = (String) message.getObj()[2];
+        int score = (int) message.getObj()[3];
+        nicknames.put(nick, score);
+        playerResources = (List<Resource>) message.getObj()[4];
+
+        updateScores();
+    }
+
+    /**
+     * Handles the message containing the updated hand.
+     *
+     * @param message The message received.
+     */
+    public void replyHandUpdateHandler(Message message) {
+        String newCardUUID = (String) message.getObj()[0];
+        for(int i = 0; i < 3; i++){
+            if(currentHandUUID.get(i).isEmpty()){
+                currentHandUUID.set(i, newCardUUID);
+                break;
+            }
+        }
+        GuiApp.getMainPlayerViewController().update_view();
+    }
+
+    /**
+     * Sends to the server the request of the viewable cards.
+     */
+    public void requestViewableCards() {
+        cli.sendMessage(
+                new Message(
+                        REQUEST_VIEWABLE_CARDS,
+                        cli.getClientID(),
+                        cli.getGameID())
+        );
+    }
+
+    /**
+     * Handles the message containing the viewable cards.
+     *
+     * @param message The message received.
+     */
+    public void replyViewableCardsHandler(Message message) {
+        rUUID = (String[]) message.getObj()[0];
+        gUUID = (String[]) message.getObj()[1];
     }
 
     /**
@@ -207,12 +323,29 @@ public class Gui {
     }
 
     /**
+     * Draws a card from the deck.
+     *
+     * @param type The type of the card.
+     * @param pos The index of the card.
+     */
+    public void drawCard(boolean type, int pos) {
+        cli.sendMessage(
+                new Message(
+                        REQUEST_CARD,
+                        cli.getClientID(),
+                        cli.getGameID(),
+                        new Object[]{type, pos})
+        );
+    }
+
+    /**
      * Notify to server the preliminary choices made by the player.
      *
      * @param choicesMade The preliminary choices made by the player.
      */
     public void preliminaryChoicesMade(Boolean[] choicesMade) {
-        String selectedUUID = cardToChooseUUID.get(choicesMade[0] ? 0 : 1);
+        String selectedUUID = cardToChooseUUID.get(choicesMade[0] ? 1 : 2);
+        allGoalsUUID.add(selectedUUID);
         boolean side = !choicesMade[1];
         cli.sendMessage(
                 new Message(
@@ -233,6 +366,11 @@ public class Gui {
      */
     public void notifyGameStartingHandler() {
         gameState = GameFlowState.GAME;
+        Platform.runLater(() -> {
+            GuiApp.getMainPlayerViewController().initialize_2();
+            GuiApp.getMainPlayerViewController().update_view();
+        });
+        requestViewableCards();
         GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
 
         //Update the view of the starting card
@@ -275,6 +413,12 @@ public class Gui {
         nicknames = (Map<String, Integer>) message.getObj()[4];
         currentPlayerNickname = (String) message.getObj()[5];
         startingPlayer = (String) message.getObj()[5];
+
+        if(startingPlayer.equals(nameP))
+            GuiApp.getMainPlayerViewController().setTurnLabel("You start!", true);
+        else
+            GuiApp.getMainPlayerViewController().setTurnLabel("Starting player is: " + startingPlayer, false);
+
         playerResources = (List<Resource>) message.getObj()[6];
         gameState = GameFlowState.PRELIMINARY_CHOICES;
         Platform.runLater(() -> GuiApp.getPreliminaryChoicesViewController().initialize_2());
@@ -518,6 +662,24 @@ public class Gui {
     }
 
     /**
+     * Returns the viewable resource cards.
+     *
+     * @return The viewable resource cards.
+     */
+    public String[] getResourceViewableCards() {
+        return rUUID;
+    }
+
+    /**
+     * Returns the viewable golden cards.
+     *
+     * @return The viewable golden cards.
+     */
+    public String[] getGoldenViewableCards() {
+        return gUUID;
+    }
+
+    /**
      * Returns the UUIDs of the common goal cards.
      *
      * @return The UUIDs of the common goal cards.
@@ -527,12 +689,32 @@ public class Gui {
     }
 
     /**
+     * Sets posX and posY of the last card placed.
+     *
+     * @param x The X position of the card.
+     * @param y The Y position of the card.
+     */
+    public void setPositions(int x, int y){
+        positionX = x;
+        positionY = y;
+    }
+
+    /**
      * Returns the UUIDs of the cards to choose.
      *
      * @return The UUIDs of the cards to choose.
      */
     public List<String> getCardToChooseUUID() {
         return cardToChooseUUID;
+    }
+
+    /**
+     * Returns the cards in the hand.
+     *
+     * @return The cards in the hand.
+     */
+    public ArrayList<String> getCurrentHandUUID() {
+        return currentHandUUID;
     }
 
     /**
