@@ -83,6 +83,22 @@ public class Gui {
         }
     }
 
+
+    public void placeCard(int numHand, int positionX, int positionY, boolean side){
+        cli.sendMessage(
+                new Message(
+                        REQUEST_PLAYER_MOVE,
+                        cli.getClientID(),
+                        cli.getGameID(),
+                        //Manca la carta da piazzare oltre alla posizione dove piazzarla
+                        new Object[]{
+                                numHand,
+                                positionX,
+                                positionY
+                        })
+        );
+    }
+
     /**
      * Notify to server the preliminary choices made by the player.
      *
@@ -202,13 +218,34 @@ public class Gui {
      * @param message The message received.
      */
     public void replyBadRequestHandler(Message message) {
-        if(message.getObj()[0].equals("Invalid nickname, please try a different one!"))
-            validatedNickname = false;
-        else if(message.getObj()[0].equals("The chosen lobby is full! Creating a new one...")) {
-            GuiApp.getWelcomeScreenController().showFullLobbyError();
-            sleep(3000);
-            validatedLobby = false;
-            validatedNickname = false;
+        switch ((String) message.getObj()[0]){
+            case "Invalid nickname, please try a different one!":
+                validatedNickname = false;
+                break;
+
+            case "The chosen lobby is full! Creating a new one...":
+                GuiApp.getWelcomeScreenController().showFullLobbyError();
+                sleep(3000);
+                validatedLobby = false;
+                validatedNickname = false;
+                break;
+
+            case "You don't have the required resources to place this card!":
+                GuiApp.getMainPlayerViewController().showError(
+                        "You don't have the required resources to place this card!"
+                );
+
+                break;
+            case "You can't place a card here!":
+                GuiApp.getMainPlayerViewController().showError(
+                        "You can't place a card here!"
+                );
+                break;
+
+
+
+
+
         }
     }
 
