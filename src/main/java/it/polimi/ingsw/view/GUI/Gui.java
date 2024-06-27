@@ -6,7 +6,9 @@ import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
 import javafx.application.Application;
 import javafx.application.Platform;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.util.*;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
@@ -40,6 +42,8 @@ public class Gui {
     private int positionX = 0, positionY = 0;
 
     private Queue<String> chatMessages = new LinkedList<>();
+    private int numHand;
+    private boolean side;
 
     /**
      * Handles arriving message from the server and updates the TUI.
@@ -48,6 +52,9 @@ public class Gui {
      */
     public void onMessageReceived(Message message) {
         switch (message.getMessageType()) {
+            case REPLY_UPDATED_SCORE:
+                replyUpdatedScore(message);
+                break;
 
             case REPLY_CHAT_MESSAGE:
                 replyChatMessage(message);
@@ -113,6 +120,23 @@ public class Gui {
                 replyPointsUpdateHandler(message);
                 break;
         }
+    }
+
+    public void replyUpdatedScore(Message message){
+        String prevUUID = currentHandUUID.get(numHand);
+        currentHandUUID.set(numHand, "");
+
+        //Available places
+        List<int[]> available = (List<int[]>) message.getObj()[0];
+
+        //Update the board with the placed card
+        String nick = (String) message.getObj()[2];
+        int score = (int) message.getObj()[3];
+        nicknames.put(nick, score);
+        playerResources = (List<Resource>) message.getObj()[4];
+
+        //Update the view of the player board
+        GuiApp.getPlayerBoardController().updatePlayerBoard(prevUUID, side, (Resource) message.getObj()[1], available);
     }
 
     /**
@@ -258,6 +282,8 @@ public class Gui {
      * @param side The side of the card.
      */
     public void placeCard(int numHand, int positionX, int positionY, boolean side){
+        this.side = side;
+        this.numHand = numHand;
         cli.sendMessage(
                 new Message(
                         REQUEST_PLAYER_MOVE,
