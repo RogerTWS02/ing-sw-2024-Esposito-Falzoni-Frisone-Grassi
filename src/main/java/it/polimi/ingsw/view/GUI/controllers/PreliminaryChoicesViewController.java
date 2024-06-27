@@ -54,8 +54,8 @@ public class PreliminaryChoicesViewController implements Initializable {
         }
 
         //Retrieve starting card
-        startingCard[0] = new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + GuiApp.getGui().getCardToChooseUUID().get(0) + ".png"));
-        startingCard[1] = new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + GuiApp.getGui().getCardToChooseUUID().get(0) + "_B.png"));
+        startingCard[0] = new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + GuiApp.getGui().getCardToChooseUUID().get(0) + "_B.png"));
+        startingCard[1] = new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + GuiApp.getGui().getCardToChooseUUID().get(0) + ".png"));
 
         //Set images
         Platform.runLater(() -> {
