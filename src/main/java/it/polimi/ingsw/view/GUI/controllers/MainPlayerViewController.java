@@ -39,6 +39,7 @@ public class MainPlayerViewController implements Initializable {
     public ImageView commonGoal1;
     public ImageView commonGoal2;
     public ImageView secretGoal;
+    public Label topRowLabel;
     private int selectedCardIndex = 100;
     private boolean isFlipped;
     private int[] coordinates = new int[2];
@@ -340,6 +341,8 @@ public class MainPlayerViewController implements Initializable {
         selectedCardIndex = 100;
         handCardsImg[selectedCardIndex] = null;
         drawPhase = true;
+
+        GuiApp.getGui().setPositions(coordinates[0], coordinates[1]);
     }
 
     /**
@@ -351,6 +354,15 @@ public class MainPlayerViewController implements Initializable {
         isFlipped = !isFlipped;
         if(isFlipped)
             Platform.runLater(() -> sideButton.setOpacity(0.5));
+    }
+
+    /**
+     * Updates the top row label.
+     *
+     * @param text The text to set.
+     */
+    public void updateTopRowLabel(String text) {
+        Platform.runLater(() -> topRowLabel.setText(text));
     }
 
     /**

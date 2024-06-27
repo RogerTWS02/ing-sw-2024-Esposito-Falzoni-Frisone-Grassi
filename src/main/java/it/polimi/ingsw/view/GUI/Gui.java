@@ -35,6 +35,9 @@ public class Gui {
     private ArrayList<String> winners;
     private String[] gUUID = new String[3];
     private String[] rUUID = new String[3];
+    private List<Integer> available;
+    private Resource[][] onBoard;
+    private int positionX = 0, positionY = 0;
 
     private Queue<String> chatMessages = new LinkedList<>();
 
@@ -97,7 +100,73 @@ public class Gui {
             case REPLY_HAND_UPDATE:
                 replyHandUpdateHandler(message);
                 break;
+
+            case REPLY_UPDATED_SCORE:
+                replyUpdatedScoreHandler(message);
+                break;
+
+            case REQUEST_PLAYER_BOARD_INFOS:
+                requestPlayerBoardInfosHandler(message);
+                break;
+
+            case REPLY_POINTS_UPDATE:
+                replyPointsUpdateHandler(message);
+                break;
         }
+    }
+
+    /**
+     * Updates the main player view top row.
+     */
+    public void updateScores() {
+        StringBuilder text = null;
+        for(int i = 0; i < nicknames.size(); i++)
+            text.append(nicknames.keySet().toArray()[i]).append(": ").append(nicknames.values().toArray()[i]).append("   ");
+        GuiApp.getMainPlayerViewController().updateTopRowLabel(text.toString());
+    }
+
+    /**
+     * Handles the message containing the updated points.
+     *
+     * @param message The message received.
+     */
+    public void replyPointsUpdateHandler(Message message){
+        String name = (String) message.getObj()[0];
+        int points = (int) message.getObj()[1];
+        nicknames.put(name, points);
+
+        updateScores();
+    }
+
+    /**
+     * Handles the message containing the request of the player board infos.
+     *
+     * @param message The message received.
+     */
+    public void requestPlayerBoardInfosHandler(Message message) {
+        cli.sendMessage(
+                new Message(
+                        REPLY_PLAYER_BOARD_INFOS,
+                        cli.getClientID(),
+                        message.getGameID(),
+                        new Object[]{message.getObj()[0], onBoard, available, nameP})
+        );
+    }
+
+    /**
+     * Handles the message containing the updated score.
+     *
+     * @param message The message received.
+     */
+    public void replyUpdatedScoreHandler(Message message) {
+        available = (List<Integer>) message.getObj()[0];
+        onBoard[positionY][positionX] = (Resource) message.getObj()[1];
+        String nick = (String) message.getObj()[2];
+        int score = (int) message.getObj()[3];
+        nicknames.put(nick, score);
+        playerResources = (List<Resource>) message.getObj()[4];
+
+        updateScores();
     }
 
     /**
@@ -558,6 +627,17 @@ public class Gui {
      */
     public List<String> getAllGoalsUUID() {
         return allGoalsUUID;
+    }
+
+    /**
+     * Sets posX and posY of the last card placed.
+     *
+     * @param x The X position of the card.
+     * @param y The Y position of the card.
+     */
+    public void setPositions(int x, int y){
+        positionX = x;
+        positionY = y;
     }
 
     /**

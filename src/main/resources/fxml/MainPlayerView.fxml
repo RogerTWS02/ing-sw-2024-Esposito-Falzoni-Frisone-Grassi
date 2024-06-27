@@ -212,6 +212,14 @@
                   <Font size="16.0" />
                </font>
             </Label>
+            <Label fx:id="topRowLabel">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets bottom="50.0" left="10.0" />
+               </GridPane.margin>
+            </Label>
          </children>
             <!-- Qui puoi aggiungere elementi per visualizzare i punti -->
         </GridPane>
