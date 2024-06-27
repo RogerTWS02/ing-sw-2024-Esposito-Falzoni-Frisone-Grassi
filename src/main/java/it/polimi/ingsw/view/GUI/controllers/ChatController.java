@@ -52,18 +52,6 @@ public class ChatController implements Initializable {
                 });
             }
         });
-
-        //set the listener for the closeButton
-        closeButton.setOnMouseReleased(e -> {
-            Platform.runLater(() -> {
-                chatRoom.setVisible(false);
-
-                //then disactivate all the things
-                closeButton.setDisable(true);
-                textArea.setDisable(true);
-            });
-        });
-
     }
 
     /**
