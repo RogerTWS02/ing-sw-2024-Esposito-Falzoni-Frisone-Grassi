@@ -182,7 +182,6 @@ public class Gui {
      */
     public void notifyGameStartingHandler() {
         gameState = GameFlowState.GAME;
-        Platform.runLater(() -> GuiApp.getEndGameScreenController().initialize_2());
         GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
     }
 
@@ -194,6 +193,7 @@ public class Gui {
     public void replyEndGameHandler(Message message) {
         winners = (ArrayList<String>) message.getObj()[0];
         gameState = GameFlowState.END;
+        Platform.runLater(() -> GuiApp.getEndGameScreenController().initialize_2());
         GuiApp.changeScene(GuiApp.getEndGameScreenRoot());
     }
 
