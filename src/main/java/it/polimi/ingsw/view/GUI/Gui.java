@@ -93,7 +93,27 @@ public class Gui {
             case REPLY_VIEWABLE_CARDS:
                 replyViewableCardsHandler(message);
                 break;
+
+            case REPLY_HAND_UPDATE:
+                replyHandUpdateHandler(message);
+                break;
         }
+    }
+
+    /**
+     * Handles the message containing the updated hand.
+     *
+     * @param message The message received.
+     */
+    public void replyHandUpdateHandler(Message message) {
+        String newCardUUID = (String) message.getObj()[0];
+        for(int i = 0; i < 3; i++){
+            if(currentHandUUID.get(i).isEmpty()){
+                currentHandUUID.set(i, newCardUUID);
+                break;
+            }
+        }
+        GuiApp.getMainPlayerViewController().update_view();
     }
 
     /**
@@ -180,6 +200,22 @@ public class Gui {
                                 positionX,
                                 positionY
                         })
+        );
+    }
+
+    /**
+     * Draws a card from the deck.
+     *
+     * @param type The type of the card.
+     * @param pos The index of the card.
+     */
+    public void drawCard(boolean type, int pos) {
+        cli.sendMessage(
+                new Message(
+                        REQUEST_CARD,
+                        cli.getClientID(),
+                        cli.getGameID(),
+                        new Object[]{type, pos})
         );
     }
 

@@ -47,6 +47,7 @@ public class MainPlayerViewController implements Initializable {
     private Image[] handCardsImg = new Image[]{null, null, null}, goalCardsImg = new Image[3], commonCards = new Image[4];
     //GC: 1 and 2 are common, 3 is secret; Common: 1 and 2 re, 3 and 4 go
     private boolean firstTurn = true;
+    private boolean drawPhase = false;
 
     /**
      * Initializes the GridPane with buttons.
@@ -82,6 +83,17 @@ public class MainPlayerViewController implements Initializable {
                 playerBoard.add(button, colIndex, rowIndex);
             }
         }
+
+        Platform.runLater(() -> {
+            resourceDeck.setDisable(true);
+            goldenDeck.setDisable(true);
+            commonResource1.setDisable(true);
+            commonResource2.setDisable(true);
+            commonGolden1.setDisable(true);
+            commonGolden2.setDisable(true);
+        });
+
+        disableChoosingCards();
     }
 
     /**
@@ -309,10 +321,25 @@ public class MainPlayerViewController implements Initializable {
 
         GuiApp.getGui().placeCard(selectedCardIndex, coordinates[0], coordinates[1], isFlipped);
         isFlipped = false;
-        Platform.runLater(() -> sideButton.setOpacity(1));
+        Platform.runLater(() -> {
+            sideButton.setOpacity(1);
+            selectedButton.setVisible(false);
+            sideButton.setVisible(false);
+            sideButton.setDisable(true);
+            placeButton.setDisable(true);
+            placeButton.setVisible(false);
+
+            resourceDeck.setDisable(false);
+            goldenDeck.setDisable(false);
+            commonResource1.setDisable(false);
+            commonResource2.setDisable(false);
+            commonGolden1.setDisable(false);
+            commonGolden2.setDisable(false);
+        });
         selectedButton = null;
         selectedCardIndex = 100;
         handCardsImg[selectedCardIndex] = null;
+        drawPhase = true;
     }
 
     /**
@@ -336,12 +363,27 @@ public class MainPlayerViewController implements Initializable {
     }
 
     /**
+     * Disables the common card choosing buttons.
+     */
+    public void disableChoosingCards() {
+        Platform.runLater(() -> {
+            resourceDeck.setDisable(true);
+            goldenDeck.setDisable(true);
+            commonResource1.setDisable(true);
+            commonResource2.setDisable(true);
+            commonGolden1.setDisable(true);
+            commonGolden2.setDisable(true);
+        });
+    }
+
+    /**
      * Handles the resource cards deck click event.
      *
      * @param mouseEvent Ignored.
      */
     public void resourceDeckPressed(MouseEvent mouseEvent) {
-        //TODO
+        GuiApp.getGui().drawCard(false, 2);
+        disableChoosingCards();
     }
 
     /**
@@ -350,7 +392,8 @@ public class MainPlayerViewController implements Initializable {
      * @param mouseEvent Ignored.
      */
     public void goldenDeckPressed(MouseEvent mouseEvent) {
-        //TODO
+        GuiApp.getGui().drawCard(true, 2);
+        disableChoosingCards();
     }
 
     /**
@@ -359,7 +402,8 @@ public class MainPlayerViewController implements Initializable {
      * @param mouseEvent Ignored.
      */
     public void commonResourcePressed1(MouseEvent mouseEvent) {
-        //TODO
+        GuiApp.getGui().drawCard(false, 0);
+        disableChoosingCards();
     }
 
     /**
@@ -368,16 +412,8 @@ public class MainPlayerViewController implements Initializable {
      * @param mouseEvent Ignored.
      */
     public void commonResourcePressed2(MouseEvent mouseEvent) {
-        //TODO
-    }
-
-    /**
-     * Handles the common golden card 2 deck click event.
-     *
-     * @param mouseEvent Ignored.
-     */
-    public void commonGoldenPressed2(MouseEvent mouseEvent) {
-        //TODO
+        GuiApp.getGui().drawCard(false, 1);
+        disableChoosingCards();
     }
 
     /**
@@ -386,6 +422,17 @@ public class MainPlayerViewController implements Initializable {
      * @param mouseEvent Ignored.
      */
     public void commonGoldenPressed1(MouseEvent mouseEvent) {
-        //TODO
+        GuiApp.getGui().drawCard(true, 0);
+        disableChoosingCards();
+    }
+
+    /**
+     * Handles the common golden card 2 deck click event.
+     *
+     * @param mouseEvent Ignored.
+     */
+    public void commonGoldenPressed2(MouseEvent mouseEvent) {
+        GuiApp.getGui().drawCard(true, 1);
+        disableChoosingCards();
     }
 }
