@@ -25,6 +25,9 @@ public class GuiApp extends Application {
     private static PreliminaryChoicesViewController preliminaryChoicesViewController;
     private static Parent chatViewRoot;
     private static ChatController chatController;
+
+    private static Parent playerBoardViewRoot;
+    private static PlayerBoardController playerBoardController;
     public static volatile boolean guiStarted = false;
 
     /**
@@ -57,6 +60,10 @@ public class GuiApp extends Application {
         chatViewRoot = loader.load();
         chatController = loader.getController();
 
+        loader = new FXMLLoader(getClass().getResource(fxmlPath + "playerBoardView.fxml"));
+        playerBoardViewRoot = loader.load();
+        playerBoardController = loader.getController();
+
         Scene scene = new Scene(welcomeScreenRoot);
         mainStage.setTitle("Codex Naturalis");
         mainStage.setScene(scene);
@@ -84,6 +91,10 @@ public class GuiApp extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static PlayerBoardController getPlayerBoardController(){
+        return playerBoardController;
     }
 
     /**

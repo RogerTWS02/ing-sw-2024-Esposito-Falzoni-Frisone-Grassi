@@ -21,7 +21,6 @@ import java.util.ResourceBundle;
 
 public class MainPlayerViewController implements Initializable {
     public GridPane startingCard;
-    public GridPane playerBoard;
     public ImageView handCard0;
     public ImageView handCard1;
     public ImageView handCard2;
@@ -43,32 +42,7 @@ public class MainPlayerViewController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        for (int i = 0; i < 81; i++) {
-            ColumnConstraints column = new ColumnConstraints(80); // Set column width
-            RowConstraints row = new RowConstraints(60); // Set row height
-            playerBoard.getColumnConstraints().add(column);
-            playerBoard.getRowConstraints().add(row);
-        }
 
-        // Loop to create and add buttons to the GridPane
-        for (int rowIndex = 0; rowIndex < 81; rowIndex++) {
-            for (int colIndex = 0; colIndex < 81; colIndex++) {
-                if((rowIndex+colIndex) % 2 != 0) continue;
-                Button button = new Button();
-                button.setVisible(false);
-                GridPane.setHgrow(button, Priority.ALWAYS);
-                GridPane.setVgrow(button, Priority.ALWAYS);
-                button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // Make button fill cell
-
-                // Set button action
-                int finalRowIndex = rowIndex;
-                int finalColIndex = colIndex;
-                button.setOnAction(event -> onButtonClicked(finalRowIndex, finalColIndex));
-
-                // Add button to GridPane
-                playerBoard.add(button, colIndex, rowIndex);
-            }
-        }
     }
 
     /**
@@ -124,34 +98,6 @@ public class MainPlayerViewController implements Initializable {
             String style = String.format("-fx-background-image: url('%s');", imagePath);
             startingCard.setStyle(style);
         });
-    }
-
-    /**
-     * Handles the button click event.
-     *
-     * @param rowIndex The row index of the clicked button.
-     * @param colIndex The column index of the clicked button.
-     */
-    public void onButtonClicked(Integer rowIndex, Integer colIndex){
-        coordinates[1] = rowIndex;
-        coordinates[0] = colIndex;
-
-        Button button = null;
-        for (Node node : playerBoard.getChildren()) {
-            if (Objects.equals(GridPane.getRowIndex(node), rowIndex) && Objects.equals(GridPane.getColumnIndex(node), colIndex)) {
-                button = (Button) node;
-                break;
-            }
-        }
-
-        //Set new button pressed
-        button.setText("");
-        button.setVisible(true);
-
-        //Reset the old button pressed
-        if(selectedButton != null)
-            selectedButton.setVisible(false);
-        selectedButton = button;
     }
 
     /**
@@ -213,7 +159,10 @@ public class MainPlayerViewController implements Initializable {
      * @param actionEvent Ignored.
      */
     public void placeButtonPressed(ActionEvent actionEvent) {
-        if(selectedButton == null) {
+        //update coordinates
+        getNewCoords();
+
+        if(coordinates[0] == -1) {
             showError("You must select a cell to place a card!");
             return;
         } else if(selectedCardIndex == 100) {
@@ -224,8 +173,11 @@ public class MainPlayerViewController implements Initializable {
         GuiApp.getGui().placeCard(selectedCardIndex, coordinates[0], coordinates[1], isFlipped);
         isFlipped = false;
         Platform.runLater(() -> sideButton.setOpacity(1));
-        selectedButton = null;
         selectedCardIndex = 100;
+    }
+
+    public void getNewCoords(){
+        coordinates = GuiApp.getPlayerBoardController().getCoords();
     }
 
     /**

@@ -41,6 +41,7 @@ public class ChatController implements Initializable {
      * @param url Ignored.
      * @param resourceBundle Ignored.
      */
+    @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //set the listener for the text field
         textArea.setOnKeyPressed(e -> {
