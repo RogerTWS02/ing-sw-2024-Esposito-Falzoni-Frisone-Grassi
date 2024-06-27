@@ -32,7 +32,7 @@ public class Chat implements Views{
             .append("+")
             .append("\n");
         System.out.println(sb);
-            msg.forEach(System.out::println);
+            msg.forEach(System.out::print);
     st
             .append("+")
             .append("-".repeat(106))

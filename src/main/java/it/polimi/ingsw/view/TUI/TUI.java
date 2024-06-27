@@ -1174,7 +1174,7 @@ public class TUI extends Thread{
                                         NEW_CHAT_MESSAGE,
                                         cli.getClientID(),
                                         cli.getGameID(),
-                                        new Object[]{" \033[38;5;208m" + nameP + ":\033[0m " + msg})
+                                        new Object[]{" \033[38;5;208m" + nameP + ":\033[0m " + msg + "\n"})
                         );
                         try {
                             Thread.sleep(1000);

@@ -7,10 +7,7 @@ import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
 import javafx.application.Application;
 import javafx.application.Platform;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
 
@@ -37,6 +34,8 @@ public class Gui {
     private List<Resource> playerResources;
     private ArrayList<String> winners;
 
+    private Queue<String> chatMessages = new LinkedList<>();
+
     /**
      * Handles arriving message from the server and updates the TUI.
      *
@@ -44,6 +43,15 @@ public class Gui {
      */
     public void onMessageReceived(Message message) {
         switch (message.getMessageType()) {
+            case REPLY_CHAT_MESSAGE:
+                chatMessages.add((String) message.getObj()[0]);
+
+                if(chatMessages.size() > 20){
+                    chatMessages.poll();
+                }
+
+                replyChatMessage();
+                break;
 
             case HEARTBEAT:
                 replyHeartbeat();
@@ -81,6 +89,24 @@ public class Gui {
                 notifyGameStartingHandler();
                 break;
         }
+    }
+
+    public void replyChatMessage(){
+        //msg.forEach(System.out::println);
+        StringBuilder concatStr = new StringBuilder();
+        chatMessages.forEach(concatStr::append);
+
+        //send the new message to the chat View
+        GuiApp.getChatController().updateMessage(concatStr);
+    }
+    public void sendChatMessage(String msg){
+        cli.sendMessage(
+                new Message(
+                        NEW_CHAT_MESSAGE,
+                        cli.getClientID(),
+                        cli.getGameID(),
+                        new Object[]{" \033[38;5;208m" + nameP + ":\033[0m " + msg + "\n"})
+        );
     }
 
 

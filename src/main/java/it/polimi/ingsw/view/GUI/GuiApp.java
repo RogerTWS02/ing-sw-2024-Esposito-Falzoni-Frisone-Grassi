@@ -1,9 +1,6 @@
 package it.polimi.ingsw.view.GUI;
 
-import it.polimi.ingsw.view.GUI.controllers.EndGameScreenController;
-import it.polimi.ingsw.view.GUI.controllers.MainPlayerViewController;
-import it.polimi.ingsw.view.GUI.controllers.PreliminaryChoicesViewController;
-import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
+import it.polimi.ingsw.view.GUI.controllers.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +23,8 @@ public class GuiApp extends Application {
     private static EndGameScreenController endGameScreenController;
     private static Parent preliminaryChoicesViewRoot;
     private static PreliminaryChoicesViewController preliminaryChoicesViewController;
+    private static Parent chatViewRoot;
+    private static ChatController chatController;
     public static volatile boolean guiStarted = false;
 
     /**
@@ -54,6 +53,10 @@ public class GuiApp extends Application {
         endGameScreenRoot = loader.load();
         endGameScreenController = loader.getController();
 
+        loader = new FXMLLoader(getClass().getResource(fxmlPath + "ChatView.fxml"));
+        chatViewRoot = loader.load();
+        chatController = loader.getController();
+
         Scene scene = new Scene(welcomeScreenRoot);
         mainStage.setTitle("Codex Naturalis");
         mainStage.setScene(scene);
@@ -81,6 +84,11 @@ public class GuiApp extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+
+    public static ChatController getChatController(){
+        return chatController;
     }
 
     /**

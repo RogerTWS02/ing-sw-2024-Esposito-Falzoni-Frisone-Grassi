@@ -46,7 +46,7 @@ public class MainPlayerViewController implements Initializable {
             //mando messaggio di non selezione
         }else{
             //piazzo la carta alla posizione segnata nella grid
-            GuiApp.getGui().
+            //GuiApp.getGui().
 
         }
         //For managing graphic stuff
