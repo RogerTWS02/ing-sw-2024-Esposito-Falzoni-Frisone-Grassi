@@ -37,7 +37,7 @@ public class Gui {
     private ArrayList<String> winners;
     private String[] gUUID = new String[3];
     private String[] rUUID = new String[3];
-    private List<Integer> available;
+    private List<int[]> available;
     private Resource[][] onBoard;
     private int positionX = 0, positionY = 0;
 
@@ -52,9 +52,6 @@ public class Gui {
      */
     public void onMessageReceived(Message message) {
         switch (message.getMessageType()) {
-            case REPLY_UPDATED_SCORE:
-                replyUpdatedScore(message);
-                break;
 
             case REPLY_CHAT_MESSAGE:
                 replyChatMessage(message);
@@ -193,7 +190,7 @@ public class Gui {
      * @param message The message received.
      */
     public void replyUpdatedScoreHandler(Message message) {
-        available = (List<Integer>) message.getObj()[0];
+        available = (List<int[]>) message.getObj()[0];
         onBoard[positionY][positionX] = (Resource) message.getObj()[1];
         String nick = (String) message.getObj()[2];
         int score = (int) message.getObj()[3];
