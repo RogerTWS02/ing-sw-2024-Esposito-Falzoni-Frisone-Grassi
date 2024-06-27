@@ -123,7 +123,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.port = port;
         this.idPlayerMap = new HashMap<>();
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
-        startHeartBeat();
+        //startHeartBeat();
     }
 
     /**
@@ -138,7 +138,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.idPlayerMap = new ConcurrentHashMap<>();
         this.port = default_port;
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
-        startHeartBeat();
+        //startHeartBeat();
     }
 
     /**

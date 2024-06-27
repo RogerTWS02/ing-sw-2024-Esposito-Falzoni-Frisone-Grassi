@@ -21,12 +21,15 @@ public class PlayerBoardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+
         // Loop to create and add buttons to the GridPane
         for (int rowIndex = 0; rowIndex < 81; rowIndex++) {
             for (int colIndex = 0; colIndex < 81; colIndex++) {
-                if((rowIndex+colIndex) % 2 != 0) continue;
                 Button button = new Button();
-                button.setVisible(false);
+                button.setVisible(true);
+                button.setDisable(false);
+                button.setId(String.format("button%d%d",rowIndex, colIndex));
+                button.setText(String.format("%d %d",rowIndex, colIndex));
                 GridPane.setHgrow(button, Priority.ALWAYS);
                 GridPane.setVgrow(button, Priority.ALWAYS);
                 button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // Make button fill cell
@@ -34,10 +37,10 @@ public class PlayerBoardController implements Initializable {
                 // Set button action
                 int finalRowIndex = rowIndex;
                 int finalColIndex = colIndex;
-                button.setOnMouseReleased(event -> onButtonClicked(finalRowIndex, finalColIndex));
+                button.setOnMouseClicked(event -> onButtonClicked(finalRowIndex, finalColIndex));
 
                 // Add button to GridPane
-                playerBoard.add(button, colIndex, rowIndex);
+                playerBoard.getChildren().add(button);
             }
         }
     }
@@ -58,7 +61,7 @@ public class PlayerBoardController implements Initializable {
                             "-fx-border-color: initial;" +
                             "-fx-border-width: initial;");
 
-        for (Node node : playerBoard.getChildren()) {
+        /*for (Node node : playerBoard.getChildren()) {
             //checks the right cell containing the node
             if (Objects.equals(GridPane.getRowIndex(node), rowIndex) && Objects.equals(GridPane.getColumnIndex(node), colIndex)) {
                 //change the stile to the selected node
@@ -72,8 +75,16 @@ public class PlayerBoardController implements Initializable {
                 prevY = colIndex;
                 break;
             }
-        }
+        }*/
 
+        prevSelect = (Button)playerBoard.getChildren().get(rowIndex+81*colIndex);
+        prevSelect.setText("");
+        prevSelect.setStyle("-fx-background-color: transparent; " +
+                "-fx-border-color: red;" +
+                "-fx-border-width: 3;");
+
+        prevX = rowIndex;
+        prevY = colIndex;
     }
 
     /**
@@ -83,8 +94,54 @@ public class PlayerBoardController implements Initializable {
      */
     public void updatePlayerBoard(String prevUUID, boolean side, Resource res, List<int[]> available){
         Platform.runLater(() -> {
-            //update the cell with the new card on the board
             String UUID;
+            if(res == null) {
+                //Insert the starting card
+                if(side)
+                    UUID = prevUUID + "_B";
+                else
+                    UUID = prevUUID;
+
+                //for (Node node : playerBoard.getChildren()){
+
+                    //if (Objects.equals(GridPane.getRowIndex(node), 40) && Objects.equals(GridPane.getColumnIndex(node), 40)) {
+
+                prevSelect = (Button) playerBoard.lookup("#button080");
+                System.out.println(prevSelect.getId());
+                System.out.println(playerBoard.lookup("#button080"));
+                prevSelect.setVisible(false);
+                prevSelect.setDisable(false);
+                prevSelect.setText("ciao");
+                System.out.print("ciao");
+                        /*
+                        //update the new available cells
+                        node.setVisible(true);
+                        String imagePath = "/graphics/startingDeck/" + UUID + ".png";
+                        String style = String.format("-fx-background-image: url('%s');", imagePath);
+                        node.setStyle(style+
+                                "-fx-border-color: initial;" +
+                                "-fx-border-width: initial;");*/
+
+                   // }
+                //}
+
+                /*//update the board with the new available cards
+                for (Node node : playerBoard.getChildren()) {
+                    for(int[] pos : available) {
+                        if (Objects.equals(GridPane.getRowIndex(node), pos[0]) && Objects.equals(GridPane.getColumnIndex(node), pos[1])) {
+                            //update the new available cells
+                            ((Button) node).setVisible(true);
+                            break;
+                        }
+                    }
+                }*/
+
+
+                return;
+            }
+
+
+            //update the cell with the new card on the board
             if(side){
                 UUID = "RC_"+res.toString()+"_B";
             }else{

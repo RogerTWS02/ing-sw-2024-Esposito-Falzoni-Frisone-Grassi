@@ -35,6 +35,7 @@ public class Gui {
     private String startingPlayer;
     private List<Resource> playerResources;
     private ArrayList<String> winners;
+    private List<int[]> available;
 
     private Queue<String> chatMessages = new LinkedList<>();
     private int numHand;
@@ -94,15 +95,25 @@ public class Gui {
             case REPLY_YOUR_TURN:
                 replyYourTurnHandler(message);
                 break;
+
+            case REPLY_CHOICES_MADE:
+                handleChoicesMade(message);
+                break;
         }
     }
+
+    /**
+     * Handles the message containing the updated score and the available positions.
+     *
+     * @param message The message received.
+     */
 
     public void replyUpdatedScore(Message message){
         String prevUUID = currentHandUUID.get(numHand);
         currentHandUUID.set(numHand, "");
 
         //Available places
-        List<int[]> available = (List<int[]>) message.getObj()[0];
+        available = (List<int[]>) message.getObj()[0];
 
         //Update the board with the placed card
         String nick = (String) message.getObj()[2];
@@ -131,6 +142,20 @@ public class Gui {
         //send the new message to the chat View
         GuiApp.getChatController().updateMessage(concatStr);
     }
+
+    /**
+     * Handles the message containing the choices made by the player and updates the player board with the starting card.
+     *
+     * @param message The message received.
+     */
+    public void handleChoicesMade(Message message) {
+        available = (List<int[]>) message.getObj()[0];
+    }
+
+    /**
+     * Sends a chat message.
+     * @param msg The message to send.
+     */
 
     public void sendChatMessage(String msg){
         cli.sendMessage(
@@ -209,6 +234,9 @@ public class Gui {
     public void notifyGameStartingHandler() {
         gameState = GameFlowState.GAME;
         GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
+
+        //Update the view of the starting card
+        GuiApp.getPlayerBoardController().updatePlayerBoard(cardToChooseUUID.get(0), side, null, available);
     }
 
     /**
