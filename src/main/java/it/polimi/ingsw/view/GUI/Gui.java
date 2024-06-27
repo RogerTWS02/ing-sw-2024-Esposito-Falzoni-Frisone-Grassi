@@ -152,8 +152,9 @@ public class Gui {
     public void updateScores() {
         StringBuilder text = null;
         for(int i = 0; i < nicknames.size(); i++)
-            text.append(nicknames.keySet().toArray()[i]).append(": ").append(nicknames.values().toArray()[i]).append("   ");
-        GuiApp.getMainPlayerViewController().updateTopRowLabel(text.toString());
+            text.append(nicknames.keySet().toArray()[i]).append(": ").append(nicknames.values().toArray()[i]).append("  ");
+        if(text != null)
+            GuiApp.getMainPlayerViewController().updateTopRowLabel(text.toString());
     }
 
     /**
@@ -371,7 +372,7 @@ public class Gui {
         GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
 
         //Update the view of the starting card
-        GuiApp.getPlayerBoardController().updatePlayerBoard(cardToChooseUUID.get(0), side, null, available);
+        //GuiApp.getPlayerBoardController().updatePlayerBoard(cardToChooseUUID.get(0), side, null, available);
     }
 
     /**

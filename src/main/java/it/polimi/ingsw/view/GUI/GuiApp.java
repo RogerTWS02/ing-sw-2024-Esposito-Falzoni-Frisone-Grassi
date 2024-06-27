@@ -60,7 +60,7 @@ public class GuiApp extends Application {
         chatViewRoot = loader.load();
         chatController = loader.getController();
 
-        loader = new FXMLLoader(getClass().getResource(fxmlPath + "playerBoardView.fxml"));
+        loader = new FXMLLoader(getClass().getResource(fxmlPath + "PlayerBoardView.fxml"));
         playerBoardViewRoot = loader.load();
         playerBoardController = loader.getController();
 
