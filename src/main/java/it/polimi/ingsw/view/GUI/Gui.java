@@ -43,14 +43,9 @@ public class Gui {
      */
     public void onMessageReceived(Message message) {
         switch (message.getMessageType()) {
+
             case REPLY_CHAT_MESSAGE:
-                chatMessages.add((String) message.getObj()[0]);
-
-                if(chatMessages.size() > 20){
-                    chatMessages.poll();
-                }
-
-                replyChatMessage();
+                replyChatMessage(message);
                 break;
 
             case HEARTBEAT:
@@ -88,10 +83,23 @@ public class Gui {
             case NOTIFY_GAME_STARTING:
                 notifyGameStartingHandler();
                 break;
+
+            case REPLY_YOUR_TURN:
+                replyYourTurnHandler(message);
+                break;
         }
     }
 
-    public void replyChatMessage(){
+    /**
+     * Handles the message containing the chat message.
+     *
+     * @param message The message received.
+     */
+    public void replyChatMessage(Message message){
+        chatMessages.add((String) message.getObj()[0]);
+        if(chatMessages.size() > 20)
+            chatMessages.poll();
+
         //msg.forEach(System.out::println);
         StringBuilder concatStr = new StringBuilder();
         chatMessages.forEach(concatStr::append);
@@ -99,6 +107,7 @@ public class Gui {
         //send the new message to the chat View
         GuiApp.getChatController().updateMessage(concatStr);
     }
+
     public void sendChatMessage(String msg){
         cli.sendMessage(
                 new Message(
@@ -109,16 +118,37 @@ public class Gui {
         );
     }
 
+    /**
+     * Handles the message containing turn information.
+     *
+     * @param message The message received.
+     */
+    public void replyYourTurnHandler(Message message) {
+        currentPlayerNickname = (String) message.getObj()[0];
+        myTurn = (boolean) message.getObj()[1];
+        if(nameP.equals(currentPlayerNickname))
+            GuiApp.getMainPlayerViewController().setTurnLabel("It's your turn!", true);
+        else
+            GuiApp.getMainPlayerViewController().setTurnLabel("It's " + currentPlayerNickname + "'s turn!", false);
+    }
 
+    /**
+     * Places the card in the specified position.
+     *
+     * @param numHand The index of the card in the hand.
+     * @param positionX The X position of the card.
+     * @param positionY The Y position of the card.
+     * @param side The side of the card.
+     */
     public void placeCard(int numHand, int positionX, int positionY, boolean side){
         cli.sendMessage(
                 new Message(
                         REQUEST_PLAYER_MOVE,
                         cli.getClientID(),
                         cli.getGameID(),
-                        //Manca la carta da piazzare oltre alla posizione dove piazzarla
                         new Object[]{
                                 numHand,
+                                side,
                                 positionX,
                                 positionY
                         })
@@ -260,18 +290,13 @@ public class Gui {
                 GuiApp.getMainPlayerViewController().showError(
                         "You don't have the required resources to place this card!"
                 );
-
                 break;
+
             case "You can't place a card here!":
                 GuiApp.getMainPlayerViewController().showError(
                         "You can't place a card here!"
                 );
                 break;
-
-
-
-
-
         }
     }
 

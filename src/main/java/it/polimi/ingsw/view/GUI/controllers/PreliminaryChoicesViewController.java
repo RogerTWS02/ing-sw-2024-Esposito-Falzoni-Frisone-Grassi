@@ -22,7 +22,7 @@ public class PreliminaryChoicesViewController implements Initializable {
     public Label choicesMadeLabel;
     public ImageView startingBack;
     public Button confirmButton;
-    Image[] commonGoalCards = new Image[2], secretGoalCards = new Image[2], startingCard = new Image[2];
+    private Image[] commonGoalCards = new Image[2], secretGoalCards = new Image[2], startingCard = new Image[2];
     private Boolean choicesMade[] = new Boolean[]{null, null}; //1 for secret goal, 2 for starting card; true/false: 1 or 2, front or back
 
     /**
