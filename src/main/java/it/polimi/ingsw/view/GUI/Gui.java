@@ -360,6 +360,12 @@ public class Gui {
         nicknames = (Map<String, Integer>) message.getObj()[4];
         currentPlayerNickname = (String) message.getObj()[5];
         startingPlayer = (String) message.getObj()[5];
+
+        if(startingPlayer.equals(nameP))
+            GuiApp.getMainPlayerViewController().setTurnLabel("You start!", true);
+        else
+            GuiApp.getMainPlayerViewController().setTurnLabel("Starting player is: " + startingPlayer, false);
+
         playerResources = (List<Resource>) message.getObj()[6];
         gameState = GameFlowState.PRELIMINARY_CHOICES;
         Platform.runLater(() -> GuiApp.getPreliminaryChoicesViewController().initialize_2());

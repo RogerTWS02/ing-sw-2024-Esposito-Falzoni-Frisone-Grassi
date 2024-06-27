@@ -142,6 +142,8 @@ public class MainPlayerViewController implements Initializable {
             commonGolden1.setImage(commonCards[2]);
             commonGolden2.setImage(commonCards[3]);
         });
+
+        GuiApp.getGui().updateScores();
     }
 
     /**
