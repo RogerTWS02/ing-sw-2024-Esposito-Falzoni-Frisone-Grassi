@@ -189,7 +189,7 @@ public class Gui {
      * @param choicesMade The preliminary choices made by the player.
      */
     public void preliminaryChoicesMade(Boolean[] choicesMade) {
-        String selectedUUID = cardToChooseUUID.get(choicesMade[0] ? 0 : 1);
+        String selectedUUID = cardToChooseUUID.get(choicesMade[0] ? 1 : 2);
         allGoalsUUID.add(selectedUUID);
         boolean side = !choicesMade[1];
         cli.sendMessage(
@@ -215,6 +215,7 @@ public class Gui {
             GuiApp.getMainPlayerViewController().initialize_2();
             GuiApp.getMainPlayerViewController().update_view();
         });
+        requestViewableCards();
         GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
     }
 

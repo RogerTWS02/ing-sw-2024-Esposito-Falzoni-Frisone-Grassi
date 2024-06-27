@@ -270,8 +270,14 @@
                <children>
                   <Label alignment="CENTER" contentDisplay="CENTER" text="     RESOURCE" textAlignment="CENTER" />
                   <Label prefHeight="17.0" prefWidth="95.0" text="       GOLDEN" GridPane.columnIndex="1" />
-                  <ImageView fx:id="resourceDeck" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#resourceDeckPressed" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                  <ImageView fx:id="goldenDeck" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#goldenDeckPressed" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <ImageView fx:id="resourceDeck" fitHeight="75.0" fitWidth="82.0" onMouseClicked="#resourceDeckPressed" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <image>
+                        <Image url="@../gui_graphics/ResourceBackground.png" />
+                     </image></ImageView>
+                  <ImageView fx:id="goldenDeck" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#goldenDeckPressed" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <image>
+                        <Image url="@../gui_graphics/GoldenBackground.png" />
+                     </image></ImageView>
                   <ImageView fx:id="commonResource1" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#commonResourcePressed1" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                   <ImageView fx:id="commonGolden1" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#commonGoldenPressed1" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                   <ImageView fx:id="commonResource2" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#commonResourcePressed2" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />

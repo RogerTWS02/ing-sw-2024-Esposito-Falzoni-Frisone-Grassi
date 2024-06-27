@@ -44,8 +44,8 @@ public class MainPlayerViewController implements Initializable {
     private int[] coordinates = new int[2];
     private Button selectedButton;
     private volatile boolean myturn;
-    private Image[] handCardsImg = new Image[3], goalCardsImg = new Image[2], deckCards = new Image[2], commonCards = new Image[4];
-    //GC: 1 and 2 are common, 3 is secret; Deck: 1 re, 2 go; Common: 1 and 2 re, 3 and 4 go
+    private Image[] handCardsImg = new Image[]{null, null, null}, goalCardsImg = new Image[3], commonCards = new Image[4];
+    //GC: 1 and 2 are common, 3 is secret; Common: 1 and 2 re, 3 and 4 go
     private boolean firstTurn = true;
 
     /**
@@ -98,37 +98,8 @@ public class MainPlayerViewController implements Initializable {
             secretGoal.setImage(goalCardsImg[2]);
         });
 
-        //Hand cards
-        for(int i = 0; i < 3; i++)
-            handCardsImg[i] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getCurrentHandUUID().get(i))));
-
-        Platform.runLater(() -> {
-            handCard0.setImage(handCardsImg[0]);
-            handCard1.setImage(handCardsImg[1]);
-            handCard2.setImage(handCardsImg[2]);
-        });
-
-        //Common cards
-        for(int i = 0; i < 2; i++)
-            commonCards[i] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getResourceViewableCards()[i])));
-        for(int i = 0; i < 2; i++)
-            commonCards[i + 2] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getGoldenViewableCards()[i])));
-
-        Platform.runLater(() -> {
-            commonResource1.setImage(commonCards[0]);
-            commonResource2.setImage(commonCards[1]);
-            commonGolden1.setImage(commonCards[2]);
-            commonGolden2.setImage(commonCards[3]);
-        });
-
-        //Deck cards
-        deckCards[0] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getResourceViewableCards()[2])));
-        deckCards[1] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getGoldenViewableCards()[2])));
-
-        Platform.runLater(() -> {
-            resourceDeck.setImage(deckCards[0]);
-            goldenDeck.setImage(deckCards[1]);
-        });
+        //Remaining cards
+        update_view();
     }
 
     /**
@@ -157,15 +128,6 @@ public class MainPlayerViewController implements Initializable {
             commonResource2.setImage(commonCards[1]);
             commonGolden1.setImage(commonCards[2]);
             commonGolden2.setImage(commonCards[3]);
-        });
-
-        //Deck cards
-        deckCards[0] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getResourceViewableCards()[2])));
-        deckCards[1] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getGoldenViewableCards()[2])));
-
-        Platform.runLater(() -> {
-            resourceDeck.setImage(deckCards[0]);
-            goldenDeck.setImage(deckCards[1]);
         });
     }
 
