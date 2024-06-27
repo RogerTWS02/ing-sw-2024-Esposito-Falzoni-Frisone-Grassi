@@ -495,13 +495,15 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                                             }
                                     )
                             );}
+
+                            idClientMap.get(id).disconnect();
                         }catch(Exception e){
                             // Printing the 'actual' exception:
                             System.out.println("Underlying exception: " + e.getCause());
                         }
 
 
-                        idClientMap.get(id).disconnect();
+                        //idClientMap.get(id).disconnect();
 
                         idClientMap.remove(id);
 
