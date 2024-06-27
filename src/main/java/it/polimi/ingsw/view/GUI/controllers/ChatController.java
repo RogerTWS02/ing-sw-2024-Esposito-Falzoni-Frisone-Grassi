@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.GUI.controllers;
 import it.polimi.ingsw.view.GUI.GuiApp;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,11 +26,21 @@ public class ChatController implements Initializable {
         });
     }
 
+    /**
+     * Sends a chat message to the server.
+     *
+     * @param msg The message to send.
+     */
     public void sendChatMessage(String msg){
         GuiApp.getGui().sendChatMessage(msg);
     }
 
-    @Override
+    /**
+     * Initializes the chat controller.
+     *
+     * @param url Ignored.
+     * @param resourceBundle Ignored.
+     */
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //set the listener for the text field
         textArea.setOnKeyPressed(e -> {
@@ -53,5 +64,14 @@ public class ChatController implements Initializable {
             });
         });
 
+    }
+
+    /**
+     * Handles the event of the close button being pressed.
+     *
+     * @param actionEvent Ignored.
+     */
+    public void closeButtonPressed(ActionEvent actionEvent) {
+        GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
     }
 }

@@ -86,9 +86,22 @@ public class GuiApp extends Application {
         launch(args);
     }
 
-
+    /**
+     * Returns the chat controller.
+     *
+     * @return The chat controller.
+     */
     public static ChatController getChatController(){
         return chatController;
+    }
+
+    /**
+     * Returns the chat view root.
+     *
+     * @return The chat view root.
+     */
+    public static Parent getChatViewRoot(){
+        return chatViewRoot;
     }
 
     /**

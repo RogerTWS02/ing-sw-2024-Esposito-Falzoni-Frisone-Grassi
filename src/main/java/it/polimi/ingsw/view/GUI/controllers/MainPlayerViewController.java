@@ -28,6 +28,7 @@ public class MainPlayerViewController implements Initializable {
     public Button placeButton;
     public Button sideButton;
     public Label turnLabel;
+    public Button chatButton;
     private int selectedCardIndex = 100;
     private boolean isFlipped;
     private int[] coordinates = new int[2];
@@ -236,5 +237,14 @@ public class MainPlayerViewController implements Initializable {
         isFlipped = !isFlipped;
         if(isFlipped)
             Platform.runLater(() -> sideButton.setOpacity(0.5));
+    }
+
+    /**
+     * Handles the "Chat" button click event.
+     *
+     * @param actionEvent Ignored.
+     */
+    public void chatButtonPressed(ActionEvent actionEvent) {
+        GuiApp.changeScene(GuiApp.getChatViewRoot());
     }
 }

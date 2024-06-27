@@ -287,6 +287,11 @@
                   <Insets left="20.0" top="110.0" />
                </VBox.margin>
             </Button>
+            <Button fx:id="chatButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#chatButtonPressed" text="Chat">
+               <VBox.margin>
+                  <Insets left="70.0" top="60.0" />
+               </VBox.margin>
+            </Button>
          </children>
         </VBox>
     </right>
