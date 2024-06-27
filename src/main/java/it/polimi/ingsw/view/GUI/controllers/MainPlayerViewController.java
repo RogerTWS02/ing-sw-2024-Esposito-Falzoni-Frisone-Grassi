@@ -136,9 +136,21 @@ public class MainPlayerViewController implements Initializable {
      * @param error The error message to show.
      */
     public void showError(String error){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error!");
         alert.setContentText(error);
+        alert.showAndWait();
+    }
+
+    /**
+     * Shows the number of turns left.
+     *
+     * @param turns The number of turns left.
+     */
+    public void showTurnsLeft(int turns){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("End game phase");
+        alert.setContentText("You have " + turns + " turns left!");
         alert.showAndWait();
     }
 
@@ -300,6 +312,8 @@ public class MainPlayerViewController implements Initializable {
         isFlipped = !isFlipped;
         if(isFlipped)
             Platform.runLater(() -> sideButton.setOpacity(0.5));
+        else
+            Platform.runLater(() -> sideButton.setOpacity(1));
     }
 
     /**

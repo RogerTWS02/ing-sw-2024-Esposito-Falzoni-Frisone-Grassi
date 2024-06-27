@@ -120,7 +120,31 @@ public class Gui {
             case REPLY_CHOICES_MADE:
                 handleChoicesMade(message);
                 break;
+
+            case NOTIFY_END_GAME:
+                notifyEndGameHandler(message);
+                break;
+
+            case REPLY_EMPTY_DECK:
+                replyEmptyDeckHandler();
+                break;
         }
+    }
+
+    /**
+     * Handles the message containing the info of empty deck.
+     */
+    public void replyEmptyDeckHandler() {
+        GuiApp.getMainPlayerViewController().showError("You can't draw this card, the deck is empty!");
+    }
+
+    /**
+     * Handles the message which notifies the end phase of the game.
+     *
+     * @param message The message received.
+     */
+    public void notifyEndGameHandler(Message message) {
+        GuiApp.getMainPlayerViewController().showTurnsLeft((Integer) message.getObj()[0]);
     }
 
     /**
