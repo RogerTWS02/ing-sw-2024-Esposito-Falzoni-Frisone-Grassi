@@ -150,11 +150,11 @@ public class Gui {
      * Updates the main player view top row.
      */
     public void updateScores() {
-        StringBuilder text = null;
-        for(int i = 0; i < nicknames.size(); i++)
-            text.append(nicknames.keySet().toArray()[i]).append(": ").append(nicknames.values().toArray()[i]).append("  ");
-        if(text != null)
-            GuiApp.getMainPlayerViewController().updateTopRowLabel(text.toString());
+        StringBuilder text = new StringBuilder();
+        text.append("SCORES     ");
+        for(String nickname : nicknames.keySet())
+            text.append(nickname).append(": ").append(nicknames.get(nickname)).append("  ");
+        GuiApp.getMainPlayerViewController().updateTopRowLabel(text.toString());
     }
 
     /**
@@ -420,6 +420,7 @@ public class Gui {
         playerResources = (List<Resource>) message.getObj()[6];
         gameState = GameFlowState.PRELIMINARY_CHOICES;
         Platform.runLater(() -> GuiApp.getPreliminaryChoicesViewController().initialize_2());
+        updateScores();
         GuiApp.changeScene(GuiApp.getPreliminaryChoicesViewRoot());
     }
 
