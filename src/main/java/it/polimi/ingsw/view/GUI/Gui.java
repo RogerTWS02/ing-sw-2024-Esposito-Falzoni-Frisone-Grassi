@@ -396,7 +396,7 @@ public class Gui {
         GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
 
         //Update the view of the starting card
-        //GuiApp.getPlayerBoardController().updatePlayerBoard(cardToChooseUUID.get(0), side, null, available);
+        GuiApp.getPlayerBoardController().updatePlayerBoard(cardToChooseUUID.get(0), side, null, available);
     }
 
     /**

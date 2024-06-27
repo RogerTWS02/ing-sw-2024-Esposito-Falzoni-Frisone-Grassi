@@ -9,7 +9,7 @@
 <BorderPane prefHeight="900.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GUI.controllers.MainPlayerViewController">
     <!-- Area centrale con griglia a scorrimento -->
     <center>
-        <ScrollPane fitToHeight="true" fitToWidth="true" nodeOrientation="RIGHT_TO_LEFT">
+        <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" nodeOrientation="RIGHT_TO_LEFT">
          <content>
             <AnchorPane>
                <children>

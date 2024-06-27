@@ -7,10 +7,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.transform.Scale;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -34,6 +37,7 @@ public class MainPlayerViewController implements Initializable {
     public ImageView commonGoal2;
     public ImageView secretGoal;
     public Label topRowLabel;
+    public ScrollPane scrollPane;
     private int selectedCardIndex = 100;
     private boolean isFlipped;
     private int[] coordinates = new int[2];
@@ -43,6 +47,7 @@ public class MainPlayerViewController implements Initializable {
     //GC: 1 and 2 are common, 3 is secret; Common: 1 and 2 re, 3 and 4 go
     private boolean firstTurn = true;
     private boolean drawPhase = false;
+    private double zoomFactor = 1.05;
 
     /**
      * Initializes the GridPane with buttons.
@@ -52,6 +57,21 @@ public class MainPlayerViewController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Scale scale = new Scale(1, 1);
+        scrollPane.getTransforms().add(scale);
+        scrollPane.addEventFilter(ScrollEvent.ANY, scrollEvent -> {
+            if (scrollEvent.isControlDown()) {
+                if (scrollEvent.getDeltaY() > 0) {
+                    scale.setX(scale.getX() * zoomFactor);
+                    scale.setY(scale.getY() * zoomFactor);
+                } else {
+                    scale.setX(scale.getX() / zoomFactor);
+                    scale.setY(scale.getY() / zoomFactor);
+                }
+                scrollEvent.consume();
+            }
+        });
+
         resourceDeck.setDisable(true);
         goldenDeck.setDisable(true);
         commonResource1.setDisable(true);

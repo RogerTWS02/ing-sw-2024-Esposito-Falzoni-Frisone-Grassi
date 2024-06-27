@@ -1,46 +1,49 @@
 package it.polimi.ingsw.view.GUI.controllers;
 
+import it.polimi.ingsw.view.GUI.GuiApp;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import it.polimi.ingsw.model.Resource;
 
 public class PlayerBoardController implements Initializable {
-    public GridPane startingCard;
     public GridPane playerBoard;
-    private Button prevSelect;
+    private ImageView prevSelect;
     int prevX = -1, prevY = -1;
 
-    @Override
+    /**
+     * Initializes the player board.
+     *
+     * @param url Ignored.
+     * @param resourceBundle Ignored.
+     */
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-
         // Loop to create and add buttons to the GridPane
         for (int rowIndex = 0; rowIndex < 81; rowIndex++) {
             for (int colIndex = 0; colIndex < 81; colIndex++) {
-                Button button = new Button();
-                button.setVisible(true);
-                button.setDisable(false);
-                button.setId(String.format("button%d%d",rowIndex, colIndex));
-                button.setText(String.format("%d %d",rowIndex, colIndex));
-                GridPane.setHgrow(button, Priority.ALWAYS);
-                GridPane.setVgrow(button, Priority.ALWAYS);
-                button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // Make button fill cell
+                ImageView imageView = new ImageView();
+                imageView.setVisible(false);
+                imageView.setDisable(true);
+                imageView.setId(String.format("img%d%d",rowIndex, colIndex));
+                GridPane.setHgrow(imageView, Priority.ALWAYS);
+                GridPane.setVgrow(imageView, Priority.ALWAYS);
+                //imageView.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // Make button fill cell
 
                 // Set button action
                 int finalRowIndex = rowIndex;
                 int finalColIndex = colIndex;
-                button.setOnMouseClicked(event -> onButtonClicked(finalRowIndex, finalColIndex));
+                imageView.setOnMouseClicked(event -> onButtonClicked(finalRowIndex, finalColIndex));
 
                 // Add button to GridPane
-                playerBoard.getChildren().add(button);
+                playerBoard.getChildren().add(imageView);
             }
         }
     }
@@ -77,8 +80,7 @@ public class PlayerBoardController implements Initializable {
             }
         }*/
 
-        prevSelect = (Button)playerBoard.getChildren().get(rowIndex+81*colIndex);
-        prevSelect.setText("");
+        prevSelect = (ImageView) playerBoard.getChildren().get(rowIndex+81*colIndex);
         prevSelect.setStyle("-fx-background-color: transparent; " +
                 "-fx-border-color: red;" +
                 "-fx-border-width: 3;");
@@ -106,14 +108,14 @@ public class PlayerBoardController implements Initializable {
 
                     //if (Objects.equals(GridPane.getRowIndex(node), 40) && Objects.equals(GridPane.getColumnIndex(node), 40)) {
 
-                prevSelect = (Button) playerBoard.lookup("#button080");
-                System.out.println(prevSelect.getId());
-                System.out.println(playerBoard.lookup("#button080"));
-                prevSelect.setVisible(false);
+                prevSelect = (ImageView) playerBoard.lookup("#img4040");
+                prevSelect.setVisible(true);
                 prevSelect.setDisable(false);
-                prevSelect.setText("ciao");
-                System.out.print("ciao");
-                        /*
+
+                Image image = new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + UUID + ".png"));
+                prevSelect.setImage(image);
+
+                /*
                         //update the new available cells
                         node.setVisible(true);
                         String imagePath = "/graphics/startingDeck/" + UUID + ".png";
