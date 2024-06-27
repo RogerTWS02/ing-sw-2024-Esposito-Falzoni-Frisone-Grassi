@@ -20,7 +20,7 @@ public class PlayerBoard implements Serializable{
     /**
      * The pawn of the player.
      */
-    public Pawn pawn;
+    private Pawn pawn;
 
     /**
      * The constructor creates a player board, given the panw of the player.
@@ -65,7 +65,7 @@ public class PlayerBoard implements Serializable{
      * @param index The index of the corner of the card.
      * @return The coordinates of the corner of the card.
      */
-    public int[] cornerCoordLookup(int index) {
+    private int[] cornerCoordLookup(int index) {
         int coord[] = new int[2];
         switch (index) {
             //The first element is the Y, the second is the X

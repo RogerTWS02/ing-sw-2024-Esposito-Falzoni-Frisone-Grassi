@@ -8,12 +8,12 @@ public class StartingCard extends PlayableCard{
     /**
      * The corners of the card when it is not flipped.
      */
-    private Corner[] FrontCardCorners;
+    private Corner[] frontCardCorners;
 
     /**
      * The corners of the card when it is flipped.
      */
-    private Corner[] BackCardCorners;
+    private Corner[] backCardCorners;
 
     /**
      * The constructor creates a StartingCard object with the specified parameters.
@@ -25,8 +25,8 @@ public class StartingCard extends PlayableCard{
      */
     public StartingCard(Resource[] permResource, Corner[] FrontCardCorners, Corner[] BackCardCorners, String UUID) {
         super(permResource, null, UUID);
-        this.BackCardCorners=BackCardCorners;
-        this.FrontCardCorners=FrontCardCorners;
+        this.backCardCorners =BackCardCorners;
+        this.frontCardCorners =FrontCardCorners;
     }
 
     /**
@@ -36,8 +36,8 @@ public class StartingCard extends PlayableCard{
      */
     public Corner[] getCardCorners() {
         if (!isFlipped())
-            return BackCardCorners;
-        return FrontCardCorners;
+            return backCardCorners;
+        return frontCardCorners;
     }
 
     /**
@@ -46,7 +46,7 @@ public class StartingCard extends PlayableCard{
      * @param FrontCardCorners The corners of the card when it is not flipped.
      */
     public void setFrontCardCorners(Corner[] FrontCardCorners) {
-        this.FrontCardCorners = FrontCardCorners;
+        this.frontCardCorners = FrontCardCorners;
     }
 
     /**
@@ -55,16 +55,16 @@ public class StartingCard extends PlayableCard{
      * @param BackCardCorners The corners of the card when it is flipped.
      */
     public void setBackCardCorners(Corner[] BackCardCorners) {
-        this.BackCardCorners = BackCardCorners;
+        this.backCardCorners = BackCardCorners;
     }
 
     /**
      * Returns the corners of the card when it is not flipped.
-     *
+     *_
      * @return The corners on the front side of the card.
      */
     public Corner[] getFrontCardCorners() {
-        return FrontCardCorners;
+        return frontCardCorners;
     }
 
     /**
@@ -73,6 +73,6 @@ public class StartingCard extends PlayableCard{
      * @return The corners on the back side of the card.
      */
     public Corner[] getBackCardCorners() {
-        return BackCardCorners;
+        return backCardCorners;
     }
 }
