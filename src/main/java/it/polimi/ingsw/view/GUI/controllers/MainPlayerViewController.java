@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -29,11 +30,23 @@ public class MainPlayerViewController implements Initializable {
     public Button sideButton;
     public Label turnLabel;
     public Button chatButton;
+    public ImageView resourceDeck;
+    public ImageView goldenDeck;
+    public ImageView commonResource1;
+    public ImageView commonGolden1;
+    public ImageView commonResource2;
+    public ImageView commonGolden2;
+    public ImageView commonGoal1;
+    public ImageView commonGoal2;
+    public ImageView secretGoal;
     private int selectedCardIndex = 100;
     private boolean isFlipped;
     private int[] coordinates = new int[2];
     private Button selectedButton;
-    private boolean myturn;
+    private volatile boolean myturn;
+    private Image[] handCardsImg = new Image[3], goalCardsImg = new Image[2], deckCards = new Image[2], commonCards = new Image[4];
+    //GC: 1 and 2 are common, 3 is secret; Deck: 1 re, 2 go; Common: 1 and 2 re, 3 and 4 go
+    private boolean firstTurn = true;
 
     /**
      * Initializes the GridPane with buttons.
@@ -72,6 +85,110 @@ public class MainPlayerViewController implements Initializable {
     }
 
     /**
+     * Initializes the view.
+     */
+    public void initialize_2() {
+        //Goal cards
+        for(int i = 0; i < 3; i++)
+            goalCardsImg[i] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getAllGoalsUUID().get(i))));
+
+        Platform.runLater(() -> {
+            commonGoal1.setImage(goalCardsImg[0]);
+            commonGoal2.setImage(goalCardsImg[1]);
+            secretGoal.setImage(goalCardsImg[2]);
+        });
+
+        //Hand cards
+        for(int i = 0; i < 3; i++)
+            handCardsImg[i] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getCurrentHandUUID().get(i))));
+
+        Platform.runLater(() -> {
+            handCard0.setImage(handCardsImg[0]);
+            handCard1.setImage(handCardsImg[1]);
+            handCard2.setImage(handCardsImg[2]);
+        });
+
+        //Common cards
+        for(int i = 0; i < 2; i++)
+            commonCards[i] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getResourceViewableCards()[i])));
+        for(int i = 0; i < 2; i++)
+            commonCards[i + 2] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getGoldenViewableCards()[i])));
+
+        Platform.runLater(() -> {
+            commonResource1.setImage(commonCards[0]);
+            commonResource2.setImage(commonCards[1]);
+            commonGolden1.setImage(commonCards[2]);
+            commonGolden2.setImage(commonCards[3]);
+        });
+
+        //Deck cards
+        deckCards[0] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getResourceViewableCards()[2])));
+        deckCards[1] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getGoldenViewableCards()[2])));
+
+        Platform.runLater(() -> {
+            resourceDeck.setImage(deckCards[0]);
+            goldenDeck.setImage(deckCards[1]);
+        });
+    }
+
+    /**
+     * Updates the view.
+     */
+    public void update_view() {
+        //Hand cards
+        for(int i = 0; i < 3; i++)
+            if(handCardsImg[i] == null)
+                handCardsImg[i] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getCurrentHandUUID().get(i))));
+
+        Platform.runLater(() -> {
+            handCard0.setImage(handCardsImg[0]);
+            handCard1.setImage(handCardsImg[1]);
+            handCard2.setImage(handCardsImg[2]);
+        });
+
+        //Common cards
+        for(int i = 0; i < 2; i++)
+            commonCards[i] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getResourceViewableCards()[i])));
+        for(int i = 0; i < 2; i++)
+            commonCards[i + 2] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getGoldenViewableCards()[i])));
+
+        Platform.runLater(() -> {
+            commonResource1.setImage(commonCards[0]);
+            commonResource2.setImage(commonCards[1]);
+            commonGolden1.setImage(commonCards[2]);
+            commonGolden2.setImage(commonCards[3]);
+        });
+
+        //Deck cards
+        deckCards[0] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getResourceViewableCards()[2])));
+        deckCards[1] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getGoldenViewableCards()[2])));
+
+        Platform.runLater(() -> {
+            resourceDeck.setImage(deckCards[0]);
+            goldenDeck.setImage(deckCards[1]);
+        });
+    }
+
+    /**
+     * Returns the card's view path.
+     *
+     * @return The card's view path.
+     */
+    public String pathBuilder(String uuid) {
+        if(uuid.contains("RGC"))
+            return "/graphics/resourcesGoalDeck/" + uuid + ".png";
+        if(uuid.contains("PGC"))
+            return "/graphics/patternGoalDeck/" + uuid + ".png";
+        if(uuid.contains("RC"))
+            return "/graphics/resourceDeck/" + uuid + ".png";
+        if(uuid.contains("GC"))
+            return "/graphics/goldenDeck/" + uuid + ".png";
+        if(uuid.contains("SC"))
+            return "/graphics/startingDeck/" + uuid + ".png";
+        return null;
+    }
+
+    /**
      * Shows an error message.
      *
      * @param error The error message to show.
@@ -107,6 +224,13 @@ public class MainPlayerViewController implements Initializable {
                 sideButton.setVisible(false);
             });
         }
+
+        GuiApp.getGui().requestViewableCards();
+
+        if(!firstTurn)
+            update_view();
+        else
+            firstTurn = false;
     }
 
     /**
@@ -159,7 +283,7 @@ public class MainPlayerViewController implements Initializable {
      *
      * @param mouseEvent Ignored.
      */
-    public void selectHandCard1(MouseEvent mouseEvent) {
+    public void selectHandCard0(MouseEvent mouseEvent) {
         selectedCardIndex = 0;
         showSelection();
     }
@@ -169,7 +293,7 @@ public class MainPlayerViewController implements Initializable {
      *
      * @param mouseEvent Ignored.
      */
-    public void selectHandCard2(MouseEvent mouseEvent) {
+    public void selectHandCard1(MouseEvent mouseEvent) {
         selectedCardIndex = 1;
         showSelection();
     }
@@ -179,7 +303,7 @@ public class MainPlayerViewController implements Initializable {
      *
      * @param mouseEvent Ignored.
      */
-    public void selectHandCard3(MouseEvent mouseEvent) {
+    public void selectHandCard2(MouseEvent mouseEvent) {
         selectedCardIndex = 2;
         showSelection();
     }
@@ -226,6 +350,7 @@ public class MainPlayerViewController implements Initializable {
         Platform.runLater(() -> sideButton.setOpacity(1));
         selectedButton = null;
         selectedCardIndex = 100;
+        handCardsImg[selectedCardIndex] = null;
     }
 
     /**
@@ -246,5 +371,59 @@ public class MainPlayerViewController implements Initializable {
      */
     public void chatButtonPressed(ActionEvent actionEvent) {
         GuiApp.changeScene(GuiApp.getChatViewRoot());
+    }
+
+    /**
+     * Handles the resource cards deck click event.
+     *
+     * @param mouseEvent Ignored.
+     */
+    public void resourceDeckPressed(MouseEvent mouseEvent) {
+        //TODO
+    }
+
+    /**
+     * Handles the golden cards deck click event.
+     *
+     * @param mouseEvent Ignored.
+     */
+    public void goldenDeckPressed(MouseEvent mouseEvent) {
+        //TODO
+    }
+
+    /**
+     * Handles the common resource card 1 deck click event.
+     *
+     * @param mouseEvent Ignored.
+     */
+    public void commonResourcePressed1(MouseEvent mouseEvent) {
+        //TODO
+    }
+
+    /**
+     * Handles the common resource card 2 deck click event.
+     *
+     * @param mouseEvent Ignored.
+     */
+    public void commonResourcePressed2(MouseEvent mouseEvent) {
+        //TODO
+    }
+
+    /**
+     * Handles the common golden card 2 deck click event.
+     *
+     * @param mouseEvent Ignored.
+     */
+    public void commonGoldenPressed2(MouseEvent mouseEvent) {
+        //TODO
+    }
+
+    /**
+     * Handles the common golden card 1 deck click event.
+     *
+     * @param mouseEvent Ignored.
+     */
+    public void commonGoldenPressed1(MouseEvent mouseEvent) {
+        //TODO
     }
 }

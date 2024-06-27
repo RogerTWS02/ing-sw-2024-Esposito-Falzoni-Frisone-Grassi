@@ -33,6 +33,8 @@ public class Gui {
     private String startingPlayer;
     private List<Resource> playerResources;
     private ArrayList<String> winners;
+    private String[] gUUID = new String[3];
+    private String[] rUUID = new String[3];
 
     private Queue<String> chatMessages = new LinkedList<>();
 
@@ -87,7 +89,33 @@ public class Gui {
             case REPLY_YOUR_TURN:
                 replyYourTurnHandler(message);
                 break;
+
+            case REPLY_VIEWABLE_CARDS:
+                replyViewableCardsHandler(message);
+                break;
         }
+    }
+
+    /**
+     * Sends to the server the request of the viewable cards.
+     */
+    public void requestViewableCards() {
+        cli.sendMessage(
+                new Message(
+                        REQUEST_VIEWABLE_CARDS,
+                        cli.getClientID(),
+                        cli.getGameID())
+        );
+    }
+
+    /**
+     * Handles the message containing the viewable cards.
+     *
+     * @param message The message received.
+     */
+    public void replyViewableCardsHandler(Message message) {
+        rUUID = (String[]) message.getObj()[0];
+        gUUID = (String[]) message.getObj()[1];
     }
 
     /**
@@ -162,6 +190,7 @@ public class Gui {
      */
     public void preliminaryChoicesMade(Boolean[] choicesMade) {
         String selectedUUID = cardToChooseUUID.get(choicesMade[0] ? 0 : 1);
+        allGoalsUUID.add(selectedUUID);
         boolean side = !choicesMade[1];
         cli.sendMessage(
                 new Message(
@@ -182,6 +211,10 @@ public class Gui {
      */
     public void notifyGameStartingHandler() {
         gameState = GameFlowState.GAME;
+        Platform.runLater(() -> {
+            GuiApp.getMainPlayerViewController().initialize_2();
+            GuiApp.getMainPlayerViewController().update_view();
+        });
         GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
     }
 
@@ -464,6 +497,24 @@ public class Gui {
     }
 
     /**
+     * Returns the viewable resource cards.
+     *
+     * @return The viewable resource cards.
+     */
+    public String[] getResourceViewableCards() {
+        return rUUID;
+    }
+
+    /**
+     * Returns the viewable golden cards.
+     *
+     * @return The viewable golden cards.
+     */
+    public String[] getGoldenViewableCards() {
+        return gUUID;
+    }
+
+    /**
      * Returns the UUIDs of the common goal cards.
      *
      * @return The UUIDs of the common goal cards.
@@ -479,6 +530,15 @@ public class Gui {
      */
     public List<String> getCardToChooseUUID() {
         return cardToChooseUUID;
+    }
+
+    /**
+     * Returns the cards in the hand.
+     *
+     * @return The cards in the hand.
+     */
+    public ArrayList<String> getCurrentHandUUID() {
+        return currentHandUUID;
     }
 
     /**

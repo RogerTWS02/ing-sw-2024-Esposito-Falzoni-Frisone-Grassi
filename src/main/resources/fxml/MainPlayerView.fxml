@@ -237,16 +237,16 @@
             <Label prefHeight="17.0" prefWidth="280.0" text="  HAND CARDS" />
             <Label prefHeight="17.0" prefWidth="279.0" text="  COMMON GOALS" GridPane.columnIndex="4" />
             <Label prefHeight="17.0" prefWidth="260.0" text="  SECRET GOAL" GridPane.columnIndex="6" />
-            <ImageView fx:id="handCard0" fitHeight="100.0" fitWidth="134.0" onMouseClicked="#selectHandCard1" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <ImageView fx:id="handCard0" fitHeight="100.0" fitWidth="134.0" onMouseClicked="#selectHandCard0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </ImageView>
-            <ImageView fx:id="handCard1" fitHeight="100.0" fitWidth="134.0" onMouseClicked="#selectHandCard2" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-            <ImageView fx:id="handCard2" fitHeight="100.0" fitWidth="134.0" onMouseClicked="#selectHandCard3" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-            <ImageView fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-            <ImageView fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-            <ImageView fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ImageView fx:id="handCard1" fitHeight="100.0" fitWidth="134.0" onMouseClicked="#selectHandCard1" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ImageView fx:id="handCard2" fitHeight="100.0" fitWidth="134.0" onMouseClicked="#selectHandCard2" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ImageView fx:id="commonGoal1" fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ImageView fx:id="commonGoal2" fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ImageView fx:id="secretGoal" fitHeight="100.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
          </children>
             <!-- Qui puoi aggiungere elementi per visualizzare le carte della mano -->
         </GridPane>
@@ -270,12 +270,31 @@
                <children>
                   <Label alignment="CENTER" contentDisplay="CENTER" text="     RESOURCE" textAlignment="CENTER" />
                   <Label prefHeight="17.0" prefWidth="95.0" text="       GOLDEN" GridPane.columnIndex="1" />
-                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-                  <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                  <ImageView fx:id="resourceDeck" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#resourceDeckPressed" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <ImageView fx:id="goldenDeck" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#goldenDeckPressed" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <ImageView fx:id="commonResource1" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#commonResourcePressed1" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <ImageView fx:id="commonGolden1" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#commonGoldenPressed1" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <ImageView fx:id="commonResource2" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#commonResourcePressed2" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                  <ImageView fx:id="commonGolden2" fitHeight="75.0" fitWidth="100.0" onMouseClicked="#commonGoldenPressed2" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                  <Label text="Deck" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets bottom="105.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label text="Deck" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets bottom="105.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label text="Common" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets bottom="105.0" />
+                     </GridPane.margin></Label>
+                  <Label text="Common" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets bottom="105.0" />
+                     </GridPane.margin>
+                  </Label>
                </children>
             </GridPane>
             <Button fx:id="placeButton" mnemonicParsing="false" onAction="#placeButtonPressed" prefHeight="40.0" prefWidth="60.0" text="Place" textAlignment="CENTER">
