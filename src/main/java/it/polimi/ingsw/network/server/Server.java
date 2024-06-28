@@ -123,7 +123,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.port = port;
         this.idPlayerMap = new HashMap<>();
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
-        //startHeartBeat();
+        startHeartBeat();
     }
 
     /**
@@ -138,7 +138,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.idPlayerMap = new ConcurrentHashMap<>();
         this.port = default_port;
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
-        //startHeartBeat();
+        startHeartBeat();
     }
 
     /**
@@ -159,6 +159,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      * @param skelly The client listener interface.
      * @return The id of the client.
      */
+    @Override
     public synchronized int createSkeleton(ClientListenerInterface skelly){
         idClientMap.put(numRMI, skelly);
         lastHeartbeat.put(numRMI, System.currentTimeMillis());
@@ -170,6 +171,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      *
      * @param message The message received.
      */
+    @Override
     public void messageHandler(Message message) throws IOException, ParseException {
         logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderID());
         switch(message.getMessageType()){
@@ -534,11 +536,21 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
     private void requestViewableCards(Message message) throws IOException, ParseException {
         String[] rUUID = new String[3];
         String[] gUUID = new String[3];
-        for(int i = 0; i < 3; i++)
-            rUUID[i] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableResourceCards[i].getUUID();
-        for(int i = 0; i < 3; i++)
-            gUUID[i] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableGoldenCards[i].getUUID();
+        for(int i = 0; i < 3; i++){
+            try{
+                rUUID[i] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableResourceCards[i].getUUID();
+            }catch (NullPointerException e){
+                rUUID[i] = "";
+            }
+        }
 
+        for(int i = 0; i < 3; i++) {
+            try{
+                gUUID[i] = gameControllerMap.get(message.getGameID()).getCurrentGame().viewableGoldenCards[i].getUUID();
+            } catch (NullPointerException e) {
+                gUUID[i] = "";
+            }
+        }
         idClientMap.get(message.getSenderID()).sendMessageToClient(
                 new Message(
                         REPLY_VIEWABLE_CARDS,
@@ -559,11 +571,17 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      */
     public void sendWinnerMessage(int gameID) throws IOException, ParseException {
         Player[] winners = gameControllerMap.get(gameID).getCurrentGame().getWinner();
-        ArrayList <String> winnersNickname = new ArrayList<>();
+        ArrayList<String> winnersNickname = new ArrayList<>();
         for(int i = 0; i < winners.length; i++){
             if(winners[i] != null)
                 winnersNickname.add(winners[i].getNickname());
         }
+
+        Map<String, Integer> playersScores = new HashMap<>();
+        for(Player player: gameControllerMap.get(gameID).getCurrentGame().getPlayers()){
+            playersScores.put(player.getNickname(), player.getScore());
+        }
+
         //Send a message to all the players of the same game with the winner
         for(int id: gameControllerMap.get(gameID)
                 .getCurrentGame()
@@ -579,7 +597,8 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             //The winners might be multiple because there could be a draw,
                             //if winners[1] is null it means that there is only one winner
                             new Object[] {
-                                    winnersNickname
+                                    winnersNickname,
+                                    playersScores
                             }
                     )
             );
@@ -923,12 +942,17 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             return;
         }
         PlayableCard replyCard = null;
-        try{
-            //draw a card
-            replyCard = gameControllerMap
-                    .get(message.getGameID())
-                    .drawViewableCard((Boolean) params[0], (Integer) params[1]);
-        }catch (IllegalArgumentException e){
+
+        //draw a card
+        replyCard = gameControllerMap
+                .get(message.getGameID())
+                .drawViewableCard((Boolean) params[0], (Integer) params[1]);
+
+
+        if(replyCard != null){
+            //DEBUGGING
+            System.out.println("I DREW: "+replyCard.getUUID());
+        }else{
             idClientMap.get(message.getSenderID()).sendMessageToClient(
                     new Message(
                             REPLY_EMPTY_DECK,
@@ -937,10 +961,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             new Object[]{}
                     )
             );
-
+            return;
         }
-        //DEBUGGING
-        System.out.println("I DREW: "+replyCard.getUUID());
+
         //put the card in the player's hand where there is a null
         for(int z = 0; z < 3; z++){
             if(idPlayerMap.get(message.getSenderID()).getHand()[z] == null){

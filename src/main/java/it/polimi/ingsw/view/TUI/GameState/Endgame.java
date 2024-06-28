@@ -9,6 +9,7 @@ public class Endgame implements Views {
     public void showEndgame(ArrayList<String> nicknames, Map<String,Integer> nickScore) {
         StringBuilder endgame = new StringBuilder();
         endgame
+                .append("\n".repeat(2))
                 .append("████████╗██╗  ██╗███████╗     ██████╗  █████╗ ███╗   ███╗███████╗    ██╗  ██╗ █████╗ ███████╗    ███████╗███╗   ██╗██████╗ ███████╗██████╗ ██╗\n")
                 .append("╚══██╔══╝██║  ██║██╔════╝    ██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██║  ██║██╔══██╗██╔════╝    ██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗██║\n")
                 .append("   ██║   ███████║█████╗      ██║  ███╗███████║██╔████╔██║█████╗      ███████║███████║███████╗    █████╗  ██╔██╗ ██║██║  ██║█████╗  ██║  ██║██║\n")
@@ -18,8 +19,8 @@ public class Endgame implements Views {
                 .append("-".repeat(142))
                 .append("\n".repeat(2));
 
-
-        if(nicknames.size()>1)endgame.append(" ".repeat(62)).append("\u001B[1mThe winners are...\n\n");
+        endgame.append(" ".repeat(62));
+        if(nicknames.size()>1)endgame.append("\u001B[1mThe winners are...\n\n");
         else endgame.append("\u001B[1mThe winner is...\n\n");
         for (int i = 0; i < nicknames.size(); i++) {
             int allign = (142 - nicknames.get(i).length()-16)/2 ;

@@ -182,10 +182,18 @@ public class Player implements Serializable {
         hand[i] = handCard;
     }
 
+    /**
+     * Returns the cards the player can choose from.
+     * @return The cards the player can choose from.
+     */
     public Object[] getCardToChoose() {
         return cardToChoose;
     }
 
+    /**
+     * Sets the cards the player can choose from.
+     * @param cardToChoose The cards the player can choose from.
+     */
     public void setCardToChoose(Object[] cardToChoose) {
         this.cardToChoose = cardToChoose;
     }

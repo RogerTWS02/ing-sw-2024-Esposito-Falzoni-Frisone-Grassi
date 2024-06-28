@@ -280,9 +280,19 @@ public class GameController {
      */
     public void setNewViewableCard(boolean type, int index) {
         if(type){
-            currentGame.viewableGoldenCards[index] = (GoldenCard) drawPlayableFromDeck(currentGame.goldenDeck);
+            try {
+                currentGame.viewableGoldenCards[index] = currentGame.viewableGoldenCards[2];
+                currentGame.viewableGoldenCards[2] = (GoldenCard) drawPlayableFromDeck(currentGame.goldenDeck);
+            }catch (IllegalArgumentException e){
+                currentGame.viewableGoldenCards[2] = null;
+            }
         } else {
-            currentGame.viewableResourceCards[index] = (ResourceCard) drawPlayableFromDeck(currentGame.resourceDeck);
+            try{
+                currentGame.viewableResourceCards[index] = currentGame.viewableResourceCards[2];
+                currentGame.viewableResourceCards[2] = (ResourceCard) drawPlayableFromDeck(currentGame.resourceDeck);
+            }catch (IllegalArgumentException e){
+                currentGame.viewableResourceCards[2] = null;
+            }
         }
     }
 
@@ -442,7 +452,7 @@ public class GameController {
      */
     public void initializeGame() {
         ///Initialize the viewable cards
-        for(int i = 0; i < 3; i++){
+        for(int i = 2; i >= 0 ; i--){
             setNewViewableCard(false, i);
             setNewViewableCard(true, i);
         }

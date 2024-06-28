@@ -44,6 +44,7 @@ public class GoldenCard extends PlayableCard{
      *
      * @return The points given by the card.
      */
+    @Override
     public int getPoints() {
         return points;
     }
@@ -62,6 +63,7 @@ public class GoldenCard extends PlayableCard{
      *
      * @return The rule the card gives points for.
      */
+    @Override
     public Object getRule() {
         return rule;
     }

@@ -45,7 +45,7 @@ public class MainPlayerViewController implements Initializable {
     private int[] coordinates = new int[2];
     private Button selectedButton;
     private volatile boolean myturn;
-    private Image[] handCardsImg = new Image[]{null, null, null}, goalCardsImg = new Image[3], commonCards = new Image[4];
+    private Image[] handCardsImg = new Image[]{null, null, null}, goalCardsImg = new Image[3], commonCards = new Image[6];
     //GC: 1 and 2 are common, 3 is secret; Common: 1 and 2 re, 3 and 4 go
     private boolean firstTurn = true;
     private boolean drawPhase = false;
@@ -212,16 +212,16 @@ public class MainPlayerViewController implements Initializable {
         });
 
         //Common cards
-        for(int i = 0; i < 2; i++)
+        for(int i = 0; i < 3; i++)
             commonCards[i] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getResourceViewableCards()[i])));
-        for(int i = 0; i < 2; i++)
-            commonCards[i + 2] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getGoldenViewableCards()[i])));
+        for(int i = 0; i < 3; i++)
+            commonCards[i + 3] = new Image(getClass().getResourceAsStream(pathBuilder(GuiApp.getGui().getGoldenViewableCards()[i])));
 
         Platform.runLater(() -> {
             commonResource1.setImage(commonCards[0]);
             commonResource2.setImage(commonCards[1]);
-            commonGolden1.setImage(commonCards[2]);
-            commonGolden2.setImage(commonCards[3]);
+            commonGolden1.setImage(commonCards[3]);
+            commonGolden2.setImage(commonCards[4]);
         });
 
         GuiApp.getGui().updateScores();
