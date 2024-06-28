@@ -65,6 +65,25 @@ public class WelcomeScreenController implements Initializable {
     }
 
     /**
+     * Shows the error message for invalid nickname.
+     */
+    public void showInvalidNicknameError() {
+        Platform.runLater(() -> {
+            doneButton.setVisible(false);
+            doneButton.setDisable(true);
+            textField.setVisible(false);
+            textField.setDisable(true);
+            createButton.setVisible(false);
+            createButton.setDisable(true);
+            refreshButton.setVisible(false);
+            refreshButton.setDisable(true);
+            textLabel.setText("Invalid nickname! Try a different one.");
+            textLabel.setVisible(true);
+            textLabel.setDisable(false);
+        });
+    }
+
+    /**
      * Shows the available lobbies.
      */
     public void showAvailableLobbies(ArrayList<String> availableLobbies) {

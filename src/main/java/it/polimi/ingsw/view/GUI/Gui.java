@@ -6,9 +6,7 @@ import it.polimi.ingsw.network.message.Message;
 import it.polimi.ingsw.view.GUI.controllers.WelcomeScreenController;
 import javafx.application.Application;
 import javafx.application.Platform;
-import org.json.simple.parser.ParseException;
 
-import java.io.IOException;
 import java.util.*;
 
 import static it.polimi.ingsw.network.message.MessageType.*;
@@ -30,6 +28,7 @@ public class Gui {
     private List<String> allGoalsUUID = new ArrayList<>();
     private List<String> cardToChooseUUID;
     private volatile boolean myTurn;
+    public volatile int turnsLeft = 3;
     private Map<String, Integer> nicknames;
     private String currentPlayerNickname;
     private String startingPlayer;
@@ -128,6 +127,9 @@ public class Gui {
             case REPLY_EMPTY_DECK:
                 replyEmptyDeckHandler();
                 break;
+
+            default:
+                break;
         }
     }
 
@@ -144,30 +146,8 @@ public class Gui {
      * @param message The message received.
      */
     public void notifyEndGameHandler(Message message) {
+        turnsLeft = (Integer) message.getObj()[0];
         GuiApp.getMainPlayerViewController().showTurnsLeft((Integer) message.getObj()[0]);
-    }
-
-    /**
-     * Handles the message containing the updated score and the available positions.
-     *
-     * @param message The message received.
-     */
-
-    public void replyUpdatedScore(Message message){
-        String prevUUID = currentHandUUID.get(numHand);
-        currentHandUUID.set(numHand, "");
-
-        //Available places
-        available = (List<int[]>) message.getObj()[0];
-
-        //Update the board with the placed card
-        String nick = (String) message.getObj()[2];
-        int score = (int) message.getObj()[3];
-        nicknames.put(nick, score);
-        playerResources = (List<Resource>) message.getObj()[4];
-
-        //Update the view of the player board
-        GuiApp.getMainPlayerViewController().updatePlayerBoard(prevUUID, side, (Resource) message.getObj()[1], available);
     }
 
     /**
@@ -231,6 +211,14 @@ public class Gui {
 
         //Update the view of the player board
         GuiApp.getMainPlayerViewController().updatePlayerBoard(prevUUID, side, (Resource) message.getObj()[1], available);
+
+        if(turnsLeft != 3) {
+            turnsLeft--;
+            if(turnsLeft == 0) {
+                notifyLastTurn();
+                GuiApp.getMainPlayerViewController().lastTurn();
+            }
+        }
     }
 
     /**
@@ -247,6 +235,20 @@ public class Gui {
             }
         }
         GuiApp.getMainPlayerViewController().update_view();
+    }
+
+    /**
+     * Sends to the server the notification of the last turn.
+     */
+    public void notifyLastTurn() {
+        cli.sendMessage(
+                new Message(
+                        NOTIFY_LAST_TURN,
+                        cli.getClientID(),
+                        cli.getGameID(),
+                        new Object[]{}
+                )
+        );
     }
 
     /**
@@ -377,7 +379,7 @@ public class Gui {
     public void preliminaryChoicesMade(Boolean[] choicesMade) {
         String selectedUUID = cardToChooseUUID.get(choicesMade[0] ? 1 : 2);
         allGoalsUUID.add(selectedUUID);
-        boolean side = !choicesMade[1];
+        side = !choicesMade[1];
         cli.sendMessage(
                 new Message(
                         NOTIFY_CHOICES_MADE,
@@ -505,6 +507,8 @@ public class Gui {
     public void replyBadRequestHandler(Message message) {
         switch ((String) message.getObj()[0]){
             case "Invalid nickname, please try a different one!":
+                GuiApp.getWelcomeScreenController().showInvalidNicknameError();
+                sleep(3000);
                 validatedNickname = false;
                 break;
 

@@ -47,8 +47,7 @@ public class MainPlayerViewController implements Initializable {
     private Image[] handCardsImg = new Image[]{null, null, null}, goalCardsImg = new Image[3], commonCards = new Image[6];
     //GC: 1 and 2 are common, 3 is secret; Common: 1 and 2 re, 3 and 4 go
     private boolean firstTurn = true;
-    private boolean drawPhase = false;
-    private double zoomFactor = 1.05;
+    private boolean drawPhase = true;
     private Button prevSelect;
     private int prevX = 40, prevY = 40;
 
@@ -124,7 +123,7 @@ public class MainPlayerViewController implements Initializable {
         String UUID;
         if (res == null) {
             //Insert the starting card
-            if (side)
+            if (!side)
                 UUID = prevUUID + "_B";
             else
                 UUID = prevUUID;
@@ -261,6 +260,9 @@ public class MainPlayerViewController implements Initializable {
             sideButton.setDisable(false);
             placeButton.setVisible(true);
             placeButton.setDisable(false);
+            handCard0.setOpacity(1);
+            handCard1.setOpacity(1);
+            handCard2.setOpacity(1);
         });
     }
 
@@ -406,6 +408,20 @@ public class MainPlayerViewController implements Initializable {
         handCardsImg[selectedCardIndex] = null;
         selectedCardIndex = 100;
         drawPhase = true;
+    }
+
+    /**
+     * Disables the "draw" buttons.
+     */
+    public void lastTurn() {
+        Platform.runLater(() -> {
+            resourceDeck.setDisable(true);
+            goldenDeck.setDisable(true);
+            commonResource1.setDisable(true);
+            commonResource2.setDisable(true);
+            commonGolden1.setDisable(true);
+            commonGolden2.setDisable(true);
+        });
     }
 
     /**
