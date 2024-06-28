@@ -427,6 +427,7 @@ public class Gui {
     public void handleReplyInterruptGame(Message message) {
         if(gameState != GameFlowState.END) {
             System.out.println((String) message.getObj()[0]);
+            Platform.runLater(Platform::exit);
             cli.closeConnection();
         }
     }
