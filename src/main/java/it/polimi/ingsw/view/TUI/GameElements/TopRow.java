@@ -21,16 +21,7 @@ public class TopRow implements Views {
 
     int widthInChars;
 
-    public TopRow() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int screenWidth = screenSize.width;
-        Frame frame = new Frame();
-        frame.addNotify();
-        Font font = new Font("Monospaced", Font.PLAIN, 10); // Usa un font monospaced
-        FontMetrics fontMetrics = frame.getFontMetrics(font);
-        int charWidth = fontMetrics.charWidth('─');
-        this.widthInChars = screenWidth / charWidth;
-    }
+    public TopRow() {}
 
     /**
      * Shows the top row of the game of a player.
@@ -64,7 +55,7 @@ public class TopRow implements Views {
         topRow
                 .append("\n")
                 .append("┌")
-                .append("─".repeat(widthInChars-2))
+                .append("─".repeat(125))
                 .append("┐")
                 .append("\n")
                 .append(" ")
@@ -108,7 +99,7 @@ public class TopRow implements Views {
             topRow
                     .append("\n")
                     .append("└")
-                    .append("─".repeat(widthInChars-2))
+                    .append("─".repeat(125))
                     .append("┘")
                     .append("\n");
 

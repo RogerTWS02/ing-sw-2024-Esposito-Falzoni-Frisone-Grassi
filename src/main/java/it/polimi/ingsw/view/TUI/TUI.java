@@ -212,11 +212,18 @@ public class TUI extends Thread{
                 break;
 
             case REPLY_EMPTY_DECK:
+                System.out.println("You can't draw this card, choose another one!");
+                try{
+                    Thread.sleep(500);
+                }catch (InterruptedException e){
+                    throw new RuntimeException(e);
+                }
                 successfulDraw = false;
                 break;
 
             case REPLY_END_GAME:
                 winners = (ArrayList<String>) message.getObj()[0];
+                nicknames = (Map<String, Integer>) message.getObj()[1];
                 break;
 
             case NOTIFY_GAME_STARTING:
@@ -513,7 +520,7 @@ public class TUI extends Thread{
      */
     private static boolean isValidPosition(String[] position) {
 
-        if (position.length < 2) {
+        if (position.length != 2) {
             return false;
         }
 
@@ -798,10 +805,10 @@ public class TUI extends Thread{
                 commonCommands(command);
 
                 try {
-                    Thread.sleep(100); // Pausa breve per evitare il busy-waiting
+                    Thread.sleep(100); // Short break for busy-waiting
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                }Views.clearScreen();
+                }
 
             }
         }
