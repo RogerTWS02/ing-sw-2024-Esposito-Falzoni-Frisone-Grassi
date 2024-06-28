@@ -123,7 +123,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.port = port;
         this.idPlayerMap = new HashMap<>();
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
-        //startHeartBeat();
+        startHeartBeat();
     }
 
     /**
@@ -138,7 +138,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.idPlayerMap = new ConcurrentHashMap<>();
         this.port = default_port;
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
-        //startHeartBeat();
+        startHeartBeat();
     }
 
     /**
@@ -159,6 +159,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      * @param skelly The client listener interface.
      * @return The id of the client.
      */
+    @Override
     public synchronized int createSkeleton(ClientListenerInterface skelly){
         idClientMap.put(numRMI, skelly);
         lastHeartbeat.put(numRMI, System.currentTimeMillis());
@@ -170,6 +171,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
      *
      * @param message The message received.
      */
+    @Override
     public void messageHandler(Message message) throws IOException, ParseException {
         logger.log(Level.INFO, message.getMessageType() + " sent by " + message.getSenderID());
         switch(message.getMessageType()){

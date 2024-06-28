@@ -148,6 +148,7 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
      * @throws IOException If there is an error in the I/O operation.
      * @throws ParseException If there is an error in the parsing operation.
      */
+    @Override
     public void sendMessageToClient(Message message) throws IOException, ParseException {
         if(hasGui)
             ((Gui) view).onMessageReceived(message);
@@ -181,15 +182,6 @@ public class Client extends UnicastRemoteObject implements ClientListenerInterfa
             }
 
         }).start();
-    }
-
-    /**
-     * This method is used to get the port of the socket.
-     *
-     * @return The port of the socket.
-     */
-    public int getSocketPort() {
-        return socket.getLocalPort();
     }
 
     /**

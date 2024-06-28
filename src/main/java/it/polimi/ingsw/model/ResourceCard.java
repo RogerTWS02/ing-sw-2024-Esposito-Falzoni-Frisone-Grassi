@@ -29,6 +29,7 @@ public class ResourceCard extends PlayableCard {
      *
      * @return The points given by the card.
      */
+    @Override
     public int getPoints() {
         return points;
     }

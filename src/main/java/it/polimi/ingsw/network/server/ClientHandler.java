@@ -75,6 +75,7 @@ public class ClientHandler extends Thread implements ClientListenerInterface {
     /**
      * Runs the client handler process.
      */
+    @Override
     public void run(){
         try {
             handleClient();
@@ -118,6 +119,7 @@ public class ClientHandler extends Thread implements ClientListenerInterface {
      *
      * @param msg The message to be sent.
      */
+    @Override
     public void sendMessageToClient(Message msg){
         try{
             synchronized (outLock){
@@ -134,6 +136,7 @@ public class ClientHandler extends Thread implements ClientListenerInterface {
     /**
      * Disconnects the client from the server.
      */
+    @Override
     public void disconnect() {
         if (isConnected) {
             try {
