@@ -60,9 +60,9 @@ public class GuiApp extends Application {
         chatViewRoot = loader.load();
         chatController = loader.getController();
 
-        loader = new FXMLLoader(getClass().getResource(fxmlPath + "PlayerBoardView.fxml"));
+        /*loader = new FXMLLoader(getClass().getResource(fxmlPath + "PlayerBoardView.fxml"));
         playerBoardViewRoot = loader.load();
-        playerBoardController = loader.getController();
+        playerBoardController = loader.getController();*/
 
         Scene scene = new Scene(welcomeScreenRoot);
         mainStage.setTitle("Codex Naturalis");
@@ -95,6 +95,11 @@ public class GuiApp extends Application {
 
     public static PlayerBoardController getPlayerBoardController(){
         return playerBoardController;
+    }
+
+    //playerboard root getter
+    public static Parent getPlayerBoardViewRoot(){
+        return playerBoardViewRoot;
     }
 
     /**

@@ -167,7 +167,7 @@ public class Gui {
         playerResources = (List<Resource>) message.getObj()[4];
 
         //Update the view of the player board
-        GuiApp.getPlayerBoardController().updatePlayerBoard(prevUUID, side, (Resource) message.getObj()[1], available);
+        GuiApp.getMainPlayerViewController().updatePlayerBoard(prevUUID, side, (Resource) message.getObj()[1], available);
     }
 
     /**
@@ -390,13 +390,12 @@ public class Gui {
         gameState = GameFlowState.GAME;
         Platform.runLater(() -> {
             GuiApp.getMainPlayerViewController().initialize_2();
-            GuiApp.getMainPlayerViewController().update_view();
         });
         requestViewableCards();
         GuiApp.changeScene(GuiApp.getMainPlayerViewRoot());
 
         //Update the view of the starting card
-        GuiApp.getPlayerBoardController().updatePlayerBoard(cardToChooseUUID.get(0), side, null, available);
+        GuiApp.getMainPlayerViewController().updatePlayerBoard(cardToChooseUUID.get(0), side, null, available);
     }
 
     /**

@@ -11,10 +11,7 @@
     <center>
         <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" nodeOrientation="RIGHT_TO_LEFT">
          <content>
-            <AnchorPane>
-               <children>
-                   <fx:include source="PlayerBoardView.fxml"/>
-               </children>
+            <AnchorPane fx:id="anchorPane">
             </AnchorPane>
          </content>
         </ScrollPane>
