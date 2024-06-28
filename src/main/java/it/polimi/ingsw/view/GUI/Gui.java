@@ -269,6 +269,7 @@ public class Gui {
     public void replyViewableCardsHandler(Message message) {
         rUUID = (String[]) message.getObj()[0];
         gUUID = (String[]) message.getObj()[1];
+        GuiApp.getMainPlayerViewController().update_view();
     }
 
     /**

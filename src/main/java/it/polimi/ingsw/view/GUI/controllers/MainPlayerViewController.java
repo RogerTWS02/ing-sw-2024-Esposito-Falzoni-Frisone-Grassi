@@ -43,7 +43,6 @@ public class MainPlayerViewController implements Initializable {
     private int selectedCardIndex = 100;
     private boolean isFlipped;
     private int[] coordinates = new int[2];
-    private Button selectedButton;
     private volatile boolean myturn;
     private Image[] handCardsImg = new Image[]{null, null, null}, goalCardsImg = new Image[3], commonCards = new Image[6];
     //GC: 1 and 2 are common, 3 is secret; Common: 1 and 2 re, 3 and 4 go
@@ -252,10 +251,17 @@ public class MainPlayerViewController implements Initializable {
      * @param error The error message to show.
      */
     public void showError(String error){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error!");
-        alert.setContentText(error);
-        alert.showAndWait();
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText(error);
+            alert.showAndWait();
+
+            sideButton.setVisible(true);
+            sideButton.setDisable(false);
+            placeButton.setVisible(true);
+            placeButton.setDisable(false);
+        });
     }
 
     /**
@@ -264,10 +270,17 @@ public class MainPlayerViewController implements Initializable {
      * @param turns The number of turns left.
      */
     public void showTurnsLeft(int turns){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("End game phase");
-        alert.setContentText("You have " + turns + " turns left!");
-        alert.showAndWait();
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("End game phase");
+            alert.setContentText("You have " + turns + " turns left!");
+            alert.showAndWait();
+
+            sideButton.setVisible(true);
+            sideButton.setDisable(false);
+            placeButton.setVisible(true);
+            placeButton.setDisable(false);
+        });
     }
 
     /**
@@ -378,14 +391,10 @@ public class MainPlayerViewController implements Initializable {
         isFlipped = false;
         Platform.runLater(() -> {
             sideButton.setOpacity(1);
-            //selectedButton.setVisible(false);
             sideButton.setVisible(false);
             sideButton.setDisable(true);
             placeButton.setDisable(true);
             placeButton.setVisible(false);
-            handCard0.setOpacity(1);
-            handCard1.setOpacity(1);
-            handCard2.setOpacity(1);
 
             resourceDeck.setDisable(false);
             goldenDeck.setDisable(false);
@@ -394,7 +403,6 @@ public class MainPlayerViewController implements Initializable {
             commonGolden1.setDisable(false);
             commonGolden2.setDisable(false);
         });
-        //selectedButton = null;
         handCardsImg[selectedCardIndex] = null;
         selectedCardIndex = 100;
         drawPhase = true;
@@ -463,6 +471,9 @@ public class MainPlayerViewController implements Initializable {
      */
     public void resourceDeckPressed(MouseEvent mouseEvent) {
         GuiApp.getGui().drawCard(false, 2);
+        handCard0.setOpacity(1);
+        handCard1.setOpacity(1);
+        handCard2.setOpacity(1);
         disableChoosingCards();
     }
 
@@ -473,6 +484,9 @@ public class MainPlayerViewController implements Initializable {
      */
     public void goldenDeckPressed(MouseEvent mouseEvent) {
         GuiApp.getGui().drawCard(true, 2);
+        handCard0.setOpacity(1);
+        handCard1.setOpacity(1);
+        handCard2.setOpacity(1);
         disableChoosingCards();
     }
 
@@ -483,6 +497,9 @@ public class MainPlayerViewController implements Initializable {
      */
     public void commonResourcePressed1(MouseEvent mouseEvent) {
         GuiApp.getGui().drawCard(false, 0);
+        handCard0.setOpacity(1);
+        handCard1.setOpacity(1);
+        handCard2.setOpacity(1);
         disableChoosingCards();
     }
 
@@ -493,6 +510,9 @@ public class MainPlayerViewController implements Initializable {
      */
     public void commonResourcePressed2(MouseEvent mouseEvent) {
         GuiApp.getGui().drawCard(false, 1);
+        handCard0.setOpacity(1);
+        handCard1.setOpacity(1);
+        handCard2.setOpacity(1);
         disableChoosingCards();
     }
 
@@ -503,6 +523,9 @@ public class MainPlayerViewController implements Initializable {
      */
     public void commonGoldenPressed1(MouseEvent mouseEvent) {
         GuiApp.getGui().drawCard(true, 0);
+        handCard0.setOpacity(1);
+        handCard1.setOpacity(1);
+        handCard2.setOpacity(1);
         disableChoosingCards();
     }
 
@@ -513,6 +536,9 @@ public class MainPlayerViewController implements Initializable {
      */
     public void commonGoldenPressed2(MouseEvent mouseEvent) {
         GuiApp.getGui().drawCard(true, 1);
+        handCard0.setOpacity(1);
+        handCard1.setOpacity(1);
+        handCard2.setOpacity(1);
         disableChoosingCards();
     }
 }
