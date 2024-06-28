@@ -509,6 +509,8 @@ public class Gui {
             case "Invalid nickname, please try a different one!":
                 GuiApp.getWelcomeScreenController().showInvalidNicknameError();
                 sleep(3000);
+                nameP = null;
+                lobbySize = 0;
                 validatedNickname = false;
                 break;
 

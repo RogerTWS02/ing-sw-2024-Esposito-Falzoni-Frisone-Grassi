@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
  * Controller for the welcome screen.
  */
 public class WelcomeScreenController implements Initializable {
-    private WelComeScreenStateEnum screenState;
+    private volatile WelComeScreenStateEnum screenState;
     public Button createButton;
     public TextField textField;
     public Button doneButton;
