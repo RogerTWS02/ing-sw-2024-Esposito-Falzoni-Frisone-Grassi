@@ -93,7 +93,9 @@ public class Draw implements Views {
                     gStringCard[1][x]="0";
                     gStringCard[2][x]="  ";
                     for(int i =3; i<9; i++) gStringCard[i][x]="  ";
-                    gStringCard[8][x]=" ".repeat(21);
+                    gStringCard[5][x]="";
+                    gStringCard[6][x]="";
+                    gStringCard[8][x]=" ".repeat(27);
                     gStringCard[9][x]=ANSI_RESET;
                }else {
                     //starting creating the cards in reverse order
@@ -148,7 +150,9 @@ public class Draw implements Views {
                     rStringCard[1][x]="0";
                     rStringCard[2][x]="  ";
                     for(int i =3; i<9; i++) rStringCard[i][x]="  ";
-                    rStringCard[8][x]=" ".repeat(21);
+                    rStringCard[5][x]="";
+                    rStringCard[6][x]="";
+                    rStringCard[8][x]=" ".repeat(27);
                     rStringCard[9][x]=ANSI_RESET;
 
                }else{

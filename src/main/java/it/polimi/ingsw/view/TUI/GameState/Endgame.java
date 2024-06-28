@@ -9,6 +9,7 @@ public class Endgame implements Views {
     public void showEndgame(ArrayList<String> nicknames, Map<String,Integer> nickScore) {
         StringBuilder endgame = new StringBuilder();
         endgame
+                .append("\n".repeat(2))
                 .append("████████╗██╗  ██╗███████╗     ██████╗  █████╗ ███╗   ███╗███████╗    ██╗  ██╗ █████╗ ███████╗    ███████╗███╗   ██╗██████╗ ███████╗██████╗ ██╗\n")
                 .append("╚══██╔══╝██║  ██║██╔════╝    ██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██║  ██║██╔══██╗██╔════╝    ██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗██║\n")
                 .append("   ██║   ███████║█████╗      ██║  ███╗███████║██╔████╔██║█████╗      ███████║███████║███████╗    █████╗  ██╔██╗ ██║██║  ██║█████╗  ██║  ██║██║\n")
