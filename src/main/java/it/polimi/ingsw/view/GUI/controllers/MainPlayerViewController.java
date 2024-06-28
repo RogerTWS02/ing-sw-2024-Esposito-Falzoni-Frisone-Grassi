@@ -5,6 +5,7 @@ import it.polimi.ingsw.view.GUI.GuiApp;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,6 +20,7 @@ import javafx.scene.transform.Scale;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainPlayerViewController implements Initializable {
@@ -42,6 +44,7 @@ public class MainPlayerViewController implements Initializable {
     public Label topRowLabel;
     public ScrollPane scrollPane;
     public AnchorPane anchorPane;
+    public GridPane gridPane;
     private int selectedCardIndex = 100;
     private boolean isFlipped;
     private int[] coordinates = new int[2];
@@ -53,7 +56,7 @@ public class MainPlayerViewController implements Initializable {
     private boolean drawPhase = false;
     private double zoomFactor = 1.05;
     private Button prevSelect;
-    private int prevX = 0, prevY = 0;
+    private int prevX = 40, prevY = 40;
 
     /**
      * Initializes the GridPane with buttons.
@@ -61,7 +64,6 @@ public class MainPlayerViewController implements Initializable {
      * @param url Ignored.
      * @param resourceBundle Ignored.
      */
-    @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Scale scale = new Scale(1, 1);
         scrollPane.getTransforms().add(scale);
@@ -78,22 +80,32 @@ public class MainPlayerViewController implements Initializable {
             }
         });
 
-        GridPane gridPane = new GridPane();
-        anchorPane.getChildren().add(gridPane);
-        anchorPane.setTopAnchor(gridPane, 0.0);
+        gridPane = new GridPane();
+        //gridPane.setPrefSize(3200, 4800);
+        gridPane.setGridLinesVisible(true);
+        //gridPane.setMinHeight(32000);
+        //gridPane.setMinWidth(48000);
+        scrollPane.setContent(gridPane);
+
+        scrollPane.setFitToWidth(false);
+        scrollPane.setFitToHeight(false);
+        /*anchorPane.setTopAnchor(gridPane, 0.0);
         anchorPane.setBottomAnchor(gridPane, 0.0);
         anchorPane.setLeftAnchor(gridPane, 0.0);
-        anchorPane.setRightAnchor(gridPane, 0.0);
+        anchorPane.setRightAnchor(gridPane, 0.0);*/
 
-        for(int i = 0; i < 9; i++) {
-            for(int j = 0; j < 9; j++) {
+        for(int i = 0; i < 81; i++) {
+            for(int j = 0; j < 81; j++) {
                 Button button = new Button();
+                button.setPrefSize(130, 100);
                 int finalJ = j;
                 int finalI = i;
                 button.setOnMouseClicked(event -> onButtonClicked(finalI, finalJ, button));
+                button.setVisible(false);
+                button.setDisable(true);
                 gridPane.add(button, i, j);
 
-                if(i == 0 && j == 0)
+                if(i == 40 && j == 40)
                     prevSelect = button;
             }
         }
@@ -173,9 +185,11 @@ public class MainPlayerViewController implements Initializable {
             else
                 UUID = prevUUID;
 
-            //String style = "url('/graphics/startingDeck/" + UUID + ".png');";
-            prevSelect.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + UUID + ".png"))));
-            //prevSelect.setDisable(true);
+            String style = "url('/graphics/startingDeck/" + UUID + ".png');";
+            prevSelect.setStyle("-fx-background-image: " + style + "-fx-background-position: center center; " + "-fx-background-size: 100% 100%;");
+            //prevSelect.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + UUID + ".png"))));
+            prevSelect.setVisible(true);
+
             Image image = new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + UUID + ".png"));
             //Platform.runLater(() -> prevSelect.setGraphic(new ImageView(image)));
             //Platform.runLater(() -> this.image.setImage(image));
@@ -203,16 +217,17 @@ public class MainPlayerViewController implements Initializable {
             // }
             //}
 
-                /*//update the board with the new available cards
-                for (Node node : playerBoard.getChildren()) {
+                //update the board with the new available cards
+                for (Node node : gridPane.getChildren()) {
                     for(int[] pos : available) {
                         if (Objects.equals(GridPane.getRowIndex(node), pos[0]) && Objects.equals(GridPane.getColumnIndex(node), pos[1])) {
                             //update the new available cells
-                            ((Button) node).setVisible(true);
+                            node.setVisible(true);
+                            node.setDisable(false);
                             break;
                         }
                     }
-                }*/
+                }
 
 
             return;

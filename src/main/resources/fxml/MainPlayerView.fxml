@@ -10,10 +10,10 @@
     <!-- Area centrale con griglia a scorrimento -->
     <center>
         <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" nodeOrientation="RIGHT_TO_LEFT">
-         <content>
-            <AnchorPane fx:id="anchorPane">
-            </AnchorPane>
-         </content>
+            <!---<content>
+               <AnchorPane fx:id="anchorPane">
+               </AnchorPane>
+         </content>-->
         </ScrollPane>
     </center>
 
