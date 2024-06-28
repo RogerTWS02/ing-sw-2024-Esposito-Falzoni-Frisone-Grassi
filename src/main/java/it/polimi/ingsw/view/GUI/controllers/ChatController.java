@@ -21,8 +21,9 @@ public class ChatController implements Initializable {
     public AnchorPane chatRoom;
 
     public void updateMessage(StringBuilder chatMsg){
+        String str = chatMsg.toString().replaceAll("\\033\\[38;5;208m", "").replaceAll("\\033\\[0m", "");
         Platform.runLater(() -> {
-            chatHistory.setText(chatMsg.toString());
+            chatHistory.setText(str);
         });
     }
 
