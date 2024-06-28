@@ -123,7 +123,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.port = port;
         this.idPlayerMap = new HashMap<>();
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
-        //startHeartBeat();
+        startHeartBeat();
     }
 
     /**
@@ -138,7 +138,7 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
         this.idPlayerMap = new ConcurrentHashMap<>();
         this.port = default_port;
         heartbeatScheduler = Executors.newScheduledThreadPool(1);
-        //startHeartBeat();
+        startHeartBeat();
     }
 
     /**
@@ -923,12 +923,17 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
             return;
         }
         PlayableCard replyCard = null;
-        try{
-            //draw a card
-            replyCard = gameControllerMap
-                    .get(message.getGameID())
-                    .drawViewableCard((Boolean) params[0], (Integer) params[1]);
-        }catch (IllegalArgumentException e){
+
+        //draw a card
+        replyCard = gameControllerMap
+                .get(message.getGameID())
+                .drawViewableCard((Boolean) params[0], (Integer) params[1]);
+
+
+        if(replyCard != null){
+            //DEBUGGING
+            System.out.println("I DREW: "+replyCard.getUUID());
+        }else{
             idClientMap.get(message.getSenderID()).sendMessageToClient(
                     new Message(
                             REPLY_EMPTY_DECK,
@@ -937,10 +942,9 @@ public class Server extends UnicastRemoteObject implements RMIServerInterface{
                             new Object[]{}
                     )
             );
-
+            return;
         }
-        //DEBUGGING
-        System.out.println("I DREW: "+replyCard.getUUID());
+
         //put the card in the player's hand where there is a null
         for(int z = 0; z < 3; z++){
             if(idPlayerMap.get(message.getSenderID()).getHand()[z] == null){

@@ -513,9 +513,9 @@ public class GameControllerTest {
      */
     @Test
     public void drawViewableCard_test_3() {
-        for(int i = 0; i < 3; i++)
+        for(int i = 2; i >= 0; i--)
             gameController.drawViewableCard(true, i);
-        for(int i = 0; i < 3; i++)
+        for(int i = 2; i >= 0; i--)
             gameController.drawViewableCard(false, i);
         PlayableCard card = gameController.drawViewableCard(true, 0);
         assertNotNull(card);
