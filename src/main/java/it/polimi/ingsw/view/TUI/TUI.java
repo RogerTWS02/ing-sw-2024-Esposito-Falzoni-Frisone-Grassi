@@ -54,6 +54,7 @@ public class TUI extends Thread{
     private volatile Boolean areThereAvailableLobbies = null;
     private List<String> availableLobbies = new ArrayList<>();
     private boolean alreadyTriedToChooseLobby = false;
+    private boolean cardfinished = true;
 
     public TUI() throws IOException, ParseException {
     }
@@ -93,6 +94,12 @@ public class TUI extends Thread{
             case REPLY_VIEWABLE_CARDS:
                 rUUID = (String[]) message.getObj()[0];
                 gUUID = (String[]) message.getObj()[1];
+                for(int i = 0; i < 3; i++){
+                    if(!rUUID[i].equals("") || !gUUID[i].equals("")){
+                        cardfinished = false;
+                        break;
+                    }
+                }
                 break;
 
             //When the lobby is full
@@ -597,7 +604,8 @@ public class TUI extends Thread{
             if (!cardPlaced) continue;
             cardPlaced = false; // set it back to false for next time
 
-            if(turnLeft != 0) { //If it is the last turn, the player doesn't draw a new card
+
+            if(turnLeft != 0 && !cardfinished) { //If it is the last turn, the player doesn't draw a new card
                 //Now it's time to draw a new card
                 while (true) {
 
@@ -638,7 +646,7 @@ public class TUI extends Thread{
 
                     if(successfulDraw) return;
                 }
-            }else{
+            }else if(turnLeft == 0){
                 //if it is the last turn, the player doesn't draw a new card but we have to notify the server
                 cli.sendMessage(
                         new Message(
