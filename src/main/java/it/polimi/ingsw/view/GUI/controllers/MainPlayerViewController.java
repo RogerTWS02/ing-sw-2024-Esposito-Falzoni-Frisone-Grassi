@@ -43,7 +43,6 @@ public class MainPlayerViewController implements Initializable {
     public ImageView secretGoal;
     public Label topRowLabel;
     public ScrollPane scrollPane;
-    public AnchorPane anchorPane;
     public GridPane gridPane;
     private int selectedCardIndex = 100;
     private boolean isFlipped;
@@ -65,7 +64,7 @@ public class MainPlayerViewController implements Initializable {
      * @param resourceBundle Ignored.
      */
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Scale scale = new Scale(1, 1);
+        /*Scale scale = new Scale(1, 1);
         scrollPane.getTransforms().add(scale);
         scrollPane.addEventFilter(ScrollEvent.ANY, scrollEvent -> {
             if (scrollEvent.isControlDown()) {
@@ -78,7 +77,7 @@ public class MainPlayerViewController implements Initializable {
                 }
                 scrollEvent.consume();
             }
-        });
+        });*/
 
         gridPane = new GridPane();
         //gridPane.setPrefSize(3200, 4800);
@@ -127,48 +126,20 @@ public class MainPlayerViewController implements Initializable {
      * @param colIndex The column index of the clicked button.
      */
     public void onButtonClicked(Integer rowIndex, Integer colIndex, Button button){
+        String prevStyle = prevSelect.getStyle();
+
         if(prevSelect == null)
             prevSelect = button;
         else {
-            prevSelect.setStyle("-fx-border-color: initial;" +
-                    "-fx-border-width: initial;");
+            prevSelect.setStyle(prevStyle + "-fx-border-color: initial;" +
+                    "-fx-border-width: initial;" + "-fx-opacity: 1");
         }
 
-        //button.setStyle("-fx-background-image: url('/graphics/startingDeck/SC_1.png');");
-
-        //revert the changes of the previous button
-        /*prevSelect.setStyle("-fx-background-color: initial; " +
-                            "-fx-border-color: initial;" +
-                            "-fx-border-width: initial;");*/
-
-        /*for (Node node : playerBoard.getChildren()) {
-            //checks the right cell containing the node
-            if (Objects.equals(GridPane.getRowIndex(node), rowIndex) && Objects.equals(GridPane.getColumnIndex(node), colIndex)) {
-                //change the stile to the selected node
-                button.setStyle("-fx-background-color: transparent; " +
-                              "-fx-border-color: red;" +
-                              "-fx-border-width: 3;");
-
-                prevSelect = (Button) node;
-                prevX = rowIndex;
-                prevY = colIndex;
-                break;
-            }
-        }*/
-
         //change the stile to the selected node
-        button.setStyle("-fx-background-color: transparent; " + "-fx-border-color: red;" + "-fx-border-width: 3;");
+        button.setStyle("-fx-border-color: red;" + "-fx-border-width: 3;");
         prevSelect = button;
         prevX = rowIndex;
         prevY = colIndex;
-
-        /*prevSelect = (ImageView) playerBoard.getChildren().get(rowIndex+81*colIndex);
-        prevSelect.setStyle("-fx-background-color: transparent; " +
-                "-fx-border-color: red;" +
-                "-fx-border-width: 3;");
-
-        prevX = rowIndex;
-        prevY = colIndex;*/
     }
 
     /**
@@ -176,88 +147,58 @@ public class MainPlayerViewController implements Initializable {
      *
      * @param prevUUID The UUID of the starting card.
      */
-    public void updatePlayerBoard(String prevUUID, boolean side, Resource res, List<int[]> available){
+    public void updatePlayerBoard(String prevUUID, boolean side, Resource res, List<int[]> available) {
         String UUID;
-        if(res == null) {
+        if (res == null) {
             //Insert the starting card
-            if(side)
+            if (side)
                 UUID = prevUUID + "_B";
             else
                 UUID = prevUUID;
 
             String style = "url('/graphics/startingDeck/" + UUID + ".png');";
-            prevSelect.setStyle("-fx-background-image: " + style + "-fx-background-position: center center; " + "-fx-background-size: 100% 100%;");
-            //prevSelect.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + UUID + ".png"))));
+            prevSelect.setStyle("-fx-background-image: " + style + "-fx-background-position: center center; " + "-fx-background-size: 100% 100%;" + "-fx-opacity: 1");
             prevSelect.setVisible(true);
 
-            Image image = new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + UUID + ".png"));
-            //Platform.runLater(() -> prevSelect.setGraphic(new ImageView(image)));
-            //Platform.runLater(() -> this.image.setImage(image));
-
-            //for (Node node : playerBoard.getChildren()){
-
-            //if (Objects.equals(GridPane.getRowIndex(node), 40) && Objects.equals(GridPane.getColumnIndex(node), 40)) {
-
-            //prevSelect = (ImageView) playerBoard.lookup("#img4040");
-            //prevSelect.setVisible(true);
-            //prevSelect.setDisable(false);
-
-            //Image image = new Image(getClass().getResourceAsStream("/graphics/startingDeck/" + UUID + ".png"));
-            //prevSelect.setImage(image);
-
-                /*
+            //update the board with the new available cards
+            for (Node node : gridPane.getChildren()) {
+                for (int[] pos : available) {
+                    if (Objects.equals(GridPane.getRowIndex(node), pos[0]) && Objects.equals(GridPane.getColumnIndex(node), pos[1])) {
                         //update the new available cells
                         node.setVisible(true);
-                        String imagePath = "/graphics/startingDeck/" + UUID + ".png";
-                        String style = String.format("-fx-background-image: url('%s');", imagePath);
-                        node.setStyle(style+
-                                "-fx-border-color: initial;" +
-                                "-fx-border-width: initial;");*/
-
-            // }
-            //}
-
-                //update the board with the new available cards
-                for (Node node : gridPane.getChildren()) {
-                    for(int[] pos : available) {
-                        if (Objects.equals(GridPane.getRowIndex(node), pos[0]) && Objects.equals(GridPane.getColumnIndex(node), pos[1])) {
-                            //update the new available cells
-                            node.setVisible(true);
-                            node.setDisable(false);
-                            break;
-                        }
+                        node.setDisable(false);
+                        break;
                     }
                 }
-
-
+            }
             return;
         }
 
 
         //update the cell with the new card on the board
-        if(side){
-            UUID = "RC_"+res.toString()+"_B";
-        }else{
+        if (side) {
+            UUID = "RC_" + res + "_B";
+        } else {
             UUID = prevUUID;
         }
         //set the right background for the starting card
         String imagePath = "/graphics/startingDeck/" + UUID + ".png";
         String style = String.format("-fx-background-image: url('%s');", imagePath);
-        prevSelect.setStyle(style+
+        prevSelect.setStyle(style +
                 "-fx-border-color: initial;" +
                 "-fx-border-width: initial;");
 
         //update the board with the new available cards
-            /*for (Node node : playerBoard.getChildren()) {
-                for(int[] pos : available) {
-                    if (playerBoard.getRowIndex(node) == pos[0] && playerBoard.getColumnIndex(node) == pos[1]) {
-                        //update the new available cells
-                        ((Button) node).setVisible(true);
-                        break;
-                    }
+        for (Node node : gridPane.getChildren()) {
+            for (int[] pos : available) {
+                if (Objects.equals(GridPane.getRowIndex(node), pos[0]) && Objects.equals(GridPane.getColumnIndex(node), pos[1])) {
+                    //update the new available cells
+                    node.setVisible(true);
+                    node.setDisable(false);
+                    break;
                 }
-            }*/
-
+            }
+        }
     }
 
     /**
