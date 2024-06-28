@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
+import java.awt.*;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +51,7 @@ public class MainPlayerViewController implements Initializable {
     private boolean drawPhase = true;
     private Button prevSelect;
     private int prevX = 40, prevY = 40;
+    private int zLevel = 100;
 
     /**
      * Initializes the GridPane with buttons.
@@ -59,11 +61,14 @@ public class MainPlayerViewController implements Initializable {
      */
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gridPane = new GridPane();
-        gridPane.setGridLinesVisible(true);
+        gridPane.setHgap(-30);
+        gridPane.setVgap(-40);
         scrollPane.setContent(gridPane);
 
         scrollPane.setFitToWidth(false);
         scrollPane.setFitToHeight(false);
+        scrollPane.setHvalue(0.5);
+        scrollPane.setVvalue(0.5);
 
         for(int i = 0; i < 81; i++) {
             for(int j = 0; j < 81; j++) {
@@ -98,17 +103,16 @@ public class MainPlayerViewController implements Initializable {
      * @param colIndex The column index of the clicked button.
      */
     public void onButtonClicked(Integer rowIndex, Integer colIndex, Button button){
-        String prevStyle = prevSelect.getStyle();
-
         if(prevSelect == null)
             prevSelect = button;
         else {
-            prevSelect.setStyle(prevStyle + "-fx-border-color: initial;" +
-                    "-fx-border-width: initial;" + "-fx-opacity: 1");
+            if(!prevSelect.isDisabled())
+                prevSelect.setStyle("-fx-border-color: initial;" +
+                    "-fx-border-width: initial;" + "-fx-opacity: 0.3");
         }
 
         //change the stile to the selected node
-        button.setStyle("-fx-border-color: red;" + "-fx-border-width: 3px;");
+        button.setStyle("-fx-border-color: red;" + "-fx-border-width: 3px;" + "-fx-opacity: 0.3");
         prevSelect = button;
         prevX = rowIndex;
         prevY = colIndex;
@@ -132,20 +136,29 @@ public class MainPlayerViewController implements Initializable {
             prevSelect.setStyle("-fx-background-image: " + style + "-fx-background-position: center center; " + "-fx-background-size: 100% 100%;" + "-fx-opacity: 1");
             prevSelect.setVisible(true);
 
+            prevSelect.setViewOrder(zLevel);
+            zLevel++;
+
             //update the board with the new available cards
             for (Node node : gridPane.getChildren()) {
+                if(node.isVisible() && !node.isDisabled()) {
+                    node.setVisible(false);
+                    node.setDisable(true);
+                }
                 for (int[] pos : available) {
                     if (Objects.equals(GridPane.getRowIndex(node), pos[0]) && Objects.equals(GridPane.getColumnIndex(node), pos[1])) {
                         //update the new available cells
                         node.setVisible(true);
                         node.setDisable(false);
+                        node.setViewOrder(zLevel);
+                        node.setStyle("-fx-opacity: 0.3");
                         break;
                     }
                 }
             }
+            zLevel -= 2;
             return;
         }
-
 
         //update the cell with the new card on the board
         if (side) {
@@ -163,17 +176,31 @@ public class MainPlayerViewController implements Initializable {
 
         prevSelect.setStyle("-fx-background-image: " + style + "-fx-background-position: center center; " + "-fx-background-size: 100% 100%;" + "-fx-opacity: 1");
         prevSelect.setVisible(true);
+        prevSelect.setDisable(true);
+        prevSelect.setViewOrder(zLevel);
+        zLevel++;
         //update the board with the new available cards
         for (Node node : gridPane.getChildren()) {
+            if(node.isVisible() && !node.isDisabled()) {
+                node.setVisible(false);
+                node.setDisable(true);
+            }
             for (int[] pos : available) {
                 if (Objects.equals(GridPane.getRowIndex(node), pos[0]) && Objects.equals(GridPane.getColumnIndex(node), pos[1])) {
                     //update the new available cells
                     node.setVisible(true);
                     node.setDisable(false);
+                    node.setViewOrder(zLevel);
+                    node.setStyle("-fx-opacity: 0.3");
                     break;
                 }
             }
         }
+        /*zLevel++;
+        prevSelect.setStyle("-fx-background-image: " + style + "-fx-background-position: center center; " + "-fx-background-size: 100% 100%;" + "-fx-opacity: 1");
+        prevSelect.setVisible(true);
+        prevSelect.setViewOrder(zLevel);*/
+        zLevel -= 2;
     }
 
     /**
