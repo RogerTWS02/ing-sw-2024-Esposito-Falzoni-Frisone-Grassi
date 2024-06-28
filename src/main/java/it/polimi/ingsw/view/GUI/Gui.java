@@ -38,7 +38,7 @@ public class Gui {
     private String[] gUUID = new String[3];
     private String[] rUUID = new String[3];
     private List<int[]> available;
-    private Resource[][] onBoard;
+    private Resource[][] onBoard = new Resource[81][81];
     private int positionX = 0, positionY = 0;
 
     private Queue<String> chatMessages = new LinkedList<>();
@@ -215,14 +215,22 @@ public class Gui {
      * @param message The message received.
      */
     public void replyUpdatedScoreHandler(Message message) {
+        String prevUUID = currentHandUUID.get(numHand);
+        currentHandUUID.set(numHand, "");
+
+        //Available places
         available = (List<int[]>) message.getObj()[0];
-        onBoard[positionY][positionX] = (Resource) message.getObj()[1];
+
+        onBoard[positionX][positionY] = (Resource) message.getObj()[1];
+
+        //Update the board with the placed card
         String nick = (String) message.getObj()[2];
         int score = (int) message.getObj()[3];
         nicknames.put(nick, score);
         playerResources = (List<Resource>) message.getObj()[4];
 
-        updateScores();
+        //Update the view of the player board
+        GuiApp.getMainPlayerViewController().updatePlayerBoard(prevUUID, side, (Resource) message.getObj()[1], available);
     }
 
     /**

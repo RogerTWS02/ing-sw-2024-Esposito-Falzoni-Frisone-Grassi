@@ -13,10 +13,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.transform.Scale;
 
 import java.net.URL;
 import java.util.List;
@@ -24,7 +21,6 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainPlayerViewController implements Initializable {
-    public GridPane startingCard;
     public ImageView handCard0;
     public ImageView handCard1;
     public ImageView handCard2;
@@ -64,34 +60,12 @@ public class MainPlayerViewController implements Initializable {
      * @param resourceBundle Ignored.
      */
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        /*Scale scale = new Scale(1, 1);
-        scrollPane.getTransforms().add(scale);
-        scrollPane.addEventFilter(ScrollEvent.ANY, scrollEvent -> {
-            if (scrollEvent.isControlDown()) {
-                if (scrollEvent.getDeltaY() > 0) {
-                    scale.setX(scale.getX() * zoomFactor);
-                    scale.setY(scale.getY() * zoomFactor);
-                } else {
-                    scale.setX(scale.getX() / zoomFactor);
-                    scale.setY(scale.getY() / zoomFactor);
-                }
-                scrollEvent.consume();
-            }
-        });*/
-
         gridPane = new GridPane();
-        //gridPane.setPrefSize(3200, 4800);
         gridPane.setGridLinesVisible(true);
-        //gridPane.setMinHeight(32000);
-        //gridPane.setMinWidth(48000);
         scrollPane.setContent(gridPane);
 
         scrollPane.setFitToWidth(false);
         scrollPane.setFitToHeight(false);
-        /*anchorPane.setTopAnchor(gridPane, 0.0);
-        anchorPane.setBottomAnchor(gridPane, 0.0);
-        anchorPane.setLeftAnchor(gridPane, 0.0);
-        anchorPane.setRightAnchor(gridPane, 0.0);*/
 
         for(int i = 0; i < 81; i++) {
             for(int j = 0; j < 81; j++) {
@@ -136,7 +110,7 @@ public class MainPlayerViewController implements Initializable {
         }
 
         //change the stile to the selected node
-        button.setStyle("-fx-border-color: red;" + "-fx-border-width: 3;");
+        button.setStyle("-fx-border-color: red;" + "-fx-border-width: 3px;");
         prevSelect = button;
         prevX = rowIndex;
         prevY = colIndex;
@@ -181,13 +155,16 @@ public class MainPlayerViewController implements Initializable {
         } else {
             UUID = prevUUID;
         }
-        //set the right background for the starting card
-        String imagePath = "/graphics/startingDeck/" + UUID + ".png";
-        String style = String.format("-fx-background-image: url('%s');", imagePath);
-        prevSelect.setStyle(style +
-                "-fx-border-color: initial;" +
-                "-fx-border-width: initial;");
 
+        String style;
+        //set the right background for the starting card
+        if(UUID.contains("RC"))
+            style = "url('/graphics/resourceDeck/" + UUID + ".png');";
+        else
+            style = "url('/graphics/goldenDeck/" + UUID + ".png');";
+
+        prevSelect.setStyle("-fx-background-image: " + style + "-fx-background-position: center center; " + "-fx-background-size: 100% 100%;" + "-fx-opacity: 1");
+        prevSelect.setVisible(true);
         //update the board with the new available cards
         for (Node node : gridPane.getChildren()) {
             for (int[] pos : available) {
@@ -327,23 +304,6 @@ public class MainPlayerViewController implements Initializable {
     }
 
     /**
-     * Starts the player board, showing the starting card.
-     *
-     * @param UUID The UUID of the starting card.
-     */
-    public void startPlayerBoard(String UUID){
-        Platform.runLater(() -> {
-            startingCard.setVisible(true);
-            startingCard.setDisable(true);
-
-            //set the right background for the starting card
-            String imagePath = "/graphics/startingDeck/" + UUID + ".png";
-            String style = String.format("-fx-background-image: url('%s');", imagePath);
-            startingCard.setStyle(style);
-        });
-    }
-
-    /**
      * Selects the first hand card.
      *
      * @param mouseEvent Ignored.
@@ -413,15 +373,19 @@ public class MainPlayerViewController implements Initializable {
             return;
         }
 
+        GuiApp.getGui().setPositions(coordinates[0], coordinates[1]);
         GuiApp.getGui().placeCard(selectedCardIndex, coordinates[0], coordinates[1], isFlipped);
         isFlipped = false;
         Platform.runLater(() -> {
             sideButton.setOpacity(1);
-            selectedButton.setVisible(false);
+            //selectedButton.setVisible(false);
             sideButton.setVisible(false);
             sideButton.setDisable(true);
             placeButton.setDisable(true);
             placeButton.setVisible(false);
+            handCard0.setOpacity(1);
+            handCard1.setOpacity(1);
+            handCard2.setOpacity(1);
 
             resourceDeck.setDisable(false);
             goldenDeck.setDisable(false);
@@ -430,16 +394,21 @@ public class MainPlayerViewController implements Initializable {
             commonGolden1.setDisable(false);
             commonGolden2.setDisable(false);
         });
-        selectedButton = null;
-        selectedCardIndex = 100;
+        //selectedButton = null;
         handCardsImg[selectedCardIndex] = null;
+        selectedCardIndex = 100;
         drawPhase = true;
-
-        GuiApp.getGui().setPositions(coordinates[0], coordinates[1]);
     }
 
-    public void getNewCoords(){
-        coordinates = GuiApp.getPlayerBoardController().getCoords();
+    /**
+     * Returns the new coordinates.
+     *
+     * @return The new coordinates.
+     */
+    public int[] getNewCoords(){
+        coordinates[0] = prevX;
+        coordinates[1] = prevY;
+        return coordinates;
     }
 
     /**
